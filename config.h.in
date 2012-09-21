@@ -32,15 +32,15 @@
 /* Define this to disable all text wrapping. */
 #undef DISABLE_WRAPPING
 
-/* Define this to have syntax highlighting, requires regex.h and ENABLE_NANORC
+/* Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC
    too! */
 #undef ENABLE_COLOR
 
 /* Define this to enable multiple file buffers. */
 #undef ENABLE_MULTIBUFFER
 
-/* Define this to use .nanorc files. */
-#undef ENABLE_NANORC
+/* Define this to use .pinotrc files. */
+#undef ENABLE_PINOTRC
 
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
@@ -194,10 +194,10 @@
 #undef HAVE_WCWIDTH
 
 /* Define this to enable extra stuff. */
-#undef NANO_EXTRA
+#undef PINOT_EXTRA
 
-/* Define this to make the nano executable as small as possible. */
-#undef NANO_TINY
+/* Define this to make the pinot executable as small as possible. */
+#undef PINOT_TINY
 
 /* Shut up assert warnings :-) */
 #undef NDEBUG
@@ -230,7 +230,7 @@
 /* Where data are placed to. */
 #undef PKGDATADIR
 
-/* Specify alternate rcfile name (default: .nanorc) */
+/* Specify alternate rcfile name (default: .pinotrc) */
 #undef RCFILE_NAME
 
 /* Define this if you know your curses library allows LINES and COLS to be
