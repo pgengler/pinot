@@ -39,12 +39,12 @@
 /* Define this to enable multiple file buffers. */
 #undef ENABLE_MULTIBUFFER
 
-/* Define this to use .pinotrc files. */
-#undef ENABLE_PINOTRC
-
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
 #undef ENABLE_NLS
+
+/* Define this to use .pinotrc files. */
+#undef ENABLE_PINOTRC
 
 /* Define this if your system has sufficient UTF-8 support (a wide curses
    library, iswalnum(), iswpunct(), iswblank() or iswspace(), nl_langinfo,
@@ -196,12 +196,6 @@
 /* Define to 1 if you have the `wcwidth' function. */
 #undef HAVE_WCWIDTH
 
-/* Define this to enable extra stuff. */
-#undef PINOT_EXTRA
-
-/* Define this to make the pinot executable as small as possible. */
-#undef PINOT_TINY
-
 /* Shut up assert warnings :-) */
 #undef NDEBUG
 
@@ -229,6 +223,12 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define this to enable extra stuff. */
+#undef PINOT_EXTRA
+
+/* Define this to make the pinot executable as small as possible. */
+#undef PINOT_TINY
 
 /* Where data are placed to. */
 #undef PKGDATADIR

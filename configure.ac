@@ -144,7 +144,7 @@ AC_ARG_ENABLE(color,
 if test x$enableval != xno; then
     if test x$ac_cv_header_pcreposix_h = xyes; then
 	AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC too!]) color_support=yes
+	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
     else
 	AC_MSG_ERROR([
 *** The header file pcreposix.h was not found.  If you wish to use color
@@ -156,7 +156,7 @@ fi,
     if test x$enable_tiny != xyes; then
 	if test x$ac_cv_header_pcreposix_h = xyes; then
 	    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC too!]) color_support=yes	
+	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
 	else
 	    AC_MSG_ERROR([
 *** The header file pcreposix.h was not found.  If you wish to use color
