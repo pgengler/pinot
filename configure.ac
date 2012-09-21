@@ -1,26 +1,23 @@
-# Configuration for GNU nano - a small and user-friendly text editor
+# Configuration for pinot - a small and user-friendly text editor
 #
 # Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 # Free Software Foundation, Inc.
 #
-# GNU nano is free software; you can redistribute it and/or modify it
+# pinot is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any
 # later version.
 #
-# GNU nano is distributed in the hope that it will be useful, but
+# pinot is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with GNU nano; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301,
-# USA.
+# along with pinot; if not, write to the Free Software Foundation, Inc.,
+## 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
-# $Id: configure.ac 4538 2011-02-26 14:41:55Z astyanax $
-
-AC_INIT([GNU nano], [2.3.1], [nano-devel@gnu.org], [nano])
+AC_INIT([GNU pinot], [0.0.1], [nano-devel@gnu.org], [pinot])
 AC_CONFIG_SRCDIR([src/pinot.c])
 AC_CANONICAL_TARGET([])
 AM_INIT_AUTOMAKE
@@ -611,7 +608,7 @@ doc/texinfo/Makefile
 m4/Makefile
 po/Makefile.in
 src/Makefile
-nano.spec
+pinot.spec
 ])
 
 AC_OUTPUT
