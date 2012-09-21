@@ -1283,7 +1283,7 @@ void do_rcfile(void)
 	sprintf(pinotrc, "%s/%s", homedir, RCFILE_NAME);
 
 	/* Don't open directories, character files, or block files. */
-	if (stat(pinptrc, &rcinfo) != -1) {
+	if (stat(pinotrc, &rcinfo) != -1) {
 	    if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) ||
 		S_ISBLK(rcinfo.st_mode))
 		rcfile_error(S_ISDIR(rcinfo.st_mode) ?
