@@ -106,6 +106,9 @@
 /* Define to 1 if you have the `magic' library (-lmagic). */
 #undef HAVE_LIBMAGIC
 
+/* Define to 1 if you have the `pcreposix' library (-lpcreposix). */
+#undef HAVE_LIBPCREPOSIX
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
