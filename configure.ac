@@ -583,6 +583,8 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_WARN([*** Can't check for macro redefinability when cross-compiling]))
 
+AC_CHECK_HEADERS(pcreposix.h)
+AC_CHECK_LIB(pcreposix, regcomp)
 AC_CHECK_LIB(magic, magic_open)
 
 # Check for groff html support
