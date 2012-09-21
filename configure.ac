@@ -604,7 +604,6 @@ Makefile
 doc/Makefile
 doc/pinotrc.sample
 doc/man/Makefile
-doc/man/fr/Makefile
 doc/syntax/Makefile
 doc/texinfo/Makefile
 m4/Makefile
