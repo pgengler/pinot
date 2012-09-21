@@ -1,6 +1,6 @@
-## Here is an example for nanorc files.
+## Here is an example for pinotrc files.
 ##
-syntax "nanorc" "\.?nanorc$"
+syntax "pinotrc" "\.?pinotrc$"
 ## Possible errors and parameters
 icolor brightwhite "^[[:space:]]*((un)?set|include|syntax|i?color).*$"
 ## Keywords

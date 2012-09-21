@@ -1,4 +1,4 @@
-## CMake syntax highlighter for GNU Nano
+## CMake syntax highlighter for pinot
 ##
 syntax "cmake" "(CMakeLists\.txt|\.cmake)$"
 

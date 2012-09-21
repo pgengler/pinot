@@ -1,6 +1,6 @@
-## Sample initialization file for GNU nano.
+## Sample initialization file for pinot.
 ##
-## Please note that you must have configured nano with --enable-nanorc
+## Please note that you must have configured pinot with --enable-pinotrc
 ## for this file to be read!  Also note that this file should not be in
 ## DOS or Mac format, and that characters specially interpreted by the
 ## shell should not be escaped here.
@@ -53,7 +53,7 @@
 ##
 # set fill -8
 
-## Enable ~/.nano_history for saving and reading search/replace strings.
+## Enable ~/.pinot_history for saving and reading search/replace strings.
 # set historylog
 
 ## The opening and closing brackets that can be found by bracket
@@ -93,7 +93,7 @@
 ## Don't wrap text at all.
 # set nowrap
 
-## Set operating directory.  nano will not read or write files outside
+## Set operating directory.  pinot will not read or write files outside
 ## this directory and its subdirectories.  Also, the current directory
 ## is changed to here, so any files are inserted from this dir.  A blank
 ## string means the operating directory feature is turned off.
@@ -149,7 +149,7 @@
 ##
 # set speller "aspell -x -c"
 
-## Allow nano to be suspended.
+## Allow pinot to be suspended.
 # set suspend
 
 ## Use this tab size instead of the default; it must be greater than 0.
@@ -211,17 +211,17 @@
 ## make use of such files (which can only include "syntax", "color", and
 ## "icolor" commands) as follows:
 ##
-## include "/path/to/syntax_file.nanorc"
+## include "/path/to/syntax_file.pinotrc"
 ##
 ## Unless otherwise noted, the name of the syntax file (without the
-## ".nanorc" extension) should be the same as the "short description"
+## ".pinotrc" extension) should be the same as the "short description"
 ## name inside that file.  These names are kept fairly short to make
-## them easier to remember and faster to type using nano's -Y option.
+## them easier to remember and faster to type using pinot's -Y option.
 ##
 ## All regexes should be extended regular expressions.
 
 ## Key bindings
-## Please see nanorc(5) for more details on this
+## Please see pinotrc(5) for more details on this
 ##
 ## Here are some samples to get you going
 ##
@@ -233,80 +233,80 @@
 # bind kdel backspace all
 
 
-## Nanorc files
-# include "@PKGDATADIR@/nanorc.nanorc"
+## pinotrc files
+# include "@PKGDATADIR@/pinotrc.pinotrc"
 
 ## C/C++
-# include "@PKGDATADIR@/c.nanorc"
+# include "@PKGDATADIR@/c.pinotrc"
 
 ## Makefiles
-# include "@PKGDATADIR@/makefile.nanorc"
+# include "@PKGDATADIR@/makefile.pinotrc"
 
 ## Cascading Style Sheets
-# include "@PKGDATADIR@/css.nanorc"
+# include "@PKGDATADIR@/css.pinotrc"
 
 ## Debian files
-# include "@PKGDATADIR@/debian.nanorc"
+# include "@PKGDATADIR@/debian.pinotrc"
 
 ## Gentoo files
-# include "@PKGDATADIR@/gentoo.nanorc"
+# include "@PKGDATADIR@/gentoo.pinotrc"
 
 ## HTML
-# include "@PKGDATADIR@/html.nanorc"
+# include "@PKGDATADIR@/html.pinotrc"
 
 ## PHP
-# include "@PKGDATADIR@/php.nanorc"
+# include "@PKGDATADIR@/php.pinotrc"
 
 ## TCL
-# include "@PKGDATADIR@/tcl.nanorc"
+# include "@PKGDATADIR@/tcl.pinotrc"
 
 ## TeX
-# include "@PKGDATADIR@/tex.nanorc"
+# include "@PKGDATADIR@/tex.pinotrc"
 
 ## Quoted emails (under e.g. mutt)
-# include "@PKGDATADIR@/mutt.nanorc"
+# include "@PKGDATADIR@/mutt.pinotrc"
 
 ## Patch files
-# include "@PKGDATADIR@/patch.nanorc"
+# include "@PKGDATADIR@/patch.pinotrc"
 
 ## Manpages
-# include "@PKGDATADIR@/man.nanorc"
+# include "@PKGDATADIR@/man.pinotrc"
 
 ## Groff
-# include "@PKGDATADIR@/groff.nanorc"
+# include "@PKGDATADIR@/groff.pinotrc"
 
 ## Perl
-# include "@PKGDATADIR@/perl.nanorc"
+# include "@PKGDATADIR@/perl.pinotrc"
 
 ## Python
-# include "@PKGDATADIR@/python.nanorc"
+# include "@PKGDATADIR@/python.pinotrc"
 
 ## Ruby
-# include "@PKGDATADIR@/ruby.nanorc"
+# include "@PKGDATADIR@/ruby.pinotrc"
 
 ## Java
-# include "@PKGDATADIR@/java.nanorc"
+# include "@PKGDATADIR@/java.pinotrc"
 
 ## Fortran
-# include "@PKGDATADIR@/fortran.nanorc"
+# include "@PKGDATADIR@/fortran.pinotrc"
 
 ## Objective-C
-# include "@PKGDATADIR@/objc.nanorc"
+# include "@PKGDATADIR@/objc.pinotrc"
 
 ## OCaml
-# include "@PKGDATADIR@/ocaml.nanorc"
+# include "@PKGDATADIR@/ocaml.pinotrc"
 
 ## AWK
-# include "@PKGDATADIR@/awk.nanorc"
+# include "@PKGDATADIR@/awk.pinotrc"
 
 ## Assembler
-# include "@PKGDATADIR@/asm.nanorc"
+# include "@PKGDATADIR@/asm.pinotrc"
 
 ## Bourne shell scripts
-# include "@PKGDATADIR@/sh.nanorc"
+# include "@PKGDATADIR@/sh.pinotrc"
 
 ## POV-Ray
-# include "@PKGDATADIR@/pov.nanorc"
+# include "@PKGDATADIR@/pov.pinotrc"
 
 ## XML-type files
-# include "@PKGDATADIR@/xml.nanorc"
+# include "@PKGDATADIR@/xml.pinotrc"

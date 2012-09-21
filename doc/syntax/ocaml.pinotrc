@@ -1,4 +1,4 @@
-# OCaml sample nanorc
+# OCaml sample pinotrc
 #
 syntax "ocaml" "\.mli?$"
 #uid

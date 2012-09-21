@@ -36,7 +36,7 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = doc
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/nanorc.sample.in
+	$(srcdir)/pinotrc.sample.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_define_dir.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glib-2.0.m4 \
@@ -48,7 +48,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = nanorc.sample
+CONFIG_CLEAN_FILES = pinotrc.sample
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -248,7 +248,7 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-nanorc.sample: $(top_builddir)/config.status $(srcdir)/nanorc.sample.in
+pinotrc.sample: $(top_builddir)/config.status $(srcdir)/pinotrc.sample.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 # This directory's subdirectories are mostly independent; you can cd
