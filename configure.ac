@@ -64,7 +64,7 @@ fi
 AC_ARG_ENABLE(tiny,
 [  --enable-tiny           Disable features for the sake of size],
 [if test x$enableval = xyes; then
-    AC_DEFINE(NANO_TINY, 1, [Define this to make the nano executable as small as possible.]) tiny_support=yes
+    AC_DEFINE(PINOT_TINY, 1, [Define this to make the pinot executable as small as possible.]) tiny_support=yes
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
     AC_DEFINE(DISABLE_JUSTIFY, 1, [Define this to disable the justify routines.])
@@ -79,10 +79,10 @@ fi])
 AC_ARG_ENABLE(extra,
 [  --disable-extra          Disable extra features, currently only easter eggs],
 [if test x$enableval != xno; then
-    AC_DEFINE(NANO_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
+    AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
 fi], 
     [if test x$enable_tiny != xyes; then
-        AC_DEFINE(NANO_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
+        AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
     fi])
 
 AC_ARG_ENABLE(browser,
@@ -143,8 +143,8 @@ AC_ARG_ENABLE(color,
 [  --disable-color          Disable color and syntax highlighting],
 if test x$enableval != xno; then
     if test x$ac_cv_header_regex_h = xyes; then
-	AC_DEFINE(ENABLE_NANORC, 1, [Define this to use .nanorc files.]) nanorc_support=yes
-	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_NANORC too!]) color_support=yes
+	AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
+	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC too!]) color_support=yes
     else
 	AC_MSG_ERROR([
 *** The header file regex.h was not found.  If you wish to use color
@@ -155,8 +155,8 @@ if test x$enableval != xno; then
 fi, 
     if test x$enable_tiny != xyes; then
 	if test x$ac_cv_header_regex_h = xyes; then
-	    AC_DEFINE(ENABLE_NANORC, 1, [Define this to use .nanorc files.]) nanorc_support=yes
-	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_NANORC too!]) color_support=yes	
+	    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
+	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC too!]) color_support=yes	
 	else
 	    AC_MSG_ERROR([
 *** The header file regex.h was not found.  If you wish to use color
@@ -176,17 +176,17 @@ fi],
         AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
     fi])
 
-AC_ARG_ENABLE(nanorc,
-[  --disable-nanorc         Disable use of .nanorc files],
+AC_ARG_ENABLE(pinotrc,
+[  --disable-pinotrc         Disable use of .pinotrc files],
 [if test x$enableval != xno; then
-    AC_DEFINE(ENABLE_NANORC, 1, [Define this to use .nanorc files.]) nanorc_support=yes
+    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
 fi], 
     [if test x$enable_tiny != xyes; then
-        AC_DEFINE(ENABLE_NANORC, 1, [Define this to use .nanorc files.]) nanorc_support=yes
+        AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
     fi])
 
 AC_ARG_ENABLE(all,
-[  --enable-all            Enable ALL extra nano functionality (ignored for compatibility as all options default to on)],
+[  --enable-all            Enable ALL extra pinot functionality (ignored for compatibility as all options default to on)],
 [if test x$enableval = xyes; then
     echo "--enable-all option no longer needed, ignoring for compatibility"
 fi])
@@ -390,7 +390,7 @@ int main(void)
     esac], [AC_MSG_RESULT(no)])
 
 if test x$CURSES_LIB_NAME = xslang; then
-    AC_DEFINE(NANO_TINY, 1, [Define this to make the nano executable as small as possible.]) tiny_support=yes
+    AC_DEFINE(PINOT_TINY, 1, [Define this to make the pinot executable as small as possible.]) tiny_support=yes
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
     AC_DEFINE(DISABLE_JUSTIFY, 1, [Define this to disable the justify routines.])
@@ -402,12 +402,12 @@ if test x$CURSES_LIB_NAME = xslang; then
 fi
 
 AM_CONDITIONAL(USE_COLOR, test x$color_support = xyes)
-AM_CONDITIONAL(USE_NANORC, test x$nanorc_support = xyes)
+AM_CONDITIONAL(USE_PINOTRC, test x$pinotrc_support = xyes)
 
 AC_ARG_ENABLE(altrcname,
-[  --enable-altrcname          Specify alternate rcfile name (default: .nanorc)],
+[  --enable-altrcname          Specify alternate rcfile name (default: .pinotrc)],
 [if test x$enableval != no; then
-    AC_DEFINE_UNQUOTED(RCFILE_NAME, "$enableval", [Specify alternate rcfile name (default: .nanorc)]) rcfilename=$enableval
+    AC_DEFINE_UNQUOTED(RCFILE_NAME, "$enableval", [Specify alternate rcfile name (default: .pinotrc)]) rcfilename=$enableval
 fi])
 
 dnl Checks for functions.
@@ -463,7 +463,7 @@ if eval "test x$CURSES_LIB_NAME = x"; then
     AC_MSG_WARN([
 *** No curses lib available.  Consider getting the official ncurses
 *** distribution from ftp://ftp.gnu.org/pub/gnu/ncurses if you get
-*** errors compiling nano.])
+*** errors compiling pinot.])
 else
     AC_MSG_RESULT([Using $CURSES_LIB_NAME as the curses library])
 fi
@@ -600,7 +600,7 @@ AM_CONDITIONAL(GROFF_HTML, test x$groff_html_support = xyes)
 AC_CONFIG_FILES([
 Makefile
 doc/Makefile
-doc/nanorc.sample
+doc/pinotrc.sample
 doc/man/Makefile
 doc/man/fr/Makefile
 doc/syntax/Makefile
