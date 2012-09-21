@@ -1,1 +1,3 @@
 *.o
+config.log
+config.status
