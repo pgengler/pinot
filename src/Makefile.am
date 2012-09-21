@@ -12,7 +12,7 @@ nano_SOURCES =	browser.c \
 		global.c \
 		help.c \
 		move.c \
-		nano.c \
+		pinot.c \
 		pinot.h \
 		prompt.c \
 		proto.h \

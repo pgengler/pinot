@@ -407,7 +407,7 @@ void do_scroll_down(void);
 void do_left(void);
 void do_right(void);
 
-/* All functions in nano.c. */
+/* All functions in pinot.c. */
 filestruct *make_new_node(filestruct *prevnode);
 filestruct *copy_node(const filestruct *src);
 void splice_node(filestruct *begin, filestruct *newnode, filestruct
