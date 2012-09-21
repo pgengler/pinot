@@ -2530,6 +2530,8 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 	    coloruid++;
 	    if (tmpcolor->bright)
 		wattron(edit, A_BOLD);
+	    if (tmpcolor->underline)
+		wattron(edit, A_UNDERLINE);
 	    wattron(edit, COLOR_PAIR(tmpcolor->pairnum));
 	    /* Two notes about regexec().  A return value of zero means
 	     * that there is a match.  Also, rm_eo is the first
@@ -2784,6 +2786,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 	    }
 
 	    wattroff(edit, A_BOLD);
+	    wattroff(edit, A_UNDERLINE);
 	    wattroff(edit, COLOR_PAIR(tmpcolor->pairnum));
 	}
 	lastptr = fileptr;

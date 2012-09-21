@@ -665,12 +665,12 @@ void parse_include(char *ptr)
 }
 
 /* Return the short value corresponding to the color named in colorname,
- * and set bright to TRUE if that color is bright. */
-COLORWIDTH color_to_short(const char *colorname, bool *bright)
+ * and set bright to TRUE if that color is bright (similarly for underline. */
+COLORWIDTH color_to_short(const char *colorname, bool *bright, bool *underline)
 {
     COLORWIDTH mcolor = -1;
 
-    assert(colorname != NULL && bright != NULL);
+    assert(colorname != NULL && bright != NULL && underline != NULL);
 
     if (strncasecmp(colorname, "bright", 6) == 0) {
 	*bright = TRUE;
@@ -683,6 +683,11 @@ COLORWIDTH color_to_short(const char *colorname, bool *bright)
     if (sscanf(colorname, "%hu", &mcolor) == 1) {
 	if (mcolor > 255) mcolor = 255;
 	return mcolor;
+    }
+
+    if (strncasecmp(colorname, "under", 5) == 0) {
+	*underline = TRUE;
+	colorname += 5;
     }
 
     if (strcasecmp(colorname, "green") == 0)
@@ -717,7 +722,7 @@ COLORWIDTH color_to_short(const char *colorname, bool *bright)
 void parse_colors(char *ptr, bool icase)
 {
     COLORWIDTH fg, bg;
-    bool bright = FALSE, no_fgcolor = FALSE;
+    bool bright = FALSE, underline = FALSE, no_fgcolor = FALSE;
     char *fgstr;
 
     assert(ptr != NULL);
@@ -753,12 +758,18 @@ void parse_colors(char *ptr, bool icase)
 		bgcolorname);
 	    return;
 	}
-	bg = color_to_short(bgcolorname, &bright);
+	if (strncasecmp(bgcolorname, "under", 5) == 0) {
+	    rcfile_error(
+		N_("Background color \"%s\" cannot be underline"),
+		bgcolorname);
+	    return;
+	}
+	bg = color_to_short(bgcolorname, &bright, &underline);
     } else
 	bg = -1;
 
     if (!no_fgcolor) {
-	fg = color_to_short(fgstr, &bright);
+	fg = color_to_short(fgstr, &bright, &underline);
 
 	/* Don't try to parse screwed-up foreground colors. */
 	if (fg == -1)
@@ -808,6 +819,7 @@ void parse_colors(char *ptr, bool icase)
 	    newcolor->fg = fg;
 	    newcolor->bg = bg;
 	    newcolor->bright = bright;
+	    newcolor->underline = underline;
 	    newcolor->icase = icase;
 
 	    newcolor->start_regex = mallocstrcpy(NULL, fgstr);
