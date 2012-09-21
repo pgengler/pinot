@@ -3460,8 +3460,8 @@ void do_replace_highlight(bool highlight, const char *word)
 }
 
 #ifdef PINOT_EXTRA
-#define CREDIT_LEN 55
-#define XLCREDIT_LEN 8
+#define CREDIT_LEN 57
+#define XLCREDIT_LEN 9
 
 /* Easter egg: Display credits.  Assume nodelay(edit) and scrollok(edit)
  * are FALSE. */
