@@ -680,6 +680,11 @@ COLORWIDTH color_to_short(const char *colorname, bool *bright)
 	colorname += 4;
     }
 
+    if (sscanf(colorname, "%hu", &mcolor) == 1) {
+	if (mcolor > 255) mcolor = 255;
+	return mcolor;
+    }
+
     if (strcasecmp(colorname, "green") == 0)
 	mcolor = COLOR_GREEN;
     else if (strcasecmp(colorname, "red") == 0)
