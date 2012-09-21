@@ -38,7 +38,7 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/pinot.spec.in $(top_srcdir)/configure ABOUT-NLS \
-	AUTHORS COPYING COPYING.DOC ChangeLog INSTALL NEWS THANKS TODO \
+	AUTHORS.nano COPYING COPYING.DOC INSTALL THANKS TODO \
 	config.guess config.rpath config.sub depcomp install-sh \
 	missing mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
