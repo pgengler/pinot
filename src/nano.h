@@ -198,6 +198,8 @@ typedef struct colortype {
 	/* This syntax's background color. */
     bool bright;
 	/* Is this color A_BOLD? */
+    bool underline;
+	/* Is this color A_UNDERLINE? */
     bool icase;
 	/* Is this regex string case insensitive? */
     int pairnum;

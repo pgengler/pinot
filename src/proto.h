@@ -555,7 +555,7 @@ bool nregcomp(const char *regex, int cflags);
 void parse_syntax(char *ptr);
 void parse_magic_syntax(char *ptr);
 void parse_include(char *ptr);
-short color_to_short(const char *colorname, bool *bright);
+short color_to_short(const char *colorname, bool *bright, bool *underline);
 void parse_colors(char *ptr, bool icase);
 void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
