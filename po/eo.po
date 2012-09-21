@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nano 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-26 09:24-0500\n"
+"POT-Creation-Date: 2012-09-21 14:28-0400\n"
 "PO-Revision-Date: 2011-03-13 12:02+0100\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"Language: eo\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.0\n"
 
@@ -24,7 +24,7 @@ msgid "Go To Directory"
 msgstr "Iri dosierujon"
 
 #: src/browser.c:233 src/browser.c:830 src/files.c:864 src/files.c:2078
-#: src/nano.c:1068 src/search.c:220 src/search.c:313 src/search.c:974
+#: src/pinot.c:1067 src/search.c:220 src/search.c:313 src/search.c:974
 #: src/search.c:1039
 msgid "Cancelled"
 msgstr "Rezignita"
@@ -37,7 +37,7 @@ msgstr "Ne eblas iri ekstere de %s en limigita reĝimo"
 #: src/browser.c:277 src/browser.c:324 src/browser.c:347 src/files.c:726
 #: src/files.c:735 src/files.c:1561 src/files.c:1687 src/files.c:1741
 #: src/files.c:1762 src/files.c:1885 src/files.c:2792 src/files.c:2994
-#: src/rcfile.c:640 src/rcfile.c:1279
+#: src/rcfile.c:640 src/rcfile.c:1299
 #, c-format
 msgid "Error reading %s: %s"
 msgstr "Eraro dum legado de %s: %s"
@@ -196,12 +196,12 @@ msgstr "Nova dosiero"
 msgid "\"%s\" not found"
 msgstr "\"%s\" ne trovatas"
 
-#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1229 src/rcfile.c:1270
+#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1249 src/rcfile.c:1290
 #, c-format
 msgid "\"%s\" is a directory"
 msgstr "\"%s\" estas dosierujo"
 
-#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1230 src/rcfile.c:1271
+#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1250 src/rcfile.c:1291
 #, c-format
 msgid "\"%s\" is a device file"
 msgstr "\"%s\" estas aparato"
@@ -249,7 +249,7 @@ msgstr "Kun \"--nofollow\" ne eblas antaŭglui nek postglui al simbola ligilo"
 msgid "Error writing backup file %s: %s"
 msgstr "Eraro dum skribado de savkopio %s: %s"
 
-#: src/files.c:1603 src/nano.c:705
+#: src/files.c:1603 src/pinot.c:704
 msgid "Too many backup files?"
 msgstr "Ĉu troaj savkopioj?"
 
@@ -345,18 +345,18 @@ msgstr ""
 "pozicion.\n"
 
 #: src/files.c:2759
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Path %s is not a directory and needs to be.\n"
-"Nano will be unable to load or save search or cursor position history\n"
+"pinot will be unable to load or save search or cursor position history\n"
 msgstr ""
 "Vojo %s ne estas dosierujo sed devas esti.\n"
 "'Nano' ne kapablos konservi/relegi serĉan historion nek kursoran pozicion.\n"
 
 #: src/files.c:2775
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I tried to move\n"
+"Detected a legacy pinot history file (%s) which I tried to move\n"
 "to the preferred location (%s) but encountered an error: %s"
 msgstr ""
 "Troviĝis olda historia dosiero (%s);\n"
@@ -364,11 +364,11 @@ msgstr ""
 "okazis eraro: %s"
 
 #: src/files.c:2778
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I moved\n"
+"Detected a legacy pinot history file (%s) which I moved\n"
 "to the preferred location (%s)\n"
-"(see the nano FAQ about this change)"
+"(see the pinot FAQ about this change)"
 msgstr ""
 "Troviĝis olda historia dosiero (%s)\n"
 "kiu nun moviĝis al preferata loko (%s).\n"
@@ -530,11 +530,13 @@ msgid "Display this help text"
 msgstr "Montri ĉi tiun helptekston"
 
 #: src/global.c:555
-msgid "Close the current file buffer / Exit from nano"
+#, fuzzy
+msgid "Close the current file buffer / Exit from pinot"
 msgstr "Fermi la nunan bufron / Eliri el 'nano'"
 
 #: src/global.c:557
-msgid "Exit from nano"
+#, fuzzy
+msgid "Exit from pinot"
 msgstr "Eliri el 'nano'"
 
 #: src/global.c:561
@@ -1068,16 +1070,18 @@ msgstr ""
 "\n"
 
 #: src/help.c:260
+#, fuzzy
 msgid ""
 "Insert File Help Text\n"
 "\n"
 " Type in the name of a file to be inserted into the current file buffer at "
 "the current cursor location.\n"
 "\n"
-" If you have compiled nano with multiple file buffer support, and enable "
+" If you have compiled pinot with multiple file buffer support, and enable "
 "multiple file buffers with the -F or --multibuffer command line flags, the "
-"Meta-F toggle, or a nanorc file, inserting a file will cause it to be loaded "
-"into a separate buffer (use Meta-< and > to switch between file buffers).  "
+"Meta-F toggle, or a pinotrc file, inserting a file will cause it to be "
+"loaded into a separate buffer (use Meta-< and > to switch between file "
+"buffers).  "
 msgstr ""
 "Helpteksto por enmeti dosieron\n"
 "\n"
@@ -1146,9 +1150,9 @@ msgstr ""
 "\n"
 " La dosieresplorilo uzeblas por esplori la arbo de dosierujoj por elekti "
 "dosieron por legi aŭ skribi.  Vi povas uzi la sagoklavojn aŭ «paĝon supren/"
-"suben» por foliumi tra la dosieroj, kaj «S» aŭ «Enigo» por elekti la indikatan "
-"dosieron aŭ eniri la indikatan dosierujon.  Por iri unu nivelon supren, "
-"elektu la dosierujon «..» je la supro de la listo.\n"
+"suben» por foliumi tra la dosieroj, kaj «S» aŭ «Enigo» por elekti la "
+"indikatan dosieron aŭ eniri la indikatan dosierujon.  Por iri unu nivelon "
+"supren, elektu la dosierujon «..» je la supro de la listo.\n"
 "\n"
 " La subaj klavkomandoj disponeblas en la dosieresplorilo:\n"
 "\n"
@@ -1251,15 +1255,16 @@ msgstr ""
 "\n"
 
 #: src/help.c:356
+#, fuzzy
 msgid ""
-"Main nano help text\n"
+"Main pinot help text\n"
 "\n"
-" The nano editor is designed to emulate the functionality and ease-of-use of "
-"the UW Pico text editor.  There are four main sections of the editor.  The "
-"top line shows the program version, the current filename being edited, and "
-"whether or not the file has been modified.  Next is the main editor window "
-"showing the file being edited.  The status line is the third line from the "
-"bottom and shows important messages.  "
+" The pinot editor is designed to emulate the functionality and ease-of-use "
+"of the UW Pico text editor.  There are four main sections of the editor.  "
+"The top line shows the program version, the current filename being edited, "
+"and whether or not the file has been modified.  Next is the main editor "
+"window showing the file being edited.  The status line is the third line "
+"from the bottom and shows important messages.  "
 msgstr ""
 "Ĉefa helpteksto de 'nano'\n"
 "\n"
@@ -1307,11 +1312,11 @@ msgstr ""
 msgid "enable/disable"
 msgstr " (ŝalto)"
 
-#: src/nano.c:587
+#: src/pinot.c:586
 msgid "Key invalid in view mode"
 msgstr "Klavo ne validas en rigarda reĝimo"
 
-#: src/nano.c:699
+#: src/pinot.c:698
 #, c-format
 msgid ""
 "\n"
@@ -1320,7 +1325,7 @@ msgstr ""
 "\n"
 "Bufro skribiĝis al %s\n"
 
-#: src/nano.c:701
+#: src/pinot.c:700
 #, c-format
 msgid ""
 "\n"
@@ -1329,7 +1334,7 @@ msgstr ""
 "\n"
 "Bufro ne skribiĝis al %s: %s\n"
 
-#: src/nano.c:704
+#: src/pinot.c:703
 #, c-format
 msgid ""
 "\n"
@@ -1338,270 +1343,272 @@ msgstr ""
 "\n"
 "Bufro ne skribiĝis: %s\n"
 
-#: src/nano.c:727
-msgid "Window size is too small for nano...\n"
+#: src/pinot.c:726
+#, fuzzy
+msgid "Window size is too small for pinot...\n"
 msgstr "Fenestro estas tro malgranda por 'nano'...\n"
 
-#: src/nano.c:820
-#, c-format
+#: src/pinot.c:819
+#, fuzzy, c-format
 msgid ""
-"Usage: nano [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
+"Usage: pinot [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
 "\n"
 msgstr ""
 "Uzmaniero:  nano [OPCIO...] [[+LINIO,KOLUMNO] DOSIERO...]\n"
 "\n"
 
-#: src/nano.c:823
+#: src/pinot.c:822
 #, c-format
 msgid "Option\t\tGNU long option\t\tMeaning\n"
 msgstr "Opcio\t\tLonga GNU-a opcio\t  Signifo\n"
 
-#: src/nano.c:825
+#: src/pinot.c:824
 #, c-format
 msgid "Option\t\tMeaning\n"
 msgstr "Opcio\t\t  Signifo\n"
 
 # La sekvaj mesaĝoj komencas en traduko per minusklo,
 # ĉar ili estas komandlinia helpteksto, kaj tiel normalas.
-#: src/nano.c:828
+#: src/pinot.c:827
 msgid "Show this message"
 msgstr "montri ĉi tiun mesaĝon"
 
-#: src/nano.c:829
+#: src/pinot.c:828
 msgid "+LINE,COLUMN"
 msgstr "+LINIO,KOLUMNO"
 
-#: src/nano.c:830
+#: src/pinot.c:829
 msgid "Start at line LINE, column COLUMN"
 msgstr "komenci en linio LINIO (kaj kolumno KOLUMNO)"
 
-#: src/nano.c:832
+#: src/pinot.c:831
 msgid "Enable smart home key"
 msgstr "estigi klavon «Komencen» inteligenta"
 
-#: src/nano.c:833
+#: src/pinot.c:832
 msgid "Save backups of existing files"
 msgstr "fari savkopion de ekzistanta dosiero"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 msgid "-C <dir>"
 msgstr "-C <ujo>"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 msgid "--backupdir=<dir>"
 msgstr "--backupdir=<ujo>"
 
-#: src/nano.c:835
+#: src/pinot.c:834
 msgid "Directory for saving unique backup files"
 msgstr "dosierujo por konservi unikajn savkopiojn"
 
-#: src/nano.c:838
+#: src/pinot.c:837
 msgid "Use bold instead of reverse video text"
 msgstr "uzi grasan anstataŭ negativan tekston"
 
-#: src/nano.c:841
+#: src/pinot.c:840
 msgid "Convert typed tabs to spaces"
 msgstr "konverti tajpatajn tabojn al spacoj"
 
-#: src/nano.c:844
+#: src/pinot.c:843
 msgid "Enable multiple file buffers"
 msgstr "ebligi uzon de pluraj dosierbufroj"
 
-#: src/nano.c:849
+#: src/pinot.c:848
 msgid "Log & read search/replace string history"
 msgstr "memori historion de serĉitaj signoĉenoj"
 
-#: src/nano.c:852
-msgid "Don't look at nanorc files"
+#: src/pinot.c:851
+#, fuzzy
+msgid "Don't look at pinotorc files"
 msgstr "ignori 'nanorc'-dosierojn"
 
-#: src/nano.c:855
+#: src/pinot.c:854
 msgid "Fix numeric keypad key confusion problem"
 msgstr "fliki konfuzon je cifera klavareto"
 
-#: src/nano.c:857
+#: src/pinot.c:856
 msgid "Don't add newlines to the ends of files"
 msgstr "ne aldoni novlinion al fino de dosiero"
 
-#: src/nano.c:860
+#: src/pinot.c:859
 msgid "Don't convert files from DOS/Mac format"
 msgstr "ne konverti el DOS-/Mac-aranĝo"
 
-#: src/nano.c:862
+#: src/pinot.c:861
 msgid "Use one more line for editing"
 msgstr "uzi unu plian linion por redakti"
 
-#: src/nano.c:865
+#: src/pinot.c:864
 msgid "Log & read location of cursor position"
 msgstr "konservi kaj relegi kursoran pozicion"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 msgid "-Q <str>"
 msgstr "-Q <ĉeno>"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 msgid "--quotestr=<str>"
 msgstr "--quotestr=<ĉeno>"
 
-#: src/nano.c:869
+#: src/pinot.c:868
 msgid "Quoting string"
 msgstr "signoĉeno de rekonendaj citiloj"
 
-#: src/nano.c:871
+#: src/pinot.c:870
 msgid "Restricted mode"
 msgstr "limigita reĝimo"
 
-#: src/nano.c:874
+#: src/pinot.c:873
 msgid "Scroll by line instead of half-screen"
 msgstr "rulumi po linio anstataŭ po duon-ekrano"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 msgid "-T <#cols>"
 msgstr "-T <kolumnoj>"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 msgid "--tabsize=<#cols>"
 msgstr "--tabsize=<kolumnoj>"
 
-#: src/nano.c:877
+#: src/pinot.c:876
 msgid "Set width of a tab to #cols columns"
 msgstr "uzenda larĝo de tabo"
 
-#: src/nano.c:879
+#: src/pinot.c:878
 msgid "Do quick statusbar blanking"
 msgstr "viŝi statlinio tuj post sekva klavtuŝo"
 
-#: src/nano.c:882
+#: src/pinot.c:881
 msgid "Print version information and exit"
 msgstr "montri programversion kaj fini"
 
-#: src/nano.c:885
+#: src/pinot.c:884
 msgid "Detect word boundaries more accurately"
 msgstr "detekti vortlimojn pli akurate"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 msgid "-Y <str>"
 msgstr "-Y <ĉeno>"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 msgid "--syntax=<str>"
 msgstr "--syntax=<ĉeno>"
 
-#: src/nano.c:889
+#: src/pinot.c:888
 msgid "Syntax definition to use for coloring"
 msgstr "uzenda sintaksdifino por kolorigi"
 
-#: src/nano.c:891
+#: src/pinot.c:890
 msgid "Constantly show cursor position"
 msgstr "daŭre montri kursoran pozicion"
 
-#: src/nano.c:893
+#: src/pinot.c:892
 msgid "Fix Backspace/Delete confusion problem"
 msgstr "fliki konfuzon pri «Retropaŝo»/«Forigo»"
 
-#: src/nano.c:896
+#: src/pinot.c:895
 msgid "Automatically indent new lines"
 msgstr "aŭtomate deŝovi novajn liniojn"
 
-#: src/nano.c:897
+#: src/pinot.c:896
 msgid "Cut from cursor to end of line"
 msgstr "forigi ekde de la kursoro ĝis liniofino"
 
-#: src/nano.c:900
+#: src/pinot.c:899
 msgid "Don't follow symbolic links, overwrite"
 msgstr "ne sekvi simbolajn ligilojn; anstataŭigi"
 
-#: src/nano.c:902
+#: src/pinot.c:901
 msgid "Enable the use of the mouse"
 msgstr "ebligi uzon de muso"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 msgid "-o <dir>"
 msgstr "-o <ujo>"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 msgid "--operatingdir=<dir>"
 msgstr "--operatingdir=<ujo>"
 
-#: src/nano.c:906
+#: src/pinot.c:905
 msgid "Set operating directory"
 msgstr "uzenda kuranta dosierujo"
 
-#: src/nano.c:909
+#: src/pinot.c:908
 msgid "Preserve XON (^Q) and XOFF (^S) keys"
 msgstr "ebligi klavojn ^Q (XON) kaj ^S (XOFF)"
 
-#: src/nano.c:911
+#: src/pinot.c:910
 msgid "Silently ignore startup issues like rc file errors"
 msgstr "silente ignori lanĉajn problemetojn"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 msgid "-r <#cols>"
 msgstr "-r <kolumnoj>"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 msgid "--fill=<#cols>"
 msgstr "--fill=<kolumnoj>"
 
-#: src/nano.c:914
+#: src/pinot.c:913
 msgid "Set wrapping point at column #cols"
 msgstr "uzenda larĝo por faldi/rektigi"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 msgid "-s <prog>"
 msgstr "-s <programo>"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 msgid "--speller=<prog>"
 msgstr "--speller=<programo>"
 
-#: src/nano.c:918
+#: src/pinot.c:917
 msgid "Enable alternate speller"
 msgstr "uzenda alternativa literumilo"
 
-#: src/nano.c:921
+#: src/pinot.c:920
 msgid "Auto save on exit, don't prompt"
 msgstr "aŭtomate konservi je fino, sen demandi"
 
-#: src/nano.c:923
+#: src/pinot.c:922
 msgid "Allow generic undo [EXPERIMENTAL]"
 msgstr "ebligi ĝeneralan malfaron [PROVA]"
 
-#: src/nano.c:926
+#: src/pinot.c:925
 msgid "View mode (read-only)"
 msgstr "rigarda reĝimo (ne eblas redakti)"
 
-#: src/nano.c:928
+#: src/pinot.c:927
 msgid "Don't wrap long lines"
 msgstr "ne faldi longajn liniojn"
 
-#: src/nano.c:930
+#: src/pinot.c:929
 msgid "Don't show the two help lines"
 msgstr "ne montri la du helpajn liniojn"
 
-#: src/nano.c:931
+#: src/pinot.c:930
 msgid "Enable suspension"
 msgstr "ebligi paŭzigo"
 
-#: src/nano.c:932
+#: src/pinot.c:931
 msgid "Enable soft line wrapping"
 msgstr "ebligi ĉirkaŭfluon de linioj"
 
-#: src/nano.c:936
+#: src/pinot.c:935
 msgid "(ignored, for Pico compatibility)"
 msgstr "(ignoritaj, por kongruo kun 'Pico')"
 
-#: src/nano.c:946
-#, c-format
-msgid " GNU nano version %s (compiled %s, %s)\n"
+#: src/pinot.c:945
+#, fuzzy, c-format
+msgid " pinot version %s (compiled %s, %s)\n"
 msgstr " GNU nano  versio %s  (kompilita %s, %s)\n"
 
-#: src/nano.c:951
+#: src/pinot.c:950
 #, c-format
-msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
-msgstr " Retpoŝto: <nano@nano-editor.org>    TTT: http://www.nano-editor.org/"
+msgid " Email: phil@pgengler.net\tWeb: http://github.com/pgengler"
+msgstr ""
 
-#: src/nano.c:952
+#: src/pinot.c:951
 #, c-format
 msgid ""
 "\n"
@@ -1610,58 +1617,58 @@ msgstr ""
 "\n"
 " Kompilaj opcioj:"
 
-#: src/nano.c:1030
+#: src/pinot.c:1029
 msgid "Sorry, support for this function has been disabled"
 msgstr "Subteno de ĉi tiu funkcio malebliĝis"
 
-#: src/nano.c:1052
+#: src/pinot.c:1051
 msgid "Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "
 msgstr "Ĉu konservi modifitan bufron? (\"N\" DETRUOS ŜANĜOJN) "
 
-#: src/nano.c:1100
+#: src/pinot.c:1099
 msgid "Couldn't reopen stdin from keyboard, sorry\n"
 msgstr "Maleblas remalfermi klavaron kiel ĉefenigujon\n"
 
-#: src/nano.c:1126
+#: src/pinot.c:1125
 #, c-format
 msgid "Reading from stdin, ^C to abort\n"
 msgstr "Legado el ĉefenigujo; ^C por ĉesigi\n"
 
-#: src/nano.c:1194
+#: src/pinot.c:1193
 msgid "Received SIGHUP or SIGTERM\n"
 msgstr "Ricevitas SIGHUP aŭ SIGTERM\n"
 
-#: src/nano.c:1216
-#, c-format
-msgid "Use \"fg\" to return to nano.\n"
+#: src/pinot.c:1215
+#, fuzzy, c-format
+msgid "Use \"fg\" to return to pinot.\n"
 msgstr "Uzu \"fg\" por reveni al 'nano'.\n"
 
-#: src/nano.c:1398
+#: src/pinot.c:1397
 msgid "enabled"
 msgstr "(enŝaltitas)"
 
-#: src/nano.c:1399
+#: src/pinot.c:1398
 msgid "disabled"
 msgstr "(malŝaltitas)"
 
-#: src/nano.c:1566 src/winio.c:1256
+#: src/pinot.c:1565 src/winio.c:1256
 msgid "Unknown Command"
 msgstr "Nekonata komando"
 
-#: src/nano.c:1692
+#: src/pinot.c:1691
 msgid "XON ignored, mumble mumble"
 msgstr "Mmm-mmm, XON ignoratas"
 
-#: src/nano.c:1697
+#: src/pinot.c:1696
 msgid "XOFF ignored, mumble mumble"
 msgstr "Mmm-mmm, XOFF ignoratas"
 
-#: src/nano.c:2233 src/rcfile.c:1175
+#: src/pinot.c:2232 src/rcfile.c:1195
 #, c-format
 msgid "Requested tab size \"%s\" is invalid"
 msgstr "Petata tablarĝo \"%s\" ne validas"
 
-#: src/nano.c:2292 src/rcfile.c:1100
+#: src/pinot.c:2291 src/rcfile.c:1120
 #, c-format
 msgid "Requested fill size \"%s\" is invalid"
 msgstr "Petata faldlarĝo \"%s\" ne validas"
@@ -1705,8 +1712,8 @@ msgstr "Eraro en %s en linio %lu: "
 msgid "Argument '%s' has an unterminated \""
 msgstr "Argumento '%s' havas senparan citilon \""
 
-#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:783
-#: src/rcfile.c:840 src/rcfile.c:893
+#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:802
+#: src/rcfile.c:860 src/rcfile.c:913
 msgid "Regex strings must begin and end with a \" character"
 msgstr "Regulesprimaj signoĉenoj devas komenci kaj fini kun citilo \""
 
@@ -1766,7 +1773,7 @@ msgstr "Ĉeno \"%s\" ne estas nomo de menuo"
 msgid "Sorry, keystr \"%s\" is an illegal binding"
 msgstr "Klavĉeno \"%s\" ne estas valida ligo"
 
-#: src/rcfile.c:697
+#: src/rcfile.c:710
 #, c-format
 msgid ""
 "Color \"%s\" not understood.\n"
@@ -1781,97 +1788,103 @@ msgstr ""
 "\"black\" (nigra) kaj \"white\" (blanka),\n"
 "kun (por malfonaj koloroj) la malnepra prefikso \"bright\" (hela)."
 
-#: src/rcfile.c:719
+#: src/rcfile.c:732
 msgid "Cannot add a color command without a syntax command"
 msgstr "Ne eblas aldoni koloran komandon sen sintaksa komando"
 
-#: src/rcfile.c:724
+#: src/rcfile.c:737
 msgid "Missing color name"
 msgstr "Mankas nomo de koloro"
 
-#: src/rcfile.c:744
+#: src/rcfile.c:757
 #, c-format
 msgid "Background color \"%s\" cannot be bright"
 msgstr "Fona koloro \"%s\" ne povas esti hela"
 
-#: src/rcfile.c:762 src/rcfile.c:881
+#: src/rcfile.c:763
+#, fuzzy, c-format
+msgid "Background color \"%s\" cannot be underline"
+msgstr "Fona koloro \"%s\" ne povas esti hela"
+
+#: src/rcfile.c:781 src/rcfile.c:901
 msgid "Missing regex string"
 msgstr "Mankas regulesprima signoĉeno"
 
-#: src/rcfile.c:834
+#: src/rcfile.c:854
 msgid "\"start=\" requires a corresponding \"end=\""
 msgstr "\"start=\" bezonas paran \"end=\""
 
-#: src/rcfile.c:876
+#: src/rcfile.c:896
 msgid "Cannot add a header regex without a syntax command"
 msgstr "Ne eblas aldoni kapan regulesprimon sen sintaksa komando"
 
-#: src/rcfile.c:946
+#: src/rcfile.c:966
 #, c-format
 msgid "Fatal error: no keys mapped for function \"%s\""
 msgstr "Neignorebla eraro: neniu klavo ligita al funkcio \"%s\""
 
-#: src/rcfile.c:948
+#: src/rcfile.c:968
+#, fuzzy
 msgid ""
-"Exiting.  Please use nano with the -I option if needed to adjust your nanorc "
-"settings\n"
+"Exiting.  Please use pinot with the -I option if needed to adjust your "
+"pinotrc settings\n"
 msgstr "Eliro.  Se necesas, uzu 'nano -I' por ĝustigi agordojn en 'nanorc'.\n"
 
-#: src/rcfile.c:998 src/rcfile.c:1007 src/rcfile.c:1017
+#: src/rcfile.c:1018 src/rcfile.c:1027 src/rcfile.c:1037
 #, c-format
 msgid "Command \"%s\" not allowed in included file"
 msgstr "Komando \"%s\" ne permesatas en inkluda dosiero"
 
-#: src/rcfile.c:1023 src/rcfile.c:1203
+#: src/rcfile.c:1043 src/rcfile.c:1223
 #, c-format
 msgid "Syntax \"%s\" has no color commands"
 msgstr "Sintakso \"%s\" ne havas kolorajn komandojn"
 
-#: src/rcfile.c:1041
+#: src/rcfile.c:1061
 #, c-format
 msgid "Command \"%s\" not understood"
 msgstr "Komando \"%s\" ne estas komprenata"
 
-#: src/rcfile.c:1047
+#: src/rcfile.c:1067
 msgid "Missing flag"
 msgstr "Mankas flago"
 
-#: src/rcfile.c:1069
+#: src/rcfile.c:1089
 #, c-format
 msgid "Option \"%s\" requires an argument"
 msgstr "Opcio \"%s\" bezonas argumenton"
 
-#: src/rcfile.c:1087
+#: src/rcfile.c:1107
 msgid "Option is not a valid multibyte string"
 msgstr "Opcia argumento ne estas valida plurbitoka signoĉeno"
 
-#: src/rcfile.c:1113 src/rcfile.c:1141 src/rcfile.c:1150
+#: src/rcfile.c:1133 src/rcfile.c:1161 src/rcfile.c:1170
 msgid "Non-blank characters required"
 msgstr "Neblankaj signoj bezonatas"
 
-#: src/rcfile.c:1123
+#: src/rcfile.c:1143
 msgid "Two single-column characters required"
 msgstr "Du unukolumnaj signoj bezonatas"
 
-#: src/rcfile.c:1189
+#: src/rcfile.c:1209
 #, c-format
 msgid "Cannot unset flag \"%s\""
 msgstr "Ne eblas malŝalti flagon \"%s\""
 
-#: src/rcfile.c:1198
+#: src/rcfile.c:1218
 #, c-format
 msgid "Unknown flag \"%s\""
 msgstr "Nekonata flago \"%s\""
 
-#: src/rcfile.c:1257
+#: src/rcfile.c:1277
 msgid "I can't find my home directory!  Wah!"
 msgstr "Ne eblas trovi hejman dosierujon.  Ve!"
 
-#: src/rcfile.c:1295
-#, c-format
+#: src/rcfile.c:1315
+#, fuzzy, c-format
 msgid ""
 "\n"
-"Press Enter to continue starting nano.\n"
+"Press Enter to continue starting pinot.\n"
 msgstr ""
 "\n"
 "Premu \"Enter\" por daŭrigi la lanĉon de 'nano'.\n"
@@ -2078,7 +2091,8 @@ msgid "In Selection:  "
 msgstr "En markaĵo:  "
 
 #: src/utils.c:405 src/utils.c:417
-msgid "nano is out of memory!"
+#, fuzzy
+msgid "pinot is out of memory!"
 msgstr "Mankas sufiĉa memoro por 'nano'!"
 
 #. TRANSLATORS: This is displayed during the input of a
@@ -2103,42 +2117,52 @@ msgstr "DOSIERUJO:"
 msgid "File:"
 msgstr "Dosiero:"
 
-#: src/winio.c:3359
+#: src/winio.c:3400
 #, c-format
 msgid "line %ld/%ld (%d%%), col %lu/%lu (%d%%), char %lu/%lu (%d%%)"
 msgstr "linio %ld/%ld (%d%%), kolumno %lu/%lu (%d%%), litero %lu/%lu (%d%%)"
 
-#: src/winio.c:3491
-msgid "The nano text editor"
+#: src/winio.c:3534
+#, fuzzy
+msgid "The pinot text editor"
 msgstr "La tekstredaktilo 'nano'"
 
-#: src/winio.c:3492
+#: src/winio.c:3535
 msgid "version"
 msgstr "versio"
 
-#: src/winio.c:3493
+#: src/winio.c:3536
 msgid "Brought to you by:"
 msgstr "Prezentita al vi per:"
 
-#: src/winio.c:3494
+#: src/winio.c:3537
+msgid "The original nano developers:"
+msgstr ""
+
+#: src/winio.c:3538
 msgid "Special thanks to:"
 msgstr "Specialan dankon al:"
 
-#: src/winio.c:3495
+#: src/winio.c:3539
 msgid "The Free Software Foundation"
 msgstr "la “Free Software Foundation”"
 
-#: src/winio.c:3496
+#: src/winio.c:3540
 msgid "For ncurses:"
 msgstr "por 'ncurses':"
 
-#: src/winio.c:3497
+#: src/winio.c:3541
 msgid "and anyone else we forgot..."
 msgstr "kaj iuj ajn kiujn ni forgesis..."
 
-#: src/winio.c:3498
-msgid "Thank you for using nano!"
+#: src/winio.c:3542
+#, fuzzy
+msgid "Thank you for using pinot!"
 msgstr "Dankon pro via uzo de 'nano'!"
+
+#~ msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
+#~ msgstr ""
+#~ " Retpoŝto: <nano@nano-editor.org>    TTT: http://www.nano-editor.org/"
 
 #~ msgid "Error writing backup file %s: File owner mismatch"
 #~ msgstr "Eraro dum skribado de savkopio %s: alia posedanto"

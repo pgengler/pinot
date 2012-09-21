@@ -15,10 +15,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nano 2.2.4pre2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-26 09:24-0500\n"
+"POT-Creation-Date: 2012-09-21 14:28-0400\n"
 "PO-Revision-Date: 2010-06-14 14:48+0200\n"
 "Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -29,7 +30,7 @@ msgid "Go To Directory"
 msgstr "Gå til katalog"
 
 #: src/browser.c:233 src/browser.c:830 src/files.c:864 src/files.c:2078
-#: src/nano.c:1068 src/search.c:220 src/search.c:313 src/search.c:974
+#: src/pinot.c:1067 src/search.c:220 src/search.c:313 src/search.c:974
 #: src/search.c:1039
 msgid "Cancelled"
 msgstr "Afbrudt"
@@ -42,7 +43,7 @@ msgstr "Kan ikke gå uden for %s i begrænset tilstand"
 #: src/browser.c:277 src/browser.c:324 src/browser.c:347 src/files.c:726
 #: src/files.c:735 src/files.c:1561 src/files.c:1687 src/files.c:1741
 #: src/files.c:1762 src/files.c:1885 src/files.c:2792 src/files.c:2994
-#: src/rcfile.c:640 src/rcfile.c:1279
+#: src/rcfile.c:640 src/rcfile.c:1299
 #, c-format
 msgid "Error reading %s: %s"
 msgstr "Fejl ved læsning af %s: %s"
@@ -201,12 +202,12 @@ msgstr "Ny fil"
 msgid "\"%s\" not found"
 msgstr "\"%s\" kunne ikke findes"
 
-#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1229 src/rcfile.c:1270
+#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1249 src/rcfile.c:1290
 #, c-format
 msgid "\"%s\" is a directory"
 msgstr "\"%s\" er et katalog"
 
-#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1230 src/rcfile.c:1271
+#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1250 src/rcfile.c:1291
 #, c-format
 msgid "\"%s\" is a device file"
 msgstr "\"%s\" er en enhedsfil"
@@ -254,7 +255,7 @@ msgstr "Kan ikke foran- eller efterstille til symlænke med --nofollow givet"
 msgid "Error writing backup file %s: %s"
 msgstr "Fejl ved skrivning af sikkerhedskopifil %s: %s"
 
-#: src/files.c:1603 src/nano.c:705
+#: src/files.c:1603 src/pinot.c:704
 msgid "Too many backup files?"
 msgstr "For mange sikkerhedskopifiler?"
 
@@ -350,22 +351,22 @@ msgstr ""
 #, c-format
 msgid ""
 "Path %s is not a directory and needs to be.\n"
-"Nano will be unable to load or save search or cursor position history\n"
+"pinot will be unable to load or save search or cursor position history\n"
 msgstr ""
 
 #: src/files.c:2775
 #, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I tried to move\n"
+"Detected a legacy pinot history file (%s) which I tried to move\n"
 "to the preferred location (%s) but encountered an error: %s"
 msgstr ""
 
 #: src/files.c:2778
 #, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I moved\n"
+"Detected a legacy pinot history file (%s) which I moved\n"
 "to the preferred location (%s)\n"
-"(see the nano FAQ about this change)"
+"(see the pinot FAQ about this change)"
 msgstr ""
 
 #. TRANSLATORS: Try to keep the next five strings at most 10 characters.
@@ -547,11 +548,13 @@ msgid "Display this help text"
 msgstr "Vis denne hjælpetekst"
 
 #: src/global.c:555
-msgid "Close the current file buffer / Exit from nano"
+#, fuzzy
+msgid "Close the current file buffer / Exit from pinot"
 msgstr "Luk nuværende filbuffer / afslut nano"
 
 #: src/global.c:557
-msgid "Exit from nano"
+#, fuzzy
+msgid "Exit from pinot"
 msgstr "Afslut nano"
 
 #: src/global.c:561
@@ -1085,16 +1088,18 @@ msgstr ""
 "\n"
 
 #: src/help.c:260
+#, fuzzy
 msgid ""
 "Insert File Help Text\n"
 "\n"
 " Type in the name of a file to be inserted into the current file buffer at "
 "the current cursor location.\n"
 "\n"
-" If you have compiled nano with multiple file buffer support, and enable "
+" If you have compiled pinot with multiple file buffer support, and enable "
 "multiple file buffers with the -F or --multibuffer command line flags, the "
-"Meta-F toggle, or a nanorc file, inserting a file will cause it to be loaded "
-"into a separate buffer (use Meta-< and > to switch between file buffers).  "
+"Meta-F toggle, or a pinotrc file, inserting a file will cause it to be "
+"loaded into a separate buffer (use Meta-< and > to switch between file "
+"buffers).  "
 msgstr ""
 "Hjælpetekst for indsæt fil\n"
 "\n"
@@ -1272,15 +1277,16 @@ msgstr ""
 "\n"
 
 #: src/help.c:356
+#, fuzzy
 msgid ""
-"Main nano help text\n"
+"Main pinot help text\n"
 "\n"
-" The nano editor is designed to emulate the functionality and ease-of-use of "
-"the UW Pico text editor.  There are four main sections of the editor.  The "
-"top line shows the program version, the current filename being edited, and "
-"whether or not the file has been modified.  Next is the main editor window "
-"showing the file being edited.  The status line is the third line from the "
-"bottom and shows important messages.  "
+" The pinot editor is designed to emulate the functionality and ease-of-use "
+"of the UW Pico text editor.  There are four main sections of the editor.  "
+"The top line shows the program version, the current filename being edited, "
+"and whether or not the file has been modified.  Next is the main editor "
+"window showing the file being edited.  The status line is the third line "
+"from the bottom and shows important messages.  "
 msgstr ""
 "Hovedhjælpetekst for nano\n"
 "\n"
@@ -1327,11 +1333,11 @@ msgstr ""
 msgid "enable/disable"
 msgstr "aktivér/deaktivér"
 
-#: src/nano.c:587
+#: src/pinot.c:586
 msgid "Key invalid in view mode"
 msgstr "Tasten ugyldig i visningstilstand"
 
-#: src/nano.c:699
+#: src/pinot.c:698
 #, c-format
 msgid ""
 "\n"
@@ -1340,7 +1346,7 @@ msgstr ""
 "\n"
 "Bufferen skrevet til %s\n"
 
-#: src/nano.c:701
+#: src/pinot.c:700
 #, c-format
 msgid ""
 "\n"
@@ -1349,7 +1355,7 @@ msgstr ""
 "\n"
 "Buffer ikke skrevet til %s: %s\n"
 
-#: src/nano.c:704
+#: src/pinot.c:703
 #, c-format
 msgid ""
 "\n"
@@ -1358,269 +1364,271 @@ msgstr ""
 "\n"
 "Buffer ikke skrevet: %s\n"
 
-#: src/nano.c:727
-msgid "Window size is too small for nano...\n"
+#: src/pinot.c:726
+#, fuzzy
+msgid "Window size is too small for pinot...\n"
 msgstr "Vinduestørrelsen er for lille til Nano...\n"
 
-#: src/nano.c:820
-#, c-format
+#: src/pinot.c:819
+#, fuzzy, c-format
 msgid ""
-"Usage: nano [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
+"Usage: pinot [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
 "\n"
 msgstr ""
 "Brug: nano [FLAG] [[+LINJE,KOLONNE] FIL]...\n"
 "\n"
 
-#: src/nano.c:823
+#: src/pinot.c:822
 #, c-format
 msgid "Option\t\tGNU long option\t\tMeaning\n"
 msgstr "Flag\t\tLangt GNU-flag\t\tBetydning\n"
 
-#: src/nano.c:825
+#: src/pinot.c:824
 #, c-format
 msgid "Option\t\tMeaning\n"
 msgstr "Flag\t\tBetydning\n"
 
-#: src/nano.c:828
+#: src/pinot.c:827
 msgid "Show this message"
 msgstr "Vis denne meddelelse"
 
-#: src/nano.c:829
+#: src/pinot.c:828
 msgid "+LINE,COLUMN"
 msgstr "+LINJE,KOLONNE"
 
-#: src/nano.c:830
+#: src/pinot.c:829
 msgid "Start at line LINE, column COLUMN"
 msgstr "Start ved linjenummer LINJE, kolonne KOLONNE"
 
-#: src/nano.c:832
+#: src/pinot.c:831
 msgid "Enable smart home key"
 msgstr "Brug smart home-tast"
 
-#: src/nano.c:833
+#: src/pinot.c:832
 msgid "Save backups of existing files"
 msgstr "Gem sikkerhedskopier af eksisterende filer"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 msgid "-C <dir>"
 msgstr "-C <kat>"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 msgid "--backupdir=<dir>"
 msgstr "--backupdir=<kat>"
 
-#: src/nano.c:835
+#: src/pinot.c:834
 msgid "Directory for saving unique backup files"
 msgstr "Katalog til at gemme unikke sikkerhedskopifiler"
 
-#: src/nano.c:838
+#: src/pinot.c:837
 msgid "Use bold instead of reverse video text"
 msgstr "Brug fed frem for omvendt video-tekst"
 
-#: src/nano.c:841
+#: src/pinot.c:840
 msgid "Convert typed tabs to spaces"
 msgstr "Konvertér skrevne tabulatortegn til mellemrum"
 
-#: src/nano.c:844
+#: src/pinot.c:843
 msgid "Enable multiple file buffers"
 msgstr "Tillad flere fil-buffere"
 
-#: src/nano.c:849
+#: src/pinot.c:848
 msgid "Log & read search/replace string history"
 msgstr "Log & læs streng-historik for søg og erstat"
 
-#: src/nano.c:852
-msgid "Don't look at nanorc files"
+#: src/pinot.c:851
+#, fuzzy
+msgid "Don't look at pinotorc files"
 msgstr "Se ikke på nanorc-filer"
 
-#: src/nano.c:855
+#: src/pinot.c:854
 msgid "Fix numeric keypad key confusion problem"
 msgstr "Fiks forvirringsproblem med numerisk tastatur"
 
-#: src/nano.c:857
+#: src/pinot.c:856
 msgid "Don't add newlines to the ends of files"
 msgstr "Tilføj ikke linjeskift til slut i filer"
 
-#: src/nano.c:860
+#: src/pinot.c:859
 msgid "Don't convert files from DOS/Mac format"
 msgstr "Konvertér ikke fra DOS/Mac-format"
 
-#: src/nano.c:862
+#: src/pinot.c:861
 msgid "Use one more line for editing"
 msgstr "Brug en ekstra linje til redigering"
 
-#: src/nano.c:865
+#: src/pinot.c:864
 #, fuzzy
 msgid "Log & read location of cursor position"
 msgstr "Indsæt et tabulatortegn ved markørpositionen"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 msgid "-Q <str>"
 msgstr "-Q <str>"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 msgid "--quotestr=<str>"
 msgstr "--quotestr=<str>"
 
-#: src/nano.c:869
+#: src/pinot.c:868
 msgid "Quoting string"
 msgstr "Anførelsesstreng"
 
-#: src/nano.c:871
+#: src/pinot.c:870
 msgid "Restricted mode"
 msgstr "Begrænset tilstand"
 
-#: src/nano.c:874
+#: src/pinot.c:873
 msgid "Scroll by line instead of half-screen"
 msgstr "Rul linjevis frem for en halv skærm ad gangen"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 msgid "-T <#cols>"
 msgstr "-T <#kolonner>"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 msgid "--tabsize=<#cols>"
 msgstr "--tabsize=<#kolonner>"
 
-#: src/nano.c:877
+#: src/pinot.c:876
 msgid "Set width of a tab to #cols columns"
 msgstr "Sæt bredden på et tabulatortegn til #kolonner"
 
-#: src/nano.c:879
+#: src/pinot.c:878
 msgid "Do quick statusbar blanking"
 msgstr "Ryd statuslinje hurtigt"
 
-#: src/nano.c:882
+#: src/pinot.c:881
 msgid "Print version information and exit"
 msgstr "Udskriv versionsinformation og afslut"
 
-#: src/nano.c:885
+#: src/pinot.c:884
 msgid "Detect word boundaries more accurately"
 msgstr "Find ordgrænser mere præcist"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 msgid "-Y <str>"
 msgstr "-Y <str>"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 msgid "--syntax=<str>"
 msgstr "--syntax=<str>"
 
-#: src/nano.c:889
+#: src/pinot.c:888
 msgid "Syntax definition to use for coloring"
 msgstr "Syntaksdefinition for farvelægning"
 
-#: src/nano.c:891
+#: src/pinot.c:890
 msgid "Constantly show cursor position"
 msgstr "Vis markørposition hele tiden"
 
-#: src/nano.c:893
+#: src/pinot.c:892
 msgid "Fix Backspace/Delete confusion problem"
 msgstr "Fiks forvirringsproblem med Tilbagetast/Slettetast"
 
-#: src/nano.c:896
+#: src/pinot.c:895
 msgid "Automatically indent new lines"
 msgstr "Indryk automatisk nye linjer"
 
-#: src/nano.c:897
+#: src/pinot.c:896
 msgid "Cut from cursor to end of line"
 msgstr "Klip fra markøren til linjens slutning"
 
-#: src/nano.c:900
+#: src/pinot.c:899
 msgid "Don't follow symbolic links, overwrite"
 msgstr "Følg ikke symbolske lænker, overskriv"
 
-#: src/nano.c:902
+#: src/pinot.c:901
 msgid "Enable the use of the mouse"
 msgstr "Aktivér styring med mus"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 msgid "-o <dir>"
 msgstr "-o <kat>"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 msgid "--operatingdir=<dir>"
 msgstr "--operatingdir=<kat>"
 
-#: src/nano.c:906
+#: src/pinot.c:905
 msgid "Set operating directory"
 msgstr "Sæt behandlet katalog"
 
-#: src/nano.c:909
+#: src/pinot.c:908
 msgid "Preserve XON (^Q) and XOFF (^S) keys"
 msgstr "Behold XON- (^Q) og XOFF- (^S) taster"
 
-#: src/nano.c:911
+#: src/pinot.c:910
 msgid "Silently ignore startup issues like rc file errors"
 msgstr "Ignorer opstartsproblemer såsom fejl i rc-fil uden fejlmeddelelser"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 msgid "-r <#cols>"
 msgstr "-r <#kolonner>"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 msgid "--fill=<#cols>"
 msgstr "--fill=<#kolonner>"
 
-#: src/nano.c:914
+#: src/pinot.c:913
 msgid "Set wrapping point at column #cols"
 msgstr "Placér ombrydningspunkt ved #kolonner"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 msgid "-s <prog>"
 msgstr "-s <prog>"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 msgid "--speller=<prog>"
 msgstr "--speller=<prog>"
 
-#: src/nano.c:918
+#: src/pinot.c:917
 msgid "Enable alternate speller"
 msgstr "Brug alternativ stavekontrol"
 
-#: src/nano.c:921
+#: src/pinot.c:920
 msgid "Auto save on exit, don't prompt"
 msgstr "Gem automatisk ved afslutning, spørg ikke"
 
-#: src/nano.c:923
+#: src/pinot.c:922
 msgid "Allow generic undo [EXPERIMENTAL]"
 msgstr "Tillad generisk fortryd [EKSPERIMENTEL]"
 
-#: src/nano.c:926
+#: src/pinot.c:925
 msgid "View mode (read-only)"
 msgstr "Visningstilstand (skrivebeskyttet)"
 
-#: src/nano.c:928
+#: src/pinot.c:927
 msgid "Don't wrap long lines"
 msgstr "Ombryd ikke lange linjer"
 
-#: src/nano.c:930
+#: src/pinot.c:929
 msgid "Don't show the two help lines"
 msgstr "Vis ikke de to hjælpelinjer"
 
-#: src/nano.c:931
+#: src/pinot.c:930
 msgid "Enable suspension"
 msgstr "Slå suspend til"
 
-#: src/nano.c:932
+#: src/pinot.c:931
 msgid "Enable soft line wrapping"
 msgstr "Brug blød linjeombrydning"
 
-#: src/nano.c:936
+#: src/pinot.c:935
 msgid "(ignored, for Pico compatibility)"
 msgstr "(ignoreret, for Pico-kompatibilitet)"
 
-#: src/nano.c:946
-#, c-format
-msgid " GNU nano version %s (compiled %s, %s)\n"
+#: src/pinot.c:945
+#, fuzzy, c-format
+msgid " pinot version %s (compiled %s, %s)\n"
 msgstr " GNU nano version %s (kompileret %s, %s)\n"
 
-#: src/nano.c:951
+#: src/pinot.c:950
 #, c-format
-msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
-msgstr " E-post: nano@nano-editor.org\tHjemmeside: http://www.nano-editor.org/"
+msgid " Email: phil@pgengler.net\tWeb: http://github.com/pgengler"
+msgstr ""
 
-#: src/nano.c:952
+#: src/pinot.c:951
 #, c-format
 msgid ""
 "\n"
@@ -1629,58 +1637,58 @@ msgstr ""
 "\n"
 " Kompileringsflag:"
 
-#: src/nano.c:1030
+#: src/pinot.c:1029
 msgid "Sorry, support for this function has been disabled"
 msgstr "Desværre, understøttelse af denne funktion er blevet deaktiveret"
 
-#: src/nano.c:1052
+#: src/pinot.c:1051
 msgid "Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "
 msgstr "Gem ændret buffer (AT SVARE \"Nej\" VIL ØDELÆGGE ÆNDRINGER)? "
 
-#: src/nano.c:1100
+#: src/pinot.c:1099
 msgid "Couldn't reopen stdin from keyboard, sorry\n"
 msgstr "Kunne ikke genåbne stdin fra tastaturet, beklager\n"
 
-#: src/nano.c:1126
+#: src/pinot.c:1125
 #, c-format
 msgid "Reading from stdin, ^C to abort\n"
 msgstr "Læser fra stdin, ^C for at afbryde\n"
 
-#: src/nano.c:1194
+#: src/pinot.c:1193
 msgid "Received SIGHUP or SIGTERM\n"
 msgstr "Modtog SIGHUP eller SIGTERM\n"
 
-#: src/nano.c:1216
-#, c-format
-msgid "Use \"fg\" to return to nano.\n"
+#: src/pinot.c:1215
+#, fuzzy, c-format
+msgid "Use \"fg\" to return to pinot.\n"
 msgstr "Brug \"fg\" for at returnere til nano\n"
 
-#: src/nano.c:1398
+#: src/pinot.c:1397
 msgid "enabled"
 msgstr "aktiveret"
 
-#: src/nano.c:1399
+#: src/pinot.c:1398
 msgid "disabled"
 msgstr "deaktiveret"
 
-#: src/nano.c:1566 src/winio.c:1256
+#: src/pinot.c:1565 src/winio.c:1256
 msgid "Unknown Command"
 msgstr "Ukendt kommando"
 
-#: src/nano.c:1692
+#: src/pinot.c:1691
 msgid "XON ignored, mumble mumble"
 msgstr "XON ignoreret, mumle mumle"
 
-#: src/nano.c:1697
+#: src/pinot.c:1696
 msgid "XOFF ignored, mumble mumble"
 msgstr "XOFF ignoreret, mumle mumle"
 
-#: src/nano.c:2233 src/rcfile.c:1175
+#: src/pinot.c:2232 src/rcfile.c:1195
 #, c-format
 msgid "Requested tab size \"%s\" is invalid"
 msgstr "Ønsket tab-størrelse \"%s\" er ugyldig"
 
-#: src/nano.c:2292 src/rcfile.c:1100
+#: src/pinot.c:2291 src/rcfile.c:1120
 #, c-format
 msgid "Requested fill size \"%s\" is invalid"
 msgstr "Ønsket fyld-størrelse \"%s\" er ugyldig"
@@ -1722,8 +1730,8 @@ msgstr "Fejl i %s på linje %lu: "
 msgid "Argument '%s' has an unterminated \""
 msgstr "Argument \"%s\" har et uafsluttet \""
 
-#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:783
-#: src/rcfile.c:840 src/rcfile.c:893
+#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:802
+#: src/rcfile.c:860 src/rcfile.c:913
 msgid "Regex strings must begin and end with a \" character"
 msgstr "Regex-strenge skal begynde og ende med et \"-tegn"
 
@@ -1787,7 +1795,7 @@ msgstr "Kunne ikke associere navnet \"%s\" med en menu"
 msgid "Sorry, keystr \"%s\" is an illegal binding"
 msgstr "Beklager, keystr \"%s\" er en ugyldig binding"
 
-#: src/rcfile.c:697
+#: src/rcfile.c:710
 #, c-format
 msgid ""
 "Color \"%s\" not understood.\n"
@@ -1802,100 +1810,106 @@ msgstr ""
 "\"black\", med den valgfri forstavelse \"bright\"\n"
 "til forgrundsfarver."
 
-#: src/rcfile.c:719
+#: src/rcfile.c:732
 msgid "Cannot add a color command without a syntax command"
 msgstr "Kan ikke tilføje farvekommando uden en syntakskommando"
 
-#: src/rcfile.c:724
+#: src/rcfile.c:737
 msgid "Missing color name"
 msgstr "Mangler farvenavn"
 
-#: src/rcfile.c:744
+#: src/rcfile.c:757
 #, c-format
 msgid "Background color \"%s\" cannot be bright"
 msgstr "Baggrundsfarven \"%s\" må ikke være lys"
 
-#: src/rcfile.c:762 src/rcfile.c:881
+#: src/rcfile.c:763
+#, fuzzy, c-format
+msgid "Background color \"%s\" cannot be underline"
+msgstr "Baggrundsfarven \"%s\" må ikke være lys"
+
+#: src/rcfile.c:781 src/rcfile.c:901
 msgid "Missing regex string"
 msgstr "Mangler regex-streng"
 
-#: src/rcfile.c:834
+#: src/rcfile.c:854
 msgid "\"start=\" requires a corresponding \"end=\""
 msgstr "\"start=\" kræver et tilsvarende \"end=\""
 
 # Headeren/filhovedet er første linje i rc-filen, så vidt jeg kan se
-#: src/rcfile.c:876
+#: src/rcfile.c:896
 msgid "Cannot add a header regex without a syntax command"
 msgstr "Kan ikke tilføje filhoved-regex uden en syntakskommando"
 
-#: src/rcfile.c:946
+#: src/rcfile.c:966
 #, c-format
 msgid "Fatal error: no keys mapped for function \"%s\""
 msgstr "Fatal fejl: Ingen taster bundet til funktionen \"%s\""
 
-#: src/rcfile.c:948
+#: src/rcfile.c:968
+#, fuzzy
 msgid ""
-"Exiting.  Please use nano with the -I option if needed to adjust your nanorc "
-"settings\n"
+"Exiting.  Please use pinot with the -I option if needed to adjust your "
+"pinotrc settings\n"
 msgstr ""
 "Afslutter.  Start om nødvendigt nano med flaget -I for at justere dine "
 "nanorc-indstillinger\n"
 
-#: src/rcfile.c:998 src/rcfile.c:1007 src/rcfile.c:1017
+#: src/rcfile.c:1018 src/rcfile.c:1027 src/rcfile.c:1037
 #, c-format
 msgid "Command \"%s\" not allowed in included file"
 msgstr "Kommandoen \"%s\" tillades ikke i inkluderet fil"
 
-#: src/rcfile.c:1023 src/rcfile.c:1203
+#: src/rcfile.c:1043 src/rcfile.c:1223
 #, c-format
 msgid "Syntax \"%s\" has no color commands"
 msgstr "Syntaksen \"%s\" har ingen farvekommandoer"
 
-#: src/rcfile.c:1041
+#: src/rcfile.c:1061
 #, c-format
 msgid "Command \"%s\" not understood"
 msgstr "Kommando \"%s\" ikke forstået"
 
-#: src/rcfile.c:1047
+#: src/rcfile.c:1067
 msgid "Missing flag"
 msgstr "Mangler flag"
 
-#: src/rcfile.c:1069
+#: src/rcfile.c:1089
 #, c-format
 msgid "Option \"%s\" requires an argument"
 msgstr "Flaget \"%s\" kræver et argument"
 
-#: src/rcfile.c:1087
+#: src/rcfile.c:1107
 msgid "Option is not a valid multibyte string"
 msgstr "Flaget er ikke en gyldig flerbytestreng"
 
-#: src/rcfile.c:1113 src/rcfile.c:1141 src/rcfile.c:1150
+#: src/rcfile.c:1133 src/rcfile.c:1161 src/rcfile.c:1170
 msgid "Non-blank characters required"
 msgstr "Kræver ikke-blanke tegn"
 
-#: src/rcfile.c:1123
+#: src/rcfile.c:1143
 msgid "Two single-column characters required"
 msgstr "Der kræves to enkelt-kolonnetegn"
 
-#: src/rcfile.c:1189
+#: src/rcfile.c:1209
 #, c-format
 msgid "Cannot unset flag \"%s\""
 msgstr "Kan ikke fjerne flag \"%s\""
 
-#: src/rcfile.c:1198
+#: src/rcfile.c:1218
 #, c-format
 msgid "Unknown flag \"%s\""
 msgstr "Ukendt flag \"%s\""
 
-#: src/rcfile.c:1257
+#: src/rcfile.c:1277
 msgid "I can't find my home directory!  Wah!"
 msgstr "Jeg kan ikke finde mit hjemmekatalog!  Hulk!"
 
-#: src/rcfile.c:1295
-#, c-format
+#: src/rcfile.c:1315
+#, fuzzy, c-format
 msgid ""
 "\n"
-"Press Enter to continue starting nano.\n"
+"Press Enter to continue starting pinot.\n"
 msgstr ""
 "\n"
 "Tryk enter for at fortsætte opstart af nano.\n"
@@ -2103,7 +2117,8 @@ msgid "In Selection:  "
 msgstr "I markering:  "
 
 #: src/utils.c:405 src/utils.c:417
-msgid "nano is out of memory!"
+#, fuzzy
+msgid "pinot is out of memory!"
 msgstr "nano har ikke mere hukommelse!"
 
 #. TRANSLATORS: This is displayed during the input of a
@@ -2128,42 +2143,52 @@ msgstr "KAT:"
 msgid "File:"
 msgstr "Fil:"
 
-#: src/winio.c:3359
+#: src/winio.c:3400
 #, c-format
 msgid "line %ld/%ld (%d%%), col %lu/%lu (%d%%), char %lu/%lu (%d%%)"
 msgstr "linje %ld/%ld (%d%%), kol %lu/%lu (%d%%), tegn %lu/%lu (%d%%)"
 
-#: src/winio.c:3491
-msgid "The nano text editor"
+#: src/winio.c:3534
+#, fuzzy
+msgid "The pinot text editor"
 msgstr "Tekstredigereren nano"
 
-#: src/winio.c:3492
+#: src/winio.c:3535
 msgid "version"
 msgstr "version"
 
-#: src/winio.c:3493
+#: src/winio.c:3536
 msgid "Brought to you by:"
 msgstr "Præsenteres af:"
 
-#: src/winio.c:3494
+#: src/winio.c:3537
+msgid "The original nano developers:"
+msgstr ""
+
+#: src/winio.c:3538
 msgid "Special thanks to:"
 msgstr "Særlig tak til:"
 
-#: src/winio.c:3495
+#: src/winio.c:3539
 msgid "The Free Software Foundation"
 msgstr "Free Software Foundation"
 
-#: src/winio.c:3496
+#: src/winio.c:3540
 msgid "For ncurses:"
 msgstr "For ncurses:"
 
-#: src/winio.c:3497
+#: src/winio.c:3541
 msgid "and anyone else we forgot..."
 msgstr "og alle andre som vi har glemt..."
 
-#: src/winio.c:3498
-msgid "Thank you for using nano!"
+#: src/winio.c:3542
+#, fuzzy
+msgid "Thank you for using pinot!"
 msgstr "Tak for at du bruger nano!"
+
+#~ msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
+#~ msgstr ""
+#~ " E-post: nano@nano-editor.org\tHjemmeside: http://www.nano-editor.org/"
 
 #~ msgid "Error writing backup file %s: File owner mismatch"
 #~ msgstr ""

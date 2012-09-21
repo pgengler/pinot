@@ -10,10 +10,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nano 2.2.2pre1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-26 09:24-0500\n"
+"POT-Creation-Date: 2012-09-21 14:28-0400\n"
 "PO-Revision-Date: 2010-03-03 12:57+0100\n"
 "Last-Translator: Gabor Kelemen <kelemeng@gnome.hu>\n"
 "Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,7 +26,7 @@ msgid "Go To Directory"
 msgstr "Könyvtárváltás"
 
 #: src/browser.c:233 src/browser.c:830 src/files.c:864 src/files.c:2078
-#: src/nano.c:1068 src/search.c:220 src/search.c:313 src/search.c:974
+#: src/pinot.c:1067 src/search.c:220 src/search.c:313 src/search.c:974
 #: src/search.c:1039
 msgid "Cancelled"
 msgstr "Megszakítva"
@@ -38,7 +39,7 @@ msgstr "Korlátozott módban nem léphet ki a következőből: %s"
 #: src/browser.c:277 src/browser.c:324 src/browser.c:347 src/files.c:726
 #: src/files.c:735 src/files.c:1561 src/files.c:1687 src/files.c:1741
 #: src/files.c:1762 src/files.c:1885 src/files.c:2792 src/files.c:2994
-#: src/rcfile.c:640 src/rcfile.c:1279
+#: src/rcfile.c:640 src/rcfile.c:1299
 #, c-format
 msgid "Error reading %s: %s"
 msgstr "Hiba %s olvasásakor: %s"
@@ -201,12 +202,12 @@ msgstr "Új fájl"
 msgid "\"%s\" not found"
 msgstr "„%s” nem található"
 
-#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1229 src/rcfile.c:1270
+#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1249 src/rcfile.c:1290
 #, c-format
 msgid "\"%s\" is a directory"
 msgstr "„%s” egy könyvtár"
 
-#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1230 src/rcfile.c:1271
+#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1250 src/rcfile.c:1291
 #, c-format
 msgid "\"%s\" is a device file"
 msgstr "A(z) „%s” egy eszközfájl"
@@ -256,7 +257,7 @@ msgstr ""
 msgid "Error writing backup file %s: %s"
 msgstr "Hiba a biztonságimentés-fájl (%s) írásakor: %s"
 
-#: src/files.c:1603 src/nano.c:705
+#: src/files.c:1603 src/pinot.c:704
 msgid "Too many backup files?"
 msgstr "Túl sok biztonsági mentés van?"
 
@@ -352,22 +353,22 @@ msgstr ""
 #, c-format
 msgid ""
 "Path %s is not a directory and needs to be.\n"
-"Nano will be unable to load or save search or cursor position history\n"
+"pinot will be unable to load or save search or cursor position history\n"
 msgstr ""
 
 #: src/files.c:2775
 #, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I tried to move\n"
+"Detected a legacy pinot history file (%s) which I tried to move\n"
 "to the preferred location (%s) but encountered an error: %s"
 msgstr ""
 
 #: src/files.c:2778
 #, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I moved\n"
+"Detected a legacy pinot history file (%s) which I moved\n"
 "to the preferred location (%s)\n"
-"(see the nano FAQ about this change)"
+"(see the pinot FAQ about this change)"
 msgstr ""
 
 #. TRANSLATORS: Try to keep the next five strings at most 10 characters.
@@ -526,11 +527,13 @@ msgid "Display this help text"
 msgstr "Ezen súgószöveg megjelenítése"
 
 #: src/global.c:555
-msgid "Close the current file buffer / Exit from nano"
+#, fuzzy
+msgid "Close the current file buffer / Exit from pinot"
 msgstr "Aktuális fájlpuffer bezárása/Kilépés a nanoból"
 
 #: src/global.c:557
-msgid "Exit from nano"
+#, fuzzy
+msgid "Exit from pinot"
 msgstr "Kilépés a nanoból"
 
 #: src/global.c:561
@@ -1064,16 +1067,18 @@ msgstr ""
 "\n"
 
 #: src/help.c:260
+#, fuzzy
 msgid ""
 "Insert File Help Text\n"
 "\n"
 " Type in the name of a file to be inserted into the current file buffer at "
 "the current cursor location.\n"
 "\n"
-" If you have compiled nano with multiple file buffer support, and enable "
+" If you have compiled pinot with multiple file buffer support, and enable "
 "multiple file buffers with the -F or --multibuffer command line flags, the "
-"Meta-F toggle, or a nanorc file, inserting a file will cause it to be loaded "
-"into a separate buffer (use Meta-< and > to switch between file buffers).  "
+"Meta-F toggle, or a pinotrc file, inserting a file will cause it to be "
+"loaded into a separate buffer (use Meta-< and > to switch between file "
+"buffers).  "
 msgstr ""
 "Fájlbeszúrás súgója\n"
 "\n"
@@ -1256,15 +1261,16 @@ msgstr ""
 "\n"
 
 #: src/help.c:356
+#, fuzzy
 msgid ""
-"Main nano help text\n"
+"Main pinot help text\n"
 "\n"
-" The nano editor is designed to emulate the functionality and ease-of-use of "
-"the UW Pico text editor.  There are four main sections of the editor.  The "
-"top line shows the program version, the current filename being edited, and "
-"whether or not the file has been modified.  Next is the main editor window "
-"showing the file being edited.  The status line is the third line from the "
-"bottom and shows important messages.  "
+" The pinot editor is designed to emulate the functionality and ease-of-use "
+"of the UW Pico text editor.  There are four main sections of the editor.  "
+"The top line shows the program version, the current filename being edited, "
+"and whether or not the file has been modified.  Next is the main editor "
+"window showing the file being edited.  The status line is the third line "
+"from the bottom and shows important messages.  "
 msgstr ""
 "A nano fő súgószövege\n"
 "\n"
@@ -1312,11 +1318,11 @@ msgstr ""
 msgid "enable/disable"
 msgstr "be/kikapcsolása"
 
-#: src/nano.c:587
+#: src/pinot.c:586
 msgid "Key invalid in view mode"
 msgstr "A billentyű illegális megjelenítés módban"
 
-#: src/nano.c:699
+#: src/pinot.c:698
 #, c-format
 msgid ""
 "\n"
@@ -1325,7 +1331,7 @@ msgstr ""
 "\n"
 "A puffer a(z) %s fájlba írva\n"
 
-#: src/nano.c:701
+#: src/pinot.c:700
 #, c-format
 msgid ""
 "\n"
@@ -1334,7 +1340,7 @@ msgstr ""
 "\n"
 "A puffer nem lett a(z) %s fájlba írva: %s\n"
 
-#: src/nano.c:704
+#: src/pinot.c:703
 #, c-format
 msgid ""
 "\n"
@@ -1343,297 +1349,299 @@ msgstr ""
 "\n"
 "A puffer nem került mentésre: %s\n"
 
-#: src/nano.c:727
-msgid "Window size is too small for nano...\n"
+#: src/pinot.c:726
+#, fuzzy
+msgid "Window size is too small for pinot...\n"
 msgstr "Az ablak mérete túl kicsi a nanonak…\n"
 
-#: src/nano.c:820
-#, c-format
+#: src/pinot.c:819
+#, fuzzy, c-format
 msgid ""
-"Usage: nano [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
+"Usage: pinot [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
 "\n"
 msgstr ""
 "Használat: nano [KAPCSOLÓK] [[+SOR,OSZLOP] FÁJL]...\n"
 "\n"
 
-#: src/nano.c:823
+#: src/pinot.c:822
 #, c-format
 msgid "Option\t\tGNU long option\t\tMeaning\n"
 msgstr "Kapcsoló\t\tGNU hosszú kapcsoló\t\tJelentés\n"
 
-#: src/nano.c:825
+#: src/pinot.c:824
 #, c-format
 msgid "Option\t\tMeaning\n"
 msgstr "Kapcsoló\t\tJelentés\n"
 
-#: src/nano.c:828
+#: src/pinot.c:827
 msgid "Show this message"
 msgstr "Ezen üzenet kiírása"
 
-#: src/nano.c:829
+#: src/pinot.c:828
 msgid "+LINE,COLUMN"
 msgstr "+SOR,OSZLOP"
 
-#: src/nano.c:830
+#: src/pinot.c:829
 msgid "Start at line LINE, column COLUMN"
 msgstr "A SOR. sorban és OSZLOP. oszlopban kezd"
 
-#: src/nano.c:832
+#: src/pinot.c:831
 msgid "Enable smart home key"
 msgstr "Okos home billentyű engedélyezése"
 
-#: src/nano.c:833
+#: src/pinot.c:832
 msgid "Save backups of existing files"
 msgstr ""
 "Meglévő fájlokról biztonsági másolatok\n"
 "\t\t\t\t\t  mentése"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 msgid "-C <dir>"
 msgstr "-C <könyvtár>"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 msgid "--backupdir=<dir>"
 msgstr "--backupdir=<könyvtár>"
 
-#: src/nano.c:835
+#: src/pinot.c:834
 msgid "Directory for saving unique backup files"
 msgstr ""
 "Az egyedi biztonsági mentés fájlok\n"
 "\t\t\t\t\t  mentési könyvtára"
 
-#: src/nano.c:838
+#: src/pinot.c:837
 msgid "Use bold instead of reverse video text"
 msgstr ""
 "Félkövér használata invertált szöveg\n"
 "\t\t\t\t\t  helyett"
 
-#: src/nano.c:841
+#: src/pinot.c:840
 msgid "Convert typed tabs to spaces"
 msgstr ""
 "Beírt tab karakterek átalakítása\n"
 "\t\t\t\t\t  szóközökké"
 
-#: src/nano.c:844
+#: src/pinot.c:843
 msgid "Enable multiple file buffers"
 msgstr "Több fájlpuffer engedélyezése"
 
-#: src/nano.c:849
+#: src/pinot.c:848
 msgid "Log & read search/replace string history"
 msgstr ""
 "Keresés/csere előzményeinek naplózása\n"
 "\t\t\t\t\t  és olvasása"
 
-#: src/nano.c:852
-msgid "Don't look at nanorc files"
+#: src/pinot.c:851
+#, fuzzy
+msgid "Don't look at pinotorc files"
 msgstr "nanorc fájlok keresésének kihagyása"
 
-#: src/nano.c:855
+#: src/pinot.c:854
 msgid "Fix numeric keypad key confusion problem"
 msgstr ""
 "A numerikus billentyűzet zavarainak\n"
 "\t\t\t\t\t  javítása"
 
-#: src/nano.c:857
+#: src/pinot.c:856
 msgid "Don't add newlines to the ends of files"
 msgstr "Ne adjon új sorokat a fájlok végéhez"
 
-#: src/nano.c:860
+#: src/pinot.c:859
 msgid "Don't convert files from DOS/Mac format"
 msgstr ""
 "Ne alakítsa át a fájlokat DOS/Mac\n"
 "\t\t\t\t\t  formátumról"
 
-#: src/nano.c:862
+#: src/pinot.c:861
 msgid "Use one more line for editing"
 msgstr ""
 "Eggyel több sor használata a\n"
 "\t\t\t\t\t  szerkesztéshez"
 
-#: src/nano.c:865
+#: src/pinot.c:864
 #, fuzzy
 msgid "Log & read location of cursor position"
 msgstr "Tabulátor beszúrása a kurzor helyére"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 msgid "-Q <str>"
 msgstr "-Q <szöveg>"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 msgid "--quotestr=<str>"
 msgstr "--quotestr=<szöveg>"
 
-#: src/nano.c:869
+#: src/pinot.c:868
 msgid "Quoting string"
 msgstr "Idézetszöveg"
 
-#: src/nano.c:871
+#: src/pinot.c:870
 msgid "Restricted mode"
 msgstr "Korlátozott mód"
 
-#: src/nano.c:874
+#: src/pinot.c:873
 msgid "Scroll by line instead of half-screen"
 msgstr "Görgetés soronként fél képernyő helyett"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 msgid "-T <#cols>"
 msgstr "-T <#oszlop>"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 msgid "--tabsize=<#cols>"
 msgstr "--tabsize=<#oszlop>"
 
-#: src/nano.c:877
+#: src/pinot.c:876
 msgid "Set width of a tab to #cols columns"
 msgstr ""
 "A tabulátorszélesség legyen #oszlop\n"
 "\t\t\t\t\t  oszlop"
 
-#: src/nano.c:879
+#: src/pinot.c:878
 msgid "Do quick statusbar blanking"
 msgstr "Törölje gyorsan az állapotsort"
 
-#: src/nano.c:882
+#: src/pinot.c:881
 msgid "Print version information and exit"
 msgstr "Verziószám kiírása és kilépés"
 
-#: src/nano.c:885
+#: src/pinot.c:884
 msgid "Detect word boundaries more accurately"
 msgstr "Szóhatárok pontosabb észlelése"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 msgid "-Y <str>"
 msgstr "-Y <szöveg>"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 msgid "--syntax=<str>"
 msgstr "--syntax=<szöveg>"
 
-#: src/nano.c:889
+#: src/pinot.c:888
 msgid "Syntax definition to use for coloring"
 msgstr ""
 "A színezéshez használandó\n"
 "\t\t\t\t\t  szintaxisleírás"
 
-#: src/nano.c:891
+#: src/pinot.c:890
 msgid "Constantly show cursor position"
 msgstr "Kurzor pozíciójának állandó mutatása"
 
-#: src/nano.c:893
+#: src/pinot.c:892
 msgid "Fix Backspace/Delete confusion problem"
 msgstr "Visszatörlés/törlés zavarainak javítása"
 
-#: src/nano.c:896
+#: src/pinot.c:895
 msgid "Automatically indent new lines"
 msgstr "Új sorok automatikus behúzása"
 
-#: src/nano.c:897
+#: src/pinot.c:896
 msgid "Cut from cursor to end of line"
 msgstr "Kivágás a kurzor helyétől a sor végéig"
 
-#: src/nano.c:900
+#: src/pinot.c:899
 msgid "Don't follow symbolic links, overwrite"
 msgstr ""
 "Szimbolikus linkek követése helyett\n"
 "\t\t\t\t\t  felülírás"
 
-#: src/nano.c:902
+#: src/pinot.c:901
 msgid "Enable the use of the mouse"
 msgstr "Egér használatának engedélyezése"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 msgid "-o <dir>"
 msgstr "-o <könyvtár>"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 msgid "--operatingdir=<dir>"
 msgstr "--operatingdir=<könyvtár>"
 
-#: src/nano.c:906
+#: src/pinot.c:905
 msgid "Set operating directory"
 msgstr "Munkakönyvtár beállítása"
 
-#: src/nano.c:909
+#: src/pinot.c:908
 msgid "Preserve XON (^Q) and XOFF (^S) keys"
 msgstr ""
 "XON (^Q) és XOFF (^S) billentyűk\n"
 "\t\t\t\t\t  megőrzése"
 
-#: src/nano.c:911
+#: src/pinot.c:910
 msgid "Silently ignore startup issues like rc file errors"
 msgstr "Indítási hibák, például rc-fájlhibák csendes mellőzése"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 msgid "-r <#cols>"
 msgstr "-r <#oszlop>"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 msgid "--fill=<#cols>"
 msgstr "--fill=<#oszlop>"
 
-#: src/nano.c:914
+#: src/pinot.c:913
 msgid "Set wrapping point at column #cols"
 msgstr "Töréspont beállítása a #oszlop oszlopnál"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 msgid "-s <prog>"
 msgstr "-s <prog>"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 msgid "--speller=<prog>"
 msgstr "--speller=<prog>"
 
-#: src/nano.c:918
+#: src/pinot.c:917
 msgid "Enable alternate speller"
 msgstr ""
 "Alternatív helyesírás-ellenőrző\n"
 "\t\t\t\t\t  használata"
 
-#: src/nano.c:921
+#: src/pinot.c:920
 msgid "Auto save on exit, don't prompt"
 msgstr "Automatikus mentés kilépéskor"
 
-#: src/nano.c:923
+#: src/pinot.c:922
 msgid "Allow generic undo [EXPERIMENTAL]"
 msgstr "Általános visszavonás engedélyezése [KÍSÉRLETI]"
 
-#: src/nano.c:926
+#: src/pinot.c:925
 msgid "View mode (read-only)"
 msgstr "Megjelenítés mód (csak olvasható)"
 
-#: src/nano.c:928
+#: src/pinot.c:927
 msgid "Don't wrap long lines"
 msgstr "Ne tördelje a hosszú sorokat"
 
-#: src/nano.c:930
+#: src/pinot.c:929
 msgid "Don't show the two help lines"
 msgstr "A két súgósor elrejtése"
 
-#: src/nano.c:931
+#: src/pinot.c:930
 msgid "Enable suspension"
 msgstr "Felfüggesztés engedélyezése"
 
-#: src/nano.c:932
+#: src/pinot.c:931
 msgid "Enable soft line wrapping"
 msgstr "Laza sortördelés engedélyezése"
 
-#: src/nano.c:936
+#: src/pinot.c:935
 msgid "(ignored, for Pico compatibility)"
 msgstr ""
 "(A Pico kompatibilitás érdekében\n"
 "\t\t\t\t\t mellőzve)"
 
-#: src/nano.c:946
-#, c-format
-msgid " GNU nano version %s (compiled %s, %s)\n"
+#: src/pinot.c:945
+#, fuzzy, c-format
+msgid " pinot version %s (compiled %s, %s)\n"
 msgstr " GNU nano %s verzió. (fordítva: %s, %s)\n"
 
-#: src/nano.c:951
+#: src/pinot.c:950
 #, c-format
-msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
-msgstr " E-mail: nano@nano-editor.org\tWeb: http://www.nano-editor.org"
+msgid " Email: phil@pgengler.net\tWeb: http://github.com/pgengler"
+msgstr ""
 
-#: src/nano.c:952
+#: src/pinot.c:951
 #, c-format
 msgid ""
 "\n"
@@ -1642,59 +1650,59 @@ msgstr ""
 "\n"
 " Fordítási kapcsolók:"
 
-#: src/nano.c:1030
+#: src/pinot.c:1029
 msgid "Sorry, support for this function has been disabled"
 msgstr "Elnézést, a funkció támogatása ki van kapcsolva"
 
-#: src/nano.c:1052
+#: src/pinot.c:1051
 msgid "Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "
 msgstr ""
 "Menti a változtatásokat („NEM” VÁLASZ ESETÉN MINDEN MÓDOSÍTÁS ELVÉSZ)? "
 
-#: src/nano.c:1100
+#: src/pinot.c:1099
 msgid "Couldn't reopen stdin from keyboard, sorry\n"
 msgstr "Az stdin nem nyitható újra a billentyűzetről.\n"
 
-#: src/nano.c:1126
+#: src/pinot.c:1125
 #, c-format
 msgid "Reading from stdin, ^C to abort\n"
 msgstr "Olvasás stdinről, ^C megszakítja\n"
 
-#: src/nano.c:1194
+#: src/pinot.c:1193
 msgid "Received SIGHUP or SIGTERM\n"
 msgstr "SIGHUP vagy SIGTERM érkezett\n"
 
-#: src/nano.c:1216
-#, c-format
-msgid "Use \"fg\" to return to nano.\n"
+#: src/pinot.c:1215
+#, fuzzy, c-format
+msgid "Use \"fg\" to return to pinot.\n"
 msgstr "Az „fg” kiadásával visszatérhet a nanohoz.\n"
 
-#: src/nano.c:1398
+#: src/pinot.c:1397
 msgid "enabled"
 msgstr "engedélyezve"
 
-#: src/nano.c:1399
+#: src/pinot.c:1398
 msgid "disabled"
 msgstr "kikapcsolva"
 
-#: src/nano.c:1566 src/winio.c:1256
+#: src/pinot.c:1565 src/winio.c:1256
 msgid "Unknown Command"
 msgstr "Ismeretlen parancs"
 
-#: src/nano.c:1692
+#: src/pinot.c:1691
 msgid "XON ignored, mumble mumble"
 msgstr "XON kihagyva, ej-ej"
 
-#: src/nano.c:1697
+#: src/pinot.c:1696
 msgid "XOFF ignored, mumble mumble"
 msgstr "XOFF kihagyva, ej-ej"
 
-#: src/nano.c:2233 src/rcfile.c:1175
+#: src/pinot.c:2232 src/rcfile.c:1195
 #, c-format
 msgid "Requested tab size \"%s\" is invalid"
 msgstr "A kért „%s” tabméret érvénytelen"
 
-#: src/nano.c:2292 src/rcfile.c:1100
+#: src/pinot.c:2291 src/rcfile.c:1120
 #, c-format
 msgid "Requested fill size \"%s\" is invalid"
 msgstr "A kért „%s” kitöltésméret érvénytelen"
@@ -1736,8 +1744,8 @@ msgstr "Hiba a(z) %s %lu. sorában: "
 msgid "Argument '%s' has an unterminated \""
 msgstr "A(z) „%s” argumentum lezáratlan \" jellel rendelkezik"
 
-#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:783
-#: src/rcfile.c:840 src/rcfile.c:893
+#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:802
+#: src/rcfile.c:860 src/rcfile.c:913
 msgid "Regex strings must begin and end with a \" character"
 msgstr "A reguláris kifejezéseknek \" karakterekkel kezdődniük és végződniük"
 
@@ -1802,7 +1810,7 @@ msgstr "A név („%s”) nem képezhető le menüre"
 msgid "Sorry, keystr \"%s\" is an illegal binding"
 msgstr "A billentyű-karakterlánc („%s”) nem érvényes kötés"
 
-#: src/rcfile.c:697
+#: src/rcfile.c:710
 #, c-format
 msgid ""
 "Color \"%s\" not understood.\n"
@@ -1816,99 +1824,105 @@ msgstr ""
 "„white”, „yellow”, „cyan”, „magenta” és \n"
 "„black”, opcionális „bright” előtaggal az előtérszínekhez."
 
-#: src/rcfile.c:719
+#: src/rcfile.c:732
 msgid "Cannot add a color command without a syntax command"
 msgstr "Nem adható meg színparancs szintaxissor nélkül"
 
-#: src/rcfile.c:724
+#: src/rcfile.c:737
 msgid "Missing color name"
 msgstr "Hiányzik a szín neve"
 
-#: src/rcfile.c:744
+#: src/rcfile.c:757
 #, c-format
 msgid "Background color \"%s\" cannot be bright"
 msgstr "A(z) „%s” háttérszín nem lehet világos"
 
-#: src/rcfile.c:762 src/rcfile.c:881
+#: src/rcfile.c:763
+#, fuzzy, c-format
+msgid "Background color \"%s\" cannot be underline"
+msgstr "A(z) „%s” háttérszín nem lehet világos"
+
+#: src/rcfile.c:781 src/rcfile.c:901
 msgid "Missing regex string"
 msgstr "Hiányzó regex karaktersorozat"
 
-#: src/rcfile.c:834
+#: src/rcfile.c:854
 msgid "\"start=\" requires a corresponding \"end=\""
 msgstr "„start=” -hoz kell egy megfelelő „end=”"
 
-#: src/rcfile.c:876
+#: src/rcfile.c:896
 msgid "Cannot add a header regex without a syntax command"
 msgstr "Nem adható meg fejléc regex szintaxisparancs nélkül"
 
-#: src/rcfile.c:946
+#: src/rcfile.c:966
 #, c-format
 msgid "Fatal error: no keys mapped for function \"%s\""
 msgstr "Végzetes hiba: nincsenek billentyűk leképezve a függvényhez („%s”)"
 
-#: src/rcfile.c:948
+#: src/rcfile.c:968
+#, fuzzy
 msgid ""
-"Exiting.  Please use nano with the -I option if needed to adjust your nanorc "
-"settings\n"
+"Exiting.  Please use pinot with the -I option if needed to adjust your "
+"pinotrc settings\n"
 msgstr ""
 "Kilépés. Használja a nanot a -I kapcsolóval, ha módosítani kívánja a nanorc "
 "beállításait\n"
 
-#: src/rcfile.c:998 src/rcfile.c:1007 src/rcfile.c:1017
+#: src/rcfile.c:1018 src/rcfile.c:1027 src/rcfile.c:1037
 #, c-format
 msgid "Command \"%s\" not allowed in included file"
 msgstr "A(z) „%s” parancs nem engedélyezett a tartalmazott fájlban"
 
-#: src/rcfile.c:1023 src/rcfile.c:1203
+#: src/rcfile.c:1043 src/rcfile.c:1223
 #, c-format
 msgid "Syntax \"%s\" has no color commands"
 msgstr "A(z) „%s” szintaxis nem rendelkezik színparancsokkal"
 
-#: src/rcfile.c:1041
+#: src/rcfile.c:1061
 #, c-format
 msgid "Command \"%s\" not understood"
 msgstr "A(z) „%s” parancs nem értelmezhető"
 
-#: src/rcfile.c:1047
+#: src/rcfile.c:1067
 msgid "Missing flag"
 msgstr "Hiányzik a jelző"
 
-#: src/rcfile.c:1069
+#: src/rcfile.c:1089
 #, c-format
 msgid "Option \"%s\" requires an argument"
 msgstr "A(z) „%s” kapcsoló egy paramétert igényel"
 
-#: src/rcfile.c:1087
+#: src/rcfile.c:1107
 msgid "Option is not a valid multibyte string"
 msgstr "A kapcsoló nem érvényes több bájtos karaktersorozat"
 
-#: src/rcfile.c:1113 src/rcfile.c:1141 src/rcfile.c:1150
+#: src/rcfile.c:1133 src/rcfile.c:1161 src/rcfile.c:1170
 msgid "Non-blank characters required"
 msgstr "Nem üres karakterek szükségesek"
 
-#: src/rcfile.c:1123
+#: src/rcfile.c:1143
 msgid "Two single-column characters required"
 msgstr "Két egyoszlopos karakter szükséges"
 
-#: src/rcfile.c:1189
+#: src/rcfile.c:1209
 #, c-format
 msgid "Cannot unset flag \"%s\""
 msgstr "A(z) „%s” jelző nem állítható vissza"
 
-#: src/rcfile.c:1198
+#: src/rcfile.c:1218
 #, c-format
 msgid "Unknown flag \"%s\""
 msgstr "Ismeretlen jelző: „%s”"
 
-#: src/rcfile.c:1257
+#: src/rcfile.c:1277
 msgid "I can't find my home directory!  Wah!"
 msgstr "Nincs meg a saját könyvtár! Hopp!"
 
-#: src/rcfile.c:1295
-#, c-format
+#: src/rcfile.c:1315
+#, fuzzy, c-format
 msgid ""
 "\n"
-"Press Enter to continue starting nano.\n"
+"Press Enter to continue starting pinot.\n"
 msgstr ""
 "\n"
 "A nano indításának folytatásához nyomja le az Enter billentyűt.\n"
@@ -2115,7 +2129,8 @@ msgid "In Selection:  "
 msgstr "A kiválasztásban:  "
 
 #: src/utils.c:405 src/utils.c:417
-msgid "nano is out of memory!"
+#, fuzzy
+msgid "pinot is out of memory!"
 msgstr "nano: elfogyott a memória!"
 
 #. TRANSLATORS: This is displayed during the input of a
@@ -2140,39 +2155,48 @@ msgstr "Könyvtár:"
 msgid "File:"
 msgstr "Fájl:"
 
-#: src/winio.c:3359
+#: src/winio.c:3400
 #, c-format
 msgid "line %ld/%ld (%d%%), col %lu/%lu (%d%%), char %lu/%lu (%d%%)"
 msgstr "sor %ld/%ld (%d%%), oszlop %lu/%lu (%d%%), karakter %lu/%lu (%d%%)"
 
-#: src/winio.c:3491
-msgid "The nano text editor"
+#: src/winio.c:3534
+#, fuzzy
+msgid "The pinot text editor"
 msgstr "A nano szövegszerkesztő"
 
-#: src/winio.c:3492
+#: src/winio.c:3535
 msgid "version"
 msgstr "verzió"
 
-#: src/winio.c:3493
+#: src/winio.c:3536
 msgid "Brought to you by:"
 msgstr "Fejlesztők:"
 
-#: src/winio.c:3494
+#: src/winio.c:3537
+msgid "The original nano developers:"
+msgstr ""
+
+#: src/winio.c:3538
 msgid "Special thanks to:"
 msgstr "Külön köszönet:"
 
-#: src/winio.c:3495
+#: src/winio.c:3539
 msgid "The Free Software Foundation"
 msgstr "A Free Software Foundation"
 
-#: src/winio.c:3496
+#: src/winio.c:3540
 msgid "For ncurses:"
 msgstr "Az ncurses számára:"
 
-#: src/winio.c:3497
+#: src/winio.c:3541
 msgid "and anyone else we forgot..."
 msgstr "és mindenkinek, akit kifelejtettünk volna..."
 
-#: src/winio.c:3498
-msgid "Thank you for using nano!"
+#: src/winio.c:3542
+#, fuzzy
+msgid "Thank you for using pinot!"
 msgstr "Köszönjük, hogy a nano-t választotta!"
+
+#~ msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
+#~ msgstr " E-mail: nano@nano-editor.org\tWeb: http://www.nano-editor.org"

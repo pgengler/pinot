@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nano 1.3.10pre2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-26 09:24-0500\n"
+"POT-Creation-Date: 2012-09-21 14:28-0400\n"
 "PO-Revision-Date: 2005-12-13 09:33+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@pcmail.com.tw>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,7 +22,7 @@ msgid "Go To Directory"
 msgstr "跳至目錄"
 
 #: src/browser.c:233 src/browser.c:830 src/files.c:864 src/files.c:2078
-#: src/nano.c:1068 src/search.c:220 src/search.c:313 src/search.c:974
+#: src/pinot.c:1067 src/search.c:220 src/search.c:313 src/search.c:974
 #: src/search.c:1039
 msgid "Cancelled"
 msgstr "已取消"
@@ -34,7 +35,7 @@ msgstr "在限制模式中無法至 %s 外部"
 #: src/browser.c:277 src/browser.c:324 src/browser.c:347 src/files.c:726
 #: src/files.c:735 src/files.c:1561 src/files.c:1687 src/files.c:1741
 #: src/files.c:1762 src/files.c:1885 src/files.c:2792 src/files.c:2994
-#: src/rcfile.c:640 src/rcfile.c:1279
+#: src/rcfile.c:640 src/rcfile.c:1299
 #, c-format
 msgid "Error reading %s: %s"
 msgstr "讀取 %s 時發生錯誤: %s"
@@ -177,12 +178,12 @@ msgstr "新檔案"
 msgid "\"%s\" not found"
 msgstr "找不到 \"%s\""
 
-#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1229 src/rcfile.c:1270
+#: src/files.c:721 src/rcfile.c:631 src/rcfile.c:1249 src/rcfile.c:1290
 #, c-format
 msgid "\"%s\" is a directory"
 msgstr "\"%s\" 是一個目錄"
 
-#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1230 src/rcfile.c:1271
+#: src/files.c:722 src/rcfile.c:632 src/rcfile.c:1250 src/rcfile.c:1291
 #, fuzzy, c-format
 msgid "\"%s\" is a device file"
 msgstr "\"%s\" 是一個裝置檔案"
@@ -231,7 +232,7 @@ msgstr "--nofollow 設定下，無法前引或附加至符號連結檔"
 msgid "Error writing backup file %s: %s"
 msgstr "寫入暫存檔案 %s 時發生錯誤"
 
-#: src/files.c:1603 src/nano.c:705
+#: src/files.c:1603 src/pinot.c:704
 msgid "Too many backup files?"
 msgstr "太多備份檔案？"
 
@@ -326,22 +327,22 @@ msgstr ""
 #, c-format
 msgid ""
 "Path %s is not a directory and needs to be.\n"
-"Nano will be unable to load or save search or cursor position history\n"
+"pinot will be unable to load or save search or cursor position history\n"
 msgstr ""
 
 #: src/files.c:2775
 #, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I tried to move\n"
+"Detected a legacy pinot history file (%s) which I tried to move\n"
 "to the preferred location (%s) but encountered an error: %s"
 msgstr ""
 
 #: src/files.c:2778
 #, c-format
 msgid ""
-"Detected a legacy nano history file (%s) which I moved\n"
+"Detected a legacy pinot history file (%s) which I moved\n"
 "to the preferred location (%s)\n"
-"(see the nano FAQ about this change)"
+"(see the pinot FAQ about this change)"
 msgstr ""
 
 #. TRANSLATORS: Try to keep the next five strings at most 10 characters.
@@ -506,11 +507,12 @@ msgstr ""
 
 #: src/global.c:555
 #, fuzzy
-msgid "Close the current file buffer / Exit from nano"
+msgid "Close the current file buffer / Exit from pinot"
 msgstr "關閉目前檔案緩衝區並離開 nano"
 
 #: src/global.c:557
-msgid "Exit from nano"
+#, fuzzy
+msgid "Exit from pinot"
 msgstr "離開 nano"
 
 #: src/global.c:561
@@ -1084,16 +1086,18 @@ msgstr ""
 "\n"
 
 #: src/help.c:260
+#, fuzzy
 msgid ""
 "Insert File Help Text\n"
 "\n"
 " Type in the name of a file to be inserted into the current file buffer at "
 "the current cursor location.\n"
 "\n"
-" If you have compiled nano with multiple file buffer support, and enable "
+" If you have compiled pinot with multiple file buffer support, and enable "
 "multiple file buffers with the -F or --multibuffer command line flags, the "
-"Meta-F toggle, or a nanorc file, inserting a file will cause it to be loaded "
-"into a separate buffer (use Meta-< and > to switch between file buffers).  "
+"Meta-F toggle, or a pinotrc file, inserting a file will cause it to be "
+"loaded into a separate buffer (use Meta-< and > to switch between file "
+"buffers).  "
 msgstr ""
 "插入檔案輔助說明\n"
 "\n"
@@ -1261,14 +1265,14 @@ msgstr ""
 #: src/help.c:356
 #, fuzzy
 msgid ""
-"Main nano help text\n"
+"Main pinot help text\n"
 "\n"
-" The nano editor is designed to emulate the functionality and ease-of-use of "
-"the UW Pico text editor.  There are four main sections of the editor.  The "
-"top line shows the program version, the current filename being edited, and "
-"whether or not the file has been modified.  Next is the main editor window "
-"showing the file being edited.  The status line is the third line from the "
-"bottom and shows important messages.  "
+" The pinot editor is designed to emulate the functionality and ease-of-use "
+"of the UW Pico text editor.  There are four main sections of the editor.  "
+"The top line shows the program version, the current filename being edited, "
+"and whether or not the file has been modified.  Next is the main editor "
+"window showing the file being edited.  The status line is the third line "
+"from the bottom and shows important messages.  "
 msgstr ""
 "nano 輔助說明\n"
 "\n"
@@ -1311,12 +1315,12 @@ msgstr ""
 msgid "enable/disable"
 msgstr "開啟/關閉"
 
-#: src/nano.c:587
+#: src/pinot.c:586
 #, fuzzy
 msgid "Key invalid in view mode"
 msgstr "觀看模式中此按鍵無效"
 
-#: src/nano.c:699
+#: src/pinot.c:698
 #, c-format
 msgid ""
 "\n"
@@ -1325,7 +1329,7 @@ msgstr ""
 "\n"
 "緩衝區已寫入 %s\n"
 
-#: src/nano.c:701
+#: src/pinot.c:700
 #, c-format
 msgid ""
 "\n"
@@ -1334,7 +1338,7 @@ msgstr ""
 "\n"
 "緩衝區未寫入至 %s: %s\n"
 
-#: src/nano.c:704
+#: src/pinot.c:703
 #, c-format
 msgid ""
 "\n"
@@ -1343,292 +1347,294 @@ msgstr ""
 "\n"
 "緩衝區未寫入: %s\n"
 
-#: src/nano.c:727
-msgid "Window size is too small for nano...\n"
+#: src/pinot.c:726
+#, fuzzy
+msgid "Window size is too small for pinot...\n"
 msgstr "視窗尺寸對 nano 來說太小了...\n"
 
-#: src/nano.c:820
+#: src/pinot.c:819
 #, fuzzy, c-format
 msgid ""
-"Usage: nano [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
+"Usage: pinot [OPTIONS] [[+LINE,COLUMN] FILE]...\n"
 "\n"
 msgstr ""
 "用法: nano [+列數,行數] [選項] [檔案名稱]\n"
 "\n"
 
-#: src/nano.c:823
+#: src/pinot.c:822
 #, fuzzy, c-format
 msgid "Option\t\tGNU long option\t\tMeaning\n"
 msgstr "選項\t\tGNU 長選項\t\t意義\n"
 
-#: src/nano.c:825
+#: src/pinot.c:824
 #, c-format
 msgid "Option\t\tMeaning\n"
 msgstr "選項\t\t意義\n"
 
-#: src/nano.c:828
+#: src/pinot.c:827
 msgid "Show this message"
 msgstr "顯示此訊息"
 
-#: src/nano.c:829
+#: src/pinot.c:828
 msgid "+LINE,COLUMN"
 msgstr "+列數,行數"
 
-#: src/nano.c:830
+#: src/pinot.c:829
 msgid "Start at line LINE, column COLUMN"
 msgstr "從所指列數與行數開始"
 
-#: src/nano.c:832
+#: src/pinot.c:831
 msgid "Enable smart home key"
 msgstr "開啟智慧型 HOME 按鍵功能"
 
-#: src/nano.c:833
+#: src/pinot.c:832
 msgid "Save backups of existing files"
 msgstr "儲存既有檔案的備份"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 #, fuzzy
 msgid "-C <dir>"
 msgstr "-C [目錄]"
 
-#: src/nano.c:834
+#: src/pinot.c:833
 #, fuzzy
 msgid "--backupdir=<dir>"
 msgstr "--backupdir=[目錄]"
 
-#: src/nano.c:835
+#: src/pinot.c:834
 msgid "Directory for saving unique backup files"
 msgstr "用以儲存獨一備份檔案的目錄"
 
-#: src/nano.c:838
+#: src/pinot.c:837
 msgid "Use bold instead of reverse video text"
 msgstr ""
 
-#: src/nano.c:841
+#: src/pinot.c:840
 msgid "Convert typed tabs to spaces"
 msgstr "將已輸入的跳格符號轉換為空白"
 
-#: src/nano.c:844
+#: src/pinot.c:843
 msgid "Enable multiple file buffers"
 msgstr "開啟多重檔案緩衝區功能"
 
-#: src/nano.c:849
+#: src/pinot.c:848
 msgid "Log & read search/replace string history"
 msgstr "記錄與讀取 搜尋/置換 的歷史字串"
 
-#: src/nano.c:852
-msgid "Don't look at nanorc files"
+#: src/pinot.c:851
+#, fuzzy
+msgid "Don't look at pinotorc files"
 msgstr "不要參考 nanorc 檔案"
 
-#: src/nano.c:855
+#: src/pinot.c:854
 msgid "Fix numeric keypad key confusion problem"
 msgstr "修正數字鍵區按鍵混淆問題"
 
-#: src/nano.c:857
+#: src/pinot.c:856
 msgid "Don't add newlines to the ends of files"
 msgstr "不要將換列加到檔案末端"
 
-#: src/nano.c:860
+#: src/pinot.c:859
 msgid "Don't convert files from DOS/Mac format"
 msgstr "不要從 DOS/Mac 格式轉檔"
 
-#: src/nano.c:862
+#: src/pinot.c:861
 #, fuzzy
 msgid "Use one more line for editing"
 msgstr "編輯時使用更多空間"
 
-#: src/nano.c:865
+#: src/pinot.c:864
 #, fuzzy
 msgid "Log & read location of cursor position"
 msgstr "標記游標所在文字"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 #, fuzzy
 msgid "-Q <str>"
 msgstr "-Q [字串]"
 
-#: src/nano.c:868
+#: src/pinot.c:867
 #, fuzzy
 msgid "--quotestr=<str>"
 msgstr "--quotestr=[字串]"
 
-#: src/nano.c:869
+#: src/pinot.c:868
 msgid "Quoting string"
 msgstr "引用代表字串"
 
-#: src/nano.c:871
+#: src/pinot.c:870
 msgid "Restricted mode"
 msgstr "限制模式"
 
-#: src/nano.c:874
+#: src/pinot.c:873
 msgid "Scroll by line instead of half-screen"
 msgstr ""
 
-#: src/nano.c:876
+#: src/pinot.c:875
 #, fuzzy
 msgid "-T <#cols>"
 msgstr "-T [#行數]"
 
-#: src/nano.c:876
+#: src/pinot.c:875
 #, fuzzy
 msgid "--tabsize=<#cols>"
 msgstr "--tabsize=[#行數]"
 
-#: src/nano.c:877
+#: src/pinot.c:876
 #, fuzzy
 msgid "Set width of a tab to #cols columns"
 msgstr "設定跳格寬度為 #行數"
 
-#: src/nano.c:879
+#: src/pinot.c:878
 msgid "Do quick statusbar blanking"
 msgstr "狀態列快速閃動"
 
-#: src/nano.c:882
+#: src/pinot.c:881
 msgid "Print version information and exit"
 msgstr "顯示版本資訊並離開"
 
-#: src/nano.c:885
+#: src/pinot.c:884
 msgid "Detect word boundaries more accurately"
 msgstr "更正確地偵測單字邊界"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 #, fuzzy
 msgid "-Y <str>"
 msgstr "-Y [字串]"
 
-#: src/nano.c:888
+#: src/pinot.c:887
 #, fuzzy
 msgid "--syntax=<str>"
 msgstr "--syntax=[字串]"
 
-#: src/nano.c:889
+#: src/pinot.c:888
 #, fuzzy
 msgid "Syntax definition to use for coloring"
 msgstr "字串做為語法定義"
 
-#: src/nano.c:891
+#: src/pinot.c:890
 msgid "Constantly show cursor position"
 msgstr "持續顯示游標位置"
 
-#: src/nano.c:893
+#: src/pinot.c:892
 msgid "Fix Backspace/Delete confusion problem"
 msgstr "修正 退格鍵/刪除鍵 混淆問題"
 
-#: src/nano.c:896
+#: src/pinot.c:895
 msgid "Automatically indent new lines"
 msgstr "自動縮排新列"
 
-#: src/nano.c:897
+#: src/pinot.c:896
 msgid "Cut from cursor to end of line"
 msgstr "從游標剪下至列尾"
 
-#: src/nano.c:900
+#: src/pinot.c:899
 msgid "Don't follow symbolic links, overwrite"
 msgstr "不要依照符號連結，而是覆寫"
 
-#: src/nano.c:902
+#: src/pinot.c:901
 #, fuzzy
 msgid "Enable the use of the mouse"
 msgstr "開啟滑鼠功能"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 #, fuzzy
 msgid "-o <dir>"
 msgstr "-o [目錄]"
 
-#: src/nano.c:905
+#: src/pinot.c:904
 #, fuzzy
 msgid "--operatingdir=<dir>"
 msgstr "--operatingdir=[目錄]"
 
-#: src/nano.c:906
+#: src/pinot.c:905
 msgid "Set operating directory"
 msgstr "設定操作目錄"
 
-#: src/nano.c:909
+#: src/pinot.c:908
 msgid "Preserve XON (^Q) and XOFF (^S) keys"
 msgstr "保留 XON (^Q) 和 XOFF (^S) 按鍵"
 
-#: src/nano.c:911
+#: src/pinot.c:910
 msgid "Silently ignore startup issues like rc file errors"
 msgstr ""
 
-#: src/nano.c:913
+#: src/pinot.c:912
 #, fuzzy
 msgid "-r <#cols>"
 msgstr "-r [#行數]"
 
-#: src/nano.c:913
+#: src/pinot.c:912
 #, fuzzy
 msgid "--fill=<#cols>"
 msgstr "--fill=[#行數]    "
 
-#: src/nano.c:914
+#: src/pinot.c:913
 #, fuzzy
 msgid "Set wrapping point at column #cols"
 msgstr "設定跳格寬度為 #行數"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 #, fuzzy
 msgid "-s <prog>"
 msgstr "-s [程式]"
 
-#: src/nano.c:917
+#: src/pinot.c:916
 #, fuzzy
 msgid "--speller=<prog>"
 msgstr "--speller=[程式]"
 
-#: src/nano.c:918
+#: src/pinot.c:917
 msgid "Enable alternate speller"
 msgstr "啟用替代的拼字檢查程式"
 
-#: src/nano.c:921
+#: src/pinot.c:920
 msgid "Auto save on exit, don't prompt"
 msgstr "離開時自動儲存，不要提示"
 
-#: src/nano.c:923
+#: src/pinot.c:922
 msgid "Allow generic undo [EXPERIMENTAL]"
 msgstr ""
 
-#: src/nano.c:926
+#: src/pinot.c:925
 #, fuzzy
 msgid "View mode (read-only)"
 msgstr "觀看 (唯讀) 模式"
 
-#: src/nano.c:928
+#: src/pinot.c:927
 msgid "Don't wrap long lines"
 msgstr "不要自動換列"
 
-#: src/nano.c:930
+#: src/pinot.c:929
 #, fuzzy
 msgid "Don't show the two help lines"
 msgstr "不要顯示輔助區"
 
-#: src/nano.c:931
+#: src/pinot.c:930
 #, fuzzy
 msgid "Enable suspension"
 msgstr "開啟暫停功能"
 
-#: src/nano.c:932
+#: src/pinot.c:931
 #, fuzzy
 msgid "Enable soft line wrapping"
 msgstr "長列轉換"
 
-#: src/nano.c:936
+#: src/pinot.c:935
 msgid "(ignored, for Pico compatibility)"
 msgstr "(忽略，為了與 Pico 相容)"
 
-#: src/nano.c:946
-#, c-format
-msgid " GNU nano version %s (compiled %s, %s)\n"
+#: src/pinot.c:945
+#, fuzzy, c-format
+msgid " pinot version %s (compiled %s, %s)\n"
 msgstr " GNU nano 版本 %s (編譯於 %s, %s)\n"
 
-#: src/nano.c:951
+#: src/pinot.c:950
 #, c-format
-msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
-msgstr " 電子郵件: nano@nano-editor.org\t\t網頁: http://www.nano-editor.org/"
+msgid " Email: phil@pgengler.net\tWeb: http://github.com/pgengler"
+msgstr ""
 
-#: src/nano.c:952
+#: src/pinot.c:951
 #, c-format
 msgid ""
 "\n"
@@ -1637,61 +1643,61 @@ msgstr ""
 "\n"
 " 編譯選項:"
 
-#: src/nano.c:1030
+#: src/pinot.c:1029
 msgid "Sorry, support for this function has been disabled"
 msgstr "抱歉，已經關閉此功能的支援"
 
-#: src/nano.c:1052
+#: src/pinot.c:1051
 msgid "Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "
 msgstr "儲存更動過的緩衝區嗎 (回答 \"No\" 會撤銷修改)？"
 
-#: src/nano.c:1100
+#: src/pinot.c:1099
 msgid "Couldn't reopen stdin from keyboard, sorry\n"
 msgstr ""
 
-#: src/nano.c:1126
+#: src/pinot.c:1125
 #, c-format
 msgid "Reading from stdin, ^C to abort\n"
 msgstr ""
 
-#: src/nano.c:1194
+#: src/pinot.c:1193
 msgid "Received SIGHUP or SIGTERM\n"
 msgstr "接收到 SIGHUP 或 SIGTERM\n"
 
-#: src/nano.c:1216
+#: src/pinot.c:1215
 #, fuzzy, c-format
-msgid "Use \"fg\" to return to nano.\n"
+msgid "Use \"fg\" to return to pinot.\n"
 msgstr "利用 \"fg\" 來回到 nano"
 
-#: src/nano.c:1398
+#: src/pinot.c:1397
 msgid "enabled"
 msgstr "開啟"
 
-#: src/nano.c:1399
+#: src/pinot.c:1398
 msgid "disabled"
 msgstr "關閉"
 
-#: src/nano.c:1566 src/winio.c:1256
+#: src/pinot.c:1565 src/winio.c:1256
 #, fuzzy
 msgid "Unknown Command"
 msgstr "旗標 %s 無法辨識"
 
-#: src/nano.c:1692
+#: src/pinot.c:1691
 #, fuzzy
 msgid "XON ignored, mumble mumble"
 msgstr "忽略 XON，嗯嗯。"
 
-#: src/nano.c:1697
+#: src/pinot.c:1696
 #, fuzzy
 msgid "XOFF ignored, mumble mumble"
 msgstr "忽略 XOFF，嗯嗯。"
 
-#: src/nano.c:2233 src/rcfile.c:1175
+#: src/pinot.c:2232 src/rcfile.c:1195
 #, fuzzy, c-format
 msgid "Requested tab size \"%s\" is invalid"
 msgstr "所要求的跳格寬度 %s 無效"
 
-#: src/nano.c:2292 src/rcfile.c:1100
+#: src/pinot.c:2291 src/rcfile.c:1120
 #, fuzzy, c-format
 msgid "Requested fill size \"%s\" is invalid"
 msgstr "所要求的填滿行數 %s 無效"
@@ -1733,8 +1739,8 @@ msgstr "在 %s (位於第 %lu 列) 中發生錯誤: "
 msgid "Argument '%s' has an unterminated \""
 msgstr "引數 %s 有未封閉的 \""
 
-#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:783
-#: src/rcfile.c:840 src/rcfile.c:893
+#: src/rcfile.c:213 src/rcfile.c:265 src/rcfile.c:390 src/rcfile.c:802
+#: src/rcfile.c:860 src/rcfile.c:913
 msgid "Regex strings must begin and end with a \" character"
 msgstr "正規表示式字串必須以 \" 字元開始及結束"
 
@@ -1797,7 +1803,7 @@ msgstr ""
 msgid "Sorry, keystr \"%s\" is an illegal binding"
 msgstr ""
 
-#: src/rcfile.c:697
+#: src/rcfile.c:710
 #, fuzzy, c-format
 msgid ""
 "Color \"%s\" not understood.\n"
@@ -1812,99 +1818,104 @@ msgstr ""
 "\"black\"(黑)，選擇性的前置字 \"bright\"(明亮) \n"
 "可用於前景色。"
 
-#: src/rcfile.c:719
+#: src/rcfile.c:732
 #, fuzzy
 msgid "Cannot add a color command without a syntax command"
 msgstr "無法直接增加顏色而沒有語法列"
 
-#: src/rcfile.c:724
+#: src/rcfile.c:737
 msgid "Missing color name"
 msgstr "缺少顏色名稱"
 
-#: src/rcfile.c:744
+#: src/rcfile.c:757
 #, fuzzy, c-format
 msgid "Background color \"%s\" cannot be bright"
 msgstr "背景色 %s 不可為明亮"
 
-#: src/rcfile.c:762 src/rcfile.c:881
+#: src/rcfile.c:763
+#, fuzzy, c-format
+msgid "Background color \"%s\" cannot be underline"
+msgstr "背景色 %s 不可為明亮"
+
+#: src/rcfile.c:781 src/rcfile.c:901
 msgid "Missing regex string"
 msgstr "缺少正規表示式字串"
 
-#: src/rcfile.c:834
+#: src/rcfile.c:854
 msgid "\"start=\" requires a corresponding \"end=\""
 msgstr "\"start=\" 要求對應的 \"end=\""
 
-#: src/rcfile.c:876
+#: src/rcfile.c:896
 #, fuzzy
 msgid "Cannot add a header regex without a syntax command"
 msgstr "無法直接增加顏色而沒有語法列"
 
-#: src/rcfile.c:946
+#: src/rcfile.c:966
 #, c-format
 msgid "Fatal error: no keys mapped for function \"%s\""
 msgstr ""
 
-#: src/rcfile.c:948
+#: src/rcfile.c:968
 msgid ""
-"Exiting.  Please use nano with the -I option if needed to adjust your nanorc "
-"settings\n"
+"Exiting.  Please use pinot with the -I option if needed to adjust your "
+"pinotrc settings\n"
 msgstr ""
 
-#: src/rcfile.c:998 src/rcfile.c:1007 src/rcfile.c:1017
+#: src/rcfile.c:1018 src/rcfile.c:1027 src/rcfile.c:1037
 #, c-format
 msgid "Command \"%s\" not allowed in included file"
 msgstr ""
 
-#: src/rcfile.c:1023 src/rcfile.c:1203
+#: src/rcfile.c:1043 src/rcfile.c:1223
 #, c-format
 msgid "Syntax \"%s\" has no color commands"
 msgstr ""
 
-#: src/rcfile.c:1041
+#: src/rcfile.c:1061
 #, fuzzy, c-format
 msgid "Command \"%s\" not understood"
 msgstr "無法辨識 %s 命令"
 
-#: src/rcfile.c:1047
+#: src/rcfile.c:1067
 msgid "Missing flag"
 msgstr "缺少旗標"
 
-#: src/rcfile.c:1069
+#: src/rcfile.c:1089
 #, fuzzy, c-format
 msgid "Option \"%s\" requires an argument"
 msgstr "選項 %s 要求引數"
 
-#: src/rcfile.c:1087
+#: src/rcfile.c:1107
 msgid "Option is not a valid multibyte string"
 msgstr "選項並非正確的多位元字串"
 
-#: src/rcfile.c:1113 src/rcfile.c:1141 src/rcfile.c:1150
+#: src/rcfile.c:1133 src/rcfile.c:1161 src/rcfile.c:1170
 msgid "Non-blank characters required"
 msgstr "需要非空格字元"
 
-#: src/rcfile.c:1123
+#: src/rcfile.c:1143
 msgid "Two single-column characters required"
 msgstr "需要兩個單行字元"
 
-#: src/rcfile.c:1189
+#: src/rcfile.c:1209
 #, fuzzy, c-format
 msgid "Cannot unset flag \"%s\""
 msgstr "無法解除旗標 %s 設定"
 
-#: src/rcfile.c:1198
+#: src/rcfile.c:1218
 #, fuzzy, c-format
 msgid "Unknown flag \"%s\""
 msgstr "旗標 %s 無法辨識"
 
-#: src/rcfile.c:1257
+#: src/rcfile.c:1277
 msgid "I can't find my home directory!  Wah!"
 msgstr "我找不到我的家目錄！哇！"
 
-#: src/rcfile.c:1295
+#: src/rcfile.c:1315
 #, fuzzy, c-format
 msgid ""
 "\n"
-"Press Enter to continue starting nano.\n"
+"Press Enter to continue starting pinot.\n"
 msgstr ""
 "\n"
 "按下輸入鍵繼續啟動 nano\n"
@@ -2115,7 +2126,8 @@ msgid "In Selection:  "
 msgstr "於選擇部份: "
 
 #: src/utils.c:405 src/utils.c:417
-msgid "nano is out of memory!"
+#, fuzzy
+msgid "pinot is out of memory!"
 msgstr "nano 已耗盡記憶體！"
 
 #. TRANSLATORS: This is displayed during the input of a
@@ -2140,42 +2152,52 @@ msgstr "目錄:"
 msgid "File:"
 msgstr "檔案:"
 
-#: src/winio.c:3359
+#: src/winio.c:3400
 #, c-format
 msgid "line %ld/%ld (%d%%), col %lu/%lu (%d%%), char %lu/%lu (%d%%)"
 msgstr "列 %ld/%ld (%d%%), 行 %lu/%lu (%d%%), 字元 %lu/%lu (%d%%)"
 
-#: src/winio.c:3491
-msgid "The nano text editor"
+#: src/winio.c:3534
+#, fuzzy
+msgid "The pinot text editor"
 msgstr "nano 文字編輯器"
 
-#: src/winio.c:3492
+#: src/winio.c:3535
 msgid "version"
 msgstr "版本"
 
-#: src/winio.c:3493
+#: src/winio.c:3536
 msgid "Brought to you by:"
 msgstr "來自於:"
 
-#: src/winio.c:3494
+#: src/winio.c:3537
+msgid "The original nano developers:"
+msgstr ""
+
+#: src/winio.c:3538
 msgid "Special thanks to:"
 msgstr "特別感謝:"
 
-#: src/winio.c:3495
+#: src/winio.c:3539
 msgid "The Free Software Foundation"
 msgstr "自由軟體基金會"
 
-#: src/winio.c:3496
+#: src/winio.c:3540
 msgid "For ncurses:"
 msgstr "ncurses 部份:"
 
-#: src/winio.c:3497
+#: src/winio.c:3541
 msgid "and anyone else we forgot..."
 msgstr "以及其他我們不記得的人..."
 
-#: src/winio.c:3498
-msgid "Thank you for using nano!"
+#: src/winio.c:3542
+#, fuzzy
+msgid "Thank you for using pinot!"
 msgstr "謝謝您使用 nano﹗"
+
+#~ msgid " Email: nano@nano-editor.org\tWeb: http://www.nano-editor.org/"
+#~ msgstr ""
+#~ " 電子郵件: nano@nano-editor.org\t\t網頁: http://www.nano-editor.org/"
 
 #~ msgid "Prepending to %s failed: %s"
 #~ msgstr "前引於 %s 時失敗: %s"
