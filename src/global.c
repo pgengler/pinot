@@ -548,7 +548,7 @@ void shortcut_init(bool unjustify)
 #ifndef DISABLE_HELP
     /* TRANSLATORS: The next long series of strings are shortcut descriptions;
      * they are best kept shorter than 56 characters, but may be longer. */
-    const char *pino_cancel_msg = N_("Cancel the current function");
+    const char *pinot_cancel_msg = N_("Cancel the current function");
     const char *pinot_help_msg = N_("Display this help text");
     const char *pinot_exit_msg =
 #ifdef ENABLE_MULTIBUFFER

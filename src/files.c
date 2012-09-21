@@ -2978,7 +2978,7 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
 }
 
 
-/* Load histories from ~/.pino_history. */
+/* Load histories from ~/.pinot_history. */
 void load_poshistory(void)
 {
     char *pinothist = poshistfilename();
