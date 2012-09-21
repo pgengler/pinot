@@ -37,7 +37,7 @@ target_triplet = @target@
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/nano.spec.in $(top_srcdir)/configure ABOUT-NLS \
+	$(srcdir)/pinot.spec.in $(top_srcdir)/configure ABOUT-NLS \
 	AUTHORS COPYING COPYING.DOC ChangeLog INSTALL NEWS THANKS TODO \
 	config.guess config.rpath config.sub depcomp install-sh \
 	missing mkinstalldirs
@@ -54,7 +54,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = nano.spec
+CONFIG_CLEAN_FILES = pinot.spec
 CONFIG_CLEAN_VPATH_FILES =
 depcomp =
 am__depfiles_maybe =
@@ -235,7 +235,7 @@ SUBDIRS = doc m4 po src
 EXTRA_DIST = ABOUT-NLS AUTHORS BUGS COPYING COPYING.DOC ChangeLog \
 		ChangeLog.pre-2.1 INSTALL NEWS README README.SVN \
 		THANKS TODO UPGRADE config.rpath install-sh missing \
-		mkinstalldirs nano.spec
+		mkinstalldirs pinot.spec
 
 ACLOCAL_AMFLAGS = -I m4
 all: config.h
@@ -293,7 +293,7 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-nano.spec: $(top_builddir)/config.status $(srcdir)/nano.spec.in
+pinot.spec: $(top_builddir)/config.status $(srcdir)/pinot.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # This directory's subdirectories are mostly independent; you can cd
