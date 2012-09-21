@@ -176,7 +176,7 @@ char *do_browser(char *path, DIR *dir)
 	    do_browser_help();
 	    curs_set(0);
 #else
-		nano_disabled_msg();
+		pinot_disabled_msg();
 #endif
 	    /* Search for a filename. */
 	} else if (f->scfunc == do_search) {
@@ -214,7 +214,7 @@ char *do_browser(char *path, DIR *dir)
 #endif
 			MGOTODIR, ans,
 			&meta_key, &func_key,
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 			NULL,
 #endif
 			browser_refresh, N_("Go To Directory"));
@@ -795,11 +795,11 @@ int filesearch_init(void)
 #endif
 	MWHEREISFILE, backupstring,
 	&meta_key, &func_key, 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	&search_history,
 #endif
 	browser_refresh, "%s%s%s%s%s%s", _("Search"),
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* This string is just a modifier for the search prompt; no
 	 * grammar is implied. */
 	ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
@@ -811,7 +811,7 @@ int filesearch_init(void)
 	ISSET(USE_REGEXP) ? _(" [Regexp]") :
 #endif
 	"",
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* This string is just a modifier for the search prompt; no
 	 * grammar is implied. */
 	ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") :
@@ -840,7 +840,7 @@ int filesearch_init(void)
 		    return -1;
 #endif
 	} else
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (s && s->scfunc == case_sens_void) {
 		TOGGLE(CASE_SENSITIVE);
 		backupstring = mallocstrcpy(backupstring, answer);
@@ -877,7 +877,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 	/* The filename we display, minus the path. */
     const char *rev_start = filetail, *found = NULL;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (ISSET(BACKWARDS_SEARCH))
 	rev_start += strlen(rev_start);
 #endif
@@ -900,7 +900,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 
 	/* Move to the previous or next filename in the list.  If we've
 	 * reached the start or end of the list, wrap around. */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH)) {
 	    if (currselected > 0)
 		currselected--;
@@ -916,7 +916,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 		currselected = 0;
 		statusbar(_("Search Wrapped"));
 	    }
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	}
 #endif
 
@@ -927,7 +927,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 	filetail = tail(filelist[currselected]);
 
 	rev_start = filetail;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH))
 	    rev_start += strlen(rev_start);
 #endif
@@ -970,7 +970,7 @@ void do_filesearch(void)
     if (i == -1)	/* Cancel, blank search string, or regcomp()
 			 * failed. */
 	filesearch_abort();
-#if !defined(NANO_TINY) || defined(HAVE_REGEX_H)
+#if !defined(PINOT_TINY) || defined(HAVE_REGEX_H)
     else if (i == 1)	/* Case Sensitive, Backwards, or Regexp search
 			 * toggle. */
 	do_filesearch();
@@ -985,7 +985,7 @@ void do_filesearch(void)
     else
 	last_search = mallocstrcpy(last_search, answer);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If answer is not "", add this search string to the search history
      * list. */
     if (answer[0] != '\0')

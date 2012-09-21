@@ -31,7 +31,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 static pid_t pid = -1;
 	/* The PID of the forked process in execute_command(), for use
 	 * with the cancel_command() signal handler. */
@@ -45,7 +45,7 @@ static filestruct *jusbottom = NULL;
 	/* Pointer to the end of the justify buffer. */
 #endif
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Toggle the mark. */
 void do_mark(void)
 {
@@ -61,14 +61,14 @@ void do_mark(void)
 	edit_refresh();
     }
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Delete the character under the cursor. */
 void do_delete(void)
 {
     size_t orig_lenpt = 0;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     update_undo(DEL);
 #endif
 
@@ -94,7 +94,7 @@ void do_delete(void)
 
 	null_at(&openfile->current->data, openfile->current_x +
 		line_len - char_buf_len);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (openfile->mark_set && openfile->mark_begin ==
 		openfile->current && openfile->current_x <
 		openfile->mark_begin_x)
@@ -115,7 +115,7 @@ void do_delete(void)
 		openfile->current_x + strlen(foo->data) + 1);
 	strcpy(openfile->current->data + openfile->current_x,
 		foo->data);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (openfile->mark_set && openfile->mark_begin ==
 		openfile->current->next) {
 	    openfile->mark_begin = openfile->current;
@@ -164,7 +164,7 @@ void do_backspace(void)
  * of spaces that a tab would normally take up. */
 void do_tab(void)
 {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (ISSET(TABS_TO_SPACES)) {
 	char *output;
 	size_t output_len = 0, new_pww = xplustabs();
@@ -185,12 +185,12 @@ void do_tab(void)
     } else {
 #endif
 	do_output((char *) "\t", 1, TRUE);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     }
 #endif
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Indent or unindent the current line (or, if the mark is on, all lines
  * covered by the mark) len columns, depending on whether len is
  * positive or negative.  If the TABS_TO_SPACES flag is set, indent or
@@ -407,7 +407,7 @@ void redo_cut(undo *u) {
 	openfile->mark_begin = t;
     } else if (!u->to_end) {
 	/* Here we have a regular old potentially multi-line ^K cut.  We'll
-	   need to trick nano into thinking it's a marked cut to cut more
+	   need to trick pinot into thinking it's a marked cut to cut more
 	   than one line again */
 	for (c = u->cutbuffer, t = openfile->current; c->next != NULL && t->next != NULL; ) {
 
@@ -679,7 +679,7 @@ void do_redo(void)
     openfile->last_action = OTHER;
 
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Someone hits Enter *gasp!* */
 void do_enter(bool undoing)
@@ -689,7 +689,7 @@ void do_enter(bool undoing)
 
     assert(openfile->current != NULL && openfile->current->data != NULL);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (!undoing)
 	add_undo(ENTER);
 
@@ -708,14 +708,14 @@ void do_enter(bool undoing)
 	openfile->current_x) + extra + 1);
     strcpy(&newnode->data[extra], openfile->current->data +
 	openfile->current_x);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (ISSET(AUTOINDENT)) {
 	strncpy(newnode->data, openfile->current->data, extra);
 	openfile->totsize += extra;
     }
 #endif
     null_at(&openfile->current->data, openfile->current_x);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (openfile->mark_set && openfile->current ==
 	openfile->mark_begin && openfile->current_x <
 	openfile->mark_begin_x) {
@@ -746,7 +746,7 @@ void do_enter_void(void) {
     do_enter(FALSE);
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Send a SIGKILL (unconditional kill) to the forked process in
  * execute_command(). */
 RETSIGTYPE cancel_command(int signal)
@@ -1098,7 +1098,7 @@ void update_undo(undo_type action)
     fs->last_action = action;
 }
 
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 #ifndef DISABLE_WRAPPING
 /* Unset the prepend_wrap flag.  We need to do this as soon as we do
@@ -1117,7 +1117,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	/* The length of the line we wrap. */
     ssize_t wrap_loc;
 	/* The index of line->data where we wrap. */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     const char *indent_string = NULL;
 	/* Indentation to prepend to the new line. */
     size_t indent_len = 0;
@@ -1175,7 +1175,7 @@ bool do_wrap(filestruct *line, bool undoing)
     if (line->data[wrap_loc] == '\0')
 	return FALSE;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (!undoing)
 	add_undo(SPLIT);
 
@@ -1236,7 +1236,7 @@ bool do_wrap(filestruct *line, bool undoing)
      * the text of the next line. */
     new_line_len += after_break_len;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (ISSET(AUTOINDENT)) {
 	if (prepending) {
 	    /* If we're prepending, the indentation will come from the
@@ -1257,7 +1257,7 @@ bool do_wrap(filestruct *line, bool undoing)
     new_line = charalloc(new_line_len + 1);
     new_line[0] = '\0';
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (ISSET(AUTOINDENT)) {
 	/* Copy the indentation. */
 	strncpy(new_line, indent_string, indent_len);
@@ -1321,14 +1321,14 @@ bool do_wrap(filestruct *line, bool undoing)
 
 	openfile->current = openfile->current->next;
 	openfile->current_x -= wrap_loc
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		- indent_len
 #endif
 		;
 	openfile->placewewant = xplustabs();
     }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If the mark was on this line after the wrap point, we move it
      * down.  If it was on the next line and we prepended to that line,
      * we move it right. */
@@ -1454,7 +1454,7 @@ ssize_t break_line(const char *line, ssize_t goal
 }
 #endif /* !DISABLE_HELP || !DISABLE_WRAPJUSTIFY */
 
-#if !defined(NANO_TINY) || !defined(DISABLE_JUSTIFY)
+#if !defined(PINOT_TINY) || !defined(DISABLE_JUSTIFY)
 /* The "indentation" of a line is the whitespace between the quote part
  * and the non-whitespace of the line. */
 size_t indent_length(const char *line)
@@ -1481,7 +1481,7 @@ size_t indent_length(const char *line)
 
     return len;
 }
-#endif /* !NANO_TINY || !DISABLE_JUSTIFY */
+#endif /* !PINOT_TINY || !DISABLE_JUSTIFY */
 
 #ifndef DISABLE_JUSTIFY
 /* justify_format() replaces blanks with spaces and multiple spaces by 1
@@ -1498,7 +1498,7 @@ void justify_format(filestruct *paragraph, size_t skip)
 {
     char *end, *new_end, *new_paragraph_data;
     size_t shift = 0;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     size_t mark_shift = 0;
 #endif
 
@@ -1531,7 +1531,7 @@ void justify_format(filestruct *paragraph, size_t skip)
 		end += end_len;
 		shift += end_len;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		/* Keep track of the change in the current line. */
 		if (openfile->mark_set && openfile->mark_begin ==
 			paragraph && openfile->mark_begin_x >= end -
@@ -1586,7 +1586,7 @@ void justify_format(filestruct *paragraph, size_t skip)
 		end += end_len;
 		shift += end_len;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		/* Keep track of the change in the current line. */
 		if (openfile->mark_set && openfile->mark_begin ==
 			paragraph && openfile->mark_begin_x >= end -
@@ -1625,7 +1625,7 @@ void justify_format(filestruct *paragraph, size_t skip)
 	free(paragraph->data);
 	paragraph->data = new_paragraph_data;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* Adjust the mark coordinates to compensate for the change in
 	 * the current line. */
 	if (openfile->mark_set && openfile->mark_begin == paragraph) {
@@ -1711,7 +1711,7 @@ bool indents_match(const char *a_line, size_t a_indent, const char
  *	   autoindent isn't turned on.
  *   The reason for number 5) is that if autoindent isn't turned on,
  *   then an indented line is expected to start a paragraph, as in
- *   books.  Thus, nano can justify an indented paragraph only if
+ *   books.  Thus, pinot can justify an indented paragraph only if
  *   autoindent is turned on. */
 bool begpar(const filestruct *const foo)
 {
@@ -1740,7 +1740,7 @@ bool begpar(const filestruct *const foo)
     /* Case 2) or 5) or 4). */
     if (foo->prev->data[quote_len + temp_id_len] == '\0' ||
 	(quote_len == 0 && indent_len > 0
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	&& !ISSET(AUTOINDENT)
 #endif
 	) || !indents_match(foo->prev->data + quote_len, temp_id_len,
@@ -1780,7 +1780,7 @@ void backup_lines(filestruct *first_line, size_t par_len)
     ssize_t fl_lineno_save = first_line->lineno;
     ssize_t edittop_lineno_save = openfile->edittop->lineno;
     ssize_t current_lineno_save = openfile->current->lineno;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool old_mark_set = openfile->mark_set;
     ssize_t mb_lineno_save = 0;
     size_t mark_begin_x_save = 0;
@@ -1817,7 +1817,7 @@ void backup_lines(filestruct *first_line, size_t par_len)
      * paragraph. */
     if (openfile->current != openfile->fileage) {
 	top = openfile->current->prev;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (old_mark_set &&
 		openfile->current->lineno == mb_lineno_save) {
 	    openfile->mark_begin = openfile->current;
@@ -1833,7 +1833,7 @@ void backup_lines(filestruct *first_line, size_t par_len)
 	    openfile->edittop = top;
 	if (top->lineno == current_lineno_save)
 	    openfile->current = top;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (old_mark_set && top->lineno == mb_lineno_save) {
 	    openfile->mark_begin = top;
 	    openfile->mark_begin_x = mark_begin_x_save;
@@ -1960,7 +1960,7 @@ void do_justify(bool full_justify)
     size_t current_x_save = openfile->current_x;
     size_t pww_save = openfile->placewewant;
     size_t totsize_save = openfile->totsize;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     filestruct *mark_begin_save = openfile->mark_begin;
     size_t mark_begin_x_save = openfile->mark_begin_x;
 #endif
@@ -2120,7 +2120,7 @@ void do_justify(bool full_justify)
 	    if (next_line == openfile->filebot)
 		openfile->filebot = openfile->current;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    /* Adjust the mark coordinates to compensate for the change
 	     * in the next line. */
 	    if (openfile->mark_set && openfile->mark_begin ==
@@ -2183,7 +2183,7 @@ void do_justify(bool full_justify)
 	     * turned on, set the indentation length to zero so that the
 	     * indentation is treated as part of the line. */
 	    if (quote_len == 0
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		&& !ISSET(AUTOINDENT)
 #endif
 		)
@@ -2201,7 +2201,7 @@ void do_justify(bool full_justify)
 	    par_len++;
 	    openfile->totsize += indent_len + 1;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    /* Adjust the mark coordinates to compensate for the change
 	     * in the current line. */
 	    if (openfile->mark_set && openfile->mark_begin ==
@@ -2260,7 +2260,7 @@ void do_justify(bool full_justify)
 
     edit_refresh();
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* We're going to set jump_buf so that we return here after a
      * SIGWINCH instead of to main().  Indicate this. */
     jump_buf_main = FALSE;
@@ -2321,7 +2321,7 @@ void do_justify(bool full_justify)
 	    openfile->current_x = current_x_save;
 	    openfile->placewewant = pww_save;
 	    openfile->totsize = totsize_save;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    if (openfile->mark_set) {
 		openfile->mark_begin = mark_begin_save;
 		openfile->mark_begin_x = mark_begin_x_save;
@@ -2379,13 +2379,13 @@ bool do_int_spell_fix(const char *word)
     bool canceled = FALSE;
 	/* The return value. */
     bool case_sens_set = ISSET(CASE_SENSITIVE);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool backwards_search_set = ISSET(BACKWARDS_SEARCH);
 #endif
 #ifdef HAVE_REGEX_H
     bool regexp_set = ISSET(USE_REGEXP);
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool old_mark_set = openfile->mark_set;
     bool added_magicline = FALSE;
 	/* Whether we added a magicline after filebot. */
@@ -2399,7 +2399,7 @@ bool do_int_spell_fix(const char *word)
     /* Make sure spell-check is case sensitive. */
     SET(CASE_SENSITIVE);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Make sure spell-check goes forward only. */
     UNSET(BACKWARDS_SEARCH);
 #endif
@@ -2417,7 +2417,7 @@ bool do_int_spell_fix(const char *word)
     last_search = mallocstrcpy(NULL, word);
     last_replace = mallocstrcpy(NULL, word);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (old_mark_set) {
 	/* If the mark is on, partition the filestruct so that it
 	 * contains only the marked text; if the NO_NEWLINES flag isn't
@@ -2461,7 +2461,7 @@ bool do_int_spell_fix(const char *word)
 #endif
 		MSPELL, word,
 		&meta_key, &func_key,
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		NULL,
 #endif
 		edit_refresh, _("Edit a replacement")) == -1);
@@ -2480,7 +2480,7 @@ bool do_int_spell_fix(const char *word)
 	}
     }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (old_mark_set) {
 	/* If the mark was on, the NO_NEWLINES flag isn't set, and we
 	 * added a magicline, remove it now. */
@@ -2522,7 +2522,7 @@ bool do_int_spell_fix(const char *word)
     if (!case_sens_set)
 	UNSET(CASE_SENSITIVE);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Restore search/replace direction. */
     if (backwards_search_set)
 	SET(BACKWARDS_SEARCH);
@@ -2731,7 +2731,7 @@ const char *do_alt_speller(char *tempfile_name)
     char *ptr;
     static int arglen = 3;
     static char **spellargs = NULL;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool old_mark_set = openfile->mark_set;
     bool added_magicline = FALSE;
 	/* Whether we added a magicline after filebot. */
@@ -2792,7 +2792,7 @@ const char *do_alt_speller(char *tempfile_name)
     if (pid_spell < 0)
 	return _("Could not fork");
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Don't handle a pending SIGWINCH until the alternate spell checker
      * is finished and we've loaded the spell-checked file back in. */
     allow_pending_sigwinch(FALSE);
@@ -2819,7 +2819,7 @@ const char *do_alt_speller(char *tempfile_name)
 	char *alt_spell_error;
 	char *invoke_error = _("Error invoking \"%s\"");
 
-#ifndef NANO_TINY
+#ifndef PINOTO_TINY
 	/* Turn the mark back on if it was on before. */
 	openfile->mark_set = old_mark_set;
 #endif
@@ -2831,7 +2831,7 @@ const char *do_alt_speller(char *tempfile_name)
 	return alt_spell_error;
     }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (old_mark_set) {
 	/* If the mark is on, partition the filestruct so that it
 	 * contains only the marked text; if the NO_NEWLINES flag isn't
@@ -2854,7 +2854,7 @@ const char *do_alt_speller(char *tempfile_name)
      * text. */
     replace_buffer(tempfile_name);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (old_mark_set) {
 	filestruct *top_save = openfile->fileage;
 
@@ -2908,7 +2908,7 @@ const char *do_alt_speller(char *tempfile_name)
     do_gotopos(lineno_save, current_x_save, current_y_save, pww_save);
     set_modified();
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Handle a pending SIGWINCH again. */
     allow_pending_sigwinch(TRUE);
 #endif
@@ -2926,7 +2926,7 @@ void do_spell(void)
     const char *spell_msg;
 
     if (ISSET(RESTRICTED)) {
-        nano_disabled_msg();
+        pinot_disabled_msg();
 	return;
     }
 
@@ -2936,7 +2936,7 @@ void do_spell(void)
     }
 
     status =
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	openfile->mark_set ? write_marked_file(temp, temp_file, TRUE,
 	OVERWRITE) :
 #endif
@@ -2971,7 +2971,7 @@ void do_spell(void)
 }
 #endif /* !DISABLE_SPELLER */
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Our own version of "wc".  Note that its character counts are in
  * multibyte characters instead of single-byte characters. */
 void do_wordlinechar_count(void)
@@ -3036,7 +3036,7 @@ void do_wordlinechar_count(void)
 	_("In Selection:  ") : "", (unsigned long)words, (long)nlines,
 	(unsigned long)chars);
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Get verbatim input. */
 void do_verbatim_input(void)

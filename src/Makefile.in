@@ -35,7 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = nano$(EXEEXT)
+bin_PROGRAMS = pinot$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,13 +53,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_nano_OBJECTS = browser.$(OBJEXT) chars.$(OBJEXT) color.$(OBJEXT) \
+am_pinot_OBJECTS = browser.$(OBJEXT) chars.$(OBJEXT) color.$(OBJEXT) \
 	cut.$(OBJEXT) files.$(OBJEXT) global.$(OBJEXT) help.$(OBJEXT) \
-	move.$(OBJEXT) nano.$(OBJEXT) prompt.$(OBJEXT) \
+	move.$(OBJEXT) pinot.$(OBJEXT) prompt.$(OBJEXT) \
 	rcfile.$(OBJEXT) search.$(OBJEXT) text.$(OBJEXT) \
 	utils.$(OBJEXT) winio.$(OBJEXT)
-nano_OBJECTS = $(am_nano_OBJECTS)
-nano_DEPENDENCIES =
+pinot_OBJECTS = $(am_pinot_OBJECTS)
+pinot_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -68,8 +68,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(nano_SOURCES)
-DIST_SOURCES = $(nano_SOURCES)
+SOURCES = $(pinot_SOURCES)
+DIST_SOURCES = $(pinot_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -194,7 +194,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
 ACLOCAL_AMFLAGS = -I m4
-nano_SOURCES = browser.c \
+pinot_SOURCES = browser.c \
 		chars.c \
 		color.c \
 		cut.c \
@@ -212,7 +212,7 @@ nano_SOURCES = browser.c \
 		utils.c \
 		winio.c 
 
-nano_LDADD = @GLIB_LIBS@ @LIBINTL@
+pinot_LDADD = @GLIB_LIBS@ @LIBINTL@
 all: all-am
 
 .SUFFIXES:
@@ -284,9 +284,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-nano$(EXEEXT): $(nano_OBJECTS) $(nano_DEPENDENCIES) 
-	@rm -f nano$(EXEEXT)
-	$(LINK) $(nano_OBJECTS) $(nano_LDADD) $(LIBS)
+pinot$(EXEEXT): $(pinot_OBJECTS) $(pinot_DEPENDENCIES) 
+	@rm -f pinot$(EXEEXT)
+	$(LINK) $(pinot_OBJECTS) $(pinot_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -302,7 +302,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/global.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/help.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/move.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nano.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pinot.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prompt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rcfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/search.Po@am__quote@
@@ -527,9 +527,9 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 install-exec-hook:
-	cd $(DESTDIR)$(bindir) && rm -f rnano && $(LN_S) nano rnano
+	cd $(DESTDIR)$(bindir) && rm -f rpinot && $(LN_S) pinot rpinot
 uninstall-hook:
-	cd $(DESTDIR)$(bindir) && rm -f rnano
+	cd $(DESTDIR)$(bindir) && rm -f rpinot
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

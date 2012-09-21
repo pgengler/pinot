@@ -217,7 +217,7 @@ char control_rep(char c)
     /* Treat newlines embedded in a line as encoded nulls. */
     if (c == '\n')
 	return '@';
-    else if (c == NANO_CONTROL_8)
+    else if (c == PINOT_CONTROL_8)
 	return '?';
     else
 	return c + 64;
@@ -233,7 +233,7 @@ wchar_t control_wrep(wchar_t wc)
     /* Treat newlines embedded in a line as encoded nulls. */
     if (wc == '\n')
 	return '@';
-    else if (wc == NANO_CONTROL_8)
+    else if (wc == PINOT_CONTROL_8)
 	return '?';
     else
 	return wc + 64;
@@ -633,7 +633,7 @@ char *mbstrcasestr(const char *haystack, const char *needle)
 	return (char *) strcasestr(haystack, needle);
 }
 
-#if !defined(NANO_TINY) || !defined(DISABLE_TABCOMP)
+#if !defined(PINOT_TINY) || !defined(DISABLE_TABCOMP)
 /* This function is equivalent to strstr(), except in that it scans the
  * string in reverse, starting at rev_start. */
 char *revstrstr(const char *haystack, const char *needle, const char
@@ -661,9 +661,9 @@ char *revstrstr(const char *haystack, const char *needle, const char
 
     return NULL;
 }
-#endif /* !NANO_TINY || !DISABLE_TABCOMP */
+#endif /* !PINOT_TINY || !DISABLE_TABCOMP */
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* This function is equivalent to strcasestr(), except in that it scans
  * the string in reverse, starting at rev_start. */
 char *revstrcasestr(const char *haystack, const char *needle, const char
@@ -734,7 +734,7 @@ char *mbrevstrcasestr(const char *haystack, const char *needle, const
 #endif
 	return revstrcasestr(haystack, needle, rev_start);
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* This function is equivalent to strlen() for multibyte strings. */
 size_t mbstrlen(const char *s)
@@ -776,7 +776,7 @@ size_t mbstrnlen(const char *s, size_t maxlen)
 	return strnlen(s, maxlen);
 }
 
-#if !defined(NANO_TINY) || !defined(DISABLE_JUSTIFY)
+#if !defined(PINOT_TINY) || !defined(DISABLE_JUSTIFY)
 /* This function is equivalent to strchr() for multibyte strings. */
 char *mbstrchr(const char *s, const char *c)
 {
@@ -822,9 +822,9 @@ char *mbstrchr(const char *s, const char *c)
 #endif
 	return (char *) strchr(s, *c);
 }
-#endif /* !NANO_TINY || !DISABLE_JUSTIFY */
+#endif /* !PINOT_TINY || !DISABLE_JUSTIFY */
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* This function is equivalent to strpbrk() for multibyte strings. */
 char *mbstrpbrk(const char *s, const char *accept)
 {
@@ -891,9 +891,9 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char
 #endif
 	return revstrpbrk(s, accept, rev_start);
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
-#if defined(ENABLE_NANORC) && (!defined(NANO_TINY) || !defined(DISABLE_JUSTIFY))
+#if defined(ENABLE_PINOTRC) && (!defined(PINOT_TINY) || !defined(DISABLE_JUSTIFY))
 /* Return TRUE if the string s contains one or more blank characters,
  * and FALSE otherwise. */
 bool has_blank_chars(const char *s)
@@ -935,7 +935,7 @@ bool has_blank_mbchars(const char *s)
 #endif
 	return has_blank_chars(s);
 }
-#endif /* ENABLE_NANORC && (!NANO_TINY || !DISABLE_JUSTIFY) */
+#endif /* ENABLE_PINOTRC && (!PINOT_TINY || !DISABLE_JUSTIFY) */
 
 #ifdef ENABLE_UTF8
 /* Return TRUE if wc is valid Unicode, and FALSE otherwise. */
@@ -947,7 +947,7 @@ bool is_valid_unicode(wchar_t wc)
 }
 #endif
 
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 /* Check if the string s is a valid multibyte string.  Return TRUE if it
  * is, and FALSE otherwise. */
 bool is_valid_mbstring(const char *s)
@@ -960,4 +960,4 @@ bool is_valid_mbstring(const char *s)
 #endif
 	TRUE;
 }
-#endif /* ENABLE_NANORC */
+#endif /* ENABLE_PINOTRC */

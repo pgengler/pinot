@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 
 static const rcoption rcopts[] = {
     {"boldtext", BOLD_TEXT},
@@ -74,7 +74,7 @@ static const rcoption rcopts[] = {
     {"tabsize", 0},
     {"tempfile", TEMP_FILE},
     {"view", VIEW_MODE},
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     {"autoindent", AUTOINDENT},
     {"backup", BACKUP_FILE},
     {"allow_insecure_backup", INSECURE_BACKUP},
@@ -103,7 +103,7 @@ static bool errors = FALSE;
 	/* Whether we got any errors while parsing an rcfile. */
 static size_t lineno = 0;
 	/* If we did, the line number where the last error occurred. */
-static char *nanorc = NULL;
+static char *pinotrc = NULL;
 	/* The path to the rcfile we're parsing. */
 #ifdef ENABLE_COLOR
 static syntaxtype *endsyntax = NULL;
@@ -117,7 +117,7 @@ static colortype *endcolor = NULL;
 
 /* We have an error in some part of the rcfile.  Print the error message
  * on stderr, and then make the user hit Enter to continue starting
- * nano. */
+ * pinot. */
 void rcfile_error(const char *msg, ...)
 {
     va_list ap;
@@ -128,7 +128,7 @@ void rcfile_error(const char *msg, ...)
     fprintf(stderr, "\n");
     if (lineno > 0) {
 	errors = TRUE;
-	fprintf(stderr, _("Error in %s on line %lu: "), nanorc, (unsigned long)lineno);
+	fprintf(stderr, _("Error in %s on line %lu: "), pinotrc, (unsigned long)lineno);
     }
 
     va_start(ap, msg);
@@ -612,7 +612,7 @@ void parse_include(char *ptr)
 {
     struct stat rcinfo;
     FILE *rcstream;
-    char *option, *nanorc_save = nanorc, *expanded;
+    char *option, *pinotrc_save = pinotrc, *expanded;
     size_t lineno_save = lineno;
 
     option = ptr;
@@ -644,7 +644,7 @@ void parse_include(char *ptr)
 
     /* Use the name and line number position of the new syntax file
      * while parsing it, so we can know where any errors in it are. */
-    nanorc = expanded;
+    pinotrc = expanded;
     lineno = 0;
 
 #ifdef DEBUG
@@ -659,7 +659,7 @@ void parse_include(char *ptr)
 
     /* We're done with the new syntax file.  Restore the original
      * filename and line number position. */
-    nanorc = nanorc_save;
+    pinotrc = pinotrc_save;
     lineno = lineno_save;
 
 }
@@ -945,7 +945,7 @@ static void check_vitals_mapped(void)
                if (!s) {
                    rcfile_error(N_("Fatal error: no keys mapped for function \"%s\""),
                        f->desc);
-                   fprintf(stderr, N_("Exiting.  Please use nano with the -I option if needed to adjust your nanorc settings\n"));
+                   fprintf(stderr, N_("Exiting.  Please use pinot with the -I option if needed to adjust your pinotrc settings\n"));
                    exit(1);
                }
            break;
@@ -1104,7 +1104,7 @@ void parse_rcfile(FILE *rcstream
 				free(option);
 			} else
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 			if (strcasecmp(rcopts[i].name,
 				"matchbrackets") == 0) {
 			    matchbrackets = option;
@@ -1156,7 +1156,7 @@ void parse_rcfile(FILE *rcstream
 			    quotestr = option;
 			else
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 			if (strcasecmp(rcopts[i].name,
 				"backupdir") == 0)
 			    backup_dir = option;
@@ -1219,23 +1219,23 @@ void do_rcfile(void)
     struct stat rcinfo;
     FILE *rcstream;
 
-    nanorc = mallocstrcpy(nanorc, SYSCONFDIR "/nanorc");
+    pinotrc = mallocstrcpy(pinotrc, SYSCONFDIR "/pinotrc");
 
     /* Don't open directories, character files, or block files. */
-    if (stat(nanorc, &rcinfo) != -1) {
+    if (stat(pinotrc, &rcinfo) != -1) {
 	if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) ||
 		S_ISBLK(rcinfo.st_mode))
 	    rcfile_error(S_ISDIR(rcinfo.st_mode) ?
 		_("\"%s\" is a directory") :
-		_("\"%s\" is a device file"), nanorc);
+		_("\"%s\" is a device file"), pinotrc);
     }
 
 #ifdef DEBUG
-    fprintf(stderr, "Parsing file \"%s\"\n", nanorc);
+    fprintf(stderr, "Parsing file \"%s\"\n", pinotrc);
 #endif
 
-    /* Try to open the system-wide nanorc. */
-    rcstream = fopen(nanorc, "rb");
+    /* Try to open the system-wide pinotrc. */
+    rcstream = fopen(pinotrc, "rb");
     if (rcstream != NULL)
 	parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
@@ -1244,10 +1244,10 @@ void do_rcfile(void)
 		);
 
 #ifdef DISABLE_ROOTWRAPPING
-    /* We've already read SYSCONFDIR/nanorc, if it's there.  If we're
+    /* We've already read SYSCONFDIR/pinotrc, if it's there.  If we're
      * root, and --disable-wrapping-as-root is used, turn wrapping off
      * now. */
-    if (geteuid() == NANO_ROOT_UID)
+    if (geteuid() == PINOT_ROOT_UID)
 	SET(NO_WRAP);
 #endif
 
@@ -1257,26 +1257,26 @@ void do_rcfile(void)
 	rcfile_error(N_("I can't find my home directory!  Wah!"));
     else {
 #ifndef RCFILE_NAME
-#define RCFILE_NAME ".nanorc"
+#define RCFILE_NAME ".pinotrc"
 #endif
-	nanorc = charealloc(nanorc, strlen(homedir) + strlen(RCFILE_NAME) + 2);
-	sprintf(nanorc, "%s/%s", homedir, RCFILE_NAME);
+	pinotrc = charealloc(pinotrc, strlen(homedir) + strlen(RCFILE_NAME) + 2);
+	sprintf(pinotrc, "%s/%s", homedir, RCFILE_NAME);
 
 	/* Don't open directories, character files, or block files. */
-	if (stat(nanorc, &rcinfo) != -1) {
+	if (stat(pinptrc, &rcinfo) != -1) {
 	    if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) ||
 		S_ISBLK(rcinfo.st_mode))
 		rcfile_error(S_ISDIR(rcinfo.st_mode) ?
 			_("\"%s\" is a directory") :
-			_("\"%s\" is a device file"), nanorc);
+			_("\"%s\" is a device file"), pinotrc);
 	}
 
-	/* Try to open the current user's nanorc. */
-	rcstream = fopen(nanorc, "rb");
+	/* Try to open the current user's pinotrc. */
+	rcstream = fopen(pinotrc, "rb");
 	if (rcstream == NULL) {
 	    /* Don't complain about the file's not existing. */
 	    if (errno != ENOENT)
-		rcfile_error(N_("Error reading %s: %s"), nanorc,
+		rcfile_error(N_("Error reading %s: %s"), pinotrc,
 			strerror(errno));
 	} else
 	    parse_rcfile(rcstream
@@ -1286,13 +1286,13 @@ void do_rcfile(void)
 		);
     }
 
-    free(nanorc);
-    nanorc = NULL;
+    free(pinotrc);
+    pinotrc = NULL;
 
     if (errors && !ISSET(QUIET)) {
 	errors = FALSE;
 	fprintf(stderr,
-		_("\nPress Enter to continue starting nano.\n"));
+		_("\nPress Enter to continue starting pinot.\n"));
 	while (getchar() != '\n')
 	    ;
     }
@@ -1302,4 +1302,4 @@ void do_rcfile(void)
 #endif
 }
 
-#endif /* ENABLE_NANORC */
+#endif /* ENABLE_PINOTRC */

@@ -39,7 +39,7 @@
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 #include <sys/ioctl.h>
 #endif
 
@@ -47,7 +47,7 @@
 static int oldinterval = -1;
 	/* Used to store the user's original mouse click interval. */
 #endif
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 static bool no_rcfiles = FALSE;
 	/* Should we ignore all rcfiles? */
 #endif
@@ -294,7 +294,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 {
     filestruct *top_save;
     bool edittop_inside;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool mark_inside = FALSE;
 #endif
 
@@ -312,7 +312,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
     edittop_inside = (openfile->edittop->lineno >=
 	openfile->fileage->lineno && openfile->edittop->lineno <=
 	openfile->filebot->lineno);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (openfile->mark_set)
 	mark_inside = (openfile->mark_begin->lineno >=
 		openfile->fileage->lineno &&
@@ -377,7 +377,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
      * saved text used to start. */
     openfile->current = openfile->fileage;
     openfile->current_x = top_x;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (mark_inside) {
 	openfile->mark_begin = openfile->current;
 	openfile->mark_begin_x = openfile->current_x;
@@ -413,13 +413,13 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
     filestruct *top_save;
     size_t current_x_save = openfile->current_x;
     bool edittop_inside;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool right_side_up = FALSE, single_line = FALSE;
 #endif
 
     assert(file_top != NULL && file_bot != NULL);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Keep track of whether the mark begins inside the partition and
      * will need adjustment. */
     if (openfile->mark_set) {
@@ -453,7 +453,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
     openfile->current = openfile->filebot;
     openfile->current_x = strlen(openfile->filebot->data);
     if (openfile->fileage == openfile->filebot) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (openfile->mark_set) {
 	    openfile->mark_begin = openfile->current;
 	    if (!right_side_up)
@@ -462,7 +462,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 #endif
 	openfile->current_x += current_x_save;
     }
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     else if (openfile->mark_set) {
 	if (!right_side_up) {
 	    if (single_line) {
@@ -516,7 +516,7 @@ openfilestruct *make_new_opennode(void)
     newnode->filebot = NULL;
     newnode->edittop = NULL;
     newnode->current = NULL;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     newnode->current_stat = NULL;
     newnode->last_action = OTHER;
 #endif
@@ -556,7 +556,7 @@ void delete_opennode(openfilestruct *fileptr)
 
     free(fileptr->filename);
     free_filestruct(fileptr->fileage);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (fileptr->current_stat != NULL)
 	free(fileptr->current_stat);
 #endif
@@ -586,7 +586,7 @@ void print_view_warning(void)
     statusbar(_("Key invalid in view mode"));
 }
 
-/* Make nano exit gracefully. */
+/* Make pinot exit gracefully. */
 void finish(void)
 {
     /* Blank the statusbar (and shortcut list, if applicable), and move
@@ -601,7 +601,7 @@ void finish(void)
     /* Restore the old terminal settings. */
     tcsetattr(0, TCSANOW, &oldterm);
 
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
     if (!no_rcfiles && ISSET(HISTORYLOG))
 	save_history();
     if (!no_rcfiles && ISSET(POS_HISTORY)) {
@@ -618,7 +618,7 @@ void finish(void)
     exit(0);
 }
 
-/* Make nano die gracefully. */
+/* Make pinot die gracefully. */
 void die(const char *msg, ...)
 {
     va_list ap;
@@ -639,7 +639,7 @@ void die(const char *msg, ...)
 	    unpartition_filestruct(&filepart);
 
 	die_save_file(openfile->filename
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		, openfile->current_stat
 #endif
 		);
@@ -656,7 +656,7 @@ void die(const char *msg, ...)
 	    /* Save the current file buffer if it's been modified. */
 	    if (openfile->modified)
 		die_save_file(openfile->filename
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 			, openfile->current_stat
 #endif
 			);
@@ -671,7 +671,7 @@ void die(const char *msg, ...)
 /* Save the current file under the name spacified in die_filename, which
  * is modified to be unique if necessary. */
 void die_save_file(const char *die_filename
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	, struct stat *die_stat
 #endif
 	)
@@ -688,7 +688,7 @@ void die_save_file(const char *die_filename
     /* If we can't save, we have really bad problems, but we might as
      * well try. */
     if (*die_filename == '\0')
-	die_filename = "nano";
+	die_filename = "pinot";
 
     retval = get_next_filename(die_filename, ".save");
     if (retval[0] != '\0')
@@ -703,7 +703,7 @@ void die_save_file(const char *die_filename
 	fprintf(stderr, _("\nBuffer not written: %s\n"),
 		_("Too many backup files?"));
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Try and chmod/chown the save file to the values of the original file, but
        dont worry if it fails because we're supposed to be bailing as fast
        as possible. */
@@ -717,13 +717,13 @@ void die_save_file(const char *die_filename
     free(retval);
 }
 
-/* Initialize the three window portions nano uses. */
+/* Initialize the three window portions pinot uses. */
 void window_init(void)
 {
     /* If the screen height is too small, get out. */
     editwinrows = LINES - 5 + no_more_space() + no_help();
     if (COLS < MIN_EDITOR_COLS || editwinrows < MIN_EDITOR_ROWS)
-	die(_("Window size is too small for nano...\n"));
+	die(_("Window size is too small for pinot...\n"));
 
 #ifndef DISABLE_WRAPJUSTIFY
     /* Set up fill, based on the screen width. */
@@ -813,10 +813,10 @@ void print_opt_full(const char *shortflag
     printf("\n");
 }
 
-/* Explain how to properly use nano and its command line options. */
+/* Explain how to properly use pinot and its command line options. */
 void usage(void)
 {
-    printf(_("Usage: nano [OPTIONS] [[+LINE,COLUMN] FILE]...\n\n"));
+    printf(_("Usage: pinot [OPTIONS] [[+LINE,COLUMN] FILE]...\n\n"));
     printf(
 #ifdef HAVE_GETOPT_LONG
 	_("Option\t\tGNU long option\t\tMeaning\n")
@@ -827,7 +827,7 @@ void usage(void)
     print_opt("-h, -?", "--help", N_("Show this message"));
     print_opt(_("+LINE,COLUMN"), "",
 	N_("Start at line LINE, column COLUMN"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-A", "--smarthome", N_("Enable smart home key"));
     print_opt("-B", "--backup", N_("Save backups of existing files"));
     print_opt(_("-C <dir>"), _("--backupdir=<dir>"),
@@ -835,31 +835,31 @@ void usage(void)
 #endif
     print_opt("-D", "--boldtext",
 	N_("Use bold instead of reverse video text"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-E", "--tabstospaces",
 	N_("Convert typed tabs to spaces"));
 #endif
 #ifdef ENABLE_MULTIBUFFER
     print_opt("-F", "--multibuffer", N_("Enable multiple file buffers"));
 #endif
-#ifdef ENABLE_NANORC
-#ifndef NANO_TINY
+#ifdef ENABLE_PINOTRC
+#ifndef PINOT_TINY
     print_opt("-H", "--historylog",
 	N_("Log & read search/replace string history"));
 #endif
     print_opt("-I", "--ignorercfiles",
-	N_("Don't look at nanorc files"));
+	N_("Don't look at pinotorc files"));
 #endif
     print_opt("-K", "--rebindkeypad",
 	N_("Fix numeric keypad key confusion problem"));
     print_opt("-L", "--nonewlines",
 	N_("Don't add newlines to the ends of files"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-N", "--noconvert",
 	N_("Don't convert files from DOS/Mac format"));
 #endif
     print_opt("-O", "--morespace", N_("Use one more line for editing"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-P", "--poslog",
 	N_("Log & read location of cursor position"));
 #endif
@@ -868,18 +868,18 @@ void usage(void)
 	N_("Quoting string"));
 #endif
     print_opt("-R", "--restricted", N_("Restricted mode"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-S", "--smooth",
 	N_("Scroll by line instead of half-screen"));
 #endif
     print_opt(_("-T <#cols>"), _("--tabsize=<#cols>"),
 	N_("Set width of a tab to #cols columns"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-U", "--quickblank", N_("Do quick statusbar blanking"));
 #endif
     print_opt("-V", "--version",
 	N_("Print version information and exit"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-W", "--wordbounds",
 	N_("Detect word boundaries more accurately"));
 #endif
@@ -890,7 +890,7 @@ void usage(void)
     print_opt("-c", "--const", N_("Constantly show cursor position"));
     print_opt("-d", "--rebinddelete",
 	N_("Fix Backspace/Delete confusion problem"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-i", "--autoindent",
 	N_("Automatically indent new lines"));
     print_opt("-k", "--cut", N_("Cut from cursor to end of line"));
@@ -918,7 +918,7 @@ void usage(void)
 #endif
     print_opt("-t", "--tempfile",
 	N_("Auto save on exit, don't prompt"));
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     print_opt("-u", "--undo", N_("Allow generic undo [EXPERIMENTAL]"));
 #endif
 
@@ -937,17 +937,17 @@ void usage(void)
     exit(0);
 }
 
-/* Display the current version of nano, the date and time it was
+/* Display the current version of pinot, the date and time it was
  * compiled, contact information for it, and the configuration options
  * it was compiled with. */
 void version(void)
 {
-    printf(_(" GNU nano version %s (compiled %s, %s)\n"), VERSION,
+    printf(_(" pinot version %s (compiled %s, %s)\n"), VERSION,
 	__TIME__, __DATE__);
     printf(" (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,\n");
     printf(" 2008, 2009 Free Software Foundation, Inc.\n");
     printf(
-	_(" Email: nano@nano-editor.org	Web: http://www.nano-editor.org/"));
+	_(" Email: phil@pgengler.net	Web: http://github.com/pgengler"));
     printf(_("\n Compiled options:"));
 
 #ifdef DISABLE_BROWSER
@@ -986,16 +986,16 @@ void version(void)
 #ifdef DEBUG
     printf(" --enable-debug");
 #endif
-#ifdef NANO_EXTRA
+#ifdef PINOT_EXTRA
     printf(" --enable-extra");
 #endif
 #ifdef ENABLE_MULTIBUFFER
     printf(" --enable-multibuffer");
 #endif
-#ifdef ENABLE_NANORC
-    printf(" --enable-nanorc");
+#ifdef ENABLE_PINOTRC
+    printf(" --enable-pinotrc");
 #endif
-#ifdef NANO_TINY
+#ifdef PINOT_TINY
     printf(" --enable-tiny");
 #endif
 #ifdef ENABLE_UTF8
@@ -1024,7 +1024,7 @@ int no_help(void)
 }
 
 /* Indicate a disabled function on the statusbar. */
-void nano_disabled_msg(void)
+void pinot_disabled_msg(void)
 {
     statusbar(_("Sorry, support for this function has been disabled"));
 }
@@ -1033,7 +1033,7 @@ void nano_disabled_msg(void)
  * isn't set, ask whether or not to save the file buffer.  If the
  * TEMP_FILE flag is set, save it unconditionally.  Then, if more than
  * one file buffer is open, close the current file buffer and switch to
- * the next one.  If only one file buffer is open, exit from nano. */
+ * the next one.  If only one file buffer is open, exit from pinot. */
 void do_exit(void)
 {
     int i;
@@ -1116,7 +1116,7 @@ RETSIGTYPE cancel_stdin_pager(int signal)
     pager_input_aborted = TRUE;
 }
 
-/* Let nano read stdin for the first file at least */
+/* Let pinot read stdin for the first file at least */
 void stdin_pager(void)
 {
     endwin();
@@ -1127,7 +1127,7 @@ void stdin_pager(void)
     /* Set things up so that Ctrl-C will cancel the new process. */
     /* Enable interpretation of the special control keys so that we get
      * SIGINT when Ctrl-C is pressed. */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     enable_signals();
 #endif
 
@@ -1163,7 +1163,7 @@ void signal_init(void)
     sigaction(SIGHUP, &act, NULL);
     sigaction(SIGTERM, &act, NULL);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Trap SIGWINCH because we want to handle window resizes. */
     act.sa_handler = handle_sigwinch;
     sigaction(SIGWINCH, &act, NULL);
@@ -1198,7 +1198,7 @@ RETSIGTYPE do_suspend(int signal)
 {
 
     if (ISSET(RESTRICTED)) {
-        nano_disabled_msg();
+        pinot_disabled_msg();
 	return;
     }
 
@@ -1212,7 +1212,7 @@ RETSIGTYPE do_suspend(int signal)
     endwin();
 
     /* Display our helpful message. */
-    printf(_("Use \"fg\" to return to nano.\n"));
+    printf(_("Use \"fg\" to return to pinot.\n"));
     fflush(stdout);
 
     /* Restore the old terminal settings. */
@@ -1244,7 +1244,7 @@ RETSIGTYPE do_continue(int signal)
 	enable_mouse_support();
 #endif
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Perhaps the user resized the window while we slept.  Handle it,
      * and restore the terminal to its previous state and update the
      * screen in the process. */
@@ -1263,7 +1263,7 @@ RETSIGTYPE do_continue(int signal)
 #endif
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Handler for SIGWINCH (window size change). */
 RETSIGTYPE handle_sigwinch(int signal)
 {
@@ -1340,9 +1340,9 @@ void allow_pending_sigwinch(bool allow)
     sigaddset(&winch, SIGWINCH);
     sigprocmask(allow ? SIG_UNBLOCK : SIG_BLOCK, &winch, NULL);
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Handle the global toggle specified in which. */
 void do_toggle(int flag)
 {
@@ -1365,7 +1365,7 @@ void do_toggle(int flag)
 	case SUSPEND:
 	    signal_init();
 	    break;
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 	case WHITESPACE_DISPLAY:
 	    titlebar(NULL);
 	    edit_refresh();
@@ -1403,7 +1403,7 @@ void do_toggle_void(void)
 {
 ;
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Disable extended input and output processing in our terminal
  * settings. */
@@ -1428,7 +1428,7 @@ void disable_signals(void)
     tcsetattr(0, TCSANOW, &term);
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Enable interpretation of the special control keys in our terminal
  * settings. */
 void enable_signals(void)
@@ -1634,7 +1634,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 		    /* If the function associated with this shortcut is
 		     * cutting or copying text, indicate this. */
 		    if (s->scfunc == do_cut_text_void
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 			|| s->scfunc == do_copy_text || s->scfunc ==
 			do_cut_till_end
 #endif
@@ -1647,7 +1647,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 			if (ISSET(VIEW_MODE) && f && !f->viewok)
 			    print_view_warning();
 			else {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 			    if (s->scfunc == do_toggle_void)
 				do_toggle(s->toggle);
 			    else {
@@ -1763,7 +1763,7 @@ int do_mouse(void)
 	    openfile->placewewant = xplustabs();
 	}
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* Clicking where the cursor is toggles the mark, as does
 	 * clicking beyond the line length with the cursor at the end of
 	 * the line. */
@@ -1982,7 +1982,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	openfile->totsize++;
 	set_modified();
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	update_undo(ADD);
 
 	/* Note that current_x has not yet been incremented. */
@@ -2053,7 +2053,7 @@ int main(int argc, char **argv)
 #ifdef ENABLE_MULTIBUFFER
 	{"multibuffer", 0, NULL, 'F'},
 #endif
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 	{"ignorercfiles", 0, NULL, 'I'},
 #endif
 	{"rebindkeypad", 0, NULL, 'K'},
@@ -2092,7 +2092,7 @@ int main(int argc, char **argv)
 #endif
 	{"nohelp", 0, NULL, 'x'},
 	{"suspend", 0, NULL, 'z'},
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	{"smarthome", 0, NULL, 'A'},
 	{"backup", 0, NULL, 'B'},
 	{"backupdir", 1, NULL, 'C'},
@@ -2135,10 +2135,10 @@ int main(int argc, char **argv)
     textdomain(PACKAGE);
 #endif
 
-#if !defined(ENABLE_NANORC) && defined(DISABLE_ROOTWRAPPING)
+#if !defined(ENABLE_PINOTRC) && defined(DISABLE_ROOTWRAPPING)
     /* If we don't have rcfile support, --disable-wrapping-as-root is
      * used, and we're root, turn wrapping off. */
-    if (geteuid() == NANO_ROOT_UID)
+    if (geteuid() == PINOT_ROOT_UID)
 	SET(NO_WRAP);
 #endif
 
@@ -2161,7 +2161,7 @@ int main(int argc, char **argv)
 	    case 'j':
 		/* Pico compatibility flags. */
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'A':
 		SET(SMART_HOME);
 		break;
@@ -2175,7 +2175,7 @@ int main(int argc, char **argv)
 	    case 'D':
 		SET(BOLD_TEXT);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'E':
 		SET(TABS_TO_SPACES);
 		break;
@@ -2185,8 +2185,8 @@ int main(int argc, char **argv)
 		SET(MULTIBUFFER);
 		break;
 #endif
-#ifdef ENABLE_NANORC
-#ifndef NANO_TINY
+#ifdef ENABLE_PINOTRC
+#ifndef PINOT_TINY
 	    case 'H':
 		SET(HISTORYLOG);
 		break;
@@ -2201,7 +2201,7 @@ int main(int argc, char **argv)
 	    case 'L':
 		SET(NO_NEWLINES);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'N':
 		SET(NO_CONVERT);
 		break;
@@ -2209,7 +2209,7 @@ int main(int argc, char **argv)
 	    case 'O':
 		SET(MORE_SPACE);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'P':
 		SET(POS_HISTORY);
 		break;
@@ -2222,7 +2222,7 @@ int main(int argc, char **argv)
 	    case 'R':
 		SET(RESTRICTED);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'S':
 		SET(SMOOTH_SCROLL);
 		break;
@@ -2234,7 +2234,7 @@ int main(int argc, char **argv)
 		    exit(1);
 		}
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'U':
 		SET(QUICK_BLANK);
 		break;
@@ -2242,7 +2242,7 @@ int main(int argc, char **argv)
 	    case 'V':
 		version();
 		exit(0);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'W':
 		SET(WORD_BOUNDS);
 		break;
@@ -2258,7 +2258,7 @@ int main(int argc, char **argv)
 	    case 'd':
 		SET(REBIND_DELETE);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'i':
 		SET(AUTOINDENT);
 		break;
@@ -2303,7 +2303,7 @@ int main(int argc, char **argv)
 	    case 't':
 		SET(TEMP_FILE);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case 'u':
 		SET(UNDOABLE);
 		break;
@@ -2327,7 +2327,7 @@ int main(int argc, char **argv)
 	    case 'z':
 		SET(SUSPEND);
 		break;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    case '$':
 		SET(SOFTWRAP);
 		break;
@@ -2348,7 +2348,7 @@ int main(int argc, char **argv)
     if (ISSET(RESTRICTED)) {
 	UNSET(SUSPEND);
 	UNSET(BACKUP_FILE);
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 	no_rcfiles = TRUE;
 #endif
     }
@@ -2361,7 +2361,7 @@ int main(int argc, char **argv)
 /* We've read through the command line options.  Now back up the flags
  * and values that are set, and read the rcfile(s).  If the values
  * haven't changed afterward, restore the backed-up values. */
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
     if (!no_rcfiles) {
 #ifndef DISABLE_OPERATINGDIR
 	char *operating_dir_cpy = operating_dir;
@@ -2369,7 +2369,7 @@ int main(int argc, char **argv)
 #ifndef DISABLE_WRAPJUSTIFY
 	ssize_t wrap_at_cpy = wrap_at;
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	char *backup_dir_cpy = backup_dir;
 #endif
 #ifndef DISABLE_JUSTIFY
@@ -2387,7 +2387,7 @@ int main(int argc, char **argv)
 #ifndef DISABLE_OPERATINGDIR
 	operating_dir = NULL;
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	backup_dir = NULL;
 #endif
 #ifndef DISABLE_JUSTIFY
@@ -2414,7 +2414,7 @@ int main(int argc, char **argv)
 	if (fill_used)
 	    wrap_at = wrap_at_cpy;
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (backup_dir_cpy != NULL) {
 	    free(backup_dir);
 	    backup_dir = backup_dir_cpy;
@@ -2441,10 +2441,10 @@ int main(int argc, char **argv)
 #ifdef DISABLE_ROOTWRAPPING
     /* If we don't have any rcfiles, --disable-wrapping-as-root is used,
      * and we're root, turn wrapping off. */
-    else if (geteuid() == NANO_ROOT_UID)
+    else if (geteuid() == PINOT_ROOT_UID)
 	SET(NO_WRAP);
 #endif
-#endif /* ENABLE_NANORC */
+#endif /* ENABLE_PINOTRC */
 
 #ifndef DISABLE_WRAPPING
     /* Overwrite an rcfile "set nowrap" or --disable-wrapping-as-root
@@ -2458,13 +2458,13 @@ int main(int argc, char **argv)
     if (ISSET(BOLD_TEXT))
 	reverse_attr = A_BOLD;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Set up the search/replace history. */
     history_init();
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
     if (!no_rcfiles) {
 	if (ISSET(HISTORYLOG) || ISSET(POS_HISTORY)) {
-	    if (check_dotnano() == 0) {
+	    if (check_dotpinot() == 0) {
 		UNSET(HISTORYLOG);
 		UNSET(POS_HISTORY);
 	    }
@@ -2474,10 +2474,10 @@ int main(int argc, char **argv)
 	if (ISSET(POS_HISTORY))
 	    load_poshistory();
     }
-#endif /* ENABLE_NANORC */
-#endif /* NANO_TINY */
+#endif /* ENABLE_PINOTRC */
+#endif /* PINOT_TINY */
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* Set up the backup directory (unless we're using restricted mode,
      * in which case backups are disabled, since they would allow
      * reading from or writing to files not specified on the command
@@ -2542,13 +2542,13 @@ int main(int argc, char **argv)
     }
 #endif
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If matchbrackets wasn't specified, set its default value. */
     if (matchbrackets == NULL)
 	matchbrackets = mallocstrcpy(NULL, "(<[{)>]}");
 #endif
 
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
     /* If whitespace wasn't specified, set its default value. */
     if (whitespace == NULL) {
 	whitespace = mallocstrcpy(NULL, "  ");
@@ -2634,7 +2634,7 @@ int main(int argc, char **argv)
 		    iline = 1;
 		    icol = 1;
 		}
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
                   else {
 		    /* See if we have a POS history to use if we haven't overridden it */
 		    ssize_t savedposline, savedposcol;
@@ -2642,7 +2642,7 @@ int main(int argc, char **argv)
 			do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE,
 			FALSE);
 		}
-#endif /* NANO_TINY */
+#endif /* PINOT_TINY */
 	    }
 	}
     }
@@ -2680,14 +2680,14 @@ int main(int argc, char **argv)
     if (startline > 1 || startcol > 1)
 	do_gotolinecolumn(startline, startcol, FALSE, FALSE, FALSE,
 		FALSE);
-# ifndef NANO_TINY
+# ifndef PINOT_TINY
     else {
 	/* See if we have a POS history to use if we haven't overridden it */
 	ssize_t savedposline, savedposcol;
 	if (check_poshistory(argv[optind], &savedposline, &savedposcol))
 	    do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
     }
-#endif /* NANO_TINY */
+#endif /* PINOT_TINY */
 
     display_main_list();
 
@@ -2700,7 +2700,7 @@ int main(int argc, char **argv)
 	reset_cursor();
 	wnoutrefresh(edit);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (!jump_buf_main) {
 	    /* If we haven't already, we're going to set jump_buf so
 	     * that we return here after a SIGWINCH.  Indicate this. */

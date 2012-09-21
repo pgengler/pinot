@@ -223,8 +223,8 @@ void help_init(void)
     const sc *s;
     int scsfound = 0;
 
-#ifndef NANO_TINY
-#ifdef ENABLE_NANORC
+#ifndef PINOT_TINY
+#ifdef ENABLE_PINOTRC
     bool old_whitespace = ISSET(WHITESPACE_DISPLAY);
 
     UNSET(WHITESPACE_DISPLAY);
@@ -260,10 +260,10 @@ void help_init(void)
 	htx[0] = N_("Insert File Help Text\n\n "
 		"Type in the name of a file to be inserted into the "
 		"current file buffer at the current cursor "
-		"location.\n\n If you have compiled nano with multiple "
+		"location.\n\n If you have compiled pinot with multiple "
 		"file buffer support, and enable multiple file buffers "
 		"with the -F or --multibuffer command line flags, the "
-		"Meta-F toggle, or a nanorc file, inserting a file "
+		"Meta-F toggle, or a pinotrc file, inserting a file "
 		"will cause it to be loaded into a separate buffer "
 		"(use Meta-< and > to switch between file buffers).  ");
 	htx[1] = N_("If you need another blank buffer, do not enter "
@@ -338,7 +338,7 @@ void help_init(void)
 	htx[2] = NULL;
     }
 #endif /* !DISABLE_SPELLER */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     else if (currmenu == MEXTCMD) {
 	htx[0] = N_("Execute Command Help Text\n\n "
 		"This mode allows you to insert the output of a "
@@ -350,11 +350,11 @@ void help_init(void)
 	htx[1] = NULL;
 	htx[2] = NULL;
     }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
     else {
 	/* Default to the main help list. */
-	htx[0] = N_("Main nano help text\n\n "
-		"The nano editor is designed to emulate the "
+	htx[0] = N_("Main pinot help text\n\n "
+		"The pinot editor is designed to emulate the "
 		"functionality and ease-of-use of the UW Pico text "
 		"editor.  There are four main sections of the editor.  "
 		"The top line shows the program version, the current "
@@ -399,7 +399,7 @@ void help_init(void)
             if (f->menus & currmenu)
 		allocsize += (24 * mb_cur_max()) + strlen(f->help) + 2;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If we're on the main list, we also count the toggle help text.
      * Each entry has "M-%c\t\t\t", which fills 24 columns, plus a
      * space, plus translated text, plus one or two '\n's. */
@@ -474,7 +474,7 @@ void help_init(void)
 	    ptr += sprintf(ptr, "\n");
     }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* And the toggles... */
     if (currmenu == MMAIN)
         for (s = sclist; s != NULL; s = s->next)
@@ -483,7 +483,7 @@ void help_init(void)
 		    s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
 
 
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
     if (old_whitespace)
 	SET(WHITESPACE_DISPLAY);
 #endif
@@ -556,7 +556,7 @@ void do_help_void(void)
     do_help(&edit_refresh);
 #else
     if (currmenu == MMAIN)
-	nano_disabled_msg();
+	pinot_disabled_msg();
     else
 	beep();
 #endif

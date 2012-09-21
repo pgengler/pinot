@@ -53,7 +53,7 @@ void cut_line(void)
     openfile->placewewant = 0;
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Move all currently marked text into the cutbuffer, and set the
  * current place we want to where the text used to start. */
 void cut_marked(void)
@@ -105,21 +105,21 @@ void cut_to_eof(void)
 	openfile->current_x, openfile->filebot,
 	strlen(openfile->filebot->data));
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Move text from the current filestruct into the cutbuffer.  If
  * copy_text is TRUE, copy the text back into the filestruct afterward.
  * If cut_till_end is TRUE, move all text from the current cursor
  * position to the end of the file into the cutbuffer. */
 void do_cut_text(
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	bool copy_text, bool cut_till_end, bool undoing
 #else
 	void
 #endif
 	)
 {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     filestruct *cb_save = NULL;
 	/* The current end of the cutbuffer, before we add text to
 	 * it. */
@@ -141,7 +141,7 @@ void do_cut_text(
 #endif
     }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (copy_text) {
 	if (cutbuffer != NULL) {
 	    /* If the cutbuffer isn't empty, save where it currently
@@ -161,7 +161,7 @@ void do_cut_text(
      * cutbuffer instead of replacing it. */
     keep_cutbuffer = TRUE;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 
     if (cut_till_end) {
 	/* If cut_till_end is TRUE, move all text up to the end of the
@@ -181,7 +181,7 @@ void do_cut_text(
 	/* Move the entire line into the cutbuffer. */
 	cut_line();
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (copy_text) {
 	/* Copy the text in the cutbuffer, starting at its saved end if
 	 * there is one, back into the filestruct.  This effectively
@@ -226,17 +226,17 @@ void do_cut_text(
 /* Move text from the current filestruct into the cutbuffer. */
 void do_cut_text_void(void)
 {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     add_undo(CUT);
 #endif
     do_cut_text(
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	FALSE, FALSE, FALSE
 #endif
 	);
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Move text from the current filestruct into the cutbuffer, and copy it
  * back into the filestruct afterward. */
 void do_copy_text(void)
@@ -247,12 +247,12 @@ void do_copy_text(void)
 /* Cut from the current cursor position to the end of the file. */
 void do_cut_till_end(void)
 {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     add_undo(CUT);
 #endif
     do_cut_text(FALSE, TRUE, FALSE);
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Copy text from the cutbuffer into the current filestruct. */
 void do_uncut_text(void)
@@ -263,7 +263,7 @@ void do_uncut_text(void)
     if (cutbuffer == NULL)
 	return;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
      update_undo(UNCUT);
 #endif
 

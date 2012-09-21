@@ -66,7 +66,7 @@ void initialize_buffer(void)
     openfile->current_y = 0;
 
     openfile->modified = FALSE;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     openfile->mark_set = FALSE;
 
     openfile->mark_begin = NULL;
@@ -147,7 +147,7 @@ void open_buffer(const char *filename, bool undoable)
      * no stat, update the stat, if applicable. */
     if (rc > 0) {
 	read_file(f, rc, filename, undoable, new_buffer);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (openfile->current_stat == NULL) {
 	    openfile->current_stat =
 		(struct stat *)nmalloc(sizeof(struct stat));
@@ -279,9 +279,9 @@ bool close_buffer(void)
     if (openfile == openfile->next)
 	return FALSE;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
         update_poshistory(openfile->filename, openfile->current->lineno, xplustabs()+1);
-#endif /* NANO_TINY */
+#endif /* PINOT_TINY */
 
     /* Switch to the next file buffer. */
     switch_to_next_buffer_void();
@@ -353,7 +353,7 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool
 
     fileptr->data = mallocstrcpy(NULL, buf);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If it's a DOS file ("\r\n"), and file conversion isn't disabled,
      * strip the '\r' part from fileptr->data. */
     if (!ISSET(NO_CONVERT) && buf_len > 0 && buf[buf_len - 1] == '\r')
@@ -419,7 +419,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	 * character or EOF. */
     bool writable = TRUE;
 	/* Is the file writable (if we care) */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     int format = 0;
 	/* 0 = *nix, 1 = DOS, 2 = Mac, 3 = both DOS and Mac. */
 #endif
@@ -429,7 +429,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
     buf = charalloc(bufx);
     buf[0] = '\0';
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (undoable)
 	add_undo(INSERT);
 #endif
@@ -446,7 +446,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	/* If it's a *nix file ("\n") or a DOS file ("\r\n"), and file
 	 * conversion isn't disabled, handle it! */
 	if (input == '\n') {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    /* If it's a DOS file or a DOS/Mac file ('\r' before '\n' on
 	     * the first line if we think it's a *nix file, or on any
 	     * line otherwise), and file conversion isn't disabled,
@@ -468,7 +468,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	    num_lines++;
 	    buf[0] = '\0';
 	    i = 0;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* If it's a Mac file ('\r' without '\n' on the first line if we
 	 * think it's a *nix file, or on any line otherwise), and file
 	 * conversion isn't disabled, handle it! */
@@ -523,7 +523,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	writable = is_file_writable(filename);
     }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If file conversion isn't disabled and the last character in this
      * file is '\r', read it in properly as a Mac format line. */
     if (len == 0 && !ISSET(NO_CONVERT) && input == '\r') {
@@ -536,7 +536,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 
     /* Did we not get a newline and still have stuff to do? */
     if (len > 0) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* If file conversion isn't disabled and the last character in
 	 * this file is '\r', set format to Mac if we currently think
 	 * the file is a *nix file, or to both DOS and Mac if we
@@ -627,7 +627,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
      * file we inserted. */
     openfile->placewewant = xplustabs();
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     if (undoable)
 	update_undo(INSERT);
 
@@ -790,7 +790,7 @@ char *get_next_filename(const char *name, const char *suffix)
  * into the current buffer if it isn't.  If execute is TRUE, insert the
  * output of an executed command instead of a file. */
 void do_insertfile(
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	bool execute
 #else
 	void
@@ -806,14 +806,14 @@ void do_insertfile(
     ssize_t current_y_save = openfile->current_y;
     bool edittop_inside = FALSE, meta_key = FALSE, func_key = FALSE;
     const sc *s;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     bool right_side_up = FALSE, single_line = FALSE;
 #endif
 
     currmenu = MINSERTFILE;
 
     while (TRUE) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (execute) {
 	    msg =
 #ifdef ENABLE_MULTIBUFFER
@@ -829,7 +829,7 @@ void do_insertfile(
 		_("File to insert into new buffer [from %s] ") :
 #endif
 		_("File to insert [from %s] ");
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	}
 #endif
 
@@ -837,12 +837,12 @@ void do_insertfile(
 #ifndef DISABLE_TABCOMP
 		TRUE,
 #endif
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		execute ? MEXTCMD :
 #endif
 		MINSERTFILE, ans,
 		&meta_key, &func_key,
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		NULL,
 #endif
 		edit_refresh, msg,
@@ -870,7 +870,7 @@ void do_insertfile(
 
 	    s = get_shortcut(currmenu, &i, &meta_key, &func_key);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 #ifdef ENABLE_MULTIBUFFER
 
 	    if (s && s->scfunc == new_buffer_void) {
@@ -887,7 +887,7 @@ void do_insertfile(
 #ifndef DISABLE_BROWSER
 	    else
 #endif
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 #ifndef DISABLE_BROWSER
 	    if (s && s->scfunc == to_files_void) {
@@ -913,7 +913,7 @@ void do_insertfile(
 		)
 		continue;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		/* Keep track of whether the mark begins inside the
 		 * partition and will need adjustment. */
 		if (openfile->mark_set) {
@@ -950,7 +950,7 @@ void do_insertfile(
 	    sunder(answer);
 	    align(&answer);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    if (execute) {
 #ifdef ENABLE_MULTIBUFFER
 		if (ISSET(MULTIBUFFER))
@@ -971,7 +971,7 @@ void do_insertfile(
 		}
 #endif
 	    } else {
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 		/* Make sure the path to the file specified in answer is
 		 * tilde-expanded. */
 		answer = mallocstrassn(answer,
@@ -980,7 +980,7 @@ void do_insertfile(
 		/* Save the file specified in answer in the current
 		 * buffer. */
 		open_buffer(answer, TRUE);
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    }
 #endif
 
@@ -1007,7 +1007,7 @@ void do_insertfile(
 		 * current line. */
 		openfile->current_x = strlen(openfile->filebot->data);
 		if (openfile->fileage == openfile->filebot) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		    if (openfile->mark_set) {
 			openfile->mark_begin = openfile->current;
 			if (!right_side_up)
@@ -1017,7 +1017,7 @@ void do_insertfile(
 #endif
 		    openfile->current_x += current_x_save;
 		}
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		else if (openfile->mark_set) {
 		    if (!right_side_up) {
 			if (single_line) {
@@ -1072,7 +1072,7 @@ void do_insertfile_void(void)
 {
 
     if (ISSET(RESTRICTED)) {
-        nano_disabled_msg();
+        pinot_disabled_msg();
 	return;
     }
 
@@ -1082,7 +1082,7 @@ void do_insertfile_void(void)
     else
 #endif
 	do_insertfile(
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		FALSE
 #endif
 		);
@@ -1248,7 +1248,7 @@ char *check_writable_directory(const char *path)
     return full_path;
 }
 
-/* This function calls mkstemp(($TMPDIR|P_tmpdir|/tmp/)"nano.XXXXXX").
+/* This function calls mkstemp(($TMPDIR|P_tmpdir|/tmp/)"pinot.XXXXXX").
  * On success, it returns the malloc()ed filename and corresponding FILE
  * stream, opened in "r+b" mode.  On error, it returns NULL for the
  * filename and leaves the FILE stream unchanged. */
@@ -1278,7 +1278,7 @@ char *safe_tempfile(FILE **f)
 	full_tempdir = mallocstrcpy(NULL, "/tmp/");
 
     full_tempdir = charealloc(full_tempdir, strlen(full_tempdir) + 12);
-    strcat(full_tempdir, "nano.XXXXXX");
+    strcat(full_tempdir, "pinot.XXXXXX");
 
     original_umask = umask(0);
     umask(S_IRWXG | S_IRWXO);
@@ -1369,7 +1369,7 @@ bool check_operating_dir(const char *currpath, bool allow_tabcomp)
 }
 #endif
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Although this sucks, it sucks less than having a single 'my system is messed up
  * and I'm blanket allowing insecure file writing operations.
  */
@@ -1467,7 +1467,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
     int fd;
 	/* The file descriptor we use. */
     mode_t original_umask = 0;
-	/* Our umask, from when nano started. */
+	/* Our umask, from when pinot started. */
     bool realexists;
 	/* The result of stat().  TRUE if the file exists, FALSE
 	 * otherwise.  If name is a link that points nowhere, realexists
@@ -1527,7 +1527,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
      * one). */
     realexists = (stat(realname, &st) != -1);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* if we have not stat()d this file before (say, the user just
      * specified it interactively), stat and save the value
      * or else we will chase null pointers when we do
@@ -1538,7 +1538,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
     /* We backup only if the backup toggle is set, the file isn't
      * temporary, and the file already exists.  Furthermore, if we
      * aren't appending, prepending, or writing a selection, we backup
-     * only if the file has not been modified by someone else since nano
+     * only if the file has not been modified by someone else since pinot
      * opened it. */
     if (ISSET(BACKUP_FILE) && !tmp && realexists && ((append !=
 	OVERWRITE || openfile->mark_set) || (openfile->current_stat &&
@@ -1649,7 +1649,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 
         /* We shouldn't worry about chown()ing something if we're not
 	   root, since it's likely to fail! */
-	if (geteuid() == NANO_ROOT_UID && fchown(backup_fd,
+	if (geteuid() == PINOT_ROOT_UID && fchown(backup_fd,
 		openfile->current_stat->st_uid, openfile->current_stat->st_gid) == -1
 		&& !ISSET(INSECURE_BACKUP)) {
 	    if (prompt_failed_backupwrite(backupname))
@@ -1707,7 +1707,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
     }
 
     skip_backup:
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
     /* If NOFOLLOW_SYMLINKS is set and the file is a link, we aren't
      * doing prepend or append.  So we delete the link first, and just
@@ -1840,7 +1840,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 	    if (fileptr->data[0] == '\0')
 		lineswritten--;
 	} else {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    if (openfile->fmt == DOS_FILE || openfile->fmt ==
 		MAC_FILE) {
 		if (putc('\r', f) == EOF) {
@@ -1859,7 +1859,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 		    fclose(f);
 		    goto cleanup_and_exit;
 		}
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    }
 #endif
 	}
@@ -1919,7 +1919,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 #endif
 	}
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* Update current_stat to reference the file as it is now. */
 	if (openfile->current_stat == NULL)
 	    openfile->current_stat =
@@ -1944,7 +1944,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
     return retval;
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Write a marked selection from a file out to disk.  Return TRUE on
  * success or FALSE on error. */
 bool write_marked_file(const char *name, FILE *f_open, bool tmp,
@@ -1990,7 +1990,7 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp,
 
     return retval;
 }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 /* Write the current file to disk.  If the mark is on, write the current
  * marked selection to disk.  If exiting is TRUE, write the file to disk
@@ -2002,7 +2002,7 @@ bool do_writeout(bool exiting)
     append_type append = OVERWRITE;
     char *ans;
 	/* The last answer the user typed at the statusbar prompt. */
-#ifdef NANO_EXTRA
+#ifdef PINOT_EXTRA
     static bool did_credits = FALSE;
 #endif
     bool retval = FALSE, meta_key = FALSE, func_key = FALSE;
@@ -2020,14 +2020,14 @@ bool do_writeout(bool exiting)
     }
 
     ans = mallocstrcpy(NULL,
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	(!exiting && openfile->mark_set) ? "" :
 #endif
 	openfile->filename);
 
     while (TRUE) {
 	const char *msg;
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	const char *formatstr, *backupstr;
 
 	formatstr = (openfile->fmt == DOS_FILE) ?
@@ -2046,7 +2046,7 @@ bool do_writeout(bool exiting)
 		_("Append Selection to File") :
 		_("Write Selection to File");
 	else
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 	    msg = (append == PREPEND) ? _("File Name to Prepend to") :
 		(append == APPEND) ? _("File Name to Append to") :
 		_("File Name to Write");
@@ -2061,11 +2061,11 @@ bool do_writeout(bool exiting)
 #endif
 		MWRITEFILE, ans,
 		&meta_key, &func_key,
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		NULL,
 #endif
 		edit_refresh, "%s%s%s", msg,
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		formatstr, backupstr
 #else
 		"", ""
@@ -2094,7 +2094,7 @@ bool do_writeout(bool exiting)
 		answer = tmp;
 	    } else
 #endif /* !DISABLE_BROWSER */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	    if (s && s->scfunc == dos_format_void) {
 		openfile->fmt = (openfile->fmt == DOS_FILE) ? NIX_FILE :
 			DOS_FILE;
@@ -2107,7 +2107,7 @@ bool do_writeout(bool exiting)
 		TOGGLE(BACKUP_FILE);
 		continue;
 	    } else
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 	    if (s && s->scfunc == prepend_void) {
 		append = (append == PREPEND) ? OVERWRITE : PREPEND;
 		continue;
@@ -2122,7 +2122,7 @@ bool do_writeout(bool exiting)
 	    fprintf(stderr, "filename is %s\n", answer);
 #endif
 
-#ifdef NANO_EXTRA
+#ifdef PINOT_EXTRA
 	    /* If the current file has been modified, we've pressed
 	     * Ctrl-X at the edit window to exit, we've pressed "y" at
 	     * the "Save modified buffer" prompt to save, we've entered
@@ -2184,7 +2184,7 @@ bool do_writeout(bool exiting)
 			if (i == 0 || i == -1)
 			    continue;
 		    } else
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		    if (exiting || !openfile->mark_set)
 #endif
 		    {
@@ -2194,7 +2194,7 @@ bool do_writeout(bool exiting)
 			    continue;
 		    }
 		}
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		/* Complain if the file exists, the name hasn't changed, and the
 		    stat information we had before does not match what we have now */
 		else if (name_exists && openfile->current_stat && (openfile->current_stat->st_mtime < st.st_mtime ||
@@ -2218,7 +2218,7 @@ bool do_writeout(bool exiting)
 	     * function is disabled, since it allows reading from or
 	     * writing to files not specified on the command line. */
 	    retval =
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 		(!ISSET(RESTRICTED) && !exiting && openfile->mark_set) ?
 		write_marked_file(answer, NULL, FALSE, append) :
 #endif
@@ -2686,7 +2686,7 @@ const char *tail(const char *foo)
     return tmp;
 }
 
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
 /* Return the constructed dorfile path, or NULL if we can't find the home
  * directory.  The string is dynamically allocated, and should be
  * freed. */
@@ -2708,7 +2708,7 @@ char *construct_filename(const char *str)
 
 char *histfilename(void)
 {
-    return construct_filename("/.nano/search_history");
+    return construct_filename("/.pinot/search_history");
 }
 
 /* Construct the legacy history filename
@@ -2716,12 +2716,12 @@ char *histfilename(void)
  */
 char *legacyhistfilename(void)
 {
-    return construct_filename("/.nano_history");
+    return construct_filename("/.pinot_history");
 }
 
 char *poshistfilename(void)
 {
-    return construct_filename("/.nano/filepos_history");
+    return construct_filename("/.pinot/filepos_history");
 }
 
 
@@ -2741,55 +2741,55 @@ void history_error(const char *msg, ...)
 }
 
 /* Now that we have more than one history file, let's just rely
-   on a .nano dir for this stuff.  Return 1 if the dir exists
+   on a .pinot dir for this stuff.  Return 1 if the dir exists
    or was successfully created, and return 0 otherwise.
  */
-int check_dotnano(void)
+int check_dotpinot(void)
 {
     struct stat dirstat;
-    char *nanodir = construct_filename("/.nano");
+    char *pinotdir = construct_filename("/.pinot");
 
-    if (stat(nanodir, &dirstat) == -1) {
-	if (mkdir(nanodir, S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+    if (stat(pinotdir, &dirstat) == -1) {
+	if (mkdir(pinotdir, S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
 	    history_error(N_("Unable to create directory %s: %s\nIt is required for saving/loading search history or cursor position\n"),
-		nanodir, strerror(errno));
+		pinotdir, strerror(errno));
 	    return 0;
 	}
     } else if (!S_ISDIR(dirstat.st_mode)) {
-	history_error(N_("Path %s is not a directory and needs to be.\nNano will be unable to load or save search or cursor position history\n"));
+	history_error(N_("Path %s is not a directory and needs to be.\npinot will be unable to load or save search or cursor position history\n"));
 	return 0;
     }
     return 1;
 }
 
-/* Load histories from ~/.nano_history. */
+/* Load histories from ~/.pinot_history. */
 void load_history(void)
 {
-    char *nanohist = histfilename();
+    char *pinothist = histfilename();
     char *legacyhist = legacyhistfilename();
     struct stat hstat;
 
 
-    if (stat(legacyhist, &hstat) != -1 && stat(nanohist, &hstat) == -1) {
-	if (rename(legacyhist, nanohist)  == -1)
-	    history_error(N_("Detected a legacy nano history file (%s) which I tried to move\nto the preferred location (%s) but encountered an error: %s"),
-		legacyhist, nanohist, strerror(errno));
+    if (stat(legacyhist, &hstat) != -1 && stat(pinothist, &hstat) == -1) {
+	if (rename(legacyhist, pinothist)  == -1)
+	    history_error(N_("Detected a legacy pinot history file (%s) which I tried to move\nto the preferred location (%s) but encountered an error: %s"),
+		legacyhist, pinothist, strerror(errno));
 	else
-	    history_error(N_("Detected a legacy nano history file (%s) which I moved\nto the preferred location (%s)\n(see the nano FAQ about this change)"),
-		legacyhist, nanohist);
+	    history_error(N_("Detected a legacy pinot history file (%s) which I moved\nto the preferred location (%s)\n(see the pinot FAQ about this change)"),
+		legacyhist, pinothist);
     }
 
 
 
     /* Assume do_rcfile() has reported a missing home directory. */
-    if (nanohist != NULL) {
-	FILE *hist = fopen(nanohist, "rb");
+    if (pinothist != NULL) {
+	FILE *hist = fopen(pinothist, "rb");
 
 	if (hist == NULL) {
 	    if (errno != ENOENT) {
 		/* Don't save history when we quit. */
 		UNSET(HISTORYLOG);
-		history_error(N_("Error reading %s: %s"), nanohist,
+		history_error(N_("Error reading %s: %s"), pinothist,
 			strerror(errno));
 	    }
 	} else {
@@ -2818,7 +2818,7 @@ void load_history(void)
 	    if (search_history->prev != NULL)
 		last_search = mallocstrcpy(NULL, search_history->prev->data);
 	}
-	free(nanohist);
+	free(pinothist);
 	free(legacyhist);
     }
 }
@@ -2845,38 +2845,38 @@ bool writehist(FILE *hist, filestruct *h)
     return TRUE;
 }
 
-/* Save histories to ~/.nano/search_history. */
+/* Save histories to ~/.pinot/search_history. */
 void save_history(void)
 {
-    char *nanohist;
+    char *pinothist;
 
     /* Don't save unchanged or empty histories. */
     if (!history_has_changed() || (searchbot->lineno == 1 &&
 	replacebot->lineno == 1))
 	return;
 
-    nanohist = histfilename();
+    pinothist = histfilename();
 
-    if (nanohist != NULL) {
-	FILE *hist = fopen(nanohist, "wb");
+    if (pinothist != NULL) {
+	FILE *hist = fopen(pinothist, "wb");
 
 	if (hist == NULL)
-	    history_error(N_("Error writing %s: %s"), nanohist,
+	    history_error(N_("Error writing %s: %s"), pinothist,
 		strerror(errno));
 	else {
 	    /* Make sure no one else can read from or write to the
 	     * history file. */
-	    chmod(nanohist, S_IRUSR | S_IWUSR);
+	    chmod(pinothist, S_IRUSR | S_IWUSR);
 
 	    if (!writehist(hist, searchage) || !writehist(hist,
 		replaceage))
-		history_error(N_("Error writing %s: %s"), nanohist,
+		history_error(N_("Error writing %s: %s"), pinothist,
 			strerror(errno));
 
 	    fclose(hist);
 	}
 
-	free(nanohist);
+	free(pinothist);
     }
 }
 
@@ -2978,20 +2978,20 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
 }
 
 
-/* Load histories from ~/.nano_history. */
+/* Load histories from ~/.pino_history. */
 void load_poshistory(void)
 {
-    char *nanohist = poshistfilename();
+    char *pinothist = poshistfilename();
 
     /* Assume do_rcfile() has reported a missing home directory. */
-    if (nanohist != NULL) {
-	FILE *hist = fopen(nanohist, "rb");
+    if (pinothist != NULL) {
+	FILE *hist = fopen(pinothist, "rb");
 
 	if (hist == NULL) {
 	    if (errno != ENOENT) {
 		/* Don't save history when we quit. */
 		UNSET(HISTORYLOG);
-		history_error(N_("Error reading %s: %s"), nanohist,
+		history_error(N_("Error reading %s: %s"), pinothist,
 			strerror(errno));
 	    }
 	} else {
@@ -3034,8 +3034,8 @@ void load_poshistory(void)
 	    fclose(hist);
 	    free(line);
 	}
-	free(nanohist);
+	free(pinothist);
     }
 }
 
-#endif /* !NANO_TINY && ENABLE_NANORC */
+#endif /* !PINOT_TINY && ENABLE_PINOTRC */

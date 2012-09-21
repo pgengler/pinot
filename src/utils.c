@@ -183,7 +183,7 @@ void sunder(char *str)
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301, USA. */
 
-#ifdef ENABLE_NANORC
+#ifdef ENABLE_PINOTRC
 
 #ifndef HAVE_GETDELIM
 /* This function is equivalent to getdelim(). */
@@ -243,7 +243,7 @@ ssize_t ngetline(char **lineptr, size_t *n, FILE *stream)
     return getdelim(lineptr, n, '\n', stream);
 }
 #endif
-#endif /* ENABLE_NANORC */
+#endif /* ENABLE_PINOTRC */
 
 #ifdef HAVE_REGEX_H
 /* Do the compiled regex in preg and the regex in string match the
@@ -337,7 +337,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 
 #ifdef HAVE_REGEX_H
     if (ISSET(USE_REGEXP)) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH)) {
 	    if (regexec(&search_regexp, haystack, 1, regmatches,
 		0) == 0 && haystack + regmatches[0].rm_so <= start) {
@@ -355,7 +355,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 		return retval;
 	    }
 	} else
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 	if (regexec(&search_regexp, start, 10, regmatches,
 		(start > haystack) ? REG_NOTBOL : 0) == 0) {
 	    const char *retval = start + regmatches[0].rm_so;
@@ -366,17 +366,17 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 	return NULL;
     }
 #endif /* HAVE_REGEX_H */
-#if !defined(NANO_TINY) || !defined(DISABLE_SPELLER)
+#if !defined(PINOT_TINY) || !defined(DISABLE_SPELLER)
     if (ISSET(CASE_SENSITIVE)) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH))
 	    return revstrstr(haystack, needle, start);
 	else
 #endif
 	    return strstr(start, needle);
     }
-#endif /* !DISABLE_SPELLER || !NANO_TINY */
-#ifndef NANO_TINY
+#endif /* !DISABLE_SPELLER || !PINOT_TINY */
+#ifndef PINOT_TINY
     else if (ISSET(BACKWARDS_SEARCH))
 	return mbrevstrcasestr(haystack, needle, start);
 #endif
@@ -402,7 +402,7 @@ void *nmalloc(size_t howmuch)
     void *r = malloc(howmuch);
 
     if (r == NULL && howmuch != 0)
-	die(_("nano is out of memory!"));
+	die(_("pinot is out of memory!"));
 
     return r;
 }
@@ -414,7 +414,7 @@ void *nrealloc(void *ptr, size_t howmuch)
     void *r = realloc(ptr, howmuch);
 
     if (r == NULL && howmuch != 0)
-	die(_("nano is out of memory!"));
+	die(_("pinot is out of memory!"));
 
     return r;
 }
@@ -453,7 +453,7 @@ char *mallocstrassn(char *dest, char *src)
     return src;
 }
 
-/* nano scrolls horizontally within a line in chunks.  Return the column
+/* pinot scrolls horizontally within a line in chunks.  Return the column
  * number of the first character displayed in the edit window when the
  * cursor is at the given column.  Note that (0 <= column -
  * get_page_start(column) < COLS). */
@@ -549,7 +549,7 @@ void new_magicline(void)
     openfile->totsize++;
 }
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 /* Remove the magicline from filebot, if there is one and it isn't the
  * only line in the file.  Assume that edittop and current are not at
  * filebot. */

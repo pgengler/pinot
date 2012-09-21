@@ -43,17 +43,17 @@ static bool disable_cursorpos = FALSE;
 
 /* Control character compatibility:
  *
- * - NANO_BACKSPACE_KEY is Ctrl-H, which is Backspace under ASCII, ANSI,
+ * - PINOT_BACKSPACE_KEY is Ctrl-H, which is Backspace under ASCII, ANSI,
  *   VT100, and VT220.
- * - NANO_TAB_KEY is Ctrl-I, which is Tab under ASCII, ANSI, VT100,
+ * - PINOT_TAB_KEY is Ctrl-I, which is Tab under ASCII, ANSI, VT100,
  *   VT220, and VT320.
- * - NANO_ENTER_KEY is Ctrl-M, which is Enter under ASCII, ANSI, VT100,
+ * - PINOT_ENTER_KEY is Ctrl-M, which is Enter under ASCII, ANSI, VT100,
  *   VT220, and VT320.
- * - NANO_XON_KEY is Ctrl-Q, which is XON under ASCII, ANSI, VT100,
+ * - PINOT_XON_KEY is Ctrl-Q, which is XON under ASCII, ANSI, VT100,
  *   VT220, and VT320.
- * - NANO_XOFF_KEY is Ctrl-S, which is XOFF under ASCII, ANSI, VT100,
+ * - PINOT_XOFF_KEY is Ctrl-S, which is XOFF under ASCII, ANSI, VT100,
  *   VT220, and VT320.
- * - NANO_CONTROL_8 is Ctrl-8 (Ctrl-?), which is Delete under ASCII,
+ * - PINOT_CONTROL_8 is Ctrl-8 (Ctrl-?), which is Delete under ASCII,
  *   ANSI, VT100, and VT220, and which is Backspace under VT320.
  *
  * Note: VT220 and VT320 also generate Esc [ 3 ~ for Delete.  By
@@ -113,7 +113,7 @@ void get_key_buffer(WINDOW *win)
 	return;
 
     /* Read in the first character using blocking input. */
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     allow_pending_sigwinch(TRUE);
 #endif
 
@@ -138,7 +138,7 @@ void get_key_buffer(WINDOW *win)
 		handle_hupterm(0);
 	}
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     allow_pending_sigwinch(FALSE);
 #endif
 
@@ -152,7 +152,7 @@ void get_key_buffer(WINDOW *win)
     nodelay(win, TRUE);
 
     while (TRUE) {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	allow_pending_sigwinch(TRUE);
 #endif
 
@@ -169,7 +169,7 @@ void get_key_buffer(WINDOW *win)
 		sizeof(int));
 	key_buffer[key_buffer_len - 1] = input;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	allow_pending_sigwinch(FALSE);
 #endif
     }
@@ -191,7 +191,7 @@ size_t get_key_buffer_len(void)
 /* Add the keystrokes in input to the keystroke buffer. */
 void unget_input(int *input, size_t input_len)
 {
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     allow_pending_sigwinch(TRUE);
     allow_pending_sigwinch(FALSE);
 #endif
@@ -235,7 +235,7 @@ void unget_kbinput(int kbinput, bool meta_key, bool func_key)
     unget_input(&kbinput, 1);
 
     if (meta_key) {
-	kbinput = NANO_CONTROL_3;
+	kbinput = PINOT_CONTROL_3;
 	unget_input(&kbinput, 1);
     }
 }
@@ -249,7 +249,7 @@ int *get_input(WINDOW *win, size_t input_len)
 {
     int *input;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     allow_pending_sigwinch(TRUE);
     allow_pending_sigwinch(FALSE);
 #endif
@@ -344,7 +344,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
     switch (*kbinput) {
 	case ERR:
 	    break;
-	case NANO_CONTROL_3:
+	case PINOT_CONTROL_3:
 	    /* Increment the escape counter. */
 	    escapes++;
 	    switch (escapes) {
@@ -496,7 +496,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 
     if (retval != ERR) {
 	switch (retval) {
-	    case NANO_CONTROL_8:
+	    case PINOT_CONTROL_8:
 		retval = ISSET(REBIND_DELETE) ? sc_seq_or(do_delete, 0) :
 			sc_seq_or(do_backspace, 0);
 		break;
@@ -623,9 +623,9 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 		retval = ERR;
 		break;
 #endif
-#if !defined(NANO_TINY) && defined(KEY_RESIZE)
+#if !defined(PINOT_TINY) && defined(KEY_RESIZE)
 	    /* Since we don't change the default SIGWINCH handler when
-	     * NANO_TINY is defined, KEY_RESIZE is never generated.
+	     * PINOT_TINY is defined, KEY_RESIZE is never generated.
 	     * Also, Slang and SunOS 5.7-5.9 don't support
 	     * KEY_RESIZE. */
 	    case KEY_RESIZE:
@@ -1449,16 +1449,16 @@ int get_control_kbinput(int kbinput)
 
      /* Ctrl-Space (Ctrl-2, Ctrl-@, Ctrl-`) */
     if (kbinput == ' ' || kbinput == '2')
-	retval = NANO_CONTROL_SPACE;
+	retval = PINOT_CONTROL_SPACE;
     /* Ctrl-/ (Ctrl-7, Ctrl-_) */
     else if (kbinput == '/')
-	retval = NANO_CONTROL_7;
+	retval = PINOT_CONTROL_7;
     /* Ctrl-3 (Ctrl-[, Esc) to Ctrl-7 (Ctrl-/, Ctrl-_) */
     else if ('3' <= kbinput && kbinput <= '7')
 	retval = kbinput - 24;
     /* Ctrl-8 (Ctrl-?) */
     else if (kbinput == '8' || kbinput == '?')
-	retval = NANO_CONTROL_8;
+	retval = PINOT_CONTROL_8;
     /* Ctrl-@ (Ctrl-Space, Ctrl-2, Ctrl-`) to Ctrl-_ (Ctrl-/, Ctrl-7) */
     else if ('@' <= kbinput && kbinput <= '_')
 	retval = kbinput - '@';
@@ -1999,7 +1999,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 
 	/* If buf contains a tab character, interpret it. */
 	if (*buf_mb == '\t') {
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
 	    if (ISSET(WHITESPACE_DISPLAY)) {
 		int i;
 
@@ -2034,7 +2034,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 	    free(ctrl_buf_mb);
 	/* If buf contains a space character, interpret it. */
 	} else if (*buf_mb == ' ') {
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
 	    if (ISSET(WHITESPACE_DISPLAY)) {
 		int i;
 
@@ -2081,10 +2081,10 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 }
 
 /* If path is NULL, we're in normal editing mode, so display the current
- * version of nano, the current filename, and whether the current file
+ * version of pinot, the current filename, and whether the current file
  * has been modified on the titlebar.  If path isn't NULL, we're in the
  * file browser, and path contains the directory to start the file
- * browser in, so display the current version of nano and the contents
+ * browser in, so display the current version of pinot and the contents
  * of path on the titlebar. */
 void titlebar(const char *path)
 {
@@ -2269,7 +2269,7 @@ void statusbar(const char *msg, ...)
     va_list ap;
     char *bar, *foo;
     size_t start_x, foo_len;
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
     bool old_whitespace;
 #endif
 
@@ -2285,7 +2285,7 @@ void statusbar(const char *msg, ...)
 
     blank_statusbar();
 
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
     old_whitespace = ISSET(WHITESPACE_DISPLAY);
     UNSET(WHITESPACE_DISPLAY);
 #endif
@@ -2293,7 +2293,7 @@ void statusbar(const char *msg, ...)
     vsnprintf(bar, mb_cur_max() * (COLS - 3), msg, ap);
     va_end(ap);
     foo = display_string(bar, 0, COLS - 4, FALSE);
-#if !defined(NANO_TINY) && defined(ENABLE_NANORC)
+#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
     if (old_whitespace)
 	SET(WHITESPACE_DISPLAY);
 #endif
@@ -2321,7 +2321,7 @@ void statusbar(const char *msg, ...)
      * keystroke.  Otherwise, blank it after twenty-six keystrokes, as
      * Pico does. */
     statusblank =
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	ISSET(QUICK_BLANK) && !ISSET(CONST_UPDATE) ? 1 :
 #endif
 	26;
@@ -2466,7 +2466,7 @@ void reset_cursor(void)
 void edit_draw(filestruct *fileptr, const char *converted, int
 	line, size_t start)
 {
-#if !defined(NANO_TINY) || defined(ENABLE_COLOR)
+#if !defined(PINOT_TINY) || defined(ENABLE_COLOR)
     size_t startpos = actual_x(fileptr->data, start);
 	/* The position in fileptr->data of the leftmost character
 	 * that displays at least partially on the window. */
@@ -2790,7 +2790,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
     }
 #endif /* ENABLE_COLOR */
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
     /* If the mark is on, we need to display it. */
     if (openfile->mark_set && (fileptr->lineno <=
 	openfile->mark_begin->lineno || fileptr->lineno <=
@@ -2859,7 +2859,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 	    wattroff(edit, reverse_attr);
 	}
     }
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 }
 
 /* Just update one line in the edit buffer.  This is basically a wrapper
@@ -2952,7 +2952,7 @@ int update_line(filestruct *fileptr, size_t index)
 bool need_horizontal_update(size_t pww_save)
 {
     return
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	openfile->mark_set ||
 #endif
 	get_page_start(pww_save) !=
@@ -2965,7 +2965,7 @@ bool need_horizontal_update(size_t pww_save)
 bool need_vertical_update(size_t pww_save)
 {
     return
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	openfile->mark_set ||
 #endif
 	get_page_start(pww_save) !=
@@ -3164,7 +3164,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 #endif
 	filestruct *old_edittop = openfile->edittop;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* If the mark is on, update all the lines between old_current
 	 * and either the old first line or old last line (depending on
 	 * whether we've scrolled up or down) of the edit window. */
@@ -3188,7 +3188,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			foo->next;
 	    }
 	}
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 	/* Put edittop in range of current, get the difference in lines
 	 * between the original edittop and the current edittop, and
@@ -3200,7 +3200,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 	if (do_redraw)
 	    update_line(old_current, 0);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	/* If the mark is on, update all the lines between the old first
 	 * line or old last line of the edit window (depending on
 	 * whether we've scrolled up or down) and current. */
@@ -3212,7 +3212,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			foo->prev : foo->next;
 	    }
 	}
-#endif /* !NANO_TINY */
+#endif /* !PINOT_TINY */
 
 	return;
     }
@@ -3226,12 +3226,12 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 	if (do_redraw)
 	    update_line(foo, 0);
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	if (!openfile->mark_set)
 #endif
 	    break;
 
-#ifndef NANO_TINY
+#ifndef PINOT_TINY
 	foo = (foo->lineno > openfile->current->lineno) ? foo->prev :
 		foo->next;
 #endif
@@ -3456,7 +3456,7 @@ void do_replace_highlight(bool highlight, const char *word)
 	wattroff(edit, reverse_attr);
 }
 
-#ifdef NANO_EXTRA
+#ifdef PINOT_EXTRA
 #define CREDIT_LEN 55
 #define XLCREDIT_LEN 8
 
@@ -3468,11 +3468,13 @@ void do_credits(void)
     bool old_no_help = ISSET(NO_HELP);
     int kbinput = ERR, crpos = 0, xlpos = 0;
     const char *credits[CREDIT_LEN] = {
-	NULL,				/* "The nano text editor" */
+	NULL,				/* "The pinot text editor" */
 	NULL,				/* "version" */
 	VERSION,
 	"",
 	NULL,				/* "Brought to you by:" */
+  "Phil Gengler",
+	NULL,       /* "The original nano developers:" */
 	"Chris Allegretta",
 	"Jordi Mallach",
 	"Adam Rogoyski",
@@ -3511,7 +3513,7 @@ void do_credits(void)
 	"Zeyd Ben-Halim",
 	"Eric S. Raymond",
 	NULL,				/* "and anyone else we forgot..." */
-	NULL,				/* "Thank you for using nano!" */
+	NULL,				/* "Thank you for using pinot!" */
 	"",
 	"",
 	"",
@@ -3522,18 +3524,19 @@ void do_credits(void)
 	"",
 	"",
 	"",
-	"http://www.nano-editor.org/"
+	"http://github.com/pgengler"
     };
 
     const char *xlcredits[XLCREDIT_LEN] = {
-	N_("The nano text editor"),
+	N_("The pinot text editor"),
 	N_("version"),
 	N_("Brought to you by:"),
+	N_("The original nano developers:"),
 	N_("Special thanks to:"),
 	N_("The Free Software Foundation"),
 	N_("For ncurses:"),
 	N_("and anyone else we forgot..."),
-	N_("Thank you for using nano!")
+	N_("Thank you for using pinot!")
     };
 
     /* credits[15]: Make sure this name is displayed properly, since we
@@ -3621,4 +3624,4 @@ void do_credits(void)
 
     total_refresh();
 }
-#endif /* NANO_EXTRA */
+#endif /* PINOT_EXTRA */
