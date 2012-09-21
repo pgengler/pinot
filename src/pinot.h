@@ -1,6 +1,5 @@
-/* $Id: nano.h 4535 2011-02-26 14:22:37Z astyanax $ */
 /**************************************************************************
- *   nano.h                                                               *
+ *   pinot.h                                                              *
  *                                                                        *
  *   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,  *
  *   2008, 2009 Free Software Foundation, Inc.                            *
@@ -21,8 +20,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef NANO_H
-#define NANO_H 1
+#ifndef PINOT_H
+#define PINOT_H 1
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -794,4 +793,4 @@ enum
 /* The maximum number of bytes buffered at one time. */
 #define MAX_BUF_SIZE 128
 
-#endif /* !NANO_H */
+#endif /* !PINOT_H */

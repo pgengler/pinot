@@ -203,7 +203,7 @@ nano_SOURCES = browser.c \
 		help.c \
 		move.c \
 		nano.c \
-		nano.h \
+		pinot.h \
 		prompt.c \
 		proto.h \
 		rcfile.c \

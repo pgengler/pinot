@@ -24,7 +24,7 @@
 #ifndef PROTO_H
 #define PROTO_H 1
 
-#include "nano.h"
+#include "pinot.h"
 
 /* All external variables.  See global.c for their descriptions. */
 #ifndef NANO_TINY
