@@ -4,32 +4,32 @@ else
 SUBDIRS =
 endif
 
-if USE_NANORC
-man_MANS = nano.1 nanorc.5 rnano.1
+if USE_PINOTRC
+man_MANS = pinot.1 pinotrc.5 rpinot.1
 if GROFF_HTML
-BUILT_SOURCES = nano.1.html nanorc.5.html rnano.1.html
+BUILT_SOURCES = pinot.1.html pinotrc.5.html rpinot.1.html
 endif
 else
-man_MANS = nano.1 rnano.1
+man_MANS = pinot.1 rpinot.1
 if GROFF_HTML
-BUILT_SOURCES = nano.1.html rnano.1.html
+BUILT_SOURCES = pinot.1.html rpinot.1.html
 endif
 endif
 
-nano_man_mans = nano.1 nanorc.5 rnano.1
+pinot_man_mans = pinot.1 pinotrc.5 rpinot.1
 if GROFF_HTML
-htmlman_DATA = nano.1.html nanorc.5.html rnano.1.html
-htmlmandir = $(datadir)/nano/man-html
-nano_built_sources = nano.1.html nanorc.5.html rnano.1.html
+htmlman_DATA = pinot.1.html pinotrc.5.html rpinot.1.html
+htmlmandir = $(datadir)/pinot/man-html
+pinot_built_sources = pinot.1.html pinotrc.5.html rpinot.1.html
 
-nano.1.html: nano.1
+pinot.1.html: pinot.1
 	groff -t -mandoc -Thtml < $? > $@
-nanorc.5.html: nanorc.5
+pinotrc.5.html: pinotrc.5
 	groff -t -mandoc -Thtml < $? > $@
-rnano.1.html: rnano.1
+rpinot.1.html: rpinot.1
 	groff -t -mandoc -Thtml < $? > $@
 
-EXTRA_DIST = $(nano_man_mans) $(nano_built_sources)
+EXTRA_DIST = $(pinot_man_mans) $(pinot_built_sources)
 else 
-EXTRA_DIST = $(nano_man_mans)
+EXTRA_DIST = $(pinot_man_mans)
 endif

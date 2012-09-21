@@ -242,16 +242,16 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @USE_NLS_FALSE@SUBDIRS = 
 @USE_NLS_TRUE@SUBDIRS = fr
-@USE_NANORC_FALSE@man_MANS = nano.1 rnano.1
-@USE_NANORC_TRUE@man_MANS = nano.1 nanorc.5 rnano.1
-@GROFF_HTML_TRUE@@USE_NANORC_FALSE@BUILT_SOURCES = nano.1.html rnano.1.html
-@GROFF_HTML_TRUE@@USE_NANORC_TRUE@BUILT_SOURCES = nano.1.html nanorc.5.html rnano.1.html
-nano_man_mans = nano.1 nanorc.5 rnano.1
-@GROFF_HTML_TRUE@htmlman_DATA = nano.1.html nanorc.5.html rnano.1.html
-@GROFF_HTML_TRUE@htmlmandir = $(datadir)/nano/man-html
-@GROFF_HTML_TRUE@nano_built_sources = nano.1.html nanorc.5.html rnano.1.html
-@GROFF_HTML_FALSE@EXTRA_DIST = $(nano_man_mans)
-@GROFF_HTML_TRUE@EXTRA_DIST = $(nano_man_mans) $(nano_built_sources)
+@USE_PINOTRC_FALSE@man_MANS = pinot.1 rpinot.1
+@USE_PINOTRC_TRUE@man_MANS = pinot.1 pinotrc.5 rpinot.1
+@GROFF_HTML_TRUE@@USE_PINOTRC_FALSE@BUILT_SOURCES = pinot.1.html rpinot.1.html
+@GROFF_HTML_TRUE@@USE_PINOTRC_TRUE@BUILT_SOURCES = pinot.1.html pinotrc.5.html rpinot.1.html
+pinot_man_mans = pinot.1 pinotrc.5 rpinot.1
+@GROFF_HTML_TRUE@htmlman_DATA = pinot.1.html pinotrc.5.html rpinot.1.html
+@GROFF_HTML_TRUE@htmlmandir = $(datadir)/pinot/man-html
+@GROFF_HTML_TRUE@pinot_built_sources = pinot.1.html pinotrc.5.html rpinot.1.html
+@GROFF_HTML_FALSE@EXTRA_DIST = $(pinot_man_mans)
+@GROFF_HTML_TRUE@EXTRA_DIST = $(pinot_man_mans) $(pinot_built_sources)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -713,11 +713,11 @@ uninstall-man: uninstall-man1 uninstall-man5
 	uninstall-man uninstall-man1 uninstall-man5
 
 
-@GROFF_HTML_TRUE@nano.1.html: nano.1
+@GROFF_HTML_TRUE@pinot.1.html: pinot.1
 @GROFF_HTML_TRUE@	groff -t -mandoc -Thtml < $? > $@
-@GROFF_HTML_TRUE@nanorc.5.html: nanorc.5
+@GROFF_HTML_TRUE@pinotrc.5.html: pinotrc.5
 @GROFF_HTML_TRUE@	groff -t -mandoc -Thtml < $? > $@
-@GROFF_HTML_TRUE@rnano.1.html: rnano.1
+@GROFF_HTML_TRUE@rpinot.1.html: rpinot.1
 @GROFF_HTML_TRUE@	groff -t -mandoc -Thtml < $? > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
