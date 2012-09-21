@@ -805,7 +805,7 @@ int filesearch_init(void)
 	ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
 #endif
 	"",
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* This string is just a modifier for the search prompt; no
 	 * grammar is implied. */
 	ISSET(USE_REGEXP) ? _(" [Regexp]") :
@@ -832,7 +832,7 @@ int filesearch_init(void)
     } else {
         s = get_shortcut(MBROWSER, &i, &meta_key, &func_key);
 	if (i == -2 || i == 0) {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 		/* Use last_search if answer is an empty string, or
 		 * answer if it isn't. */
 		if (ISSET(USE_REGEXP) && !regexp_init((i == -2) ?
@@ -851,7 +851,7 @@ int filesearch_init(void)
 		return 1;
 	} else
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	if (s && s->scfunc == regexp_void) {
 		TOGGLE(USE_REGEXP);
 		backupstring = mallocstrcpy(backupstring, answer);
@@ -954,7 +954,7 @@ void filesearch_abort(void)
 {
     currmenu = MBROWSER;
     bottombars(MBROWSER);
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     regexp_cleanup();
 #endif
 }
@@ -970,7 +970,7 @@ void do_filesearch(void)
     if (i == -1)	/* Cancel, blank search string, or regcomp()
 			 * failed. */
 	filesearch_abort();
-#if !defined(PINOT_TINY) || defined(HAVE_REGEX_H)
+#if !defined(PINOT_TINY) || defined(HAVE_PCREPOSIX_H)
     else if (i == 1)	/* Case Sensitive, Backwards, or Regexp search
 			 * toggle. */
 	do_filesearch();
@@ -1018,7 +1018,7 @@ void do_fileresearch(void)
     search_init_globals();
 
     if (last_search[0] != '\0') {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* Since answer is "", use last_search! */
 	if (ISSET(USE_REGEXP) && !regexp_init(last_search))
 	    return;

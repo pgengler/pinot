@@ -104,7 +104,7 @@ char *brackets = NULL;
 	 * can end sentences. */
 char *quotestr = NULL;
 	/* The quoting string.  The default value is set in main(). */
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 regex_t quotereg;
 	/* The compiled regular expression from the quoting string. */
 int quoterc;
@@ -184,7 +184,7 @@ poshiststruct *poshistory;
 #endif
 
 /* Regular expressions. */
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 regex_t search_regexp;
 	/* The compiled regular expression to use in searches. */
 regmatch_t regmatches[10];
@@ -467,7 +467,7 @@ const char *case_sens_msg = N_("Case Sens");
 const char *backwards_msg = N_("Backwards");
 #endif
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 const char *regexp_msg = N_("Regexp");
 #endif
 
@@ -650,7 +650,7 @@ void shortcut_init(bool unjustify)
     const char *pinot_reverse_msg =
 	N_("Reverse the direction of the search");
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     const char *pinot_regexp_msg =
 	N_("Toggle the use of regular expressions");
 #endif
@@ -969,7 +969,7 @@ void shortcut_init(bool unjustify)
 	backwards_msg, IFSCHELP(pinot_reverse_msg), FALSE, VIEW);
 #endif
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     add_to_funcs(regexp_void,
 	(MWHEREIS|MREPLACE|MWHEREISFILE),
 	regexp_msg, IFSCHELP(pinot_regexp_msg), FALSE, VIEW);
@@ -1637,7 +1637,7 @@ void thanks_for_all_the_fish(void)
 #ifndef DISABLE_JUSTIFY
     if (quotestr != NULL)
 	free(quotestr);
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     regfree(&quotereg);
     if (quoteerr != NULL)
 	free(quoteerr);

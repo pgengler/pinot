@@ -70,7 +70,7 @@ extern undo_type last_action;
 extern char *punct;
 extern char *brackets;
 extern char *quotestr;
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 extern regex_t quotereg;
 extern int quoterc;
 extern char *quoteerr;
@@ -117,7 +117,7 @@ extern poshiststruct *poshistory;
 void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos);
 #endif
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 extern regex_t search_regexp;
 extern regmatch_t regmatches[10];
 #endif
@@ -569,7 +569,7 @@ void do_rcfile(void);
 #endif
 
 /* All functions in search.c. */
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 bool regexp_init(const char *regexp);
 void regexp_cleanup(void);
 #endif
@@ -588,7 +588,7 @@ void do_search(void);
 #ifndef PINOT_TINY
 void do_research(void);
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 int replace_regexp(char *string, bool create);
 #endif
 char *replace_line(const char *needle);
@@ -703,7 +703,7 @@ ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
 ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 #endif
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);
 const char *fixbounds(const char *r);
 #endif
@@ -834,7 +834,7 @@ extern const char *new_buffer_msg;
 void enable_nodelay(void);
 void disable_nodelay(void);
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 extern const char *regexp_msg;
 #endif
 

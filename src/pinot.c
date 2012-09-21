@@ -2505,13 +2505,13 @@ int main(int argc, char **argv)
     /* If quotestr wasn't specified, set its default value. */
     if (quotestr == NULL)
 	quotestr = mallocstrcpy(NULL,
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 		"^([ \t]*[#:>|}])+"
 #else
 		"> "
 #endif
 		);
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     quoterc = regcomp(&quotereg, quotestr, REG_EXTENDED);
 
     if (quoterc == 0) {
@@ -2526,7 +2526,7 @@ int main(int argc, char **argv)
     }
 #else
     quotelen = strlen(quotestr);
-#endif /* !HAVE_REGEX_H */
+#endif /* !HAVE_PCREPOSIX_H */
 #endif /* !DISABLE_JUSTIFY */
 
 #ifndef DISABLE_SPELLER

@@ -6770,7 +6770,7 @@ $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
 
-for ac_header in getopt.h libintl.h limits.h regex.h sys/param.h wchar.h wctype.h stdarg.h magic.h
+for ac_header in getopt.h libintl.h limits.h pcreposix.h sys/param.h wchar.h wctype.h stdarg.h magic.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -6945,7 +6945,7 @@ fi
 # Check whether --enable-color was given.
 if test "${enable_color+set}" = set; then :
   enableval=$enable_color; if test x$enableval != xno; then
-    if test x$ac_cv_header_regex_h = xyes; then
+    if test x$ac_cv_header_pcreposix_h = xyes; then
 
 $as_echo "#define ENABLE_PINOTRC 1" >>confdefs.h
  pinotrc_support=yes
@@ -6954,15 +6954,15 @@ $as_echo "#define ENABLE_COLOR 1" >>confdefs.h
  color_support=yes
     else
 	as_fn_error $? "
-*** The header file regex.h was not found.  If you wish to use color
+*** The header file pcreposix.h was not found.  If you wish to use color
 *** support this header file is required.  Please either install C
-*** libraries that include the regex.h file or call the configure
+*** libraries that include the pcreposix.h file or call the configure
 *** script with --disable-color." "$LINENO" 5
     fi
 fi
 else
   if test x$enable_tiny != xyes; then
-	if test x$ac_cv_header_regex_h = xyes; then
+	if test x$ac_cv_header_pcreposix_h = xyes; then
 
 $as_echo "#define ENABLE_PINOTRC 1" >>confdefs.h
  pinotrc_support=yes
@@ -6971,9 +6971,9 @@ $as_echo "#define ENABLE_COLOR 1" >>confdefs.h
  color_support=yes
 	else
 	    as_fn_error $? "
-*** The header file regex.h was not found.  If you wish to use color
+*** The header file pcreposix.h was not found.  If you wish to use color
 *** support this header file is required.  Please either install C
-*** libraries that include the regex.h file or call the configure
+*** libraries that include the pcreposix.h file or call the configure
 *** script with --disable-color." "$LINENO" 5
 	fi
     fi
@@ -8321,6 +8321,63 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+
+for ac_header in pcreposix.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "pcreposix.h" "ac_cv_header_pcreposix_h" "$ac_includes_default"
+if test "x$ac_cv_header_pcreposix_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PCREPOSIX_H 1
+_ACEOF
+
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for regcomp in -lpcreposix" >&5
+$as_echo_n "checking for regcomp in -lpcreposix... " >&6; }
+if ${ac_cv_lib_pcreposix_regcomp+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpcreposix  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char regcomp ();
+int
+main ()
+{
+return regcomp ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pcreposix_regcomp=yes
+else
+  ac_cv_lib_pcreposix_regcomp=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pcreposix_regcomp" >&5
+$as_echo "$ac_cv_lib_pcreposix_regcomp" >&6; }
+if test "x$ac_cv_lib_pcreposix_regcomp" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPCREPOSIX 1
+_ACEOF
+
+  LIBS="-lpcreposix $LIBS"
+
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for magic_open in -lmagic" >&5
 $as_echo_n "checking for magic_open in -lmagic... " >&6; }

@@ -32,8 +32,8 @@
 /* Define this to disable all text wrapping. */
 #undef DISABLE_WRAPPING
 
-/* Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC
-   too! */
+/* Define this to have syntax highlighting, requires pcreposix.h and
+   ENABLE_PINOTRC too! */
 #undef ENABLE_COLOR
 
 /* Define this to enable multiple file buffers. */
@@ -106,6 +106,9 @@
 /* Define to 1 if you have the `magic' library (-lmagic). */
 #undef HAVE_LIBMAGIC
 
+/* Define to 1 if you have the `pcreposix' library (-lpcreposix). */
+#undef HAVE_LIBPCREPOSIX
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -130,8 +133,8 @@
 /* Define to 1 if you have the `nl_langinfo' function. */
 #undef HAVE_NL_LANGINFO
 
-/* Define to 1 if you have the <regex.h> header file. */
-#undef HAVE_REGEX_H
+/* Define to 1 if you have the <pcreposix.h> header file. */
+#undef HAVE_PCREPOSIX_H
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H

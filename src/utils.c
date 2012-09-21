@@ -245,7 +245,7 @@ ssize_t ngetline(char **lineptr, size_t *n, FILE *stream)
 #endif
 #endif /* ENABLE_PINOTRC */
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 /* Do the compiled regex in preg and the regex in string match the
  * beginning or end of a line? */
 bool regexp_bol_or_eol(const regex_t *preg, const char *string)
@@ -335,7 +335,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 
     assert(haystack != NULL && needle != NULL && start != NULL);
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     if (ISSET(USE_REGEXP)) {
 #ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH)) {
@@ -365,7 +365,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 	}
 	return NULL;
     }
-#endif /* HAVE_REGEX_H */
+#endif /* HAVE_PCREPOSIX_H */
 #if !defined(PINOT_TINY) || !defined(DISABLE_SPELLER)
     if (ISSET(CASE_SENSITIVE)) {
 #ifndef PINOT_TINY

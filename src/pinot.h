@@ -111,8 +111,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#ifdef HAVE_REGEX_H
-#include <regex.h>
+#ifdef HAVE_PCREPOSIX_H
+#include <pcreposix.h>
 #endif
 #ifndef PINOT_TINY
 #include <setjmp.h>

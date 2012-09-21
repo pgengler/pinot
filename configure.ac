@@ -47,7 +47,7 @@ AC_DEFINE_DIR([PKGDATADIR], [pkgdatadir], [Where data are placed to.])
 dnl Checks for header files.
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(getopt.h libintl.h limits.h regex.h sys/param.h wchar.h wctype.h stdarg.h magic.h)
+AC_CHECK_HEADERS(getopt.h libintl.h limits.h pcreposix.h sys/param.h wchar.h wctype.h stdarg.h magic.h)
 
 dnl Checks for options.
 
@@ -142,26 +142,26 @@ fi])
 AC_ARG_ENABLE(color,
 [  --disable-color          Disable color and syntax highlighting],
 if test x$enableval != xno; then
-    if test x$ac_cv_header_regex_h = xyes; then
+    if test x$ac_cv_header_pcreposix_h = xyes; then
 	AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
 	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC too!]) color_support=yes
     else
 	AC_MSG_ERROR([
-*** The header file regex.h was not found.  If you wish to use color
+*** The header file pcreposix.h was not found.  If you wish to use color
 *** support this header file is required.  Please either install C
-*** libraries that include the regex.h file or call the configure
+*** libraries that include the pcreposix.h file or call the configure
 *** script with --disable-color.])
     fi
 fi, 
     if test x$enable_tiny != xyes; then
-	if test x$ac_cv_header_regex_h = xyes; then
+	if test x$ac_cv_header_pcreposix_h = xyes; then
 	    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
 	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires regex.h and ENABLE_PINOTRC too!]) color_support=yes	
 	else
 	    AC_MSG_ERROR([
-*** The header file regex.h was not found.  If you wish to use color
+*** The header file pcreposix.h was not found.  If you wish to use color
 *** support this header file is required.  Please either install C
-*** libraries that include the regex.h file or call the configure
+*** libraries that include the pcreposix.h file or call the configure
 *** script with --disable-color.])
 	fi
     fi
@@ -580,6 +580,8 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_WARN([*** Can't check for macro redefinability when cross-compiling]))
 
+AC_CHECK_HEADERS(pcreposix.h)
+AC_CHECK_LIB(pcreposix, regcomp)
 AC_CHECK_LIB(magic, magic_open)
 
 # Check for groff html support
