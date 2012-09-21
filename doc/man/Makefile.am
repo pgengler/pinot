@@ -1,5 +1,5 @@
 if USE_NLS
-SUBDIRS = fr
+SUBDIRS = 
 else
 SUBDIRS =
 endif
