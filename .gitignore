@@ -9,10 +9,10 @@ config.status
 Makefile
 stamp-h1
 
-doc/nanorc.sample
+doc/pinotrc.sample
 
 po/Makefile.in
 po/POTFILES
 
 src/.deps
-src/nano
+src/pinot
