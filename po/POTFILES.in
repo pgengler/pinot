@@ -5,7 +5,7 @@ src/browser.c
 src/files.c
 src/global.c
 src/help.c
-src/nano.c
+src/pinot.c
 src/prompt.c
 src/rcfile.c
 src/search.c
