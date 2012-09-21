@@ -675,6 +675,14 @@ COLORWIDTH color_to_short(const char *colorname, bool *bright)
     if (strncasecmp(colorname, "bright", 6) == 0) {
 	*bright = TRUE;
 	colorname += 6;
+    } else if (strncasecmp(colorname, "bold", 4) == 0) {
+	*bright = TRUE;
+	colorname += 4;
+    }
+
+    if (sscanf(colorname, "%hu", &mcolor) == 1) {
+	if (mcolor > 255) mcolor = 255;
+	return mcolor;
     }
 
     if (strcasecmp(colorname, "green") == 0)
@@ -739,7 +747,7 @@ void parse_colors(char *ptr, bool icase)
 	    bgcolorname = fgstr + 1;
 	    no_fgcolor = TRUE;
 	}
-	if (strncasecmp(bgcolorname, "bright", 6) == 0) {
+	if (strncasecmp(bgcolorname, "bright", 6) == 0 || strncasecmp(bgcolorname, "bold", 4) == 0) {
 	    rcfile_error(
 		N_("Background color \"%s\" cannot be bright"),
 		bgcolorname);
