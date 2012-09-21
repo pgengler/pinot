@@ -12,6 +12,9 @@ stamp-h1
 doc/pinotrc.sample
 
 po/Makefile.in
+po/*.po~
+po/*.pot
+po/remove-potcdate.sed
 po/POTFILES
 
 src/.deps
