@@ -1642,11 +1642,11 @@ void justify_format(filestruct *paragraph, size_t skip)
  * the quote string.  This function returns the length of the quote part
  * of the given line.
  *
- * Note that if !HAVE_REGEX_H then we match concatenated copies of
+ * Note that if !HAVE_PCREPOSIX_H then we match concatenated copies of
  * quotestr. */
 size_t quote_length(const char *line)
 {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     regmatch_t matches;
     int rc = regexec(&quotereg, line, 1, &matches, 0);
 
@@ -1655,14 +1655,14 @@ size_t quote_length(const char *line)
     /* matches.rm_so should be 0, since the quote string should start
      * with the caret ^. */
     return matches.rm_eo;
-#else	/* !HAVE_REGEX_H */
+#else	/* !HAVE_PCREPOSIX_H */
     size_t qdepth = 0;
 
     /* Compute quote depth level. */
     while (strncmp(line + qdepth, quotestr, quotelen) == 0)
 	qdepth += quotelen;
     return qdepth;
-#endif	/* !HAVE_REGEX_H */
+#endif	/* !HAVE_PCREPOSIX_H */
 }
 
 /* a_line and b_line are lines of text.  The quotation part of a_line is
@@ -1870,7 +1870,7 @@ bool find_paragraph(size_t *const quote, size_t *const par)
 	/* The y-coordinate at the beginning of the paragraph we search
 	 * for. */
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     if (quoterc != 0) {
 	statusbar(_("Bad quote string %s: %s"), quotestr, quoteerr);
 	return FALSE;
@@ -2382,7 +2382,7 @@ bool do_int_spell_fix(const char *word)
 #ifndef NANO_TINY
     bool backwards_search_set = ISSET(BACKWARDS_SEARCH);
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     bool regexp_set = ISSET(USE_REGEXP);
 #endif
 #ifndef NANO_TINY
@@ -2403,7 +2403,7 @@ bool do_int_spell_fix(const char *word)
     /* Make sure spell-check goes forward only. */
     UNSET(BACKWARDS_SEARCH);
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     /* Make sure spell-check doesn't use regular expressions. */
     UNSET(USE_REGEXP);
 #endif
@@ -2527,7 +2527,7 @@ bool do_int_spell_fix(const char *word)
     if (backwards_search_set)
 	SET(BACKWARDS_SEARCH);
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     /* Restore regular expression usage setting. */
     if (regexp_set)
 	SET(USE_REGEXP);

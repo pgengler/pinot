@@ -36,7 +36,7 @@ static bool search_last_line = FALSE;
 static bool history_changed = FALSE;
 	/* Have any of the history lists changed? */
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 static bool regexp_compiled = FALSE;
 	/* Have we compiled any regular expressions? */
 
@@ -110,7 +110,7 @@ void search_replace_abort(void)
     if (openfile->mark_set)
 	edit_refresh();
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     regexp_cleanup();
 #endif
 }
@@ -189,7 +189,7 @@ int search_init(bool replacing, bool use_answer)
 	ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
 #endif
 	"",
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* TRANSLATORS: This string is just a modifier for the search
 	 * prompt; no grammar is implied. */
 	ISSET(USE_REGEXP) ? _(" [Regexp]") :
@@ -227,7 +227,7 @@ int search_init(bool replacing, bool use_answer)
 	    }
 
 	if (i == -2 || i == 0 ) {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 		/* Use last_search if answer is an empty string, or
 		 * answer if it isn't. */
 		if (ISSET(USE_REGEXP) && !regexp_init((i == -2) ?
@@ -245,7 +245,7 @@ int search_init(bool replacing, bool use_answer)
 		backupstring = mallocstrcpy(backupstring, answer);
 		return 1;
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	} else if (func == regexp_void) {
 		TOGGLE(USE_REGEXP);
 		backupstring = mallocstrcpy(backupstring, answer);
@@ -326,7 +326,7 @@ bool findnextstr(
 
 	    /* Set found_len to the length of the potential match. */
 	    found_len =
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 		ISSET(USE_REGEXP) ?
 		regmatches[0].rm_eo - regmatches[0].rm_so :
 #endif
@@ -461,7 +461,7 @@ void do_search(void)
     else if (i == -2)
 	/* Replace. */
 	do_replace();
-#if !defined(NANO_TINY) || defined(HAVE_REGEX_H)
+#if !defined(NANO_TINY) || defined(HAVE_PCREPOSIX_H)
     else if (i == 1)
 	/* Case Sensitive, Backwards, or Regexp search toggle. */
 	do_search();
@@ -494,7 +494,7 @@ void do_search(void)
      * we're on it now. */
     if (fileptr == openfile->current && fileptr_x ==
 	openfile->current_x && didfind) {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* Do the search again, skipping over the current line, if we're
 	 * doing a bol and/or eol regex search ("^", "$", or "^$"), so
 	 * that we find one only once per line.  We should only end up
@@ -514,7 +514,7 @@ void do_search(void)
 	} else {
 #endif
 	    statusbar(_("This is the only occurrence"));
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	}
 #endif
     }
@@ -536,7 +536,7 @@ void do_research(void)
     search_init_globals();
 
     if (last_search[0] != '\0') {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* Since answer is "", use last_search! */
 	if (ISSET(USE_REGEXP) && !regexp_init(last_search))
 	    return;
@@ -554,7 +554,7 @@ void do_research(void)
 	 * we're on it now. */
 	if (fileptr == openfile->current && fileptr_x ==
 		openfile->current_x && didfind) {
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	    /* Do the search again, skipping over the current line, if
 	     * we're doing a bol and/or eol regex search ("^", "$", or
 	     * "^$"), so that we find one only once per line.  We should
@@ -574,7 +574,7 @@ void do_research(void)
 	    } else {
 #endif
 		statusbar(_("This is the only occurrence"));
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	    }
 #endif
 	}
@@ -587,7 +587,7 @@ void do_research(void)
 }
 #endif
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 int replace_regexp(char *string, bool create)
 {
     /* We have a split personality here.  If create is FALSE, just
@@ -643,7 +643,7 @@ char *replace_line(const char *needle)
     size_t new_line_size, search_match_count;
 
     /* Calculate the size of the new line. */
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     if (ISSET(USE_REGEXP)) {
 	search_match_count = regmatches[0].rm_eo - regmatches[0].rm_so;
 	new_line_size = replace_regexp(NULL, FALSE);
@@ -652,7 +652,7 @@ char *replace_line(const char *needle)
 	search_match_count = strlen(needle);
 	new_line_size = strlen(openfile->current->data) -
 		search_match_count + strlen(answer) + 1;
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     }
 #endif
 
@@ -663,7 +663,7 @@ char *replace_line(const char *needle)
     strncpy(copy, openfile->current->data, openfile->current_x);
 
     /* The replacement text. */
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     if (ISSET(USE_REGEXP))
 	replace_regexp(copy + openfile->current_x, TRUE);
     else
@@ -697,7 +697,7 @@ ssize_t do_replace_loop(
     ssize_t numreplaced = -1;
     size_t match_len;
     bool replaceall = FALSE;
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
     /* The starting-line match and bol/eol regex flags. */
     bool begin_line = FALSE, bol_or_eol = FALSE;
 #endif
@@ -733,7 +733,7 @@ ssize_t do_replace_loop(
 #ifndef DISABLE_SPELLER
 	whole_word,
 #endif
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* We should find a bol and/or eol regex only once per line.  If
 	 * the bol_or_eol flag is set, it means that the last search
 	 * found one on the beginning line, so we should skip over the
@@ -745,7 +745,7 @@ ssize_t do_replace_loop(
 	, real_current, *real_current_x, needle, &match_len)) {
 	int i = 0;
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* If the bol_or_eol flag is set, we've found a match on the
 	 * beginning line already, and we're still on the beginning line
 	 * after the search, it means that we've wrapped around, so
@@ -795,7 +795,7 @@ ssize_t do_replace_loop(
 	    }
 	}
 
-#ifdef HAVE_REGEX_H
+#ifdef HAVE_PCREPOSIX_H
 	/* Set the bol_or_eol flag if we're doing a bol and/or eol regex
 	 * replace ("^", "$", or "^$"). */
 	if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp,
