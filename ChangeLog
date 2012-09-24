@@ -1,3 +1,7 @@
+0.0.2
+-----
+* Add M-` keyboard shortcut for executing a command but ignoring its output
+
 0.0.1
 -----
 Initial release (forked from nano v2.3.1)
