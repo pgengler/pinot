@@ -1,0 +1,8 @@
+0.0.1
+-----
+Initial release (forked from nano v2.3.1)
+* Rebrand as 'pinot'
+* Change from using POSIX regular expressions to PCRE regular expressions
+* Support 256 colors for syntax highlighting
+* Add 'underline' as an option for syntax highlighting
+
