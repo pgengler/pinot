@@ -1,5 +1,5 @@
 %define name	pinot
-%define version	0.0.1
+%define version	0.0.2
 %define release	1
 
 Summary	: Nano editor clone with enhancements
@@ -30,7 +30,7 @@ make DESTDIR="%{buildroot}" install
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS BUGS COPYING ChangeLog INSTALL NEWS README THANKS TODO doc/faq.html doc/pinotrc.sample
+%doc AUTHORS.nano BUGS COPYING ChangeLog INSTALL README THANKS TODO doc/faq.html doc/pinotrc.sample
 %{_bindir}/*
 %{_mandir}/man*/*
 %{_mandir}/fr/man*/*

@@ -840,6 +840,85 @@ bool execute_command(const char *command)
     return TRUE;
 }
 
+/* Execute command in a shell without saving its output. Returns -1 if an
+ * an error prevented execution, and the command's exit code if it was run. */
+bool execute_command_silently(const char *command)
+{
+    int fd[2];
+    char *shellenv;
+    struct sigaction oldaction, newaction;
+	/* Original and temporary handlers for SIGINT. */
+    bool sig_failed = FALSE;
+	/* Did sigaction() fail without changing the signal handlers? */
+    int status;
+
+    /* Make our pipes. */
+    if (pipe(fd) == -1) {
+	statusbar(_("Could not pipe"));
+	return FALSE;
+    }
+
+    /* Check $SHELL for the shell to use.  If it isn't set, use
+     * /bin/sh.  Note that $SHELL should contain only a path, with no
+     * arguments. */
+    shellenv = getenv("SHELL");
+    if (shellenv == NULL)
+	shellenv = (char *) "/bin/sh";
+
+    /* Fork a child. */
+    if ((pid = fork()) == 0) {
+	close(fd[0]);
+	close(fileno(stdout));
+	close(fileno(stderr));
+
+	/* If execl() returns at all, there was an error. */
+	execl(shellenv, tail(shellenv), "-c", command, NULL);
+	exit(0);
+    }
+
+    /* Continue as parent. */
+    close(fd[1]);
+
+    if (pid == -1) {
+	close(fd[0]);
+	statusbar(_("Could not fork"));
+	return -1;
+    }
+
+    /* Set things up so that Ctrl-C will cancel the new process. */
+
+    /* Enable interpretation of the special control keys so that we get
+     * SIGINT when Ctrl-C is pressed. */
+    enable_signals();
+
+    if (sigaction(SIGINT, NULL, &newaction) == -1) {
+	sig_failed = TRUE;
+	nperror("sigaction");
+    } else {
+	newaction.sa_handler = cancel_command;
+	if (sigaction(SIGINT, &newaction, &oldaction) == -1) {
+	    sig_failed = TRUE;
+	    nperror("sigaction");
+	}
+    }
+
+    /* Note that now oldaction is the previous SIGINT signal handler,
+     * to be restored later. */
+
+    if (wait(&status) == -1)
+	nperror("wait");
+
+    if (!sig_failed && sigaction(SIGINT, &oldaction, NULL) == -1)
+	nperror("sigaction");
+
+    /* Restore the terminal to its previous state.  In the process,
+     * disable interpretation of the special control keys so that we can
+     * use Ctrl-C for other things. */
+    terminal_init();
+
+    return WEXITSTATUS(status);
+}
+
 /* Add a new undo struct to the top of the current pile */
 void add_undo(undo_type current_action)
 {

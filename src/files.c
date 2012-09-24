@@ -786,6 +786,90 @@ char *get_next_filename(const char *name, const char *suffix)
     return buf;
 }
 
+/* Execute a command without inserting any output. The statusbar will show
+ * whether the command succeeded (exit code of 0) or failed (with the
+ * process's exit code shown). */
+#ifndef PINOT_TINY
+void do_execute_command()
+{
+	int i, status;
+	char statusbartext[50];
+	const char *msg;
+	char *ans = mallocstrcpy(NULL, "");
+	bool meta_key = FALSE, func_key = FALSE;
+	const sc *s;
+	currmenu = MEXTCMD;
+
+	while (TRUE) {
+		msg = _("Command to execute (no output) [from %s]");
+
+		i = do_prompt(TRUE,
+#ifndef DISABLE_TABCOMP
+			TRUE,
+#endif
+		MEXTCMD, ans, &meta_key, &func_key, NULL, edit_refresh, msg,
+#ifndef DISABLE_OPERATINGDIR
+		operating_dir != NULL && strcmp(operating_dir, ".") != 0 ? operating_dir :
+#endif
+		"./");
+
+		/* Cancel if the command was empty or the user cancelled */
+		if (i == -1 || (i == -2 || *answer == '\n')) {
+			statusbar(_("Cancelled"));
+			break;
+		} else {
+			ans = mallocstrcpy(ans, answer);
+
+			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
+
+#ifndef DISABLE_BROWSER
+			if (s && s->scfunc == to_files_void) {
+				char *tmp = do_browse_from(answer);
+
+				if (tmp == NULL)
+					continue;
+
+				/* User selected a file */
+				free(answer);
+				answer = tmp;
+
+				i = 0;
+			}
+#endif
+
+			/* If we don't have a file yet, go back to the prompt. */
+			if (i != 0)
+				continue;
+
+			/* Convert newlines to nulls before executing the command. */
+			sunder(answer);
+			align(&answer);
+
+			/* Execute the command without savings its output. */
+			status = execute_command_silently(answer);
+
+			/* Update the screen. */
+			edit_refresh();
+
+			/* Show success/failure indication in the status bar. */
+			if (status == 0)
+				sprintf(statusbartext, _("Command completed successfully"));
+			else
+				sprintf(statusbartext, _("Command failed with code %d"), status);
+
+			statusbar(statusbartext);
+
+			break;
+		}
+	}
+	shortcut_init(FALSE);
+
+	free(ans);
+
+	display_main_list();
+}
+#endif
+
 /* Insert a file into a new buffer if the MULTIBUFFER flag is set, or
  * into the current buffer if it isn't.  If execute is TRUE, insert the
  * output of an executed command instead of a file. */

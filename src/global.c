@@ -837,6 +837,9 @@ void shortcut_init(bool unjustify)
 	    IFSCHELP(pinot_redo_msg), TRUE, NOVIEW);
     }
 
+		add_to_funcs(do_execute_command, MMAIN, N_("Exec Cmd"),
+			IFSCHELP(pinot_execute_msg), FALSE, NOVIEW);
+
 #endif
 
     add_to_funcs(do_right, MMAIN, N_("Forward"), IFSCHELP(pinot_forward_msg),
@@ -1135,6 +1138,8 @@ void shortcut_init(bool unjustify)
     add_to_sclist(MALL, "^B", do_left, 0, TRUE);
     add_to_sclist(MMAIN, "^Space", do_next_word_void, 0, TRUE);
     add_to_sclist(MMAIN, "M-Space", do_prev_word_void, 0, TRUE);
+
+		add_to_sclist(MMAIN, "M-`", do_execute_command, 0, TRUE);
 #endif
     add_to_sclist(MALL, "kright", do_right, 0, TRUE);
     add_to_sclist(MALL, "kleft", do_left, 0, TRUE);
@@ -1354,6 +1359,8 @@ sc *strtosc(int menu, char *input)
 	s->scfunc = do_writeout_void;
     else if (!strcasecmp(input, "insert"))
 	s->scfunc = do_insertfile_void;
+    else if (!strcasecmp(input, "execute"))
+	s->scfunc = do_execute_command;
     else if (!strcasecmp(input, "whereis"))
 	s->scfunc = do_search;
     else if (!strcasecmp(input, "up"))
