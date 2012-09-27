@@ -1,0 +1,85 @@
+INSTRUCTIONS TO COMPILE AND INSTALL PINOT FROM GIT
+==================================================
+
+pinot is hosted on Github, but building from the raw source is slightly
+trickier than building from a release.
+
+
+Dependencies
+------------
+
+To successfully build pinot from Git, you'll need the following packages:
+
+- autoconf (version >= 2.54)
+- automake (version >= 1.7)
+- gettext  (version >= 0.11.5)
+- groff    (version >= 1.12)
+- texinfo  (version >= 4.0)
+- subversion (aka svn)
+- ssh (with support for the SSH version 2 protocol)
+- glib 2.x (if your system doesn't have vsnprintf(), which the configure
+  script will check for)
+- make, gcc and the normal development libraries (curses or slang, etc.)
+
+These should be available on your GNU mirror.  Note that you'll need a
+version of curses or slang with wide character support if you want pinot
+to use UTF-8.
+
+
+Download the source
+-------------------
+
+To get the latest pinot development code (called 'master'), use the
+following command. It will create a copy of the files in a subdirectory
+of your current working directory called 'pinot':
+
+    $ git clone git://github.com/pgengler/pinot.git
+
+(If you are interested in contributing to pinot, you may want to fork
+the project on Github and clone your fork instead.)
+
+
+Generate the configure script
+-----------------------------
+
+Once you have the sources in the "pinot" directory,
+
+    $ cd pinot
+    $ ./autogen.sh
+
+This will automatically copy/generate some needed files, like 'configure'.
+
+
+Configure your build
+--------------------
+
+To configure your build, run the configure script from the pinot source
+directory:
+
+    $ ./configure [--add-options-here]
+
+
+Build and install
+-----------------
+
+From the pinot source directory, build the code with:
+
+    $ make
+
+Then, once it's done compiling, run
+
+    $ make install
+
+which should copy various files (i.e. the pinot executable, the info and
+man pages, and syntax highlighting pattern files) to their appropriate
+directories.
+
+If you're installing into the default install directory (/usr/local),
+you'll need to run that "make install" command with root privileges.
+
+
+Problems?
+---------
+
+Please submit any bugs in the 'master' branch using Github's issue
+tracker (https://github.com/pgengler/pinot/issues)
