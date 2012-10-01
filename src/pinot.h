@@ -795,4 +795,8 @@ enum
 /* The maximum number of bytes buffered at one time. */
 #define MAX_BUF_SIZE 128
 
+/* Some exit codes that we might want to check for. */
+#define COMMAND_FAILED_PERMISSION_DENIED 126
+#define COMMAND_FAILED_NOT_FOUND 127
+
 #endif /* !PINOT_H */
