@@ -21,6 +21,7 @@ AC_INIT([pinot], [0.0.2], [phil@pgengler.net], [pinot])
 AC_CONFIG_SRCDIR([src/pinot.c])
 AC_CANONICAL_TARGET([])
 AM_INIT_AUTOMAKE
+AM_SILENT_RULES([yes])
 AC_CONFIG_HEADERS([config.h])
 
 AC_PREREQ(2.54)
