@@ -648,7 +648,7 @@ void do_enter_void(void);
 #ifndef PINOT_TINY
 RETSIGTYPE cancel_command(int signal);
 bool execute_command(const char *command);
-bool execute_command_silent(const char *command);
+int execute_command_silent(const char *command);
 #endif
 #ifndef DISABLE_WRAPPING
 void wrap_reset(void);

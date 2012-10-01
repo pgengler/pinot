@@ -842,7 +842,7 @@ bool execute_command(const char *command)
 
 /* Execute command in a shell without saving its output. Returns -1 if an
  * an error prevented execution, and the command's exit code if it was run. */
-bool execute_command_silently(const char *command)
+int execute_command_silently(const char *command)
 {
     int fd[2];
     char *shellenv;
