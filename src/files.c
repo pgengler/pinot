@@ -854,6 +854,10 @@ void do_execute_command()
 			/* Show success/failure indication in the status bar. */
 			if (status == 0)
 				sprintf(statusbartext, _("Command completed successfully"));
+			else if (status == COMMAND_FAILED_PERMISSION_DENIED)
+				sprintf(statusbartext, _("Execution failed: permission denied"));
+			else if (status == COMMAND_FAILED_NOT_FOUND)
+				sprintf(statusbartext, _("Execution failed: command not found"));
 			else
 				sprintf(statusbartext, _("Command failed with code %d"), status);
 
