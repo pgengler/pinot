@@ -143,7 +143,7 @@ char *full_operating_dir = NULL;
 	/* The full path to it. */
 #endif
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 char *alt_speller = NULL;
 	/* The command to use for the alternate spell checker. */
 #endif
@@ -782,7 +782,7 @@ void shortcut_init(bool unjustify)
     /* If we're using restricted mode, spell checking is disabled
      * because it allows reading from or writing to files not specified
      * on the command line. */
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_spell, MMAIN, N_("To Spell"), IFSCHELP(pinot_spell_msg),
 	    TRUE, NOVIEW);
@@ -1114,7 +1114,7 @@ void shortcut_init(bool unjustify)
     add_to_sclist(MMAIN, "F10", do_uncut_text, 0, TRUE);
     add_to_sclist(MMAIN, "^C", do_cursorpos_void, 0, TRUE);
     add_to_sclist(MMAIN, "F11", do_cursorpos_void, 0, TRUE);
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
     add_to_sclist(MMAIN, "^T", do_spell, 0, TRUE);
     add_to_sclist(MMAIN, "F12", do_spell, 0, TRUE);
 #endif
@@ -1668,7 +1668,7 @@ void thanks_for_all_the_fish(void)
 	free(last_search);
     if (last_replace != NULL)
 	free(last_replace);
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
     if (alt_speller != NULL)
 	free(alt_speller);
 #endif

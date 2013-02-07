@@ -69,7 +69,6 @@ AC_ARG_ENABLE(tiny,
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
-    AC_DEFINE(DISABLE_SPELLER, 1, [Define this to disable the spell checker functions.])
     AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
 fi])
@@ -115,9 +114,9 @@ AC_ARG_ENABLE(operatingdir,
 fi])
 
 AC_ARG_ENABLE(speller,
-[  --disable-speller       Disable spell checker functions],
+[  --enable-speller       Enable spell checker functions],
 [if test x$enableval != xyes; then
-    AC_DEFINE(DISABLE_SPELLER, 1, [Define this to disable the spell checker functions.])
+    AC_DEFINE(ENABLE_SPELLER, 1, [Define this to enable the spell checker functions.])
 fi])
 
 AC_ARG_ENABLE(tabcomp,
@@ -388,7 +387,6 @@ if test x$CURSES_LIB_NAME = xslang; then
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
-    AC_DEFINE(DISABLE_SPELLER, 1, [Define this to disable the spell checker functions.])
     AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
 fi

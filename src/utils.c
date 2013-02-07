@@ -296,7 +296,7 @@ const char *fixbounds(const char *r) {
 
 #endif
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 /* Is the word starting at position pos in buf a whole word? */
 bool is_whole_word(size_t pos, const char *buf, const char *word)
 {
@@ -321,7 +321,7 @@ bool is_whole_word(size_t pos, const char *buf, const char *word)
 
     return retval;
 }
-#endif /* !DISABLE_SPELLER */
+#endif /* ENABLE_SPELLER */
 
 /* If we are searching backwards, we will find the last match that
  * starts no later than start.  Otherwise we find the first match
@@ -370,7 +370,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 	return NULL;
     }
 #endif /* HAVE_PCREPOSIX_H */
-#if !defined(PINOT_TINY) || !defined(DISABLE_SPELLER)
+#if !defined(PINOT_TINY) || defined(ENABLE_SPELLER)
     if (ISSET(CASE_SENSITIVE)) {
 #ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH))
@@ -379,7 +379,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 #endif
 	    return strstr(start, needle);
     }
-#endif /* !DISABLE_SPELLER || !PINOT_TINY */
+#endif /* ENABLE_SPELLER || !PINOT_TINY */
 #ifndef PINOT_TINY
     else if (ISSET(BACKWARDS_SEARCH))
 	return mbrevstrcasestr(haystack, needle, start);
