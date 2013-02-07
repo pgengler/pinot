@@ -915,7 +915,7 @@ void usage(void)
     print_opt(_("-r <#cols>"), _("--fill=<#cols>"),
 	N_("Set wrapping point at column #cols"));
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
     print_opt(_("-s <prog>"), _("--speller=<prog>"),
 	N_("Enable alternate speller"));
 #endif
@@ -968,9 +968,6 @@ void version(void)
 #ifdef DISABLE_OPERATINGDIR
     printf(" --disable-operatingdir");
 #endif
-#ifdef DISABLE_SPELLER
-    printf(" --disable-speller");
-#endif
 #ifdef DISABLE_TABCOMP
     printf(" --disable-tabcomp");
 #endif
@@ -997,6 +994,9 @@ void version(void)
 #endif
 #ifdef ENABLE_PINOTRC
     printf(" --enable-pinotrc");
+#endif
+#ifdef ENABLE_SPELLER
+    printf(" --enable-speller");
 #endif
 #ifdef PINOT_TINY
     printf(" --enable-tiny");
@@ -2089,7 +2089,7 @@ int main(int argc, char **argv)
 #ifndef DISABLE_WRAPJUSTIFY
 	{"fill", 1, NULL, 'r'},
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	{"speller", 1, NULL, 's'},
 #endif
 	{"tempfile", 0, NULL, 't'},
@@ -2306,7 +2306,7 @@ int main(int argc, char **argv)
 		fill_used = TRUE;
 		break;
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	    case 's':
 		alt_speller = mallocstrcpy(alt_speller, optarg);
 		break;
@@ -2386,7 +2386,7 @@ int main(int argc, char **argv)
 #ifdef ENABLE_JUSTIFY
 	char *quotestr_cpy = quotestr;
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	char *alt_speller_cpy = alt_speller;
 #endif
 	ssize_t tabsize_cpy = tabsize;
@@ -2404,7 +2404,7 @@ int main(int argc, char **argv)
 #ifdef ENABLE_JUSTIFY
 	quotestr = NULL;
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	alt_speller = NULL;
 #endif
 
@@ -2437,7 +2437,7 @@ int main(int argc, char **argv)
 	    quotestr = quotestr_cpy;
 	}
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	if (alt_speller_cpy != NULL) {
 	    free(alt_speller);
 	    alt_speller = alt_speller_cpy;
@@ -2540,7 +2540,7 @@ int main(int argc, char **argv)
 #endif /* !HAVE_PCREPOSIX_H */
 #endif /* ENABLE_JUSTIFY */
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
     /* If we don't have an alternative spell checker after reading the
      * command line and/or rcfile(s), check $SPELL for one, as Pico
      * does (unless we're using restricted mode, in which case spell

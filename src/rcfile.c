@@ -70,7 +70,7 @@ static const rcoption rcopts[] = {
 #ifdef HAVE_PCREPOSIX_H
     {"regexp", USE_REGEXP},
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
     {"speller", 0},
 #endif
     {"suspend", SUSPEND},
@@ -1195,7 +1195,7 @@ void parse_rcfile(FILE *rcstream
 			    backup_dir = option;
 			else
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 			if (strcasecmp(rcopts[i].name, "speller") == 0)
 			    alt_speller = option;
 			else

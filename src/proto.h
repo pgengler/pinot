@@ -93,7 +93,7 @@ extern char *operating_dir;
 extern char *full_operating_dir;
 #endif
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 extern char *alt_speller;
 #endif
 
@@ -263,7 +263,7 @@ void make_new_buffer(void);
 void initialize_buffer(void);
 void initialize_buffer_text(void);
 void open_buffer(const char *filename, bool undoable);
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 void replace_buffer(const char *filename);
 #endif
 void display_buffer(void);
@@ -585,7 +585,7 @@ void search_replace_abort(void);
 void search_init_globals(void);
 int search_init(bool replacing, bool use_answer);
 bool findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	bool whole_word,
 #endif
 	bool no_sameline, const filestruct *begin, size_t begin_x, const
@@ -600,7 +600,7 @@ int replace_regexp(char *string, bool create);
 #endif
 char *replace_line(const char *needle);
 ssize_t do_replace_loop(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	bool whole_word,
 #endif
 	bool *canceled, const filestruct *real_current, size_t
@@ -609,7 +609,7 @@ void do_replace(void);
 void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer,
 	bool interactive, bool save_pos, bool allow_update);
 void do_gotolinecolumn_void(void);
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t
 	pos_pww);
 #endif
@@ -683,7 +683,7 @@ void do_justify(bool full_justify);
 void do_justify_void(void);
 void do_full_justify(void);
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 bool do_int_spell_fix(const char *word);
 const char *do_int_speller(const char *tempfile_name);
 const char *do_alt_speller(char *tempfile_name);
@@ -715,7 +715,7 @@ ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);
 const char *fixbounds(const char *r);
 #endif
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 bool is_whole_word(size_t pos, const char *buf, const char *word);
 #endif
 const char *strstrwrapper(const char *haystack, const char *needle,

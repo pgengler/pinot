@@ -276,7 +276,7 @@ int search_init(bool replacing, bool use_answer)
  * value specifies whether we found anything.  If we did, set needle_len
  * to the length of the string we found if it isn't NULL. */
 bool findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	bool whole_word,
 #endif
 	bool no_sameline, const filestruct *begin, size_t begin_x, const
@@ -320,7 +320,7 @@ bool findnextstr(
 
 	/* We've found a potential match. */
 	if (found != NULL) {
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	    bool found_whole = FALSE;
 		/* Is this potential match a whole word? */
 #endif
@@ -333,7 +333,7 @@ bool findnextstr(
 #endif
 		strlen(needle);
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	    /* If we're searching for whole words, see if this potential
 	     * match is a whole word. */
 	    if (whole_word) {
@@ -351,7 +351,7 @@ bool findnextstr(
 	     * a match on the same line we started on and this potential
 	     * match is on that line, continue searching. */
 	    if (
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 		(!whole_word || found_whole) &&
 #endif
 		(!no_sameline || fileptr != openfile->current))
@@ -486,7 +486,7 @@ void do_search(void)
 
     findnextstr_wrap_reset();
     didfind = findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	FALSE,
 #endif
 	FALSE, openfile->current, openfile->current_x, answer, NULL);
@@ -504,7 +504,7 @@ void do_search(void)
 	if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp,
 		last_search)) {
 	    didfind = findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 		FALSE,
 #endif
 		TRUE, openfile->current,
@@ -545,7 +545,7 @@ void do_research(void)
 
 	findnextstr_wrap_reset();
 	didfind = findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 		FALSE,
 #endif
 		FALSE, openfile->current, openfile->current_x,
@@ -564,7 +564,7 @@ void do_research(void)
 	    if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp,
 		last_search)) {
 		didfind = findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 			FALSE,
 #endif
 			TRUE, openfile->current, openfile->current_x,
@@ -689,7 +689,7 @@ char *replace_line(const char *needle)
  * if needle isn't found, else the number of replacements performed.  If
  * canceled isn't NULL, set it to TRUE if we canceled. */
 ssize_t do_replace_loop(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	bool whole_word,
 #endif
 	bool *canceled, const filestruct *real_current, size_t
@@ -731,7 +731,7 @@ ssize_t do_replace_loop(
 
     findnextstr_wrap_reset();
     while (findnextstr(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	whole_word,
 #endif
 #ifdef HAVE_PCREPOSIX_H
@@ -987,7 +987,7 @@ void do_replace(void)
     pww_save = openfile->placewewant;
 
     numreplaced = do_replace_loop(
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 	FALSE,
 #endif
 	NULL, begin, &begin_x, last_search);
@@ -1096,7 +1096,7 @@ void do_gotolinecolumn_void(void)
 	openfile->placewewant + 1, FALSE, TRUE, FALSE, TRUE);
 }
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 /* Go to the line with the number specified in pos_line, the
  * x-coordinate specified in pos_x, the y-coordinate specified in pos_y,
  * and the place we want specified in pos_pww. */

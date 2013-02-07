@@ -2446,7 +2446,7 @@ void do_full_justify(void)
 }
 #endif /* ENABLE_JUSTIFY */
 
-#ifndef DISABLE_SPELLER
+#ifdef ENABLE_SPELLER
 /* A word is misspelled in the file.  Let the user replace it.  We
  * return FALSE if the user cancels. */
 bool do_int_spell_fix(const char *word)
@@ -3051,7 +3051,7 @@ void do_spell(void)
     } else
 	statusbar(_("Finished checking spelling"));
 }
-#endif /* !DISABLE_SPELLER */
+#endif /* ENABLE_SPELLER */
 
 #ifndef PINOT_TINY
 /* Our own version of "wc".  Note that its character counts are in
