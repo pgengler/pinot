@@ -184,12 +184,6 @@ fi],
         AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
     fi])
 
-AC_ARG_ENABLE(all,
-[  --enable-all            Enable ALL extra pinot functionality (ignored for compatibility as all options default to on)],
-[if test x$enableval = xyes; then
-    echo "--enable-all option no longer needed, ignoring for compatibility"
-fi])
-
 AC_MSG_CHECKING([whether to enable UTF-8 support])
 AC_ARG_ENABLE(utf8,
 [  --enable-utf8           Enable UTF-8 support],
