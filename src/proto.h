@@ -85,6 +85,8 @@ extern ssize_t tabsize;
 
 #ifndef PINOT_TINY
 extern char *backup_dir;
+extern char *locking_prefix;
+extern char *locking_suffix;
 #endif
 #ifndef DISABLE_OPERATINGDIR
 extern char *operating_dir;
@@ -296,6 +298,7 @@ bool check_operating_dir(const char *currpath, bool allow_tabcomp);
 #endif
 #ifndef PINOT_TINY
 void init_backup_dir(void);
+int delete_lockfile(const char *lockfilename);
 #endif
 int copy_file(FILE *inn, FILE *out);
 bool write_file(const char *name, FILE *f_open, bool tmp, append_type

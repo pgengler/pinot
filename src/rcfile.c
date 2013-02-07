@@ -41,6 +41,9 @@ static const rcoption rcopts[] = {
 #ifndef DISABLE_WRAPJUSTIFY
     {"fill", 0},
 #endif
+#ifndef PINOT_TINY
+    {"locking", LOCKING},
+#endif
 #ifndef DISABLE_MOUSE
     {"mouse", USE_MOUSE},
 #endif
