@@ -137,7 +137,7 @@ void do_page_down(void)
     edit_update(NONE);
 }
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 /* Move up to the beginning of the last beginning-of-paragraph line
  * before the current line.  If allow_update is TRUE, update the screen
  * afterwards. */
@@ -209,7 +209,7 @@ void do_para_end_void(void)
 {
     do_para_end(TRUE);
 }
-#endif /* !DISABLE_JUSTIFY */
+#endif /* ENABLE_JUSTIFY */
 
 #ifndef PINOT_TINY
 /* Move to the next word in the file.  If allow_punct is TRUE, treat

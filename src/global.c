@@ -72,7 +72,7 @@ int maxrows = 0;
 filestruct *cutbuffer = NULL;
 	/* The buffer where we store cut text. */
 filestruct *cutbottom = NULL;
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 filestruct *jusbuffer = NULL;
 	/* The buffer where we store unjustified text. */
 #endif
@@ -96,7 +96,7 @@ int whitespace_len[2];
 	/* The length of these characters. */
 #endif
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 char *punct = NULL;
 	/* The closing punctuation that can end sentences. */
 char *brackets = NULL;
@@ -535,7 +535,7 @@ void shortcut_init(bool unjustify)
     const char *first_line_msg = N_("First Line");
     const char *last_line_msg = N_("Last Line");
     const char *suspend_msg = N_("Suspend");
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     const char *beg_of_par_msg = N_("Beg of Par");
     const char *end_of_par_msg = N_("End of Par");
     const char *fulljstify_msg = N_("FullJstify");
@@ -546,7 +546,7 @@ void shortcut_init(bool unjustify)
 #endif
     const char *go_to_line_msg = N_("Go To Line");
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     const char *pinot_justify_msg = N_("Justify the current paragraph");
 #endif
 #ifndef DISABLE_HELP
@@ -600,7 +600,7 @@ void shortcut_init(bool unjustify)
     const char *pinot_nextline_msg = N_("Go to next line");
     const char *pinot_home_msg = N_("Go to beginning of current line");
     const char *pinot_end_msg = N_("Go to end of current line");
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     const char *pinot_parabegin_msg =
 	N_("Go to beginning of paragraph; then of previous paragraph");
     const char *pinot_paraend_msg =
@@ -637,7 +637,7 @@ void shortcut_init(bool unjustify)
     const char *pinot_cut_till_end_msg =
 	N_("Cut from the cursor position to the end of the file");
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     const char *pinot_fulljustify_msg = N_("Justify the entire file");
 #endif
 #ifndef PINOT_TINY
@@ -729,7 +729,7 @@ void shortcut_init(bool unjustify)
     add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"),
 	IFSCHELP(pinot_writeout_msg), FALSE, NOVIEW);
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     /* TRANSLATORS: Try to keep this at most 10 characters. */
     add_to_funcs(do_justify_void, MMAIN, N_("Justify"),
 	pinot_justify_msg, TRUE, NOVIEW);
@@ -886,7 +886,7 @@ void shortcut_init(bool unjustify)
     add_to_funcs(do_end, MMAIN, N_("End"), IFSCHELP(pinot_end_msg),
 	FALSE, VIEW);
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     add_to_funcs(do_para_begin_void, (MMAIN|MWHEREIS), beg_of_par_msg,
 	IFSCHELP(pinot_parabegin_msg), FALSE, VIEW);
 
@@ -950,7 +950,7 @@ void shortcut_init(bool unjustify)
     add_to_funcs(xon_complaint, MMAIN, "", "", FALSE, VIEW);
     add_to_funcs(xoff_complaint, MMAIN, "", "", FALSE, VIEW);
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     add_to_funcs(do_full_justify, (MMAIN|MWHEREIS), fulljstify_msg,
 	IFSCHELP(pinot_fulljustify_msg), FALSE, NOVIEW);
 #endif
@@ -1093,7 +1093,7 @@ void shortcut_init(bool unjustify)
     add_to_sclist(MMAIN, "M-G", do_gotolinecolumn_void, 0, TRUE);
     add_to_sclist(MMAIN, "^O", do_writeout_void, 0, TRUE);
     add_to_sclist(MMAIN, "F3", do_writeout_void, 0, TRUE);
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     add_to_sclist(MMAIN, "^J", do_justify_void, 0, TRUE);
     add_to_sclist(MMAIN, "F4", do_justify_void, 0, TRUE);
 #endif
@@ -1163,7 +1163,7 @@ void shortcut_init(bool unjustify)
     add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^N", get_history_newer_void, 0, FALSE);
     add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "kdown", get_history_newer_void, 0, FALSE);
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2,
 	"^W", do_para_begin_void, 0, TRUE);
     add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2,
@@ -1219,7 +1219,7 @@ void shortcut_init(bool unjustify)
     add_to_sclist(MALL, "M-V", do_verbatim_input, 0, TRUE);
 #ifndef PINOT_TINY
     add_to_sclist(MALL, "M-T", do_cut_till_end, 0, TRUE);
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     add_to_sclist(MALL, "M-J", do_full_justify, 0, TRUE);
 #endif
     add_to_sclist(MMAIN, "M-D", do_wordlinechar_count, 0, TRUE);
@@ -1392,7 +1392,7 @@ sc *strtosc(int menu, char *input)
 	s->scfunc = do_gotolinecolumn_void;
     else if (!strcasecmp(input, "replace"))
 	s->scfunc = do_replace;
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     else if (!strcasecmp(input, "justify"))
 	s->scfunc = do_justify_void;
     else if (!strcasecmp(input, "beginpara"))
@@ -1645,7 +1645,7 @@ void thanks_for_all_the_fish(void)
     delwin(edit);
     delwin(bottomwin);
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     if (quotestr != NULL)
 	free(quotestr);
 #ifdef HAVE_PCREPOSIX_H
@@ -1676,7 +1676,7 @@ void thanks_for_all_the_fish(void)
 	free(answer);
     if (cutbuffer != NULL)
 	free_filestruct(cutbuffer);
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     if (jusbuffer != NULL)
 	free_filestruct(jusbuffer);
 #endif

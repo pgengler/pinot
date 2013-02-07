@@ -161,7 +161,7 @@
 #define DISABLE_MOUSE 1
 #endif
 
-#if defined(DISABLE_WRAPPING) && defined(DISABLE_JUSTIFY)
+#if defined(DISABLE_WRAPPING) && !defined(ENABLE_JUSTIFY)
 #define DISABLE_WRAPJUSTIFY 1
 #endif
 
