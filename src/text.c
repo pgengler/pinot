@@ -2058,6 +2058,8 @@ void do_justify(bool full_justify)
     if (full_justify)
 	openfile->current = openfile->fileage;
 
+    allow_pending_sigwinch(FALSE);
+
     while (TRUE) {
 	size_t i;
 	    /* Generic loop variable. */
@@ -2428,6 +2430,7 @@ void do_justify(bool full_justify)
     /* Display the shortcut list with UnCut. */
     shortcut_init(FALSE);
     display_main_list();
+    allow_pending_sigwinch(TRUE);
 }
 
 /* Justify the current paragraph. */
