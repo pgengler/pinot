@@ -2596,8 +2596,12 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 
 			/* Check that the match is not preceeded by another previous
 			   (single line) match before proceeding to paint it */
+/*
+  TODO: re-enable this functionality once an 'overwrite' option is added
+        to syntax parsing.
 			if (slmatcharray[pbegin] != -1 && slmatcharray[pbegin] != coloruid)
 			    paintok = FALSE;
+*/
 
 			if (paintok == TRUE) {
 			    int p;
