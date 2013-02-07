@@ -19,7 +19,7 @@
 #
 AC_INIT([pinot], [0.0.2], [phil@pgengler.net], [pinot])
 AC_CONFIG_SRCDIR([src/pinot.c])
-AC_CANONICAL_TARGET([])
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 AM_SILENT_RULES([yes])
 AC_CONFIG_HEADERS([config.h])
@@ -47,7 +47,6 @@ AC_DEFINE_DIR([PKGDATADIR], [pkgdatadir], [Where data are placed to.])
 
 dnl Checks for header files.
 
-AC_HEADER_STDC
 AC_CHECK_HEADERS(getopt.h libintl.h limits.h pcreposix.h sys/param.h wchar.h wctype.h stdarg.h magic.h)
 
 dnl Checks for options.
