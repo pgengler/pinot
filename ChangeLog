@@ -1,3 +1,8 @@
+0.0.3
+-----
+* Incorporate recent changes to 'nano', most notably limited support for
+  vim-style file locking
+
 0.0.2
 -----
 * Add M-` keyboard shortcut for executing a command but ignoring its output
