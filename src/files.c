@@ -1780,7 +1780,6 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 	/* The actual file, realname, we are writing to. */
     char *tempname = NULL;
 	/* The temp file name we write to on prepend. */
-    int backup_cflags;
 
     assert(name != NULL);
 
@@ -1843,6 +1842,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 	char *backupname;
 	struct utimbuf filetime;
 	int copy_status;
+	int backup_cflags;
 
 	/* Save the original file's access and modification times. */
 	filetime.actime = openfile->current_stat->st_atime;
