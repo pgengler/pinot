@@ -249,7 +249,7 @@ int do_lockfile(const char *filename)
     char *lockbase = basename((char *) mallocstrcpy(NULL, filename));
     ssize_t lockfilesize = (sizeof (char *) * (strlen(filename)
                    + strlen(locking_prefix) + strlen(locking_suffix) + 3));
-    char *lockfilename = nmalloc(lockfilesize);
+    char *lockfilename = (char *)nmalloc(lockfilesize);
     char lockprog[12], lockuser[16];
     struct stat fileinfo;
     int lockfd, lockpid;
@@ -263,8 +263,8 @@ int do_lockfile(const char *filename)
     if (stat(lockfilename, &fileinfo) != -1) {
         ssize_t readtot = 0;
         ssize_t readamt = 0;
-        char *lockbuf = nmalloc(8192);
-        char *promptstr = nmalloc(128);
+        char *lockbuf = (char *)nmalloc(8192);
+        char *promptstr = (char *)nmalloc(128);
         int ans;
         if ((lockfd = open(lockfilename, O_RDONLY)) < 0) {
             statusbar(_("Error opening lockfile %s: %s"),
