@@ -866,7 +866,7 @@ void usage(void)
     print_opt("-P", "--poslog",
 	N_("Log & read location of cursor position"));
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     print_opt(_("-Q <str>"), _("--quotestr=<str>"),
 	N_("Quoting string"));
 #endif
@@ -959,9 +959,6 @@ void version(void)
 #ifdef DISABLE_HELP
     printf(" --disable-help");
 #endif
-#ifdef DISABLE_JUSTIFY
-    printf(" --disable-justify");
-#endif
 #ifdef DISABLE_MOUSE
     printf(" --disable-mouse");
 #endif
@@ -991,6 +988,9 @@ void version(void)
 #endif
 #ifdef PINOT_EXTRA
     printf(" --enable-extra");
+#endif
+#ifdef ENABLE_JUSTIFY
+    printf(" --enable-justify");
 #endif
 #ifdef ENABLE_MULTIBUFFER
     printf(" --enable-multibuffer");
@@ -2066,7 +2066,7 @@ int main(int argc, char **argv)
 	{"rebindkeypad", 0, NULL, 'K'},
 	{"nonewlines", 0, NULL, 'L'},
 	{"morespace", 0, NULL, 'O'},
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 	{"quotestr", 1, NULL, 'Q'},
 #endif
 	{"restricted", 0, NULL, 'R'},
@@ -2225,7 +2225,7 @@ int main(int argc, char **argv)
 		SET(POS_HISTORY);
 		break;
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 	    case 'Q':
 		quotestr = mallocstrcpy(quotestr, optarg);
 		break;
@@ -2383,7 +2383,7 @@ int main(int argc, char **argv)
 #ifndef PINOT_TINY
 	char *backup_dir_cpy = backup_dir;
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 	char *quotestr_cpy = quotestr;
 #endif
 #ifndef DISABLE_SPELLER
@@ -2401,7 +2401,7 @@ int main(int argc, char **argv)
 #ifndef PINOT_TINY
 	backup_dir = NULL;
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 	quotestr = NULL;
 #endif
 #ifndef DISABLE_SPELLER
@@ -2431,7 +2431,7 @@ int main(int argc, char **argv)
 	    backup_dir = backup_dir_cpy;
 	}
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 	if (quotestr_cpy != NULL) {
 	    free(quotestr);
 	    quotestr = quotestr_cpy;
@@ -2504,7 +2504,7 @@ int main(int argc, char **argv)
     init_operating_dir();
 #endif
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     /* If punct wasn't specified, set its default value. */
     if (punct == NULL)
 	punct = mallocstrcpy(NULL, "!.?");
@@ -2538,7 +2538,7 @@ int main(int argc, char **argv)
 #else
     quotelen = strlen(quotestr);
 #endif /* !HAVE_PCREPOSIX_H */
-#endif /* !DISABLE_JUSTIFY */
+#endif /* ENABLE_JUSTIFY */
 
 #ifndef DISABLE_SPELLER
     /* If we don't have an alternative spell checker after reading the

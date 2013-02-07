@@ -67,7 +67,6 @@ AC_ARG_ENABLE(tiny,
     AC_DEFINE(PINOT_TINY, 1, [Define this to make the pinot executable as small as possible.]) tiny_support=yes
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
-    AC_DEFINE(DISABLE_JUSTIFY, 1, [Define this to disable the justify routines.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
     AC_DEFINE(DISABLE_SPELLER, 1, [Define this to disable the spell checker functions.])
@@ -98,9 +97,9 @@ AC_ARG_ENABLE(help,
 fi])
 
 AC_ARG_ENABLE(justify,
-[  --disable-justify       Disable justify/unjustify functions],
+[  --enable-justify       Enable justify/unjustify functions],
 [if test x$enableval != xyes; then
-    AC_DEFINE(DISABLE_JUSTIFY, 1, [Define this to disable the justify routines.])
+    AC_DEFINE(ENABLE_JUSTIFY, 1, [Define this to enable the justify routines.])
 fi])
 
 AC_ARG_ENABLE(mouse,
@@ -393,7 +392,6 @@ if test x$CURSES_LIB_NAME = xslang; then
     AC_DEFINE(PINOT_TINY, 1, [Define this to make the pinot executable as small as possible.]) tiny_support=yes
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
-    AC_DEFINE(DISABLE_JUSTIFY, 1, [Define this to disable the justify routines.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
     AC_DEFINE(DISABLE_SPELLER, 1, [Define this to disable the spell checker functions.])

@@ -50,7 +50,7 @@ extern int maxrows;
 
 extern filestruct *cutbuffer;
 extern filestruct *cutbottom;
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 extern filestruct *jusbuffer;
 #endif
 extern partition *filepart;
@@ -66,7 +66,7 @@ extern int whitespace_len[2];
 extern undo_type last_action;
 #endif
 
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 extern char *punct;
 extern char *brackets;
 extern char *quotestr;
@@ -208,7 +208,7 @@ size_t mbstrlen(const char *s);
 size_t nstrnlen(const char *s, size_t maxlen);
 #endif
 size_t mbstrnlen(const char *s, size_t maxlen);
-#if !defined(PINOT_TINY) || !defined(DISABLE_JUSTIFY)
+#if !defined(PINOT_TINY) || defined(ENABLE_JUSTIFY)
 char *mbstrchr(const char *s, const char *c);
 #endif
 #ifndef PINOT_TINY
@@ -218,7 +218,7 @@ char *revstrpbrk(const char *s, const char *accept, const char
 char *mbrevstrpbrk(const char *s, const char *accept, const char
 	*rev_start);
 #endif
-#if defined(ENABLE_PINOTRC) && (!defined(PINOT_TINY) || !defined(DISABLE_JUSTIFY))
+#if defined(ENABLE_PINOTRC) && (!defined(PINOT_TINY) || defined(ENABLE_JUSTIFY))
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
 #endif
@@ -375,7 +375,7 @@ void do_first_line(void);
 void do_last_line(void);
 void do_page_up(void);
 void do_page_down(void);
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 void do_para_begin(bool allow_update);
 void do_para_begin_void(void);
 void do_para_end(bool allow_update);
@@ -665,10 +665,10 @@ ssize_t break_line(const char *line, ssize_t goal
 #endif
 	);
 #endif
-#if !defined(PINOT_TINY) || !defined(DISABLE_JUSTIFY)
+#if !defined(PINOT_TINY) || defined(ENABLE_JUSTIFY)
 size_t indent_length(const char *line);
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 void justify_format(filestruct *paragraph, size_t skip);
 size_t quote_length(const char *line);
 bool quotes_match(const char *a_line, size_t a_quote, const char

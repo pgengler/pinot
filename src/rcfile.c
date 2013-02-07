@@ -34,7 +34,7 @@
 
 static const rcoption rcopts[] = {
     {"boldtext", BOLD_TEXT},
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     {"brackets", 0},
 #endif
     {"const", CONST_UPDATE},
@@ -61,7 +61,7 @@ static const rcoption rcopts[] = {
     {"operatingdir", 0},
 #endif
     {"preserve", PRESERVE},
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
     {"punct", 0},
     {"quotestr", 0},
 #endif
@@ -1166,7 +1166,7 @@ void parse_rcfile(FILE *rcstream
 			    }
 			} else
 #endif
-#ifndef DISABLE_JUSTIFY
+#ifdef ENABLE_JUSTIFY
 			if (strcasecmp(rcopts[i].name, "punct") == 0) {
 			    punct = option;
 			    if (has_blank_mbchars(punct)) {
