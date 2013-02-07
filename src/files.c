@@ -2697,9 +2697,6 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t
 	*num_matches, size_t buf_len)
 {
     char *dirname = mallocstrcpy(NULL, buf), *filename;
-#ifndef DISABLE_OPERATINGDIR
-    size_t dirnamelen;
-#endif
     size_t filenamelen;
     char **matches = NULL;
     DIR *dir;
@@ -2738,9 +2735,6 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t
 	return NULL;
     }
 
-#ifndef DISABLE_OPERATINGDIR
-    dirnamelen = strlen(dirname);
-#endif
     filenamelen = strlen(filename);
 
     while ((nextdir = readdir(dir)) != NULL) {
