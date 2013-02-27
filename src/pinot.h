@@ -106,7 +106,7 @@
 #endif
 #define gettext_noop(string) (string)
 #define N_(string) gettext_noop(string)
-	/* Mark a string that will be sent to gettext() later. */
+/* Mark a string that will be sent to gettext() later. */
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -167,356 +167,355 @@
 
 /* Enumeration types. */
 typedef enum {
-    NIX_FILE, DOS_FILE, MAC_FILE
+	NIX_FILE, DOS_FILE, MAC_FILE
 } file_format;
 
 typedef enum {
-    OVERWRITE, APPEND, PREPEND
+	OVERWRITE, APPEND, PREPEND
 } append_type;
 
 typedef enum {
-    UP_DIR, DOWN_DIR
+	UP_DIR, DOWN_DIR
 } scroll_dir;
 
 typedef enum {
-    CENTER, NONE
+	CENTER, NONE
 } update_type;
 
 typedef enum {
-    CONTROL, META, FKEY, RAWINPUT
+	CONTROL, META, FKEY, RAWINPUT
 }  function_type;
 
 typedef enum {
-    ADD, DEL, REPLACE, SPLIT, UNSPLIT, CUT, UNCUT, ENTER, INSERT, OTHER
+	ADD, DEL, REPLACE, SPLIT, UNSPLIT, CUT, UNCUT, ENTER, INSERT, OTHER
 } undo_type;
 
 #ifdef ENABLE_COLOR
 #define COLORWIDTH short
 typedef struct colortype {
-    COLORWIDTH fg;
+	COLORWIDTH fg;
 	/* This syntax's foreground color. */
-    COLORWIDTH bg;
+	COLORWIDTH bg;
 	/* This syntax's background color. */
-    bool bright;
+	bool bright;
 	/* Is this color A_BOLD? */
-    bool underline;
+	bool underline;
 	/* Is this color A_UNDERLINE? */
-    bool icase;
+	bool icase;
 	/* Is this regex string case insensitive? */
-    int pairnum;
+	int pairnum;
 	/* The color pair number used for this foreground color and
 	 * background color. */
-    char *start_regex;
+	char *start_regex;
 	/* The start (or all) of the regex string. */
-    regex_t *start;
+	regex_t *start;
 	/* The compiled start (or all) of the regex string. */
-    char *end_regex;
+	char *end_regex;
 	/* The end (if any) of the regex string. */
-    regex_t *end;
+	regex_t *end;
 	/* The compiled end (if any) of the regex string. */
-    struct colortype *next;
+	struct colortype *next;
 	/* Next set of colors. */
-    bool overlap;
+	bool overlap;
 	/* Is it acceptable for other regexes to overlap this one? */
-     int id;
+	int id;
 	/* basic id for assigning to lines later */
 } colortype;
 
 typedef struct exttype {
-    char *ext_regex;
+	char *ext_regex;
 	/* The extensions that match this syntax. */
-    regex_t *ext;
+	regex_t *ext;
 	/* The compiled extensions that match this syntax. */
-    struct exttype *next;
+	struct exttype *next;
 	/* Next set of extensions. */
 } exttype;
 
 typedef struct syntaxtype {
-    char *desc;
+	char *desc;
 	/* The name of this syntax. */
-    exttype *extensions;
+	exttype *extensions;
 	/* The list of extensions that this syntax applies to. */
-    exttype *headers;
+	exttype *headers;
 	/* Regexes to match on the 'header' (1st line) of the file */
-    exttype *magics;
+	exttype *magics;
 	/* Regexes to match libmagic results */
-    colortype *color;
+	colortype *color;
 	/* The colors used in this syntax. */
-    int nmultis;
+	int nmultis;
 	/* How many multi line strings this syntax has */
-    struct syntaxtype *next;
+	struct syntaxtype *next;
 	/* Next syntax. */
 } syntaxtype;
 
 #define CNONE 		(1<<1)
-	/* Yay, regex doesn't apply to this line at all! */
+/* Yay, regex doesn't apply to this line at all! */
 #define CBEGINBEFORE 	(1<<2)
-	/* regex starts on an earlier line, ends on this one */
+/* regex starts on an earlier line, ends on this one */
 #define CENDAFTER 	(1<<3)
-	/* regex sraers on this line and ends on a later one */
+/* regex sraers on this line and ends on a later one */
 #define CWHOLELINE 	(1<<4)
-	/* whole line engulfed by the regex  start < me, end > me */
+/* whole line engulfed by the regex  start < me, end > me */
 #define CSTARTENDHERE 	(1<<5)
-	/* regex starts and ends within this line */
+/* regex starts and ends within this line */
 #define CWTF		(1<<6)
-	/* Something else */
+/* Something else */
 
 #endif /* ENABLE_COLOR */
 
 
 /* Structure types. */
 typedef struct filestruct {
-    char *data;
+	char *data;
 	/* The text of this line. */
-    ssize_t lineno;
+	ssize_t lineno;
 	/* The number of this line. */
-    struct filestruct *next;
+	struct filestruct *next;
 	/* Next node. */
-    struct filestruct *prev;
+	struct filestruct *prev;
 	/* Previous node. */
 #ifdef ENABLE_COLOR
-    short *multidata;		/* Array of which multi-line regexes apply to this line */
+	short *multidata;		/* Array of which multi-line regexes apply to this line */
 #endif
 } filestruct;
 
 typedef struct partition {
-    filestruct *fileage;
+	filestruct *fileage;
 	/* The top line of this portion of the file. */
-    filestruct *top_prev;
+	filestruct *top_prev;
 	/* The line before the top line of this portion of the file. */
-    char *top_data;
+	char *top_data;
 	/* The text before the beginning of the top line of this portion
 	 * of the file. */
-    filestruct *filebot;
+	filestruct *filebot;
 	/* The bottom line of this portion of the file. */
-    filestruct *bot_next;
+	filestruct *bot_next;
 	/* The line after the bottom line of this portion of the
 	 * file. */
-    char *bot_data;
+	char *bot_data;
 	/* The text after the end of the bottom line of this portion of
 	 * the file. */
 } partition;
 
 #ifndef PINOT_TINY
 typedef struct undo {
-    ssize_t lineno;
-    undo_type type;
+	ssize_t lineno;
+	undo_type type;
 	/* What type of undo was this */
-    int begin;
+	int begin;
 	/* Where did this  action begin or end */
-    char *strdata;
+	char *strdata;
 	/* String type data we will use for ccopying the affected line back */
-    char *strdata2;
+	char *strdata2;
 	/* Sigh, need this too it looks like */
-    int xflags;
+	int xflags;
 	/* Some flag data we need */
 
-    /* Cut specific stuff we need */
-    filestruct *cutbuffer;
+	/* Cut specific stuff we need */
+	filestruct *cutbuffer;
 	/* Copy of the cutbuffer */
-    filestruct *cutbottom;
+	filestruct *cutbottom;
 	/* Copy of cutbottom */
-    bool mark_set;
+	bool mark_set;
 	/* was the marker set when we cut */
-    bool to_end;
+	bool to_end;
 	/* was this a cut to end */
-    ssize_t mark_begin_lineno;
+	ssize_t mark_begin_lineno;
 	/* copy copy copy */
-    ssize_t mark_begin_x;
+	ssize_t mark_begin_x;
 	/* Another shadow variable */
-    struct undo *next;
+	struct undo *next;
 } undo;
 
 
 typedef struct poshiststruct {
-    char *filename;
-        /* The file. */
-    ssize_t lineno;
+	char *filename;
+	/* The file. */
+	ssize_t lineno;
 	/* Line number we left off on */
-    ssize_t xno;
+	ssize_t xno;
 	/* x position in the file we left off on */
-    struct poshiststruct *next;
+	struct poshiststruct *next;
 } poshiststruct;
 #endif /* PINOT_TINY */
 
 
 typedef struct openfilestruct {
-    char *filename;
+	char *filename;
 	/* The current file's name. */
-    filestruct *fileage;
+	filestruct *fileage;
 	/* The current file's first line. */
-    filestruct *filebot;
+	filestruct *filebot;
 	/* The current file's last line. */
-    filestruct *edittop;
+	filestruct *edittop;
 	/* The current top of the edit window. */
-    filestruct *current;
+	filestruct *current;
 	/* The current file's current line. */
-    size_t totsize;
+	size_t totsize;
 	/* The current file's total number of characters. */
-    size_t current_x;
+	size_t current_x;
 	/* The current file's x-coordinate position. */
-    size_t placewewant;
+	size_t placewewant;
 	/* The current file's place we want. */
-    ssize_t current_y;
+	ssize_t current_y;
 	/* The current file's y-coordinate position. */
-    bool modified;
+	bool modified;
 	/* Whether the current file has been modified. */
 #ifndef PINOT_TINY
-    bool mark_set;
+	bool mark_set;
 	/* Whether the mark is on in the current file. */
-    filestruct *mark_begin;
+	filestruct *mark_begin;
 	/* The current file's beginning marked line, if any. */
-    size_t mark_begin_x;
+	size_t mark_begin_x;
 	/* The current file's beginning marked line's x-coordinate
 	 * position, if any. */
-    file_format fmt;
+	file_format fmt;
 	/* The current file's format. */
-    struct stat *current_stat;
+	struct stat *current_stat;
 	/* The current file's stat. */
-    undo *undotop;
+	undo *undotop;
 	/* Top of the undo list */
-    undo *current_undo;
+	undo *current_undo;
 	/* The current (i.e. n ext) level of undo */
-    undo_type last_action;
-    const char *lock_filename;
+	undo_type last_action;
+	const char *lock_filename;
 	/* The path of the lockfile, if we created one */
 #endif
 #ifdef ENABLE_COLOR
-    syntaxtype *syntax;
+	syntaxtype *syntax;
 	/* The  syntax struct for this file, if any */
-    colortype *colorstrings;
+	colortype *colorstrings;
 	/* The current file's associated colors. */
 #endif
-    struct openfilestruct *next;
+	struct openfilestruct *next;
 	/* Next node. */
-    struct openfilestruct *prev;
+	struct openfilestruct *prev;
 	/* Previous node. */
 } openfilestruct;
 
 typedef struct shortcut {
-    const char *desc;
+	const char *desc;
 	/* The function's description, e.g. "Page Up". */
 #ifndef DISABLE_HELP
-    const char *help;
+	const char *help;
 	/* The help file entry text for this function. */
-    bool blank_after;
+	bool blank_after;
 	/* Whether there should be a blank line after the help entry
 	 * text for this function. */
 #endif
-    /* Note: Key values that aren't used should be set to
-     * PINOT_NO_KEY. */
-    int ctrlval;
+	/* Note: Key values that aren't used should be set to
+	 * PINOT_NO_KEY. */
+	int ctrlval;
 	/* The special sentinel key or control key we want bound, if
 	 * any. */
-    int metaval;
+	int metaval;
 	/* The meta key we want bound, if any. */
-    int funcval;
+	int funcval;
 	/* The function key we want bound, if any. */
-    int miscval;
+	int miscval;
 	/* The other meta key we want bound, if any. */
-    bool viewok;
+	bool viewok;
 	/* Is this function allowed when in view mode? */
-    void (*func)(void);
+	void (*func)(void);
 	/* The function to call when we get this key. */
-    struct shortcut *next;
+	struct shortcut *next;
 	/* Next shortcut. */
 } shortcut;
 
 #ifdef ENABLE_PINOTRC
 typedef struct rcoption {
-   const char *name;
+	const char *name;
 	/* The name of the rcfile option. */
-   long flag;
+	long flag;
 	/* The flag associated with it, if any. */
 } rcoption;
 
 #endif
 
 typedef struct sc {
-    char *keystr;
+	char *keystr;
 	/* The shortcut key for a function, ASCII version */
-    function_type type;
-        /* What kind of function key is it for convenience later */
-    int seq;
-        /* The actual sequence to check on the the type is determined */
-    int menu;
-        /* What list does this apply to */
-    void (*scfunc)(void);
-        /* The function we're going to run */
-    int toggle;
-        /* If a toggle, what we're toggling */
-    bool execute;
+	function_type type;
+	/* What kind of function key is it for convenience later */
+	int seq;
+	/* The actual sequence to check on the the type is determined */
+	int menu;
+	/* What list does this apply to */
+	void (*scfunc)(void);
+	/* The function we're going to run */
+	int toggle;
+	/* If a toggle, what we're toggling */
+	bool execute;
 	/* Whether to execute the function in question or just return
 	   so the sequence can be caught by the calling code */
-    struct sc *next;
-        /* Next in the list */
+	struct sc *next;
+	/* Next in the list */
 } sc;
 
 typedef struct subnfunc {
-    void (*scfunc)(void);
+	void (*scfunc)(void);
 	/* What function is this */
-    int menus;
+	int menus;
 	/* In what menus does this function applu */
-    const char *desc;
+	const char *desc;
 	/* The function's description, e.g. "Page Up". */
 #ifndef DISABLE_HELP
-    const char *help;
+	const char *help;
 	/* The help file entry text for this function. */
-    bool blank_after;
+	bool blank_after;
 	/* Whether there should be a blank line after the help entry
 	 * text for this function. */
 #endif
-    bool viewok;
-        /* Is this function allowed when in view mode? */
-    long toggle;
+	bool viewok;
+	/* Is this function allowed when in view mode? */
+	long toggle;
 	/* If this is a toggle, if nonzero what toggle to set */
-    struct subnfunc *next;
+	struct subnfunc *next;
 	/* next item in the list */
 } subnfunc;
 
 
-/* Enumeration to be used in flags table. See FLAGBIT and FLAGOFF 
+/* Enumeration to be used in flags table. See FLAGBIT and FLAGOFF
  * definitions. */
-enum
-{
-    DONTUSE,
-    CASE_SENSITIVE,
-    CONST_UPDATE,
-    NO_HELP,
-    NOFOLLOW_SYMLINKS,
-    SUSPEND,
-    NO_WRAP,
-    AUTOINDENT,
-    VIEW_MODE,
-    USE_MOUSE,
-    USE_REGEXP,
-    TEMP_FILE,
-    CUT_TO_END,
-    BACKWARDS_SEARCH,
-    MULTIBUFFER,
-    SMOOTH_SCROLL,
-    REBIND_DELETE,
-    REBIND_KEYPAD,
-    NO_CONVERT,
-    BACKUP_FILE,
-    INSECURE_BACKUP,
-    NO_COLOR_SYNTAX,
-    PRESERVE,
-    HISTORYLOG,
-    RESTRICTED,
-    SMART_HOME,
-    WHITESPACE_DISPLAY,
-    MORE_SPACE,
-    TABS_TO_SPACES,
-    QUICK_BLANK,
-    WORD_BOUNDS,
-    NO_NEWLINES,
-    BOLD_TEXT,
-    QUIET,
-    UNDOABLE,
-    SOFTWRAP,
-    POS_HISTORY,
-    LOCKING
+enum {
+	DONTUSE,
+	CASE_SENSITIVE,
+	CONST_UPDATE,
+	NO_HELP,
+	NOFOLLOW_SYMLINKS,
+	SUSPEND,
+	NO_WRAP,
+	AUTOINDENT,
+	VIEW_MODE,
+	USE_MOUSE,
+	USE_REGEXP,
+	TEMP_FILE,
+	CUT_TO_END,
+	BACKWARDS_SEARCH,
+	MULTIBUFFER,
+	SMOOTH_SCROLL,
+	REBIND_DELETE,
+	REBIND_KEYPAD,
+	NO_CONVERT,
+	BACKUP_FILE,
+	INSECURE_BACKUP,
+	NO_COLOR_SYNTAX,
+	PRESERVE,
+	HISTORYLOG,
+	RESTRICTED,
+	SMART_HOME,
+	WHITESPACE_DISPLAY,
+	MORE_SPACE,
+	TABS_TO_SPACES,
+	QUICK_BLANK,
+	WORD_BOUNDS,
+	NO_NEWLINES,
+	BOLD_TEXT,
+	QUIET,
+	UNDOABLE,
+	SOFTWRAP,
+	POS_HISTORY,
+	LOCKING
 };
 
 /* Flags for which menus in which a given function should be present */
