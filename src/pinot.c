@@ -1354,7 +1354,7 @@ void allow_pending_sigwinch(bool allow)
 void do_toggle(int flag)
 {
     bool enabled;
-    char *desc;
+    const char *desc;
 
     TOGGLE(flag);
 
