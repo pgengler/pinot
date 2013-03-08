@@ -872,24 +872,23 @@ int filesearch_init(void)
 				return -1;
 			}
 #endif
+		} else if (s && s->scfunc == case_sens_void) {
+			TOGGLE(CASE_SENSITIVE);
+			backupstring = mallocstrcpy(backupstring, answer);
+			return 1;
+		} else if (s && s->scfunc ==  backwards_void) {
+			TOGGLE(BACKWARDS_SEARCH);
+			backupstring = mallocstrcpy(backupstring, answer);
+			return 1;
 		} else
-			if (s && s->scfunc == case_sens_void) {
-				TOGGLE(CASE_SENSITIVE);
-				backupstring = mallocstrcpy(backupstring, answer);
-				return 1;
-			} else if (s && s->scfunc ==  backwards_void) {
-				TOGGLE(BACKWARDS_SEARCH);
+#ifdef HAVE_PCREPOSIX_H
+			if (s && s->scfunc == regexp_void) {
+				TOGGLE(USE_REGEXP);
 				backupstring = mallocstrcpy(backupstring, answer);
 				return 1;
 			} else
-#ifdef HAVE_PCREPOSIX_H
-				if (s && s->scfunc == regexp_void) {
-					TOGGLE(USE_REGEXP);
-					backupstring = mallocstrcpy(backupstring, answer);
-					return 1;
-				} else
 #endif
-					return -1;
+				return -1;
 	}
 
 	return 0;
@@ -998,8 +997,7 @@ void do_filesearch(void)
 			 * failed. */
 	{
 		filesearch_abort();
-	}
-	else if (i == 1)	/* Case Sensitive, Backwards, or Regexp search
+	} else if (i == 1)	/* Case Sensitive, Backwards, or Regexp search
 			 * toggle. */
 	{
 		do_filesearch();

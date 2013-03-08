@@ -3074,8 +3074,8 @@ int update_line(filestruct *fileptr, size_t index)
 bool need_horizontal_update(size_t pww_save)
 {
 	return openfile->mark_set ||
-	  get_page_start(pww_save) !=
-	  get_page_start(openfile->placewewant);
+	       get_page_start(pww_save) !=
+	       get_page_start(openfile->placewewant);
 }
 
 /* Return TRUE if we need an update after moving vertically, and FALSE
@@ -3084,8 +3084,8 @@ bool need_horizontal_update(size_t pww_save)
 bool need_vertical_update(size_t pww_save)
 {
 	return openfile->mark_set ||
-	  get_page_start(pww_save) !=
-	  get_page_start(openfile->placewewant);
+	       get_page_start(pww_save) !=
+	       get_page_start(openfile->placewewant);
 }
 
 /* When edittop changes, try and figure out how many lines
@@ -3352,8 +3352,9 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			update_line(foo, 0);
 		}
 
-		if (!openfile->mark_set)
+		if (!openfile->mark_set) {
 			break;
+		}
 
 		foo = (foo->lineno > openfile->current->lineno) ? foo->prev :
 		      foo->next;

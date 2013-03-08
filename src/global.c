@@ -1409,9 +1409,8 @@ sc *strtosc(int menu, char *input)
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
 			s->toggle = SUSPEND;
-		}
-		else if (!strcasecmp(input, "right") ||
-		         !strcasecmp(input, "forward")) {
+		} else if (!strcasecmp(input, "right") ||
+		           !strcasecmp(input, "forward")) {
 			s->scfunc = do_right;
 		} else if (!strcasecmp(input, "left") ||
 		           !strcasecmp(input, "back")) {

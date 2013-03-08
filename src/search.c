@@ -442,8 +442,7 @@ void do_search(void)
 		/* Replace. */
 	{
 		do_replace();
-	}
-	else if (i == 1)
+	} else if (i == 1)
 		/* Case Sensitive, Backwards, or Regexp search toggle. */
 	{
 		do_search();
@@ -843,8 +842,9 @@ ssize_t do_replace_loop(
 			 * text, so searching will resume after the replacement
 			 * text.  Note that current_x might be set to (size_t)-1
 			 * here. */
-			if (!ISSET(BACKWARDS_SEARCH))
+			if (!ISSET(BACKWARDS_SEARCH)) {
 				openfile->current_x += match_len + length_change - 1;
+			}
 
 			/* Cleanup. */
 			openfile->totsize += mbstrlen(copy) -

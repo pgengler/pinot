@@ -175,8 +175,7 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 				do_statusbar_next_word(FALSE);
 			} else if (s->scfunc == do_prev_word_void) {
 				do_statusbar_prev_word(FALSE);
-			}
-			else if (s->scfunc == do_home) {
+			} else if (s->scfunc == do_home) {
 				do_statusbar_home();
 			} else if (s->scfunc == do_end) {
 				do_statusbar_end();
@@ -184,8 +183,7 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 
 			else if (s->scfunc == do_find_bracket) {
 				do_statusbar_find_bracket();
-			}
-			else if (s->scfunc == do_verbatim_input) {
+			} else if (s->scfunc == do_verbatim_input) {
 				/* If we're using restricted mode, the filename
 				 * isn't blank, and we're at the "Write File"
 				 * prompt, disable verbatim input. */
@@ -1020,10 +1018,9 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					                              answer, complete_len));
 					statusbar_x = strlen(answer);
 				}
-			} else
-				if (allow_tabs)
-					answer = input_tab(answer, allow_files,
-					                   &statusbar_x, &tabbed, refresh_func, list);
+			} else if (allow_tabs)
+				answer = input_tab(answer, allow_files,
+				                   &statusbar_x, &tabbed, refresh_func, list);
 
 			update_statusbar_line(answer, statusbar_x);
 		} else
@@ -1086,18 +1083,17 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					 * statusbar prompt. */
 					finished = FALSE;
 				}
-			} else
-				if (s && s->scfunc == do_help_void) {
-					update_statusbar_line(answer, statusbar_x);
+			} else if (s && s->scfunc == do_help_void) {
+				update_statusbar_line(answer, statusbar_x);
 
-					/* This key has a shortcut list entry when it's used to
-					 * go to the help browser or display a message
-					 * indicating that help is disabled, which means that
-					 * finished has been set to TRUE.  Set it back to FALSE
-					 * here, so that we aren't kicked out of the statusbar
-					 * prompt. */
-					finished = FALSE;
-				}
+				/* This key has a shortcut list entry when it's used to
+				 * go to the help browser or display a message
+				 * indicating that help is disabled, which means that
+				 * finished has been set to TRUE.  Set it back to FALSE
+				 * here, so that we aren't kicked out of the statusbar
+				 * prompt. */
+				finished = FALSE;
+			}
 
 		/* If we have a shortcut with an associated function, break out
 		 * if we're finished after running or trying to run the

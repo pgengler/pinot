@@ -1853,8 +1853,8 @@ bool begpar(const filestruct *const foo)
 
 	/* Case 2) or 5) or 4). */
 	if (foo->prev->data[quote_len + temp_id_len] == '\0' ||
-	    (quote_len == 0 && indent_len > 0 && !ISSET(AUTOINDENT)) ||
-			!indents_match(foo->prev->data + quote_len, temp_id_len, foo->data + quote_len, indent_len)) {
+	        (quote_len == 0 && indent_len > 0 && !ISSET(AUTOINDENT)) ||
+	        !indents_match(foo->prev->data + quote_len, temp_id_len, foo->data + quote_len, indent_len)) {
 		return TRUE;
 	}
 

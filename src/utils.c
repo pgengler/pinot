@@ -372,14 +372,13 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 				regexec(&search_regexp, retval, 10, regmatches, 0);
 				return retval;
 			}
-		} else
-			if (regexec(&search_regexp, start, 10, regmatches,
-			            (start > haystack) ? REG_NOTBOL : 0) == 0) {
-				const char *retval = start + regmatches[0].rm_so;
+		} else if (regexec(&search_regexp, start, 10, regmatches,
+		                   (start > haystack) ? REG_NOTBOL : 0) == 0) {
+			const char *retval = start + regmatches[0].rm_so;
 
-				regexec(&search_regexp, retval, 10, regmatches, 0);
-				return retval;
-			}
+			regexec(&search_regexp, retval, 10, regmatches, 0);
+			return retval;
+		}
 		return NULL;
 	}
 #endif /* HAVE_PCREPOSIX_H */
@@ -389,8 +388,7 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 		} else {
 			return strstr(start, needle);
 		}
-	}
-	else if (ISSET(BACKWARDS_SEARCH)) {
+	} else if (ISSET(BACKWARDS_SEARCH)) {
 		return mbrevstrcasestr(haystack, needle, start);
 	}
 	return mbstrcasestr(start, needle);

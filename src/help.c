@@ -359,8 +359,7 @@ void help_init(void)
 		            "available in Execute Command mode:\n\n");
 		htx[1] = NULL;
 		htx[2] = NULL;
-	}
-	else {
+	} else {
 		/* Default to the main help list. */
 		htx[0] = N_("Main pinot help text\n\n "
 		            "The pinot editor is designed to emulate the "

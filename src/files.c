@@ -867,14 +867,13 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 			statusbar(P_("Read %lu line (Converted from DOS format - Warning: No write permission)",
 			             "Read %lu lines (Converted from DOS format - Warning: No write permission)",
 			             (unsigned long)num_lines), (unsigned long)num_lines);
-	} else
-		if (writable)
-			statusbar(P_("Read %lu line", "Read %lu lines",
-			             (unsigned long)num_lines), (unsigned long)num_lines);
-		else
-			statusbar(P_("Read %lu line ( Warning: No write permission)",
-			             "Read %lu lines (Warning: No write permission)",
-			             (unsigned long)num_lines), (unsigned long)num_lines);
+	} else if (writable)
+		statusbar(P_("Read %lu line", "Read %lu lines",
+		             (unsigned long)num_lines), (unsigned long)num_lines);
+	else
+		statusbar(P_("Read %lu line ( Warning: No write permission)",
+		             "Read %lu lines (Warning: No write permission)",
+		             (unsigned long)num_lines), (unsigned long)num_lines);
 }
 
 /* Open the file (and decide if it exists).  If newfie is TRUE, display
@@ -1299,8 +1298,7 @@ void do_insertfile(bool execute)
 							    openfile->current_x;
 					}
 					openfile->current_x += current_x_save;
-				}
-				else if (openfile->mark_set) {
+				} else if (openfile->mark_set) {
 					if (!right_side_up) {
 						if (single_line) {
 							openfile->mark_begin = openfile->current;
@@ -2402,16 +2400,15 @@ bool do_writeout(bool exiting)
 				} else if (s && s->scfunc == backup_file_void) {
 					TOGGLE(BACKUP_FILE);
 					continue;
-				} else
-					if (s && s->scfunc == prepend_void) {
-						append = (append == PREPEND) ? OVERWRITE : PREPEND;
-						continue;
-					} else if (s && s->scfunc == append_void) {
-						append = (append == APPEND) ? OVERWRITE : APPEND;
-						continue;
-					} else if (s && s->scfunc == do_help_void) {
-						continue;
-					}
+				} else if (s && s->scfunc == prepend_void) {
+					append = (append == PREPEND) ? OVERWRITE : PREPEND;
+					continue;
+				} else if (s && s->scfunc == append_void) {
+					append = (append == APPEND) ? OVERWRITE : APPEND;
+					continue;
+				} else if (s && s->scfunc == do_help_void) {
+					continue;
+				}
 
 #ifdef DEBUG
 			fprintf(stderr, "filename is %s\n", answer);
@@ -2482,15 +2479,13 @@ bool do_writeout(bool exiting)
 						if (i == 0 || i == -1) {
 							continue;
 						}
-					} else
-						if (exiting || !openfile->mark_set)
-						{
-							i = do_yesno_prompt(FALSE,
-							                    _("Save file under DIFFERENT NAME ? "));
-							if (i == 0 || i == -1) {
-								continue;
-							}
+					} else if (exiting || !openfile->mark_set) {
+						i = do_yesno_prompt(FALSE,
+						                    _("Save file under DIFFERENT NAME ? "));
+						if (i == 0 || i == -1) {
+							continue;
 						}
+					}
 				}
 				/* Complain if the file exists, the name hasn't changed, and the
 				    stat information we had before does not match what we have now */

@@ -511,8 +511,9 @@ void do_up(bool scroll_only)
 	 * smooth scrolling mode, or up half a page if we're not.  If
 	 * scroll_only is TRUE, scroll the edit window up one line
 	 * unconditionally. */
-	if (openfile->current_y == 0 || (ISSET(SOFTWRAP) && openfile->edittop->lineno == openfile->current->next->lineno) || scroll_only)
+	if (openfile->current_y == 0 || (ISSET(SOFTWRAP) && openfile->edittop->lineno == openfile->current->next->lineno) || scroll_only) {
 		edit_scroll(UP_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? 1 : editwinrows / 2 + 1);
+	}
 
 	/* If we're below the first line of the edit window, update the
 	 * line we were on before and the line we're on now.  The former

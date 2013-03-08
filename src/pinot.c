@@ -465,8 +465,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 			}
 		}
 		openfile->current_x += current_x_save;
-	}
-	else if (openfile->mark_set) {
+	} else if (openfile->mark_set) {
 		if (!right_side_up) {
 			if (single_line) {
 				openfile->mark_begin = openfile->current;
@@ -657,8 +656,9 @@ void die(const char *msg, ...)
 			openfile = openfile->next;
 
 			/* Save the current file buffer if it's been modified. */
-			if (openfile->modified)
+			if (openfile->modified) {
 				die_save_file(openfile->filename, openfile->current_stat);
+			}
 		}
 	}
 #endif
@@ -1637,7 +1637,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 							s->scfunc();
 #ifdef ENABLE_COLOR
 							if (f && !f->viewok && openfile->syntax != NULL
-							&& openfile->syntax->nmultis > 0) {
+							        && openfile->syntax->nmultis > 0) {
 								reset_multis(openfile->current, FALSE);
 							}
 #endif
@@ -2612,8 +2612,7 @@ int main(int argc, char **argv)
 					                  FALSE);
 					iline = 1;
 					icol = 1;
-				}
-				else {
+				} else {
 					/* See if we have a POS history to use if we haven't overridden it */
 					ssize_t savedposline, savedposcol;
 					if (check_poshistory(argv[i], &savedposline, &savedposcol))
