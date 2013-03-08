@@ -114,9 +114,7 @@ void get_key_buffer(WINDOW *win)
 	}
 
 	/* Read in the first character using blocking input. */
-#ifndef PINOT_TINY
 	allow_pending_sigwinch(TRUE);
-#endif
 
 	/* Just before reading in the first character, display any pending
 	 * screen updates. */
@@ -141,9 +139,7 @@ void get_key_buffer(WINDOW *win)
 			}
 		}
 
-#ifndef PINOT_TINY
 	allow_pending_sigwinch(FALSE);
-#endif
 
 	/* Increment the length of the keystroke buffer, and save the value
 	 * of the keystroke at the end of it. */
@@ -155,9 +151,7 @@ void get_key_buffer(WINDOW *win)
 	nodelay(win, TRUE);
 
 	while (TRUE) {
-#ifndef PINOT_TINY
 		allow_pending_sigwinch(TRUE);
-#endif
 
 		input = wgetch(win);
 
@@ -173,9 +167,7 @@ void get_key_buffer(WINDOW *win)
 		                             sizeof(int));
 		key_buffer[key_buffer_len - 1] = input;
 
-#ifndef PINOT_TINY
 		allow_pending_sigwinch(FALSE);
-#endif
 	}
 
 	/* Switch back to non-blocking input. */
@@ -195,10 +187,8 @@ size_t get_key_buffer_len(void)
 /* Add the keystrokes in input to the keystroke buffer. */
 void unget_input(int *input, size_t input_len)
 {
-#ifndef PINOT_TINY
 	allow_pending_sigwinch(TRUE);
 	allow_pending_sigwinch(FALSE);
-#endif
 
 	/* If input is empty, get out. */
 	if (input_len == 0) {
@@ -256,10 +246,8 @@ int *get_input(WINDOW *win, size_t input_len)
 {
 	int *input;
 
-#ifndef PINOT_TINY
 	allow_pending_sigwinch(TRUE);
 	allow_pending_sigwinch(FALSE);
-#endif
 
 	if (key_buffer_len == 0) {
 		if (win != NULL) {
@@ -643,11 +631,8 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 			retval = ERR;
 			break;
 #endif
-#if !defined(PINOT_TINY) && defined(KEY_RESIZE)
-			/* Since we don't change the default SIGWINCH handler when
-			 * PINOT_TINY is defined, KEY_RESIZE is never generated.
-			 * Also, Slang and SunOS 5.7-5.9 don't support
-			 * KEY_RESIZE. */
+#ifdef KEY_RESIZE
+			/* Slang and SunOS 5.7-5.9 don't support KEY_RESIZE. */
 		case KEY_RESIZE:
 			retval = ERR;
 			break;
@@ -2077,7 +2062,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 
 		/* If buf contains a tab character, interpret it. */
 		if (*buf_mb == '\t') {
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 			if (ISSET(WHITESPACE_DISPLAY)) {
 				int i;
 
@@ -2114,7 +2099,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 			free(ctrl_buf_mb);
 			/* If buf contains a space character, interpret it. */
 		} else if (*buf_mb == ' ') {
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 			if (ISSET(WHITESPACE_DISPLAY)) {
 				int i;
 
@@ -2349,7 +2334,6 @@ void set_modified(void)
 	if (!openfile->modified) {
 		openfile->modified = TRUE;
 		titlebar(NULL);
-#ifndef PINOT_TINY
 		if (ISSET(LOCKING)) {
 			if (openfile->lock_filename == NULL) {
 				/* Translators: Try to keep this at most 80 characters. */
@@ -2359,7 +2343,6 @@ void set_modified(void)
 				               get_full_path(openfile->filename), TRUE);
 			}
 		}
-#endif
 	}
 }
 
@@ -2371,7 +2354,7 @@ void statusbar(const char *msg, ...)
 	va_list ap;
 	char *bar, *foo;
 	size_t start_x, foo_len;
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 	bool old_whitespace;
 #endif
 
@@ -2387,7 +2370,7 @@ void statusbar(const char *msg, ...)
 
 	blank_statusbar();
 
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 	old_whitespace = ISSET(WHITESPACE_DISPLAY);
 	UNSET(WHITESPACE_DISPLAY);
 #endif
@@ -2395,7 +2378,7 @@ void statusbar(const char *msg, ...)
 	vsnprintf(bar, mb_cur_max() * (COLS - 3), msg, ap);
 	va_end(ap);
 	foo = display_string(bar, 0, COLS - 4, FALSE);
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
@@ -2423,11 +2406,7 @@ void statusbar(const char *msg, ...)
 	 * position display is off, blank the statusbar after only one
 	 * keystroke.  Otherwise, blank it after twenty-six keystrokes, as
 	 * Pico does. */
-	statusblank =
-#ifndef PINOT_TINY
-	    ISSET(QUICK_BLANK) && !ISSET(CONST_UPDATE) ? 1 :
-#endif
-	    26;
+	statusblank = ISSET(QUICK_BLANK) && !ISSET(CONST_UPDATE) ? 1 : 26;
 }
 
 /* Display the shortcut list in s on the last two rows of the bottom
@@ -2577,7 +2556,6 @@ void reset_cursor(void)
 void edit_draw(filestruct *fileptr, const char *converted, int
                line, size_t start)
 {
-#if !defined(PINOT_TINY) || defined(ENABLE_COLOR)
 	size_t startpos = actual_x(fileptr->data, start);
 	/* The position in fileptr->data of the leftmost character
 	 * that displays at least partially on the window. */
@@ -2587,7 +2565,6 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 	 *
 	 * Note that endpos might be beyond the null terminator of the
 	 * string. */
-#endif
 
 	assert(openfile != NULL && fileptr != NULL && converted != NULL);
 	assert(strlenpt(converted) <= COLS);
@@ -2927,7 +2904,6 @@ step_two:
 	}
 #endif /* ENABLE_COLOR */
 
-#ifndef PINOT_TINY
 	/* If the mark is on, we need to display it. */
 	if (openfile->mark_set && (fileptr->lineno <=
 	                           openfile->mark_begin->lineno || fileptr->lineno <=
@@ -2999,7 +2975,6 @@ step_two:
 			wattroff(edit, reverse_attr);
 		}
 	}
-#endif /* !PINOT_TINY */
 }
 
 /* Just update one line in the edit buffer.  This is basically a wrapper
@@ -3098,12 +3073,9 @@ int update_line(filestruct *fileptr, size_t index)
  * placewewant are on different pages. */
 bool need_horizontal_update(size_t pww_save)
 {
-	return
-#ifndef PINOT_TINY
-	    openfile->mark_set ||
-#endif
-	    get_page_start(pww_save) !=
-	    get_page_start(openfile->placewewant);
+	return openfile->mark_set ||
+	  get_page_start(pww_save) !=
+	  get_page_start(openfile->placewewant);
 }
 
 /* Return TRUE if we need an update after moving vertically, and FALSE
@@ -3111,12 +3083,9 @@ bool need_horizontal_update(size_t pww_save)
  * placewewant are on different pages. */
 bool need_vertical_update(size_t pww_save)
 {
-	return
-#ifndef PINOT_TINY
-	    openfile->mark_set ||
-#endif
-	    get_page_start(pww_save) !=
-	    get_page_start(openfile->placewewant);
+	return openfile->mark_set ||
+	  get_page_start(pww_save) !=
+	  get_page_start(openfile->placewewant);
 }
 
 /* When edittop changes, try and figure out how many lines
@@ -3322,7 +3291,6 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 		        old_current->lineno, openfile->edittop->lineno);
 #endif
 
-#ifndef PINOT_TINY
 		/* If the mark is on, update all the lines between old_current
 		 * and either the old first line or old last line (depending on
 		 * whether we've scrolled up or down) of the edit window. */
@@ -3347,7 +3315,6 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 				      foo->next;
 			}
 		}
-#endif /* !PINOT_TINY */
 
 		/* Put edittop in range of current, get the difference in lines
 		 * between the original edittop and the current edittop, and
@@ -3360,7 +3327,6 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			update_line(old_current, 0);
 		}
 
-#ifndef PINOT_TINY
 		/* If the mark is on, update all the lines between the old first
 		 * line or old last line of the edit window (depending on
 		 * whether we've scrolled up or down) and current. */
@@ -3372,7 +3338,6 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 				      foo->prev : foo->next;
 			}
 		}
-#endif /* !PINOT_TINY */
 
 		return;
 	}
@@ -3387,15 +3352,11 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			update_line(foo, 0);
 		}
 
-#ifndef PINOT_TINY
 		if (!openfile->mark_set)
-#endif
 			break;
 
-#ifndef PINOT_TINY
 		foo = (foo->lineno > openfile->current->lineno) ? foo->prev :
 		      foo->next;
-#endif
 	}
 
 	if (do_redraw) {

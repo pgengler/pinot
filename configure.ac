@@ -61,27 +61,13 @@ if test x$debug_support != xyes; then
     AC_DEFINE(NDEBUG, 1, [Shut up assert warnings :-)])
 fi
 
-AC_ARG_ENABLE(tiny,
-[  --enable-tiny           Disable features for the sake of size],
-[if test x$enableval = xyes; then
-    AC_DEFINE(PINOT_TINY, 1, [Define this to make the pinot executable as small as possible.]) tiny_support=yes
-    AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
-    AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
-    AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
-    AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
-    AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
-    AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
-fi])
-
-
 AC_ARG_ENABLE(extra,
 [  --disable-extra          Disable extra features, currently only easter eggs],
 [if test x$enableval != xno; then
     AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
-fi], 
-    [if test x$enable_tiny != xyes; then
-        AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
-    fi])
+fi],[
+    AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
+])
 
 AC_ARG_ENABLE(browser,
 [  --disable-browser       Disable built-in file browser],
@@ -151,7 +137,6 @@ if test x$enableval != xno; then
 *** script with --disable-color.])
     fi
 fi, 
-    if test x$enable_tiny != xyes; then
 	if test x$ac_cv_header_pcreposix_h = xyes; then
 	    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
 	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
@@ -162,26 +147,23 @@ fi,
 *** libraries that include the pcreposix.h file or call the configure
 *** script with --disable-color.])
 	fi
-    fi
 )
 
 AC_ARG_ENABLE(multibuffer,
 [  --disable-multibuffer    Disable multiple file buffers],
 [if test x$enableval != xno; then
     AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
-fi], 
-    [if test x$enable_tiny != xyes; then
-        AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
-    fi])
+fi],[
+    AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
+])
 
 AC_ARG_ENABLE(pinotrc,
 [  --disable-pinotrc         Disable use of .pinotrc files],
 [if test x$enableval != xno; then
     AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-fi], 
-    [if test x$enable_tiny != xyes; then
-        AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-    fi])
+fi],[
+    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
+])
 
 AC_MSG_CHECKING([whether to enable UTF-8 support])
 AC_ARG_ENABLE(utf8,
@@ -382,7 +364,6 @@ int main(void)
     esac], [AC_MSG_RESULT(no)])
 
 if test x$CURSES_LIB_NAME = xslang; then
-    AC_DEFINE(PINOT_TINY, 1, [Define this to make the pinot executable as small as possible.]) tiny_support=yes
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
     AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])

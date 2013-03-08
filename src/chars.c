@@ -652,7 +652,6 @@ char *mbstrcasestr(const char *haystack, const char *needle)
 		return (char *) strcasestr(haystack, needle);
 }
 
-#if !defined(PINOT_TINY) || !defined(DISABLE_TABCOMP)
 /* This function is equivalent to strstr(), except in that it scans the
  * string in reverse, starting at rev_start. */
 char *revstrstr(const char *haystack, const char *needle, const char
@@ -683,9 +682,7 @@ char *revstrstr(const char *haystack, const char *needle, const char
 
 	return NULL;
 }
-#endif /* !PINOT_TINY || !DISABLE_TABCOMP */
 
-#ifndef PINOT_TINY
 /* This function is equivalent to strcasestr(), except in that it scans
  * the string in reverse, starting at rev_start. */
 char *revstrcasestr(const char *haystack, const char *needle, const char
@@ -762,7 +759,6 @@ char *mbrevstrcasestr(const char *haystack, const char *needle, const
 #endif
 		return revstrcasestr(haystack, needle, rev_start);
 }
-#endif /* !PINOT_TINY */
 
 /* This function is equivalent to strlen() for multibyte strings. */
 size_t mbstrlen(const char *s)
@@ -806,7 +802,6 @@ size_t mbstrnlen(const char *s, size_t maxlen)
 		return strnlen(s, maxlen);
 }
 
-#if !defined(PINOT_TINY) || defined(ENABLE_JUSTIFY)
 /* This function is equivalent to strchr() for multibyte strings. */
 char *mbstrchr(const char *s, const char *c)
 {
@@ -854,9 +849,7 @@ char *mbstrchr(const char *s, const char *c)
 #endif
 		return (char *) strchr(s, *c);
 }
-#endif /* !PINOT_TINY || ENABLE_JUSTIFY */
 
-#ifndef PINOT_TINY
 /* This function is equivalent to strpbrk() for multibyte strings. */
 char *mbstrpbrk(const char *s, const char *accept)
 {
@@ -927,9 +920,7 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char
 #endif
 		return revstrpbrk(s, accept, rev_start);
 }
-#endif /* !PINOT_TINY */
 
-#if defined(ENABLE_PINOTRC) && (!defined(PINOT_TINY) || defined(ENABLE_JUSTIFY))
 /* Return TRUE if the string s contains one or more blank characters,
  * and FALSE otherwise. */
 bool has_blank_chars(const char *s)
@@ -972,7 +963,6 @@ bool has_blank_mbchars(const char *s)
 #endif
 		return has_blank_chars(s);
 }
-#endif /* ENABLE_PINOTRC && (!PINOT_TINY || ENABLE_JUSTIFY) */
 
 #ifdef ENABLE_UTF8
 /* Return TRUE if wc is valid Unicode, and FALSE otherwise. */

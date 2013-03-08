@@ -32,7 +32,7 @@
 
 static bool search_last_line = FALSE;
 /* Have we gone past the last line while searching? */
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 static bool history_changed = FALSE;
 /* Have any of the history lists changed? */
 #endif
@@ -48,11 +48,7 @@ bool regexp_init(const char *regexp)
 
 	assert(!regexp_compiled);
 
-	rc = regcomp(&search_regexp, regexp, REG_EXTENDED
-#ifndef PINOT_TINY
-	             | (ISSET(CASE_SENSITIVE) ? 0 : REG_ICASE)
-#endif
-	            );
+	rc = regcomp(&search_regexp, regexp, REG_EXTENDED | (ISSET(CASE_SENSITIVE) ? 0 : REG_ICASE));
 
 	if (rc != 0) {
 		size_t len = regerror(rc, &search_regexp, NULL, 0);
@@ -106,11 +102,9 @@ void not_found_msg(const char *str)
 void search_replace_abort(void)
 {
 	display_main_list();
-#ifndef PINOT_TINY
 	if (openfile->mark_set) {
 		edit_refresh();
 	}
-#endif
 #ifdef HAVE_PCREPOSIX_H
 	regexp_cleanup();
 #endif
@@ -183,15 +177,11 @@ int search_init(bool replacing, bool use_answer)
 #endif
 	              replacing ? MREPLACE : MWHEREIS, backupstring,
 	              &meta_key, &func_key,
-#ifndef PINOT_TINY
 	              &search_history,
-#endif
 	              edit_refresh, "%s%s%s%s%s%s", _("Search"),
-#ifndef PINOT_TINY
 	              /* TRANSLATORS: This string is just a modifier for the search
 	               * prompt; no grammar is implied. */
 	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
-#endif
 	              "",
 #ifdef HAVE_PCREPOSIX_H
 	              /* TRANSLATORS: This string is just a modifier for the search
@@ -199,15 +189,11 @@ int search_init(bool replacing, bool use_answer)
 	              ISSET(USE_REGEXP) ? _(" [Regexp]") :
 #endif
 	              "",
-#ifndef PINOT_TINY
 	              /* TRANSLATORS: This string is just a modifier for the search
 	               * prompt; no grammar is implied. */
 	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") :
-#endif
 	              "", replacing ?
-#ifndef PINOT_TINY
 	              openfile->mark_set ? _(" (to replace) in selection") :
-#endif
 	              _(" (to replace)") : "", buf);
 
 	fflush(stderr);
@@ -242,7 +228,6 @@ int search_init(bool replacing, bool use_answer)
 			}
 #endif
 			;
-#ifndef PINOT_TINY
 		} else if (func == case_sens_void) {
 			TOGGLE(CASE_SENSITIVE);
 			backupstring = mallocstrcpy(backupstring, answer);
@@ -251,7 +236,6 @@ int search_init(bool replacing, bool use_answer)
 			TOGGLE(BACKWARDS_SEARCH);
 			backupstring = mallocstrcpy(backupstring, answer);
 			return 1;
-#endif
 #ifdef HAVE_PCREPOSIX_H
 		} else if (func == regexp_void) {
 			TOGGLE(USE_REGEXP);
@@ -304,10 +288,8 @@ bool findnextstr(
 	 * rev_start will be properly set when the search continues on the
 	 * previous or next line. */
 	rev_start +=
-#ifndef PINOT_TINY
 	    ISSET(BACKWARDS_SEARCH) ?
 	    openfile->current_x - 1 :
-#endif
 	    openfile->current_x + 1;
 
 	/* Look for needle in the current line we're searching. */
@@ -373,32 +355,24 @@ bool findnextstr(
 		}
 
 		/* Move to the previous or next line in the file. */
-#ifndef PINOT_TINY
 		if (ISSET(BACKWARDS_SEARCH)) {
 			fileptr = fileptr->prev;
 			current_y_find--;
 		} else {
-#endif
 			fileptr = fileptr->next;
 			current_y_find++;
-#ifndef PINOT_TINY
 		}
-#endif
 
 		/* We've reached the start or end of the buffer, so wrap
 		 * around. */
 		if (fileptr == NULL) {
-#ifndef PINOT_TINY
 			if (ISSET(BACKWARDS_SEARCH)) {
 				fileptr = openfile->filebot;
 				current_y_find = editwinrows - 1;
 			} else {
-#endif
 				fileptr = openfile->fileage;
 				current_y_find = 0;
-#ifndef PINOT_TINY
 			}
-#endif
 			statusbar(_("Search Wrapped"));
 		}
 
@@ -408,11 +382,9 @@ bool findnextstr(
 		}
 
 		rev_start = fileptr->data;
-#ifndef PINOT_TINY
 		if (ISSET(BACKWARDS_SEARCH)) {
 			rev_start += strlen(fileptr->data);
 		}
-#endif
 	}
 
 	/* We found an instance. */
@@ -420,12 +392,8 @@ bool findnextstr(
 
 	/* Ensure we haven't wrapped around again! */
 	if (search_last_line &&
-#ifndef PINOT_TINY
 	        ((!ISSET(BACKWARDS_SEARCH) && current_x_find > begin_x) ||
 	         (ISSET(BACKWARDS_SEARCH) && current_x_find < begin_x))
-#else
-	        current_x_find > begin_x
-#endif
 	   ) {
 		not_found_msg(needle);
 		disable_nodelay();
@@ -475,13 +443,11 @@ void do_search(void)
 	{
 		do_replace();
 	}
-#if !defined(PINOT_TINY) || defined(HAVE_PCREPOSIX_H)
 	else if (i == 1)
 		/* Case Sensitive, Backwards, or Regexp search toggle. */
 	{
 		do_search();
 	}
-#endif
 
 	if (i != 0) {
 		return;
@@ -494,13 +460,11 @@ void do_search(void)
 		last_search = mallocstrcpy(last_search, answer);
 	}
 
-#ifndef PINOT_TINY
 	/* If answer is not "", add this search string to the search history
 	 * list. */
 	if (answer[0] != '\0') {
 		update_history(&search_history, answer);
 	}
-#endif
 
 	findnextstr_wrap_reset();
 	didfind = findnextstr(
@@ -544,7 +508,6 @@ void do_search(void)
 	search_replace_abort();
 }
 
-#ifndef PINOT_TINY
 /* Search for the last string without prompting. */
 void do_research(void)
 {
@@ -608,7 +571,6 @@ void do_research(void)
 	edit_redraw(fileptr, pww_save);
 	search_replace_abort();
 }
-#endif
 
 #ifdef HAVE_PCREPOSIX_H
 int replace_regexp(char *string, bool create)
@@ -726,7 +688,6 @@ ssize_t do_replace_loop(
 	/* The starting-line match and bol/eol regex flags. */
 	bool begin_line = FALSE, bol_or_eol = FALSE;
 #endif
-#ifndef PINOT_TINY
 	bool old_mark_set = openfile->mark_set;
 	filestruct *edittop_save = openfile->edittop, *top, *bot;
 	size_t top_x, bot_x;
@@ -748,7 +709,6 @@ ssize_t do_replace_loop(
 #endif
 		edit_refresh();
 	}
-#endif
 
 	if (canceled != NULL) {
 		*canceled = FALSE;
@@ -839,9 +799,8 @@ ssize_t do_replace_loop(
 			char *copy;
 			size_t length_change;
 
-#ifndef PINOT_TINY
 			update_undo(REPLACE);
-#endif
+
 			if (i == 2) {
 				replaceall = TRUE;
 			}
@@ -851,7 +810,6 @@ ssize_t do_replace_loop(
 			length_change = strlen(copy) -
 			                strlen(openfile->current->data);
 
-#ifndef PINOT_TINY
 			/* If the mark was on and (mark_begin, mark_begin_x) was the
 			 * top of it, don't change mark_begin_x. */
 			if (!old_mark_set || !right_side_up) {
@@ -870,7 +828,6 @@ ssize_t do_replace_loop(
 			/* If the mark was on and (current, current_x) was the top
 			 * of it, don't change real_current_x. */
 			if (!old_mark_set || right_side_up) {
-#endif
 				/* Keep real_current_x in sync with the text changes. */
 				if (openfile->current == real_current &&
 				        openfile->current_x <= *real_current_x) {
@@ -880,17 +837,13 @@ ssize_t do_replace_loop(
 						                  match_len;
 					*real_current_x += length_change;
 				}
-#ifndef PINOT_TINY
 			}
-#endif
 
 			/* Set the cursor at the last character of the replacement
 			 * text, so searching will resume after the replacement
 			 * text.  Note that current_x might be set to (size_t)-1
 			 * here. */
-#ifndef PINOT_TINY
 			if (!ISSET(BACKWARDS_SEARCH))
-#endif
 				openfile->current_x += match_len + length_change - 1;
 
 			/* Cleanup. */
@@ -920,7 +873,6 @@ ssize_t do_replace_loop(
 		}
 	}
 
-#ifndef PINOT_TINY
 	if (old_mark_set) {
 		/* If the mark was on, unpartition the filestruct so that it
 		 * contains all the text again, set edittop back to what it was
@@ -930,7 +882,6 @@ ssize_t do_replace_loop(
 		openfile->mark_set = TRUE;
 		edit_refresh();
 	}
-#endif
 
 	/* If the NO_NEWLINES flag isn't set, and text has been added to the
 	 * magicline, make a new magicline. */
@@ -979,9 +930,7 @@ void do_replace(void)
 	/* If answer is not "", add answer to the search history list and
 	 * copy answer into last_search. */
 	if (answer[0] != '\0') {
-#ifndef PINOT_TINY
 		update_history(&search_history, answer);
-#endif
 		last_search = mallocstrcpy(last_search, answer);
 	}
 
@@ -993,18 +942,14 @@ void do_replace(void)
 #endif
 	              MREPLACE2, last_replace,
 	              &meta_key, &func_key,
-#ifndef PINOT_TINY
 	              &replace_history,
-#endif
 	              edit_refresh, _("Replace with"));
 
-#ifndef PINOT_TINY
 	/* Add this replace string to the replace history list.  i == 0
 	 * means that the string is not "". */
 	if (i == 0) {
 		update_history(&replace_history, answer);
 	}
-#endif
 
 	if (i != 0 && i != -2) {
 		if (i == -1) {		/* Cancel. */
@@ -1067,9 +1012,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer,
 #endif
 		                  MGOTOLINE, use_answer ? ans : "",
 		                  &meta_key, &func_key,
-#ifndef PINOT_TINY
 		                  NULL,
-#endif
 		                  edit_refresh, _("Enter line number, column number"));
 
 		free(ans);
@@ -1158,7 +1101,6 @@ void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t
 }
 #endif
 
-#ifndef PINOT_TINY
 /* Search for a match to one of the two characters in bracket_set.  If
  * reverse is TRUE, search backwards for the leftmost bracket.
  * Otherwise, search forwards for the rightmost bracket.  Return TRUE if
@@ -1552,4 +1494,3 @@ char *get_history_completion(filestruct **h, const char *s, size_t len)
 	return (char *)s;
 }
 #endif /* !DISABLE_TABCOMP */
-#endif /* !PINOT_TINY */

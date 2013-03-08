@@ -116,9 +116,7 @@
 #ifdef HAVE_PCREPOSIX_H
 #include <pcreposix.h>
 #endif
-#ifndef PINOT_TINY
 #include <setjmp.h>
-#endif
 #include <assert.h>
 
 /* If no vsnprintf(), use the version from glib 2.x. */
@@ -297,7 +295,6 @@ typedef struct partition {
 	 * the file. */
 } partition;
 
-#ifndef PINOT_TINY
 typedef struct undo {
 	ssize_t lineno;
 	undo_type type;
@@ -337,7 +334,6 @@ typedef struct poshiststruct {
 	/* x position in the file we left off on */
 	struct poshiststruct *next;
 } poshiststruct;
-#endif /* PINOT_TINY */
 
 
 typedef struct openfilestruct {
@@ -361,7 +357,6 @@ typedef struct openfilestruct {
 	/* The current file's y-coordinate position. */
 	bool modified;
 	/* Whether the current file has been modified. */
-#ifndef PINOT_TINY
 	bool mark_set;
 	/* Whether the mark is on in the current file. */
 	filestruct *mark_begin;
@@ -380,7 +375,6 @@ typedef struct openfilestruct {
 	undo_type last_action;
 	const char *lock_filename;
 	/* The path of the lockfile, if we created one */
-#endif
 #ifdef ENABLE_COLOR
 	syntaxtype *syntax;
 	/* The  syntax struct for this file, if any */
@@ -734,9 +728,6 @@ enum {
 #define PINOT_FULLJUSTIFY_METAKEY	PINOT_META_J
 #define PINOT_VERBATIM_KEY		PINOT_META_V
 
-/* Toggles do not exist if PINOT_TINY is defined. */
-#ifndef PINOT_TINY
-
 /* No toggle at all. */
 #define TOGGLE_NO_KEY			-2
 
@@ -771,8 +762,6 @@ enum {
   let's make some integer macros for function names, and then I
   can go cut my wrists after writing the big switch statement
   that will necessitate. */
-
-#endif /* !PINOT_TINY */
 
 #define VIEW TRUE
 #define NOVIEW FALSE

@@ -171,24 +171,20 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 				do_statusbar_left();
 			}
 
-#ifndef PINOT_TINY
 			else if (s->scfunc == do_next_word_void) {
 				do_statusbar_next_word(FALSE);
 			} else if (s->scfunc == do_prev_word_void) {
 				do_statusbar_prev_word(FALSE);
 			}
-#endif
 			else if (s->scfunc == do_home) {
 				do_statusbar_home();
 			} else if (s->scfunc == do_end) {
 				do_statusbar_end();
 			}
 
-#ifndef PINOT_TINY
 			else if (s->scfunc == do_find_bracket) {
 				do_statusbar_find_bracket();
 			}
-#endif
 			else if (s->scfunc == do_verbatim_input) {
 				/* If we're using restricted mode, the filename
 				 * isn't blank, and we're at the "Write File"
@@ -361,7 +357,6 @@ void do_statusbar_home(void)
 {
 	size_t pww_save = statusbar_pww;
 
-#ifndef PINOT_TINY
 	if (ISSET(SMART_HOME)) {
 		size_t statusbar_x_save = statusbar_x;
 
@@ -374,12 +369,9 @@ void do_statusbar_home(void)
 
 		statusbar_pww = statusbar_xplustabs();
 	} else {
-#endif
 		statusbar_x = 0;
 		statusbar_pww = statusbar_xplustabs();
-#ifndef PINOT_TINY
 	}
-#endif
 
 	if (need_statusbar_horizontal_update(pww_save)) {
 		update_statusbar_line(answer, statusbar_x);
@@ -465,22 +457,17 @@ void do_statusbar_cut_text(void)
 {
 	assert(answer != NULL);
 
-#ifndef PINOT_TINY
 	if (ISSET(CUT_TO_END)) {
 		null_at(&answer, statusbar_x);
 	} else {
-#endif
 		null_at(&answer, 0);
 		statusbar_x = 0;
 		statusbar_pww = statusbar_xplustabs();
-#ifndef PINOT_TINY
 	}
-#endif
 
 	update_statusbar_line(answer, statusbar_x);
 }
 
-#ifndef PINOT_TINY
 /* Move to the next word in the prompt text.  If allow_punct is TRUE,
  * treat punctuation as part of a word.  Return TRUE if we started on a
  * word, and FALSE otherwise. */
@@ -656,7 +643,6 @@ bool do_statusbar_prev_word(bool allow_punct)
 	/* Return whether we started on a word. */
 	return started_on_word;
 }
-#endif /* !PINOT_TINY */
 
 /* Get verbatim input.  Set got_enter to TRUE if we got the Enter key as
  * part of the verbatim input. */
@@ -685,7 +671,6 @@ void do_statusbar_verbatim_input(bool *got_enter)
 	free(output);
 }
 
-#ifndef PINOT_TINY
 /* Search for a match to one of the two characters in bracket_set.  If
  * reverse is TRUE, search backwards for the leftmost bracket.
  * Otherwise, search forwards for the rightmost bracket.  Return TRUE if
@@ -844,7 +829,6 @@ void do_statusbar_find_bracket(void)
 	free(bracket_set);
 	free(found_ch);
 }
-#endif /* !PINOT_TINY */
 
 /* Return the placewewant associated with statusbar_x, i.e. the
  * zero-based column position of the cursor.  The value will be no
@@ -938,9 +922,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 #endif
                             const char *curranswer,
                             bool *meta_key, bool *func_key,
-#ifndef PINOT_TINY
                             filestruct **history_list,
-#endif
                             void (*refresh_func)(void), int menu
 #ifndef DISABLE_TABCOMP
                             , bool *list
@@ -955,7 +937,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 	bool tabbed = FALSE;
 	/* Whether we've pressed Tab. */
 #endif
-#ifndef PINOT_TINY
 	char *history = NULL;
 	/* The current history string. */
 	char *magichistory = NULL;
@@ -968,7 +949,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 	/* The length of the original string that we're trying to
 	 * tab complete, if any. */
 #endif
-#endif /* !PINOT_TINY */
 
 	answer = mallocstrcpy(answer, curranswer);
 	curranswer_len = strlen(answer);
@@ -1028,7 +1008,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 #endif
 
 #ifndef DISABLE_TABCOMP
-#ifndef PINOT_TINY
 		if (s && s->scfunc == do_tab) {
 			if (history_list != NULL) {
 				if (last_kbinput != sc_seq_or(do_tab, PINOT_CONTROL_I)) {
@@ -1042,7 +1021,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					statusbar_x = strlen(answer);
 				}
 			} else
-#endif /* !PINOT_TINY */
 				if (allow_tabs)
 					answer = input_tab(answer, allow_files,
 					                   &statusbar_x, &tabbed, refresh_func, list);
@@ -1050,7 +1028,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 			update_statusbar_line(answer, statusbar_x);
 		} else
 #endif /* !DISABLE_TABCOMP */
-#ifndef PINOT_TINY
 			if (s && s->scfunc == get_history_older_void) {
 				if (history_list != NULL) {
 					/* If we're scrolling up at the bottom of the
@@ -1110,7 +1087,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					finished = FALSE;
 				}
 			} else
-#endif /* !PINOT_TINY */
 				if (s && s->scfunc == do_help_void) {
 					update_statusbar_line(answer, statusbar_x);
 
@@ -1130,7 +1106,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 			break;
 		}
 
-#if !defined(PINOT_TINY) && !defined(DISABLE_TABCOMP)
+#ifndef DISABLE_TABCOMP
 		last_kbinput = kbinput;
 #endif
 
@@ -1139,7 +1115,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 	}
 
 
-#ifndef PINOT_TINY
 	/* Set the current position in the history list to the bottom and
 	 * free magichistory, if we need to. */
 	if (history_list != NULL) {
@@ -1149,7 +1124,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 			free(magichistory);
 		}
 	}
-#endif
 
 
 	/* We've finished putting in an answer or run a normal shortcut's
@@ -1195,9 +1169,7 @@ int do_prompt(bool allow_tabs,
 #endif
               int menu, const char *curranswer,
               bool *meta_key, bool *func_key,
-#ifndef PINOT_TINY
               filestruct **history_list,
-#endif
               void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
@@ -1228,9 +1200,7 @@ int do_prompt(bool allow_tabs,
 #endif
 	                      curranswer,
 	                      meta_key, func_key,
-#ifndef PINOT_TINY
 	                      history_list,
-#endif
 	                      refresh_func, menu
 #ifndef DISABLE_TABCOMP
 	                      , &list

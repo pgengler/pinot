@@ -29,14 +29,12 @@
 #include "assert.h"
 
 /* Global variables. */
-#ifndef PINOT_TINY
 sigjmp_buf jump_buf;
 /* Used to return to either main() or the unjustify routine in
  * do_justify() after a SIGWINCH. */
 bool jump_buf_main = FALSE;
 /* Have we set jump_buf so that we return to main() after a
  * SIGWINCH? */
-#endif
 
 #ifndef DISABLE_WRAPJUSTIFY
 ssize_t fill = 0;
@@ -82,13 +80,11 @@ partition *filepart = NULL;
 openfilestruct *openfile = NULL;
 /* The list of all open file buffers. */
 
-#ifndef PINOT_TINY
 char *matchbrackets = NULL;
 /* The opening and closing brackets that can be found by bracket
  * searches. */
-#endif
 
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 char *whitespace = NULL;
 /* The characters used when displaying the first characters of
  * tabs and spaces. */
@@ -127,10 +123,8 @@ ssize_t tabsize = -1;
 /* The width of a tab in spaces.  The default value is set in
  * main(). */
 
-#ifndef PINOT_TINY
 char *backup_dir = NULL;
 /* The directory where we store backup files. */
-#endif
 const char *locking_prefix = ".";
 /* Prefix of how to store the vim-style lock file */
 const char *locking_suffix = ".swp";
@@ -170,7 +164,6 @@ sc *sclist = NULL;
 subnfunc *allfuncs = NULL;
 /* New struct for the function list */
 
-#ifndef PINOT_TINY
 filestruct *search_history = NULL;
 /* The search string history list. */
 filestruct *searchage = NULL;
@@ -185,7 +178,6 @@ filestruct *replacebot = NULL;
 /* The bottom of the replace string history list. */
 poshiststruct *poshistory;
 /* The cursor position history list  */
-#endif
 
 /* Regular expressions. */
 #ifdef HAVE_PCREPOSIX_H
@@ -477,37 +469,13 @@ const char *cancel_msg = N_("Cancel");
 const char *replace_msg = N_("Replace");
 const char *no_replace_msg = N_("No Replace");
 
-#ifndef PINOT_TINY
 const char *case_sens_msg = N_("Case Sens");
 const char *backwards_msg = N_("Backwards");
-#endif
 
 #ifdef HAVE_PCREPOSIX_H
 const char *regexp_msg = N_("Regexp");
 #endif
 
-/* Stuff we want to just stun out if we're in TINY mode */
-#ifdef PINOT_TINY
-const char *gototext_msg = "";
-const char *do_para_begin_msg = "";
-const char *do_para_end_msg = "";
-const char *case_sens_msg = "";
-const char *backwards_msg = "";
-const char *do_cut_till_end = "";
-const char *dos_format_msg = "";
-const char *mac_format_msg = "";
-const char *append_msg = "";
-const char *prepend_msg = "";
-const char *backup_file_msg = "";
-const char *to_files_msg = "";
-const char *first_file_msg = "";
-const char *whereis_next_msg = "";
-const char *last_file_msg = "";
-const char *new_buffer_msg = "";
-const char *goto_dir_msg;
-const char *ext_cmd_msg = "";
-
-#else
 /* TRANSLATORS: Try to keep the next five strings at most 10 characters. */
 const char *prev_history_msg = N_("PrevHstory");
 const char *next_history_msg = N_("NextHstory");
@@ -531,8 +499,6 @@ const char *new_buffer_msg = N_("New Buffer");
 #endif
 const char *goto_dir_msg = N_("Go To Dir");
 
-#endif /* PINOT_TINY */
-
 /* Initialize all shortcut lists.  If unjustify is TRUE, replace the
  * Uncut shortcut in the main shortcut list with UnJustify. */
 void shortcut_init(bool unjustify)
@@ -552,9 +518,7 @@ void shortcut_init(bool unjustify)
 	const char *fulljstify_msg = N_("FullJstify");
 #endif
 	const char *refresh_msg = N_("Refresh");
-#ifndef PINOT_TINY
 	const char *insert_file_msg =  N_("Insert File");
-#endif
 	const char *go_to_line_msg = N_("Go To Line");
 
 #ifdef ENABLE_JUSTIFY
@@ -591,7 +555,6 @@ void shortcut_init(bool unjustify)
 	const char *pinot_replace_msg =
 	    N_("Replace a string or a regular expression");
 	const char *pinot_gotoline_msg = N_("Go to line and column number");
-#ifndef PINOT_TINY
 	const char *pinot_mark_msg = N_("Mark text at the cursor position");
 	const char *pinot_whereis_next_msg = N_("Repeat last search");
 	const char *pinot_copy_msg =
@@ -600,13 +563,10 @@ void shortcut_init(bool unjustify)
 	const char *pinot_unindent_msg = N_("Unindent the current line");
 	const char *pinot_undo_msg = N_("Undo the last operation");
 	const char *pinot_redo_msg = N_("Redo the last undone operation");
-#endif
 	const char *pinot_forward_msg = N_("Go forward one character");
 	const char *pinot_back_msg = N_("Go back one character");
-#ifndef PINOT_TINY
 	const char *pinot_nextword_msg = N_("Go forward one word");
 	const char *pinot_prevword_msg = N_("Go back one word");
-#endif
 	const char *pinot_prevline_msg = N_("Go to previous line");
 	const char *pinot_nextline_msg = N_("Go to next line");
 	const char *pinot_home_msg = N_("Go to beginning of current line");
@@ -621,13 +581,11 @@ void shortcut_init(bool unjustify)
 	    N_("Go to the first line of the file");
 	const char *pinot_lastline_msg =
 	    N_("Go to the last line of the file");
-#ifndef PINOT_TINY
 	const char *pinot_bracket_msg = N_("Go to the matching bracket");
 	const char *pinot_scrollup_msg =
 	    N_("Scroll up one line without scrolling the cursor");
 	const char *pinot_scrolldown_msg =
 	    N_("Scroll down one line without scrolling the cursor");
-#endif
 #ifdef ENABLE_MULTIBUFFER
 	const char *pinot_prevfile_msg =
 	    N_("Switch to the previous file buffer");
@@ -644,52 +602,40 @@ void shortcut_init(bool unjustify)
 	    N_("Delete the character under the cursor");
 	const char *pinot_backspace_msg =
 	    N_("Delete the character to the left of the cursor");
-#ifndef PINOT_TINY
 	const char *pinot_cut_till_end_msg =
 	    N_("Cut from the cursor position to the end of the file");
-#endif
 #ifdef ENABLE_JUSTIFY
 	const char *pinot_fulljustify_msg = N_("Justify the entire file");
 #endif
-#ifndef PINOT_TINY
 	const char *pinot_wordcount_msg =
 	    N_("Count the number of words, lines, and characters");
-#endif
 	const char *pinot_refresh_msg =
 	    N_("Refresh (redraw) the current screen");
 	const char *pinot_suspend_msg =
 	    N_("Suspend the editor (if suspend is enabled)");
-#ifndef PINOT_TINY
 	const char *pinot_case_msg =
 	    N_("Toggle the case sensitivity of the search");
 	const char *pinot_reverse_msg =
 	    N_("Reverse the direction of the search");
-#endif
 #ifdef HAVE_PCREPOSIX_H
 	const char *pinot_regexp_msg =
 	    N_("Toggle the use of regular expressions");
 #endif
-#ifndef PINOT_TINY
 	const char *pinot_prev_history_msg =
 	    N_("Recall the previous search/replace string");
 	const char *pinot_next_history_msg =
 	    N_("Recall the next search/replace string");
-#endif
 #ifndef DISABLE_BROWSER
 	const char *pinot_tofiles_msg = N_("Go to file browser");
 #endif
-#ifndef PINOT_TINY
 	const char *pinot_dos_msg = N_("Toggle the use of DOS format");
 	const char *pinot_mac_msg = N_("Toggle the use of Mac format");
-#endif
 	const char *pinot_append_msg = N_("Toggle appending");
 	const char *pinot_prepend_msg = N_("Toggle prepending");
-#ifndef PINOT_TINY
 	const char *pinot_backup_msg =
 	    N_("Toggle backing up of the original file");
 	const char *pinot_execute_msg = N_("Execute external command");
-#endif
-#if !defined(PINOT_TINY) && defined(ENABLE_MULTIBUFFER)
+#ifdef ENABLE_MULTIBUFFER
 	const char *pinot_multibuffer_msg =
 	    N_("Toggle the use of a new buffer");
 #endif
@@ -784,11 +730,9 @@ void shortcut_init(bool unjustify)
 		add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg),
 		             FALSE, NOVIEW);
 
-#ifndef PINOT_TINY
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg),
 	             FALSE, VIEW);
-#endif
 
 	/* If we're using restricted mode, spell checking is disabled
 	 * because it allows reading from or writing to files not specified
@@ -811,23 +755,12 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS),
 	             go_to_line_msg, IFSCHELP(pinot_gotoline_msg), FALSE, VIEW);
 
-#ifdef PINOT_TINY
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg),
 	             FALSE, VIEW);
-#endif
 
 
-	add_to_funcs(do_replace, (MMAIN|MWHEREIS), replace_msg, IFSCHELP(pinot_replace_msg),
-
-#ifndef PINOT_TINY
-	             FALSE,
-#else
-	             TRUE,
-#endif
-	             NOVIEW);
-
-#ifndef PINOT_TINY
+	add_to_funcs(do_replace, (MMAIN|MWHEREIS), replace_msg, IFSCHELP(pinot_replace_msg), FALSE, NOVIEW);
 
 	add_to_funcs(do_mark, MMAIN, N_("Mark Text"),
 	             IFSCHELP(pinot_mark_msg), FALSE, VIEW);
@@ -855,8 +788,6 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(do_execute_command, MMAIN, N_("Exec Cmd"),
 	             IFSCHELP(pinot_execute_msg), FALSE, NOVIEW);
 
-#endif
-
 	add_to_funcs(do_right, MMAIN, N_("Forward"), IFSCHELP(pinot_forward_msg),
 	             FALSE, VIEW);
 
@@ -877,13 +808,11 @@ void shortcut_init(bool unjustify)
 
 	add_to_funcs(do_left, MALL, "", "", FALSE, VIEW);
 
-#ifndef PINOT_TINY
 	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"),
 	             IFSCHELP(pinot_nextword_msg), FALSE, VIEW);
 
 	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"),
 	             IFSCHELP(pinot_prevword_msg), FALSE, VIEW);
-#endif
 
 	add_to_funcs(do_up_void, (MMAIN|MHELP|MBROWSER), N_("Prev Line"),
 	             IFSCHELP(pinot_prevline_msg), FALSE, VIEW);
@@ -905,7 +834,6 @@ void shortcut_init(bool unjustify)
 	             IFSCHELP(pinot_paraend_msg), FALSE, VIEW);
 #endif
 
-#ifndef PINOT_TINY
 	add_to_funcs(do_find_bracket, MMAIN, _("Find Other Bracket"),
 	             IFSCHELP(pinot_bracket_msg), FALSE, VIEW);
 
@@ -914,7 +842,6 @@ void shortcut_init(bool unjustify)
 
 	add_to_funcs(do_scroll_down, MMAIN, N_("Scroll Down"),
 	             IFSCHELP(pinot_scrolldown_msg), FALSE, VIEW);
-#endif
 
 #ifdef ENABLE_MULTIBUFFER
 	add_to_funcs(switch_to_prev_buffer_void, MMAIN, _("Previous File"),
@@ -937,26 +864,12 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(do_delete, MMAIN, N_("Delete"), IFSCHELP(pinot_delete_msg),
 	             FALSE, NOVIEW);
 	add_to_funcs(do_delete, MALL, "", "", FALSE, NOVIEW);
-	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg),
-#ifndef PINOT_TINY
-	             FALSE,
-#else
-	             TRUE,
-#endif
-	             NOVIEW);
+	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg), FALSE, NOVIEW);
 
-	add_to_funcs(do_backspace, MALL, "", "",
-#ifndef PINOT_TINY
-	             FALSE,
-#else
-	             TRUE,
-#endif
-	             NOVIEW);
+	add_to_funcs(do_backspace, MALL, "", "", FALSE, NOVIEW);
 
-#ifndef PINOT_TINY
 	add_to_funcs(do_cut_till_end, MMAIN, N_("CutTillEnd"),
 	             IFSCHELP(pinot_cut_till_end_msg), TRUE, NOVIEW);
-#endif
 
 	add_to_funcs(xon_complaint, MMAIN, "", "", FALSE, VIEW);
 	add_to_funcs(xoff_complaint, MMAIN, "", "", FALSE, VIEW);
@@ -966,10 +879,8 @@ void shortcut_init(bool unjustify)
 	             IFSCHELP(pinot_fulljustify_msg), FALSE, NOVIEW);
 #endif
 
-#ifndef PINOT_TINY
 	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"),
 	             IFSCHELP(pinot_wordcount_msg), FALSE, VIEW);
-#endif
 
 	add_to_funcs(total_refresh, (MMAIN|MHELP), refresh_msg,
 	             IFSCHELP(pinot_refresh_msg), FALSE, VIEW);
@@ -977,7 +888,6 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(do_suspend_void, MMAIN, suspend_msg,
 	             IFSCHELP(pinot_suspend_msg), TRUE, VIEW);
 
-#ifndef PINOT_TINY
 	add_to_funcs(case_sens_void,
 	             (MWHEREIS|MREPLACE|MWHEREISFILE),
 	             case_sens_msg, IFSCHELP(pinot_case_msg), FALSE, VIEW);
@@ -985,7 +895,6 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(backwards_void,
 	             (MWHEREIS|MREPLACE|MWHEREISFILE),
 	             backwards_msg, IFSCHELP(pinot_reverse_msg), FALSE, VIEW);
-#endif
 
 #ifdef HAVE_PCREPOSIX_H
 	add_to_funcs(regexp_void,
@@ -993,7 +902,6 @@ void shortcut_init(bool unjustify)
 	             regexp_msg, IFSCHELP(pinot_regexp_msg), FALSE, VIEW);
 #endif
 
-#ifndef PINOT_TINY
 	add_to_funcs(get_history_older_void,
 	             (MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE),
 	             prev_history_msg, IFSCHELP(pinot_prev_history_msg), FALSE, VIEW);
@@ -1001,7 +909,6 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(get_history_newer_void,
 	             (MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE),
 	             next_history_msg, IFSCHELP(pinot_next_history_msg), FALSE, VIEW);
-#endif
 
 	add_to_funcs(no_replace_void, MREPLACE,
 	             no_replace_msg, IFSCHELP(pinot_whereis_msg), FALSE, VIEW);
@@ -1016,7 +923,6 @@ void shortcut_init(bool unjustify)
 		             to_files_msg, IFSCHELP(pinot_tofiles_msg), FALSE, VIEW);
 #endif
 
-#ifndef PINOT_TINY
 	/* If we're using restricted mode, the DOS format, Mac format,
 	 * append, prepend, and backup toggles are disabled.  The first and
 	 * second are useless since inserting files is disabled, the third
@@ -1042,9 +948,7 @@ void shortcut_init(bool unjustify)
 	if (!ISSET(RESTRICTED))
 		add_to_funcs( backup_file_void, MWRITEFILE,
 		              backup_file_msg, IFSCHELP(pinot_backup_msg), FALSE, NOVIEW);
-#endif
 
-#ifndef PINOT_TINY
 	/* If we're using restricted mode, command execution is disabled.
 	 * It's useless since inserting files is disabled. */
 	if (!ISSET(RESTRICTED))
@@ -1065,7 +969,6 @@ void shortcut_init(bool unjustify)
 #ifdef ENABLE_MULTIBUFFER
 	add_to_funcs( new_buffer_void, MEXTCMD,
 	              new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), FALSE, NOVIEW);
-#endif
 #endif
 
 #ifndef DISABLE_HELP
@@ -1135,7 +1038,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MWHEREIS, "^R", do_replace, 0, FALSE);
 	add_to_sclist(MREPLACE, "^R", no_replace_void, 0, FALSE);
 	add_to_sclist(MWHEREIS, "^T", do_gotolinecolumn_void, 0, FALSE);
-#ifndef PINOT_TINY
 	add_to_sclist(MMAIN, "^^", do_mark, 0, TRUE);
 	add_to_sclist(MMAIN, "F15", do_mark, 0, TRUE);
 	add_to_sclist(MMAIN, "M-A", do_mark, 0, TRUE);
@@ -1155,7 +1057,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MMAIN, "M-Space", do_prev_word_void, 0, TRUE);
 
 	add_to_sclist(MMAIN, "M-`", do_execute_command, 0, TRUE);
-#endif
 	add_to_sclist(MALL, "kright", do_right, 0, TRUE);
 	add_to_sclist(MALL, "kleft", do_left, 0, TRUE);
 	add_to_sclist(MMAIN, "^Q", xon_complaint, 0, TRUE);
@@ -1168,12 +1069,10 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MALL, "khome", do_home, 0, TRUE);
 	add_to_sclist(MALL, "^E", do_end, 0, TRUE);
 	add_to_sclist(MALL, "kend", do_end, 0, TRUE);
-#ifndef PINOT_TINY
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^P", get_history_older_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "kup", get_history_older_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^N", get_history_newer_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "kdown", get_history_newer_void, 0, FALSE);
-#endif
 #ifdef ENABLE_JUSTIFY
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2,
 	              "^W", do_para_begin_void, 0, TRUE);
@@ -1213,13 +1112,11 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MBROWSER|MWHEREISFILE, "^_", goto_dir_void, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "F13", goto_dir_void, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-G", goto_dir_void, 0, TRUE);
-#ifndef PINOT_TINY
 	add_to_sclist(MMAIN, "M-]", do_find_bracket, 0, TRUE);
 	add_to_sclist(MMAIN, "M--", do_scroll_up, 0, TRUE);
 	add_to_sclist(MMAIN, "M-_", do_scroll_up, 0, TRUE);
 	add_to_sclist(MMAIN, "M-+", do_scroll_down, 0, TRUE);
 	add_to_sclist(MMAIN, "M-=", do_scroll_down, 0, TRUE);
-#endif
 
 #ifdef ENABLE_MULTIBUFFER
 	add_to_sclist(MMAIN, "M-<", switch_to_prev_buffer_void, 0, TRUE);
@@ -1228,7 +1125,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MMAIN, "M-.", switch_to_next_buffer_void, 0, TRUE);
 #endif
 	add_to_sclist(MALL, "M-V", do_verbatim_input, 0, TRUE);
-#ifndef PINOT_TINY
 	add_to_sclist(MALL, "M-T", do_cut_till_end, 0, TRUE);
 #ifdef ENABLE_JUSTIFY
 	add_to_sclist(MALL, "M-J", do_full_justify, 0, TRUE);
@@ -1251,7 +1147,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MMAIN, "M-N", do_toggle_void, NO_CONVERT, TRUE);
 	add_to_sclist(MMAIN, "M-Z", do_toggle_void, SUSPEND, TRUE);
 	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP, TRUE);
-#endif
 	add_to_sclist(MGOTOLINE, "^T",  gototext_void, 0, FALSE);
 	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F",  new_buffer_void, 0, FALSE);
 	add_to_sclist((MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO),
@@ -1305,7 +1200,6 @@ const subnfunc *sctofunc(sc *s)
 	return f;
 }
 
-#ifndef PINOT_TINY
 /* Now lets come up with a single (hopefully)
    function to get a string for each flag */
 const char *flagtostr(int flag)
@@ -1349,7 +1243,6 @@ const char *flagtostr(int flag)
 		return "?????";
 	}
 }
-#endif /* PINOT_TINY */
 
 /* Interpret the string given by the rc file and return a
     shortcut struct, complete with proper value for execute */
@@ -1416,7 +1309,6 @@ sc *strtosc(int menu, char *input)
 			s->scfunc = do_full_justify;
 		}
 #endif
-#ifndef PINOT_TINY
 		else if (!strcasecmp(input, "mark")) {
 			s->scfunc = do_mark;
 		} else if (!strcasecmp(input, "searchagain") ||
@@ -1518,7 +1410,6 @@ sc *strtosc(int menu, char *input)
 			s->execute = FALSE;
 			s->toggle = SUSPEND;
 		}
-#endif /* PINOT_TINY */
 		else if (!strcasecmp(input, "right") ||
 		         !strcasecmp(input, "forward")) {
 			s->scfunc = do_right;
@@ -1673,11 +1564,9 @@ void thanks_for_all_the_fish(void)
 	}
 #endif
 #endif
-#ifndef PINOT_TINY
 	if (backup_dir != NULL) {
 		free(backup_dir);
 	}
-#endif
 #ifndef DISABLE_OPERATINGDIR
 	if (operating_dir != NULL) {
 		free(operating_dir);
@@ -1755,7 +1644,6 @@ void thanks_for_all_the_fish(void)
 		free(bill);
 	}
 #endif /* ENABLE_COLOR */
-#ifndef PINOT_TINY
 	/* Free the search and replace history lists. */
 	if (searchage != NULL) {
 		free_filestruct(searchage);
@@ -1763,7 +1651,6 @@ void thanks_for_all_the_fish(void)
 	if (replaceage != NULL) {
 		free_filestruct(replaceage);
 	}
-#endif
 #ifdef ENABLE_PINOTRC
 	if (homedir != NULL) {
 		free(homedir);

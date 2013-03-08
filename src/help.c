@@ -236,12 +236,10 @@ void help_init(void)
 	const sc *s;
 	int scsfound = 0;
 
-#ifndef PINOT_TINY
 #ifdef ENABLE_PINOTRC
 	bool old_whitespace = ISSET(WHITESPACE_DISPLAY);
 
 	UNSET(WHITESPACE_DISPLAY);
-#endif
 #endif
 
 	/* First, set up the initial help text for the current function. */
@@ -351,7 +349,6 @@ void help_init(void)
 		htx[2] = NULL;
 	}
 #endif /* ENABLE_SPELLER */
-#ifndef PINOT_TINY
 	else if (currmenu == MEXTCMD) {
 		htx[0] = N_("Execute Command Help Text\n\n "
 		            "This mode allows you to insert the output of a "
@@ -363,7 +360,6 @@ void help_init(void)
 		htx[1] = NULL;
 		htx[2] = NULL;
 	}
-#endif /* !PINOT_TINY */
 	else {
 		/* Default to the main help list. */
 		htx[0] = N_("Main pinot help text\n\n "
@@ -417,7 +413,6 @@ void help_init(void)
 			allocsize += (24 * mb_cur_max()) + strlen(f->help) + 2;
 		}
 
-#ifndef PINOT_TINY
 	/* If we're on the main list, we also count the toggle help text.
 	 * Each entry has "M-%c\t\t\t", which fills 24 columns, plus a
 	 * space, plus translated text, plus one or two '\n's. */
@@ -430,7 +425,6 @@ void help_init(void)
 			}
 
 	}
-#endif
 
 	/* help_text has been freed and set to NULL unless the user resized
 	 * while in the help screen. */
@@ -503,7 +497,6 @@ void help_init(void)
 		}
 	}
 
-#ifndef PINOT_TINY
 	/* And the toggles... */
 	if (currmenu == MMAIN)
 		for (s = sclist; s != NULL; s = s->next)
@@ -516,7 +509,6 @@ void help_init(void)
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
-#endif
 #endif
 
 	/* If all went well, we didn't overwrite the allocated space for

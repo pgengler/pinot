@@ -225,9 +225,7 @@ change_browser_directory:
 #endif
 			              MGOTODIR, ans,
 			              &meta_key, &func_key,
-#ifndef PINOT_TINY
 			              NULL,
-#endif
 			              browser_refresh, N_("Go To Directory"));
 
 			curs_set(0);
@@ -835,15 +833,11 @@ int filesearch_init(void)
 #endif
 	              MWHEREISFILE, backupstring,
 	              &meta_key, &func_key,
-#ifndef PINOT_TINY
 	              &search_history,
-#endif
 	              browser_refresh, "%s%s%s%s%s%s", _("Search"),
-#ifndef PINOT_TINY
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
 	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
-#endif
 	              "",
 #ifdef HAVE_PCREPOSIX_H
 	              /* This string is just a modifier for the search prompt; no
@@ -851,11 +845,9 @@ int filesearch_init(void)
 	              ISSET(USE_REGEXP) ? _(" [Regexp]") :
 #endif
 	              "",
-#ifndef PINOT_TINY
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
 	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") :
-#endif
 	              "", "", buf);
 
 	/* Release buf now that we don't need it anymore. */
@@ -881,7 +873,6 @@ int filesearch_init(void)
 			}
 #endif
 		} else
-#ifndef PINOT_TINY
 			if (s && s->scfunc == case_sens_void) {
 				TOGGLE(CASE_SENSITIVE);
 				backupstring = mallocstrcpy(backupstring, answer);
@@ -891,7 +882,6 @@ int filesearch_init(void)
 				backupstring = mallocstrcpy(backupstring, answer);
 				return 1;
 			} else
-#endif
 #ifdef HAVE_PCREPOSIX_H
 				if (s && s->scfunc == regexp_void) {
 					TOGGLE(USE_REGEXP);
@@ -918,11 +908,9 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 	/* The filename we display, minus the path. */
 	const char *rev_start = filetail, *found = NULL;
 
-#ifndef PINOT_TINY
 	if (ISSET(BACKWARDS_SEARCH)) {
 		rev_start += strlen(rev_start);
 	}
-#endif
 
 	/* Look for needle in the current filename we're searching. */
 	while (TRUE) {
@@ -943,7 +931,6 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 
 		/* Move to the previous or next filename in the list.  If we've
 		 * reached the start or end of the list, wrap around. */
-#ifndef PINOT_TINY
 		if (ISSET(BACKWARDS_SEARCH)) {
 			if (currselected > 0) {
 				currselected--;
@@ -952,16 +939,13 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 				statusbar(_("Search Wrapped"));
 			}
 		} else {
-#endif
 			if (currselected < filelist_len - 1) {
 				currselected++;
 			} else {
 				currselected = 0;
 				statusbar(_("Search Wrapped"));
 			}
-#ifndef PINOT_TINY
 		}
-#endif
 
 		/* We've reached the original starting file. */
 		if (currselected == begin) {
@@ -971,11 +955,9 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 		filetail = tail(filelist[currselected]);
 
 		rev_start = filetail;
-#ifndef PINOT_TINY
 		if (ISSET(BACKWARDS_SEARCH)) {
 			rev_start += strlen(rev_start);
 		}
-#endif
 	}
 
 	/* We've definitely found something. */
@@ -1017,13 +999,11 @@ void do_filesearch(void)
 	{
 		filesearch_abort();
 	}
-#if !defined(PINOT_TINY) || defined(HAVE_PCREPOSIX_H)
 	else if (i == 1)	/* Case Sensitive, Backwards, or Regexp search
 			 * toggle. */
 	{
 		do_filesearch();
 	}
-#endif
 
 	if (i != 0) {
 		return;
@@ -1036,13 +1016,11 @@ void do_filesearch(void)
 		last_search = mallocstrcpy(last_search, answer);
 	}
 
-#ifndef PINOT_TINY
 	/* If answer is not "", add this search string to the search history
 	 * list. */
 	if (answer[0] != '\0') {
 		update_history(&search_history, answer);
 	}
-#endif
 
 	findnextfile_wrap_reset();
 	didfind = findnextfile(FALSE, begin, answer);

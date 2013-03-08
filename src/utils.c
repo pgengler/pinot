@@ -355,7 +355,6 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 
 #ifdef HAVE_PCREPOSIX_H
 	if (ISSET(USE_REGEXP)) {
-#ifndef PINOT_TINY
 		if (ISSET(BACKWARDS_SEARCH)) {
 			if (regexec(&search_regexp, haystack, 1, regmatches,
 			            0) == 0 && haystack + regmatches[0].rm_so <= start) {
@@ -374,7 +373,6 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 				return retval;
 			}
 		} else
-#endif /* !PINOT_TINY */
 			if (regexec(&search_regexp, start, 10, regmatches,
 			            (start > haystack) ? REG_NOTBOL : 0) == 0) {
 				const char *retval = start + regmatches[0].rm_so;
@@ -385,21 +383,16 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 		return NULL;
 	}
 #endif /* HAVE_PCREPOSIX_H */
-#if !defined(PINOT_TINY) || defined(ENABLE_SPELLER)
 	if (ISSET(CASE_SENSITIVE)) {
-#ifndef PINOT_TINY
 		if (ISSET(BACKWARDS_SEARCH)) {
 			return revstrstr(haystack, needle, start);
-		} else
-#endif
+		} else {
 			return strstr(start, needle);
+		}
 	}
-#endif /* ENABLE_SPELLER || !PINOT_TINY */
-#ifndef PINOT_TINY
 	else if (ISSET(BACKWARDS_SEARCH)) {
 		return mbrevstrcasestr(haystack, needle, start);
 	}
-#endif
 	return mbstrcasestr(start, needle);
 }
 
@@ -577,7 +570,6 @@ void new_magicline(void)
 	openfile->totsize++;
 }
 
-#ifndef PINOT_TINY
 /* Remove the magicline from filebot, if there is one and it isn't the
  * only line in the file.  Assume that edittop and current are not at
  * filebot. */
@@ -624,7 +616,6 @@ void mark_order(const filestruct **top, size_t *top_x, const filestruct
 		}
 	}
 }
-#endif
 
 /* Calculate the number of characters between begin and end, and return
  * it. */

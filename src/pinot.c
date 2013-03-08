@@ -39,9 +39,7 @@
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
-#ifndef PINOT_TINY
 #include <sys/ioctl.h>
-#endif
 
 #ifndef DISABLE_MOUSE
 static int oldinterval = -1;
@@ -306,9 +304,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 {
 	filestruct *top_save;
 	bool edittop_inside;
-#ifndef PINOT_TINY
 	bool mark_inside = FALSE;
-#endif
 
 	assert(file_top != NULL && file_bot != NULL && top != NULL && bot != NULL);
 
@@ -325,7 +321,6 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 	edittop_inside = (openfile->edittop->lineno >=
 	                  openfile->fileage->lineno && openfile->edittop->lineno <=
 	                  openfile->filebot->lineno);
-#ifndef PINOT_TINY
 	if (openfile->mark_set)
 		mark_inside = (openfile->mark_begin->lineno >=
 		               openfile->fileage->lineno &&
@@ -335,7 +330,6 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 		                openfile->mark_begin_x >= top_x) &&
 		               (openfile->mark_begin != openfile->filebot ||
 		                openfile->mark_begin_x <= bot_x));
-#endif
 
 	/* Get the number of characters in the text, and subtract it from
 	 * totsize. */
@@ -391,12 +385,10 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 	 * saved text used to start. */
 	openfile->current = openfile->fileage;
 	openfile->current_x = top_x;
-#ifndef PINOT_TINY
 	if (mark_inside) {
 		openfile->mark_begin = openfile->current;
 		openfile->mark_begin_x = openfile->current_x;
 	}
-#endif
 
 	top_save = openfile->fileage;
 
@@ -429,13 +421,10 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 	filestruct *top_save;
 	size_t current_x_save = openfile->current_x;
 	bool edittop_inside;
-#ifndef PINOT_TINY
 	bool right_side_up = FALSE, single_line = FALSE;
-#endif
 
 	assert(file_top != NULL && file_bot != NULL);
 
-#ifndef PINOT_TINY
 	/* Keep track of whether the mark begins inside the partition and
 	 * will need adjustment. */
 	if (openfile->mark_set) {
@@ -447,7 +436,6 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 
 		single_line = (top == bot);
 	}
-#endif
 
 	/* Partition the filestruct so that it contains no text, and keep
 	 * track of whether the top of the edit window is inside the
@@ -470,17 +458,14 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 	openfile->current = openfile->filebot;
 	openfile->current_x = strlen(openfile->filebot->data);
 	if (openfile->fileage == openfile->filebot) {
-#ifndef PINOT_TINY
 		if (openfile->mark_set) {
 			openfile->mark_begin = openfile->current;
 			if (!right_side_up) {
 				openfile->mark_begin_x += openfile->current_x;
 			}
 		}
-#endif
 		openfile->current_x += current_x_save;
 	}
-#ifndef PINOT_TINY
 	else if (openfile->mark_set) {
 		if (!right_side_up) {
 			if (single_line) {
@@ -491,7 +476,6 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 			}
 		}
 	}
-#endif
 
 	/* Get the number of characters in the copied text, and add it to
 	 * totsize. */
@@ -537,11 +521,9 @@ openfilestruct *make_new_opennode(void)
 	newnode->filebot = NULL;
 	newnode->edittop = NULL;
 	newnode->current = NULL;
-#ifndef PINOT_TINY
 	newnode->current_stat = NULL;
 	newnode->last_action = OTHER;
 	newnode->lock_filename = NULL;
-#endif
 
 	return newnode;
 }
@@ -579,11 +561,9 @@ void delete_opennode(openfilestruct *fileptr)
 
 	free(fileptr->filename);
 	free_filestruct(fileptr->fileage);
-#ifndef PINOT_TINY
 	if (fileptr->current_stat != NULL) {
 		free(fileptr->current_stat);
 	}
-#endif
 
 	free(fileptr);
 }
@@ -626,7 +606,7 @@ void finish(void)
 	/* Restore the old terminal settings. */
 	tcsetattr(0, TCSANOW, &oldterm);
 
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles && ISSET(HISTORYLOG)) {
 		save_history();
 	}
@@ -665,11 +645,7 @@ void die(const char *msg, ...)
 			unpartition_filestruct(&filepart);
 		}
 
-		die_save_file(openfile->filename
-#ifndef PINOT_TINY
-		              , openfile->current_stat
-#endif
-		             );
+		die_save_file(openfile->filename, openfile->current_stat);
 	}
 
 #ifdef ENABLE_MULTIBUFFER
@@ -682,11 +658,7 @@ void die(const char *msg, ...)
 
 			/* Save the current file buffer if it's been modified. */
 			if (openfile->modified)
-				die_save_file(openfile->filename
-#ifndef PINOT_TINY
-				              , openfile->current_stat
-#endif
-				             );
+				die_save_file(openfile->filename, openfile->current_stat);
 		}
 	}
 #endif
@@ -697,11 +669,7 @@ void die(const char *msg, ...)
 
 /* Save the current file under the name spacified in die_filename, which
  * is modified to be unique if necessary. */
-void die_save_file(const char *die_filename
-#ifndef PINOT_TINY
-                   , struct stat *die_stat
-#endif
-                  )
+void die_save_file(const char *die_filename, struct stat *die_stat)
 {
 	char *retval;
 	bool failed = TRUE;
@@ -733,7 +701,6 @@ void die_save_file(const char *die_filename
 		fprintf(stderr, _("\nBuffer not written: %s\n"),
 		        _("Too many backup files?"));
 
-#ifndef PINOT_TINY
 	/* Try and chmod/chown the save file to the values of the original file, but
 	   dont worry if it fails because we're supposed to be bailing as fast
 	   as possible. */
@@ -742,7 +709,6 @@ void die_save_file(const char *die_filename
 		shush = chmod(retval, die_stat->st_mode);
 		shush = chown(retval, die_stat->st_uid, die_stat->st_gid);
 	}
-#endif
 
 	free(retval);
 }
@@ -867,28 +833,22 @@ void usage(void)
 	print_opt("-h, -?", "--help", N_("Show this message"));
 	print_opt(_("+LINE,COLUMN"), "",
 	          N_("Start at line LINE, column COLUMN"));
-#ifndef PINOT_TINY
 	print_opt("-A", "--smarthome", N_("Enable smart home key"));
 	print_opt("-B", "--backup", N_("Save backups of existing files"));
 	print_opt(_("-C <dir>"), _("--backupdir=<dir>"),
 	          N_("Directory for saving unique backup files"));
-#endif
 	print_opt("-D", "--boldtext",
 	          N_("Use bold instead of reverse video text"));
-#ifndef PINOT_TINY
 	print_opt("-E", "--tabstospaces",
 	          N_("Convert typed tabs to spaces"));
-#endif
 #ifdef ENABLE_MULTIBUFFER
 	print_opt("-F", "--multibuffer", N_("Enable multiple file buffers"));
 #endif
 #ifdef ENABLE_PINOTRC
-#ifndef PINOT_TINY
 	print_opt("-G", "--locking",
 	          N_("Use (vim-style) lock files"));
 	print_opt("-H", "--historylog",
 	          N_("Log & read search/replace string history"));
-#endif
 	print_opt("-I", "--ignorercfiles",
 	          N_("Don't look at pinotorc files"));
 #endif
@@ -896,35 +856,25 @@ void usage(void)
 	          N_("Fix numeric keypad key confusion problem"));
 	print_opt("-L", "--nonewlines",
 	          N_("Don't add newlines to the ends of files"));
-#ifndef PINOT_TINY
 	print_opt("-N", "--noconvert",
 	          N_("Don't convert files from DOS/Mac format"));
-#endif
 	print_opt("-O", "--morespace", N_("Use one more line for editing"));
-#ifndef PINOT_TINY
 	print_opt("-P", "--poslog",
 	          N_("Log & read location of cursor position"));
-#endif
 #ifdef ENABLE_JUSTIFY
 	print_opt(_("-Q <str>"), _("--quotestr=<str>"),
 	          N_("Quoting string"));
 #endif
 	print_opt("-R", "--restricted", N_("Restricted mode"));
-#ifndef PINOT_TINY
 	print_opt("-S", "--smooth",
 	          N_("Scroll by line instead of half-screen"));
-#endif
 	print_opt(_("-T <#cols>"), _("--tabsize=<#cols>"),
 	          N_("Set width of a tab to #cols columns"));
-#ifndef PINOT_TINY
 	print_opt("-U", "--quickblank", N_("Do quick statusbar blanking"));
-#endif
 	print_opt("-V", "--version",
 	          N_("Print version information and exit"));
-#ifndef PINOT_TINY
 	print_opt("-W", "--wordbounds",
 	          N_("Detect word boundaries more accurately"));
-#endif
 #ifdef ENABLE_COLOR
 	print_opt(_("-Y <str>"), _("--syntax=<str>"),
 	          N_("Syntax definition to use for coloring"));
@@ -932,11 +882,9 @@ void usage(void)
 	print_opt("-c", "--const", N_("Constantly show cursor position"));
 	print_opt("-d", "--rebinddelete",
 	          N_("Fix Backspace/Delete confusion problem"));
-#ifndef PINOT_TINY
 	print_opt("-i", "--autoindent",
 	          N_("Automatically indent new lines"));
 	print_opt("-k", "--cut", N_("Cut from cursor to end of line"));
-#endif
 	print_opt("-l", "--nofollow",
 	          N_("Don't follow symbolic links, overwrite"));
 #ifndef DISABLE_MOUSE
@@ -960,9 +908,7 @@ void usage(void)
 #endif
 	print_opt("-t", "--tempfile",
 	          N_("Auto save on exit, don't prompt"));
-#ifndef PINOT_TINY
 	print_opt("-u", "--undo", N_("Allow generic undo [EXPERIMENTAL]"));
-#endif
 
 	print_opt("-v", "--view", N_("View mode (read-only)"));
 #ifndef DISABLE_WRAPPING
@@ -1037,9 +983,6 @@ void version(void)
 #ifdef ENABLE_SPELLER
 	printf(" --enable-speller");
 #endif
-#ifdef PINOT_TINY
-	printf(" --enable-tiny");
-#endif
 #ifdef ENABLE_UTF8
 	printf(" --enable-utf8");
 #endif
@@ -1101,11 +1044,9 @@ void do_exit(void)
 	/* If the user chose not to save, or if the user chose to save and
 	 * the save succeeded, we're ready to exit. */
 	if (i == 0 || (i == 1 && do_writeout(TRUE))) {
-#ifndef PINOT_TINY
 		if (ISSET(LOCKING) && openfile->lock_filename) {
 			delete_lockfile(openfile->lock_filename);
 		}
-#endif /* PINOT_TINY */
 #ifdef ENABLE_MULTIBUFFER
 		/* Exit only if there are no more open file buffers. */
 		if (!close_buffer())
@@ -1182,9 +1123,7 @@ void stdin_pager(void)
 	/* Set things up so that Ctrl-C will cancel the new process. */
 	/* Enable interpretation of the special control keys so that we get
 	 * SIGINT when Ctrl-C is pressed. */
-#ifndef PINOT_TINY
 	enable_signals();
-#endif
 
 	if (sigaction(SIGINT, NULL, &pager_newaction) == -1) {
 		pager_sig_failed = TRUE;
@@ -1218,12 +1157,10 @@ void signal_init(void)
 	sigaction(SIGHUP, &act, NULL);
 	sigaction(SIGTERM, &act, NULL);
 
-#ifndef PINOT_TINY
 	/* Trap SIGWINCH because we want to handle window resizes. */
 	act.sa_handler = handle_sigwinch;
 	sigaction(SIGWINCH, &act, NULL);
 	allow_pending_sigwinch(FALSE);
-#endif
 
 	/* Trap normal suspend (^Z) so we can handle it ourselves. */
 	if (!ISSET(SUSPEND)) {
@@ -1301,26 +1238,12 @@ RETSIGTYPE do_continue(int signal)
 	}
 #endif
 
-#ifndef PINOT_TINY
 	/* Perhaps the user resized the window while we slept.  Handle it,
 	 * and restore the terminal to its previous state and update the
 	 * screen in the process. */
 	handle_sigwinch(0);
-#else
-	/* Restore the terminal to its previous state. */
-	terminal_init();
-
-	/* Turn the cursor back on for sure. */
-	curs_set(1);
-
-	/* Redraw the contents of the windows that need it. */
-	blank_statusbar();
-	wnoutrefresh(bottomwin);
-	total_refresh();
-#endif
 }
 
-#ifndef PINOT_TINY
 /* Handler for SIGWINCH (window size change). */
 RETSIGTYPE handle_sigwinch(int signal)
 {
@@ -1401,9 +1324,7 @@ void allow_pending_sigwinch(bool allow)
 	sigaddset(&winch, SIGWINCH);
 	sigprocmask(allow ? SIG_UNBLOCK : SIG_BLOCK, &winch, NULL);
 }
-#endif /* !PINOT_TINY */
 
-#ifndef PINOT_TINY
 /* Handle the global toggle specified in which. */
 void do_toggle(int flag)
 {
@@ -1465,7 +1386,6 @@ void do_toggle_void(void)
 {
 	;
 }
-#endif /* !PINOT_TINY */
 
 /* Disable extended input and output processing in our terminal
  * settings. */
@@ -1490,7 +1410,6 @@ void disable_signals(void)
 	tcsetattr(0, TCSANOW, &term);
 }
 
-#ifndef PINOT_TINY
 /* Enable interpretation of the special control keys in our terminal
  * settings. */
 void enable_signals(void)
@@ -1501,7 +1420,6 @@ void enable_signals(void)
 	term.c_lflag |= ISIG;
 	tcsetattr(0, TCSANOW, &term);
 }
-#endif
 
 /* Disable interpretation of the flow control characters in our terminal
  * settings. */
@@ -1701,10 +1619,8 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 				/* If the function associated with this shortcut is
 				 * cutting or copying text, indicate this. */
 				if (s->scfunc == do_cut_text_void
-#ifndef PINOT_TINY
 				        || s->scfunc == do_copy_text || s->scfunc ==
 				        do_cut_till_end
-#endif
 				   ) {
 					cut_copy = TRUE;
 				}
@@ -1715,13 +1631,9 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 					if (ISSET(VIEW_MODE) && f && !f->viewok) {
 						print_view_warning();
 					} else {
-#ifndef PINOT_TINY
 						if (s->scfunc == do_toggle_void) {
 							do_toggle(s->toggle);
 						} else {
-#else
-						{
-#endif
 							s->scfunc();
 #ifdef ENABLE_COLOR
 							if (f && !f->viewok && openfile->syntax != NULL
@@ -1834,14 +1746,12 @@ int do_mouse(void)
 			openfile->placewewant = xplustabs();
 		}
 
-#ifndef PINOT_TINY
 		/* Clicking where the cursor is toggles the mark, as does
 		 * clicking beyond the line length with the cursor at the end of
 		 * the line. */
 		if (sameline && openfile->current_x == current_x_save) {
 			do_mark();
 		}
-#endif
 
 		edit_redraw(current_save, pww_save);
 	}
@@ -2063,7 +1973,6 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		openfile->totsize++;
 		set_modified();
 
-#ifndef PINOT_TINY
 		update_undo(ADD);
 
 		/* Note that current_x has not yet been incremented. */
@@ -2072,7 +1981,6 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		        openfile->mark_begin_x) {
 			openfile->mark_begin_x += char_buf_len;
 		}
-#endif
 
 		openfile->current_x += char_buf_len;
 
@@ -2178,7 +2086,6 @@ int main(int argc, char **argv)
 #endif
 		{"nohelp", 0, NULL, 'x'},
 		{"suspend", 0, NULL, 'z'},
-#ifndef PINOT_TINY
 		{"smarthome", 0, NULL, 'A'},
 		{"backup", 0, NULL, 'B'},
 		{"backupdir", 1, NULL, 'C'},
@@ -2194,7 +2101,6 @@ int main(int argc, char **argv)
 		{"autoindent", 0, NULL, 'i'},
 		{"cut", 0, NULL, 'k'},
 		{"softwrap", 0, NULL, '$'},
-#endif
 		{NULL, 0, NULL, 0}
 	};
 #endif
@@ -2249,7 +2155,6 @@ int main(int argc, char **argv)
 		case 'j':
 			/* Pico compatibility flags. */
 			break;
-#ifndef PINOT_TINY
 		case 'A':
 			SET(SMART_HOME);
 			break;
@@ -2259,29 +2164,24 @@ int main(int argc, char **argv)
 		case 'C':
 			backup_dir = mallocstrcpy(backup_dir, optarg);
 			break;
-#endif
 		case 'D':
 			SET(BOLD_TEXT);
 			break;
-#ifndef PINOT_TINY
 		case 'E':
 			SET(TABS_TO_SPACES);
 			break;
-#endif
 #ifdef ENABLE_MULTIBUFFER
 		case 'F':
 			SET(MULTIBUFFER);
 			break;
 #endif
 #ifdef ENABLE_PINOTRC
-#ifndef PINOT_TINY
 		case 'G':
 			SET(LOCKING);
 			break;
 		case 'H':
 			SET(HISTORYLOG);
 			break;
-#endif
 		case 'I':
 			no_rcfiles = TRUE;
 			break;
@@ -2292,19 +2192,15 @@ int main(int argc, char **argv)
 		case 'L':
 			SET(NO_NEWLINES);
 			break;
-#ifndef PINOT_TINY
 		case 'N':
 			SET(NO_CONVERT);
 			break;
-#endif
 		case 'O':
 			SET(MORE_SPACE);
 			break;
-#ifndef PINOT_TINY
 		case 'P':
 			SET(POS_HISTORY);
 			break;
-#endif
 #ifdef ENABLE_JUSTIFY
 		case 'Q':
 			quotestr = mallocstrcpy(quotestr, optarg);
@@ -2313,11 +2209,9 @@ int main(int argc, char **argv)
 		case 'R':
 			SET(RESTRICTED);
 			break;
-#ifndef PINOT_TINY
 		case 'S':
 			SET(SMOOTH_SCROLL);
 			break;
-#endif
 		case 'T':
 			if (!parse_num(optarg, &tabsize) || tabsize <= 0) {
 				fprintf(stderr, _("Requested tab size \"%s\" is invalid"), optarg);
@@ -2325,19 +2219,15 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 			break;
-#ifndef PINOT_TINY
 		case 'U':
 			SET(QUICK_BLANK);
 			break;
-#endif
 		case 'V':
 			version();
 			exit(0);
-#ifndef PINOT_TINY
 		case 'W':
 			SET(WORD_BOUNDS);
 			break;
-#endif
 #ifdef ENABLE_COLOR
 		case 'Y':
 			syntaxstr = mallocstrcpy(syntaxstr, optarg);
@@ -2349,14 +2239,12 @@ int main(int argc, char **argv)
 		case 'd':
 			SET(REBIND_DELETE);
 			break;
-#ifndef PINOT_TINY
 		case 'i':
 			SET(AUTOINDENT);
 			break;
 		case 'k':
 			SET(CUT_TO_END);
 			break;
-#endif
 		case 'l':
 			SET(NOFOLLOW_SYMLINKS);
 			break;
@@ -2394,11 +2282,9 @@ int main(int argc, char **argv)
 		case 't':
 			SET(TEMP_FILE);
 			break;
-#ifndef PINOT_TINY
 		case 'u':
 			SET(UNDOABLE);
 			break;
-#endif
 		case 'v':
 			SET(VIEW_MODE);
 			break;
@@ -2418,11 +2304,9 @@ int main(int argc, char **argv)
 		case 'z':
 			SET(SUSPEND);
 			break;
-#ifndef PINOT_TINY
 		case '$':
 			SET(SOFTWRAP);
 			break;
-#endif
 		default:
 			usage();
 		}
@@ -2461,9 +2345,7 @@ int main(int argc, char **argv)
 #ifndef DISABLE_WRAPJUSTIFY
 		ssize_t wrap_at_cpy = wrap_at;
 #endif
-#ifndef PINOT_TINY
 		char *backup_dir_cpy = backup_dir;
-#endif
 #ifdef ENABLE_JUSTIFY
 		char *quotestr_cpy = quotestr;
 #endif
@@ -2479,9 +2361,7 @@ int main(int argc, char **argv)
 #ifndef DISABLE_OPERATINGDIR
 		operating_dir = NULL;
 #endif
-#ifndef PINOT_TINY
 		backup_dir = NULL;
-#endif
 #ifdef ENABLE_JUSTIFY
 		quotestr = NULL;
 #endif
@@ -2507,12 +2387,10 @@ int main(int argc, char **argv)
 			wrap_at = wrap_at_cpy;
 		}
 #endif
-#ifndef PINOT_TINY
 		if (backup_dir_cpy != NULL) {
 			free(backup_dir);
 			backup_dir = backup_dir_cpy;
 		}
-#endif
 #ifdef ENABLE_JUSTIFY
 		if (quotestr_cpy != NULL) {
 			free(quotestr);
@@ -2556,7 +2434,6 @@ int main(int argc, char **argv)
 		reverse_attr = A_BOLD;
 	}
 
-#ifndef PINOT_TINY
 	/* Set up the search/replace history. */
 	history_init();
 #ifdef ENABLE_PINOTRC
@@ -2575,9 +2452,7 @@ int main(int argc, char **argv)
 		}
 	}
 #endif /* ENABLE_PINOTRC */
-#endif /* PINOT_TINY */
 
-#ifndef PINOT_TINY
 	/* Set up the backup directory (unless we're using restricted mode,
 	 * in which case backups are disabled, since they would allow
 	 * reading from or writing to files not specified on the command
@@ -2586,7 +2461,6 @@ int main(int argc, char **argv)
 	if (!ISSET(RESTRICTED)) {
 		init_backup_dir();
 	}
-#endif
 
 #ifndef DISABLE_OPERATINGDIR
 	/* Set up the operating directory.  This entails chdir()ing there,
@@ -2646,14 +2520,12 @@ int main(int argc, char **argv)
 	}
 #endif
 
-#ifndef PINOT_TINY
 	/* If matchbrackets wasn't specified, set its default value. */
 	if (matchbrackets == NULL) {
 		matchbrackets = mallocstrcpy(NULL, "(<[{)>]}");
 	}
-#endif
 
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 	/* If whitespace wasn't specified, set its default value. */
 	if (whitespace == NULL) {
 		whitespace = mallocstrcpy(NULL, "  ");
@@ -2741,7 +2613,6 @@ int main(int argc, char **argv)
 					iline = 1;
 					icol = 1;
 				}
-#ifndef PINOT_TINY
 				else {
 					/* See if we have a POS history to use if we haven't overridden it */
 					ssize_t savedposline, savedposcol;
@@ -2749,7 +2620,6 @@ int main(int argc, char **argv)
 						do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE,
 						                  FALSE);
 				}
-#endif /* PINOT_TINY */
 			}
 		}
 	}
@@ -2790,7 +2660,6 @@ int main(int argc, char **argv)
 	if (startline > 1 || startcol > 1)
 		do_gotolinecolumn(startline, startcol, FALSE, FALSE, FALSE,
 		                  FALSE);
-# ifndef PINOT_TINY
 	else {
 		/* See if we have a POS history to use if we haven't overridden it */
 		ssize_t savedposline, savedposcol;
@@ -2798,7 +2667,6 @@ int main(int argc, char **argv)
 			do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
 		}
 	}
-#endif /* PINOT_TINY */
 
 	display_main_list();
 
@@ -2811,7 +2679,6 @@ int main(int argc, char **argv)
 		reset_cursor();
 		wnoutrefresh(edit);
 
-#ifndef PINOT_TINY
 		if (!jump_buf_main) {
 			/* If we haven't already, we're going to set jump_buf so
 			 * that we return here after a SIGWINCH.  Indicate this. */
@@ -2820,7 +2687,6 @@ int main(int argc, char **argv)
 			/* Return here after a SIGWINCH. */
 			sigsetjmp(jump_buf, 1);
 		}
-#endif
 
 		/* Just in case we were at the statusbar prompt, make sure the
 		 * statusbar cursor position is reset. */

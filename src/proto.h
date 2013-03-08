@@ -27,11 +27,9 @@
 #include "pinot.h"
 
 /* All external variables.  See global.c for their descriptions. */
-#ifndef PINOT_TINY
 extern sigjmp_buf jump_buf;
 extern bool jump_buf_main;
 extern bool use_undo;
-#endif
 
 #ifndef DISABLE_WRAPJUSTIFY
 extern ssize_t fill;
@@ -56,11 +54,9 @@ extern filestruct *jusbuffer;
 extern partition *filepart;
 extern openfilestruct *openfile;
 
-#ifndef PINOT_TINY
 extern char *matchbrackets;
-#endif
 
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 extern char *whitespace;
 extern int whitespace_len[2];
 extern undo_type last_action;
@@ -83,11 +79,9 @@ extern char *answer;
 
 extern ssize_t tabsize;
 
-#ifndef PINOT_TINY
 extern char *backup_dir;
 extern const char *locking_prefix;
 extern const char *locking_suffix;
-#endif
 #ifndef DISABLE_OPERATINGDIR
 extern char *operating_dir;
 extern char *full_operating_dir;
@@ -108,7 +102,6 @@ extern bool edit_refresh_needed;
 extern const shortcut *currshortcut;
 extern int currmenu;
 
-#ifndef PINOT_TINY
 extern filestruct *search_history;
 extern filestruct *searchage;
 extern filestruct *searchbot;
@@ -117,7 +110,6 @@ extern filestruct *replaceage;
 extern filestruct *replacebot;
 extern poshiststruct *poshistory;
 void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos);
-#endif
 
 #ifdef HAVE_PCREPOSIX_H
 extern regex_t search_regexp;
@@ -193,32 +185,24 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n);
 char *nstrcasestr(const char *haystack, const char *needle);
 #endif
 char *mbstrcasestr(const char *haystack, const char *needle);
-#if !defined(PINOT_TINY) || !defined(DISABLE_TABCOMP)
 char *revstrstr(const char *haystack, const char *needle, const char
                 *rev_start);
-#endif
-#ifndef PINOT_TINY
 char *revstrcasestr(const char *haystack, const char *needle, const char
                     *rev_start);
 char *mbrevstrcasestr(const char *haystack, const char *needle, const
                       char *rev_start);
-#endif
 size_t mbstrlen(const char *s);
 #ifndef HAVE_STRNLEN
 size_t nstrnlen(const char *s, size_t maxlen);
 #endif
 size_t mbstrnlen(const char *s, size_t maxlen);
-#if !defined(PINOT_TINY) || defined(ENABLE_JUSTIFY)
 char *mbstrchr(const char *s, const char *c);
-#endif
-#ifndef PINOT_TINY
 char *mbstrpbrk(const char *s, const char *accept);
 char *revstrpbrk(const char *s, const char *accept, const char
                  *rev_start);
 char *mbrevstrpbrk(const char *s, const char *accept, const char
                    *rev_start);
-#endif
-#if defined(ENABLE_PINOTRC) && (!defined(PINOT_TINY) || defined(ENABLE_JUSTIFY))
+#ifdef ENABLE_PINOTRC
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
 #endif
@@ -239,23 +223,13 @@ void color_update(void);
 /* All functions in cut.c. */
 void cutbuffer_reset(void);
 void cut_line(void);
-#ifndef PINOT_TINY
 void cut_marked(void);
 void cut_to_eol(void);
 void cut_to_eof(void);
-#endif
-void do_cut_text(
-#ifndef PINOT_TINY
-    bool copy_text, bool cut_till_end, bool undoing
-#else
-    void
-#endif
-);
+void do_cut_text(bool copy_text, bool cut_till_end, bool undoing);
 void do_cut_text_void(void);
-#ifndef PINOT_TINY
 void do_copy_text(void);
 void do_cut_till_end(void);
-#endif
 void do_uncut_text(void);
 
 /* All functions in files.c. */
@@ -278,17 +252,9 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool
 void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkwritable);
 int open_file(const char *filename, bool newfie, FILE **f);
 char *get_next_filename(const char *name, const char *suffix);
-void do_insertfile(
-#ifndef PINOT_TINY
-    bool execute
-#else
-    void
-#endif
-);
+void do_insertfile(bool execute);
 void do_insertfile_void(void);
-#ifndef PINOT_TINY
 void do_execute_command();
-#endif
 char *get_full_path(const char *origpath);
 char *check_writable_directory(const char *path);
 char *safe_tempfile(FILE **f);
@@ -296,18 +262,14 @@ char *safe_tempfile(FILE **f);
 void init_operating_dir(void);
 bool check_operating_dir(const char *currpath, bool allow_tabcomp);
 #endif
-#ifndef PINOT_TINY
 void init_backup_dir(void);
 int delete_lockfile(const char *lockfilename);
 int write_lockfile(const char *lockfilename, const char *origfilename, bool modified);
-#endif
 int copy_file(FILE *inn, FILE *out);
 bool write_file(const char *name, FILE *f_open, bool tmp, append_type
                 append, bool nonamechange);
-#ifndef PINOT_TINY
 bool write_marked_file(const char *name, FILE *f_open, bool tmp,
                        append_type append);
-#endif
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 char *real_dir_from_tilde(const char *buf);
@@ -325,7 +287,7 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool
                 *lastwastab, void (*refresh_func)(void), bool *list);
 #endif
 const char *tail(const char *foo);
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 char *histfilename(void);
 void load_history(void);
 bool writehist(FILE *hist, filestruct *histhead);
@@ -338,14 +300,12 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column);
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);
-#ifndef PINOT_TINY
 void toggle_init_one(int val
 #ifndef DISABLE_HELP
                      , const char *desc, bool blank_after
 #endif
                      , long flag);
 void toggle_init(void);
-#endif
 void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc
 #ifndef DISABLE_HELP
                  , const char *help, bool blank_after
@@ -381,36 +341,18 @@ void do_para_begin_void(void);
 void do_para_end(bool allow_update);
 void do_para_end_void(void);
 #endif
-#ifndef PINOT_TINY
 bool do_next_word(bool allow_punct, bool allow_update);
 void do_next_word_void(void);
 bool do_prev_word(bool allow_punct, bool allow_update);
 void do_prev_word_void(void);
-#endif
 void do_home(void);
 void do_end(void);
-void do_up(
-#ifndef PINOT_TINY
-    bool scroll_only
-#else
-    void
-#endif
-);
+void do_up(bool scroll_only);
 void do_up_void(void);
-#ifndef PINOT_TINY
 void do_scroll_up(void);
-#endif
-void do_down(
-#ifndef PINOT_TINY
-    bool scroll_only
-#else
-    void
-#endif
-);
+void do_down(bool scroll_only);
 void do_down_void(void);
-#ifndef PINOT_TINY
 void do_scroll_down(void);
-#endif
 void do_left(void);
 void do_right(void);
 
@@ -441,11 +383,7 @@ void free_openfilestruct(openfilestruct *src);
 void print_view_warning(void);
 void finish(void);
 void die(const char *msg, ...);
-void die_save_file(const char *die_filename
-#ifndef PINOT_TINY
-                   , struct stat *die_stat
-#endif
-                  );
+void die_save_file(const char *die_filename, struct stat *die_stat);
 void window_init(void);
 #ifndef DISABLE_MOUSE
 void disable_mouse_support(void);
@@ -467,21 +405,15 @@ void signal_init(void);
 RETSIGTYPE handle_hupterm(int signal);
 RETSIGTYPE do_suspend(int signal);
 RETSIGTYPE do_continue(int signal);
-#ifndef PINOT_TINY
 RETSIGTYPE handle_sigwinch(int signal);
 void allow_pending_sigwinch(bool allow);
-#endif
-#ifndef PINOT_TINY
 void do_toggle(int flag);
 void do_toggle_void(void);
-#endif
 void disable_extended_io(void);
 #ifdef USE_SLANG
 void disable_signals(void);
 #endif
-#ifndef PINOT_TINY
 void enable_signals(void);
-#endif
 void disable_flow_control(void);
 void enable_flow_control(void);
 void terminal_init(void);
@@ -508,16 +440,12 @@ void do_statusbar_right(void);
 void do_statusbar_backspace(void);
 void do_statusbar_delete(void);
 void do_statusbar_cut_text(void);
-#ifndef PINOT_TINY
 bool do_statusbar_next_word(bool allow_punct);
 bool do_statusbar_prev_word(bool allow_punct);
-#endif
 void do_statusbar_verbatim_input(bool *got_enter);
-#ifndef PINOT_TINY
 bool find_statusbar_bracket_match(bool reverse, const char
                                   *bracket_set);
 void do_statusbar_find_bracket(void);
-#endif
 size_t statusbar_xplustabs(void);
 size_t get_statusbar_page_start(size_t start_col, size_t column);
 void reset_statusbar_cursor(void);
@@ -530,9 +458,7 @@ const sc *get_prompt_string(int *value, bool allow_tabs,
 #endif
                             const char *curranswer,
                             bool *meta_key, bool *func_key,
-#ifndef PINOT_TINY
                             filestruct **history_list,
-#endif
                             void (*refresh_func)(void), int menu
 #ifndef DISABLE_TABCOMP
                             , bool *list
@@ -544,9 +470,7 @@ int do_prompt(bool allow_tabs,
 #endif
               int menu, const char *curranswer,
               bool *meta_key, bool *func_key,
-#ifndef PINOT_TINY
               filestruct **history_list,
-#endif
               void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 int do_yesno_prompt(bool all, const char *msg);
@@ -592,9 +516,7 @@ bool findnextstr(
     char *needle, size_t *needle_len);
 void findnextstr_wrap_reset(void);
 void do_search(void);
-#ifndef PINOT_TINY
 void do_research(void);
-#endif
 #ifdef HAVE_PCREPOSIX_H
 int replace_regexp(char *string, bool create);
 #endif
@@ -613,7 +535,6 @@ void do_gotolinecolumn_void(void);
 void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t
                 pos_pww);
 #endif
-#ifndef PINOT_TINY
 bool find_bracket_match(bool reverse, const char *bracket_set);
 void do_find_bracket(void);
 #ifdef ENABLE_PINOTRC
@@ -631,29 +552,22 @@ void get_history_newer_void(void);
 #ifndef DISABLE_TABCOMP
 char *get_history_completion(filestruct **h, const char *s, size_t len);
 #endif
-#endif
 
 /* All functions in text.c. */
-#ifndef PINOT_TINY
 void do_mark(void);
-#endif
 void do_delete(void);
 void do_backspace(void);
 void do_tab(void);
-#ifndef PINOT_TINY
 void do_indent(ssize_t cols);
 void do_indent_void(void);
 void do_unindent(void);
 void do_undo(void);
 void do_redo(void);
-#endif
 void do_enter(bool undoing);
 void do_enter_void(void);
-#ifndef PINOT_TINY
 RETSIGTYPE cancel_command(int signal);
 bool execute_command(const char *command);
 int execute_command_silent(const char *command);
-#endif
 #ifndef DISABLE_WRAPPING
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
@@ -665,9 +579,7 @@ ssize_t break_line(const char *line, ssize_t goal
 #endif
                   );
 #endif
-#if !defined(PINOT_TINY) || defined(ENABLE_JUSTIFY)
 size_t indent_length(const char *line);
-#endif
 #ifdef ENABLE_JUSTIFY
 void justify_format(filestruct *paragraph, size_t skip);
 size_t quote_length(const char *line);
@@ -689,9 +601,7 @@ const char *do_int_speller(const char *tempfile_name);
 const char *do_alt_speller(char *tempfile_name);
 void do_spell(void);
 #endif
-#ifndef PINOT_TINY
 void do_wordlinechar_count(void);
-#endif
 void do_verbatim_input(void);
 
 /* All functions in utils.c. */
@@ -703,7 +613,7 @@ void align(char **str);
 void null_at(char **data, size_t index);
 void unsunder(char *str, size_t true_len);
 void sunder(char *str);
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 #ifndef HAVE_GETLINE
 ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
 #endif
@@ -732,13 +642,11 @@ size_t actual_x(const char *s, size_t column);
 size_t strnlenpt(const char *s, size_t maxlen);
 size_t strlenpt(const char *s);
 void new_magicline(void);
-#ifndef PINOT_TINY
 void remove_magicline(void);
 void mark_order(const filestruct **top, size_t *top_x, const filestruct
                 **bot, size_t *bot_x, bool *right_side_up);
 void add_undo(undo_type current_action);
 void update_undo(undo_type action);
-#endif
 size_t get_totsize(const filestruct *begin, const filestruct *end);
 filestruct *fsfromline(ssize_t lineno);
 #ifdef DEBUG
@@ -816,12 +724,10 @@ int sc_seq_or (void (*func)(void), int defaultval);
 void do_suspend_void(void);
 
 extern const char *cancel_msg;
-#ifndef PINOT_TINY
 extern const char *case_sens_msg;
 extern const char *backwards_msg;
 extern const char *prev_history_msg;
 extern const char *next_history_msg;
-#endif
 extern const char *replace_msg;
 extern const char *no_replace_msg;
 extern const char *go_to_line_msg;

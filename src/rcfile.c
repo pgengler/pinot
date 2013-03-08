@@ -41,9 +41,7 @@ static const rcoption rcopts[] = {
 #ifndef DISABLE_WRAPJUSTIFY
 	{"fill", 0},
 #endif
-#ifndef PINOT_TINY
 	{"locking", LOCKING},
-#endif
 #ifndef DISABLE_MOUSE
 	{"mouse", USE_MOUSE},
 #endif
@@ -77,7 +75,6 @@ static const rcoption rcopts[] = {
 	{"tabsize", 0},
 	{"tempfile", TEMP_FILE},
 	{"view", VIEW_MODE},
-#ifndef PINOT_TINY
 	{"autoindent", AUTOINDENT},
 	{"backup", BACKUP_FILE},
 	{"allow_insecure_backup", INSECURE_BACKUP},
@@ -98,7 +95,6 @@ static const rcoption rcopts[] = {
 	{"whitespace", 0},
 	{"wordbounds", WORD_BOUNDS},
 	{"softwrap", SOFTWRAP},
-#endif
 	{NULL, 0}
 };
 
@@ -1183,7 +1179,6 @@ void parse_rcfile(FILE *rcstream
 								}
 							} else
 #endif
-#ifndef PINOT_TINY
 								if (strcasecmp(rcopts[i].name,
 								               "matchbrackets") == 0) {
 									matchbrackets = option;
@@ -1211,7 +1206,6 @@ void parse_rcfile(FILE *rcstream
 										                 whitespace_len[0], NULL, NULL);
 									}
 								} else
-#endif
 #ifdef ENABLE_JUSTIFY
 									if (strcasecmp(rcopts[i].name, "punct") == 0) {
 										punct = option;
@@ -1235,12 +1229,10 @@ void parse_rcfile(FILE *rcstream
 										quotestr = option;
 									} else
 #endif
-#ifndef PINOT_TINY
 										if (strcasecmp(rcopts[i].name,
 										               "backupdir") == 0) {
 											backup_dir = option;
 										} else
-#endif
 #ifdef ENABLE_SPELLER
 											if (strcasecmp(rcopts[i].name, "speller") == 0) {
 												alt_speller = option;

@@ -67,7 +67,6 @@ void initialize_buffer(void)
 	openfile->current_y = 0;
 
 	openfile->modified = FALSE;
-#ifndef PINOT_TINY
 	openfile->mark_set = FALSE;
 
 	openfile->mark_begin = NULL;
@@ -79,7 +78,6 @@ void initialize_buffer(void)
 	openfile->undotop = NULL;
 	openfile->current_undo = NULL;
 	openfile->lock_filename = NULL;
-#endif
 #ifdef ENABLE_COLOR
 	openfile->colorstrings = NULL;
 #endif
@@ -105,7 +103,6 @@ void initialize_buffer_text(void)
 	openfile->totsize = 0;
 }
 
-#ifndef PINOT_TINY
 /* Actually write the lock file.  This function will
    ALWAYS annihilate any previous version of the file.
    We'll borrow INSECURE_BACKUP here to decide about lock file
@@ -306,7 +303,6 @@ int do_lockfile(const char *filename)
 
 	return write_lockfile(lockfilename, filename, FALSE);
 }
-#endif /* PINOT_TINY */
 
 /* If it's not "", filename is a file to open.  We make a new buffer, if
  * necessary, and then open and read the file, if applicable. */
@@ -354,13 +350,11 @@ void open_buffer(const char *filename, bool undoable)
 	 * no stat, update the stat, if applicable. */
 	if (rc > 0) {
 		read_file(f, rc, filename, undoable, new_buffer);
-#ifndef PINOT_TINY
 		if (openfile->current_stat == NULL) {
 			openfile->current_stat =
 			    (struct stat *)nmalloc(sizeof(struct stat));
 			stat(filename, openfile->current_stat);
 		}
-#endif
 	}
 
 	/* If we have a file, and we're loading into a new buffer, move back
@@ -489,9 +483,7 @@ bool close_buffer(void)
 		return FALSE;
 	}
 
-#ifndef PINOT_TINY
 	update_poshistory(openfile->filename, openfile->current->lineno, xplustabs()+1);
-#endif /* PINOT_TINY */
 
 	/* Switch to the next file buffer. */
 	switch_to_next_buffer_void();
@@ -566,13 +558,11 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool
 
 	fileptr->data = mallocstrcpy(NULL, buf);
 
-#ifndef PINOT_TINY
 	/* If it's a DOS file ("\r\n"), and file conversion isn't disabled,
 	 * strip the '\r' part from fileptr->data. */
 	if (!ISSET(NO_CONVERT) && buf_len > 0 && buf[buf_len - 1] == '\r') {
 		fileptr->data[buf_len - 1] = '\0';
 	}
-#endif
 
 #ifdef ENABLE_COLOR
 	fileptr->multidata = NULL;
@@ -634,21 +624,17 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	 * character or EOF. */
 	bool writable = TRUE;
 	/* Is the file writable (if we care) */
-#ifndef PINOT_TINY
 	int format = 0;
 	/* 0 = *nix, 1 = DOS, 2 = Mac, 3 = both DOS and Mac. */
-#endif
 
 	assert(openfile->fileage != NULL && openfile->current != NULL);
 
 	buf = charalloc(bufx);
 	buf[0] = '\0';
 
-#ifndef PINOT_TINY
 	if (undoable) {
 		add_undo(INSERT);
 	}
-#endif
 
 	if (openfile->current == openfile->fileage) {
 		first_line_ins = TRUE;
@@ -663,7 +649,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 		/* If it's a *nix file ("\n") or a DOS file ("\r\n"), and file
 		 * conversion isn't disabled, handle it! */
 		if (input == '\n') {
-#ifndef PINOT_TINY
 			/* If it's a DOS file or a DOS/Mac file ('\r' before '\n' on
 			 * the first line if we think it's a *nix file, or on any
 			 * line otherwise), and file conversion isn't disabled,
@@ -674,7 +659,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 					format++;
 				}
 			}
-#endif
 
 			/* Read in the line properly. */
 			fileptr = read_line(buf, fileptr, &first_line_ins, len);
@@ -686,7 +670,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 			num_lines++;
 			buf[0] = '\0';
 			i = 0;
-#ifndef PINOT_TINY
 			/* If it's a Mac file ('\r' without '\n' on the first line if we
 			 * think it's a *nix file, or on any line otherwise), and file
 			 * conversion isn't disabled, handle it! */
@@ -711,7 +694,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 			buf[0] = input;
 			buf[1] = '\0';
 			i = 1;
-#endif
 		} else {
 			/* Calculate the total length of the line.  It might have
 			 * nulls in it, so we can't just use strlen() here. */
@@ -743,7 +725,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 		writable = is_file_writable(filename);
 	}
 
-#ifndef PINOT_TINY
 	/* If file conversion isn't disabled and the last character in this
 	 * file is '\r', read it in properly as a Mac format line. */
 	if (len == 0 && !ISSET(NO_CONVERT) && input == '\r') {
@@ -752,11 +733,9 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 		buf[0] = input;
 		buf[1] = '\0';
 	}
-#endif
 
 	/* Did we not get a newline and still have stuff to do? */
 	if (len > 0) {
-#ifndef PINOT_TINY
 		/* If file conversion isn't disabled and the last character in
 		 * this file is '\r', set format to Mac if we currently think
 		 * the file is a *nix file, or to both DOS and Mac if we
@@ -765,7 +744,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 		        (format == 0 || format == 1)) {
 			format += 2;
 		}
-#endif
 
 		/* Read in the last line properly. */
 		fileptr = read_line(buf, fileptr, &first_line_ins, len);
@@ -854,7 +832,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	 * file we inserted. */
 	openfile->placewewant = xplustabs();
 
-#ifndef PINOT_TINY
 	if (undoable) {
 		update_undo(INSERT);
 	}
@@ -891,7 +868,6 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 			             "Read %lu lines (Converted from DOS format - Warning: No write permission)",
 			             (unsigned long)num_lines), (unsigned long)num_lines);
 	} else
-#endif
 		if (writable)
 			statusbar(P_("Read %lu line", "Read %lu lines",
 			             (unsigned long)num_lines), (unsigned long)num_lines);
@@ -926,12 +902,10 @@ int open_file(const char *filename, bool newfie, FILE **f)
 		full_filename = mallocstrcpy(NULL, filename);
 	}
 
-#ifndef PINOT_TINY
 	if (ISSET(LOCKING))
 		if (do_lockfile(full_filename) < 0) {
 			return -1;
 		}
-#endif
 
 	if (stat(full_filename, &fileinfo) == -1) {
 		/* Well, maybe we can open the file even if the OS
@@ -1029,7 +1003,6 @@ char *get_next_filename(const char *name, const char *suffix)
 /* Execute a command without inserting any output. The statusbar will show
  * whether the command succeeded (exit code of 0) or failed (with the
  * process's exit code shown). */
-#ifndef PINOT_TINY
 void do_execute_command()
 {
 	int i, status;
@@ -1115,18 +1088,11 @@ void do_execute_command()
 
 	display_main_list();
 }
-#endif
 
 /* Insert a file into a new buffer if the MULTIBUFFER flag is set, or
  * into the current buffer if it isn't.  If execute is TRUE, insert the
  * output of an executed command instead of a file. */
-void do_insertfile(
-#ifndef PINOT_TINY
-    bool execute
-#else
-    void
-#endif
-)
+void do_insertfile(bool execute)
 {
 	int i;
 	const char *msg;
@@ -1137,14 +1103,11 @@ void do_insertfile(
 	ssize_t current_y_save = openfile->current_y;
 	bool edittop_inside = FALSE, meta_key = FALSE, func_key = FALSE;
 	const sc *s;
-#ifndef PINOT_TINY
 	bool right_side_up = FALSE, single_line = FALSE;
-#endif
 
 	currmenu = MINSERTFILE;
 
 	while (TRUE) {
-#ifndef PINOT_TINY
 		if (execute) {
 			msg =
 #ifdef ENABLE_MULTIBUFFER
@@ -1153,29 +1116,21 @@ void do_insertfile(
 #endif
 			    _("Command to execute [from %s] ");
 		} else {
-#endif
 			msg =
 #ifdef ENABLE_MULTIBUFFER
 			    ISSET(MULTIBUFFER) ?
 			    _("File to insert into new buffer [from %s] ") :
 #endif
 			    _("File to insert [from %s] ");
-#ifndef PINOT_TINY
 		}
-#endif
 
 		i = do_prompt(TRUE,
 #ifndef DISABLE_TABCOMP
 		              TRUE,
 #endif
-#ifndef PINOT_TINY
-		              execute ? MEXTCMD :
-#endif
-		              MINSERTFILE, ans,
+		              execute ? MEXTCMD : MINSERTFILE, ans,
 		              &meta_key, &func_key,
-#ifndef PINOT_TINY
 		              NULL,
-#endif
 		              edit_refresh, msg,
 #ifndef DISABLE_OPERATINGDIR
 		              operating_dir != NULL && strcmp(operating_dir,
@@ -1201,7 +1156,6 @@ void do_insertfile(
 
 			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
 
-#ifndef PINOT_TINY
 #ifdef ENABLE_MULTIBUFFER
 
 			if (s && s->scfunc == new_buffer_void) {
@@ -1219,7 +1173,6 @@ void do_insertfile(
 #ifndef DISABLE_BROWSER
 				else
 #endif
-#endif /* !PINOT_TINY */
 
 #ifndef DISABLE_BROWSER
 					if (s && s->scfunc == to_files_void) {
@@ -1247,7 +1200,6 @@ void do_insertfile(
 				continue;
 			}
 
-#ifndef PINOT_TINY
 			/* Keep track of whether the mark begins inside the
 			 * partition and will need adjustment. */
 			if (openfile->mark_set) {
@@ -1260,7 +1212,6 @@ void do_insertfile(
 
 				single_line = (top == bot);
 			}
-#endif
 
 #ifdef ENABLE_MULTIBUFFER
 			if (!ISSET(MULTIBUFFER)) {
@@ -1284,7 +1235,6 @@ void do_insertfile(
 			sunder(answer);
 			align(&answer);
 
-#ifndef PINOT_TINY
 			if (execute) {
 #ifdef ENABLE_MULTIBUFFER
 				if (ISSET(MULTIBUFFER))
@@ -1307,7 +1257,6 @@ void do_insertfile(
 				}
 #endif
 			} else {
-#endif /* !PINOT_TINY */
 				/* Make sure the path to the file specified in answer is
 				 * tilde-expanded. */
 				answer = mallocstrassn(answer,
@@ -1316,9 +1265,7 @@ void do_insertfile(
 				/* Save the file specified in answer in the current
 				 * buffer. */
 				open_buffer(answer, TRUE);
-#ifndef PINOT_TINY
 			}
-#endif
 
 #ifdef ENABLE_MULTIBUFFER
 			if (ISSET(MULTIBUFFER))
@@ -1345,17 +1292,14 @@ void do_insertfile(
 				 * current line. */
 				openfile->current_x = strlen(openfile->filebot->data);
 				if (openfile->fileage == openfile->filebot) {
-#ifndef PINOT_TINY
 					if (openfile->mark_set) {
 						openfile->mark_begin = openfile->current;
 						if (!right_side_up)
 							openfile->mark_begin_x +=
 							    openfile->current_x;
 					}
-#endif
 					openfile->current_x += current_x_save;
 				}
-#ifndef PINOT_TINY
 				else if (openfile->mark_set) {
 					if (!right_side_up) {
 						if (single_line) {
@@ -1366,7 +1310,6 @@ void do_insertfile(
 							    openfile->current_x;
 					}
 				}
-#endif
 
 				/* Update the current y-coordinate to account for the
 				 * number of lines inserted. */
@@ -1419,11 +1362,7 @@ void do_insertfile_void(void)
 		statusbar(_("Key invalid in non-multibuffer mode"));
 	} else
 #endif
-		do_insertfile(
-#ifndef PINOT_TINY
-		    FALSE
-#endif
-		);
+		do_insertfile(FALSE);
 
 	display_main_list();
 }
@@ -1723,7 +1662,6 @@ bool check_operating_dir(const char *currpath, bool allow_tabcomp)
 }
 #endif
 
-#ifndef PINOT_TINY
 /* Although this sucks, it sucks less than having a single 'my system is messed up
  * and I'm blanket allowing insecure file writing operations.
  */
@@ -1763,7 +1701,6 @@ void init_backup_dir(void)
 		backup_dir = full_backup_dir;
 	}
 }
-#endif
 
 /* Read from inn, write to out.  We assume inn is opened for reading,
  * and out for writing.  We return 0 on success, -1 on read error, or -2
@@ -1887,7 +1824,6 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 	 * one). */
 	realexists = (stat(realname, &st) != -1);
 
-#ifndef PINOT_TINY
 	/* if we have not stat()d this file before (say, the user just
 	 * specified it interactively), stat and save the value
 	 * or else we will chase null pointers when we do
@@ -2076,7 +2012,6 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 	}
 
 skip_backup:
-#endif /* !PINOT_TINY */
 
 	/* If NOFOLLOW_SYMLINKS is set and the file is a link, we aren't
 	 * doing prepend or append.  So we delete the link first, and just
@@ -2212,7 +2147,6 @@ skip_backup:
 				lineswritten--;
 			}
 		} else {
-#ifndef PINOT_TINY
 			if (openfile->fmt == DOS_FILE || openfile->fmt ==
 			        MAC_FILE) {
 				if (putc('\r', f) == EOF) {
@@ -2224,16 +2158,13 @@ skip_backup:
 			}
 
 			if (openfile->fmt != MAC_FILE) {
-#endif
 				if (putc('\n', f) == EOF) {
 					statusbar(_("Error writing %s: %s"), realname,
 					          strerror(errno));
 					fclose(f);
 					goto cleanup_and_exit;
 				}
-#ifndef PINOT_TINY
 			}
-#endif
 		}
 
 		fileptr = fileptr->next;
@@ -2293,13 +2224,11 @@ skip_backup:
 #endif
 		}
 
-#ifndef PINOT_TINY
 		/* Update current_stat to reference the file as it is now. */
 		if (openfile->current_stat == NULL)
 			openfile->current_stat =
 			    (struct stat *)nmalloc(sizeof(struct stat));
 		stat(realname, openfile->current_stat);
-#endif
 
 		statusbar(P_("Wrote %lu line", "Wrote %lu lines",
 		             (unsigned long)lineswritten),
@@ -2319,7 +2248,6 @@ cleanup_and_exit:
 	return retval;
 }
 
-#ifndef PINOT_TINY
 /* Write a marked selection from a file out to disk.  Return TRUE on
  * success or FALSE on error. */
 bool write_marked_file(const char *name, FILE *f_open, bool tmp,
@@ -2368,7 +2296,6 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp,
 
 	return retval;
 }
-#endif /* !PINOT_TINY */
 
 /* Write the current file to disk.  If the mark is on, write the current
  * marked selection to disk.  If exiting is TRUE, write the file to disk
@@ -2399,14 +2326,11 @@ bool do_writeout(bool exiting)
 	}
 
 	ans = mallocstrcpy(NULL,
-#ifndef PINOT_TINY
 	                   (!exiting && openfile->mark_set) ? "" :
-#endif
 	                   openfile->filename);
 
 	while (TRUE) {
 		const char *msg;
-#ifndef PINOT_TINY
 		const char *formatstr, *backupstr;
 
 		formatstr = (openfile->fmt == DOS_FILE) ?
@@ -2425,7 +2349,6 @@ bool do_writeout(bool exiting)
 			      _("Append Selection to File") :
 			      _("Write Selection to File");
 		else
-#endif /* !PINOT_TINY */
 			msg = (append == PREPEND) ? _("File Name to Prepend to") :
 			      (append == APPEND) ? _("File Name to Append to") :
 			      _("File Name to Write");
@@ -2440,15 +2363,9 @@ bool do_writeout(bool exiting)
 #endif
 		              MWRITEFILE, ans,
 		              &meta_key, &func_key,
-#ifndef PINOT_TINY
 		              NULL,
-#endif
 		              edit_refresh, "%s%s%s", msg,
-#ifndef PINOT_TINY
 		              formatstr, backupstr
-#else
-		              "", ""
-#endif
 		             );
 
 		/* If the filename or command begins with a newline (i.e. an
@@ -2474,7 +2391,6 @@ bool do_writeout(bool exiting)
 				answer = tmp;
 			} else
 #endif /* !DISABLE_BROWSER */
-#ifndef PINOT_TINY
 				if (s && s->scfunc == dos_format_void) {
 					openfile->fmt = (openfile->fmt == DOS_FILE) ? NIX_FILE :
 					                DOS_FILE;
@@ -2487,7 +2403,6 @@ bool do_writeout(bool exiting)
 					TOGGLE(BACKUP_FILE);
 					continue;
 				} else
-#endif /* !PINOT_TINY */
 					if (s && s->scfunc == prepend_void) {
 						append = (append == PREPEND) ? OVERWRITE : PREPEND;
 						continue;
@@ -2568,9 +2483,7 @@ bool do_writeout(bool exiting)
 							continue;
 						}
 					} else
-#ifndef PINOT_TINY
 						if (exiting || !openfile->mark_set)
-#endif
 						{
 							i = do_yesno_prompt(FALSE,
 							                    _("Save file under DIFFERENT NAME ? "));
@@ -2579,7 +2492,6 @@ bool do_writeout(bool exiting)
 							}
 						}
 				}
-#ifndef PINOT_TINY
 				/* Complain if the file exists, the name hasn't changed, and the
 				    stat information we had before does not match what we have now */
 				else if (name_exists && openfile->current_stat && (openfile->current_stat->st_mtime < st.st_mtime ||
@@ -2590,7 +2502,6 @@ bool do_writeout(bool exiting)
 						continue;
 					}
 				}
-#endif
 
 			}
 
@@ -2604,10 +2515,8 @@ bool do_writeout(bool exiting)
 			 * function is disabled, since it allows reading from or
 			 * writing to files not specified on the command line. */
 			retval =
-#ifndef PINOT_TINY
 			    (!ISSET(RESTRICTED) && !exiting && openfile->mark_set) ?
 			    write_marked_file(answer, NULL, FALSE, append) :
-#endif
 			    write_file(answer, NULL, FALSE, append, FALSE);
 
 			break;
@@ -3083,7 +2992,7 @@ const char *tail(const char *foo)
 	return tmp;
 }
 
-#if !defined(PINOT_TINY) && defined(ENABLE_PINOTRC)
+#ifdef ENABLE_PINOTRC
 /* Return the constructed dorfile path, or NULL if we can't find the home
  * directory.  The string is dynamically allocated, and should be
  * freed. */
@@ -3444,4 +3353,4 @@ void load_poshistory(void)
 	}
 }
 
-#endif /* !PINOT_TINY && ENABLE_PINOTRC */
+#endif /* ENABLE_PINOTRC */
