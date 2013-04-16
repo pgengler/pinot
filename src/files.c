@@ -2228,14 +2228,14 @@ skip_backup:
 		}
 
 		/* Update current_stat to reference the file as it is now. */
-		if (openfile->current_stat == NULL)
-			openfile->current_stat =
-			    (struct stat *)nmalloc(sizeof(struct stat));
-		stat(realname, openfile->current_stat);
+		if (openfile->current_stat == NULL) {
+			openfile->current_stat = (struct stat *)nmalloc(sizeof(struct stat));
+		}
+		if (!openfile->mark_set) {
+			stat(realname, openfile->current_stat);
+		}
 
-		statusbar(P_("Wrote %lu line", "Wrote %lu lines",
-		             (unsigned long)lineswritten),
-		          (unsigned long)lineswritten);
+		statusbar(P_("Wrote %lu line", "Wrote %lu lines", (unsigned long)lineswritten), (unsigned long)lineswritten);
 		openfile->modified = FALSE;
 		titlebar(NULL);
 	}
