@@ -1267,11 +1267,16 @@ void do_insertfile(bool execute)
 			}
 
 #ifdef ENABLE_MULTIBUFFER
-			if (ISSET(MULTIBUFFER))
-				/* Update the screen to account for the current
-				 * buffer. */
-			{
+			if (ISSET(MULTIBUFFER)) {
+				/* Update the screen to account for the current buffer. */
+
+				ssize_t savedposline, savedposcol;
+
 				display_buffer();
+
+				if (!execute && ISSET(POS_HISTORY) && check_poshistory(answer, &savedposline, &savedposcol)) {
+					do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
+				}
 			} else
 #endif
 			{
@@ -3299,7 +3304,7 @@ void load_poshistory(void)
 		if (hist == NULL) {
 			if (errno != ENOENT) {
 				/* Don't save history when we quit. */
-				UNSET(HISTORYLOG);
+				UNSET(POS_HISTORY);
 				history_error(N_("Error reading %s: %s"), pinothist,
 				              strerror(errno));
 			}
