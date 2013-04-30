@@ -700,9 +700,9 @@ void parse_include(char *ptr)
 
 }
 
-/* Return the short value corresponding to the color named in colorname,
+/* Return the numeric value corresponding to the color named in colorname,
  * and set bright to TRUE if that color is bright (similarly for underline. */
-COLORWIDTH color_to_short(const char *colorname, bool *bright, bool *underline)
+COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underline)
 {
 	COLORWIDTH mcolor = -1;
 
@@ -802,13 +802,13 @@ void parse_colors(char *ptr, bool icase)
 			    bgcolorname);
 			return;
 		}
-		bg = color_to_short(bgcolorname, &bright, &underline);
+		bg = color_name_to_value(bgcolorname, &bright, &underline);
 	} else {
 		bg = -1;
 	}
 
 	if (!no_fgcolor) {
-		fg = color_to_short(fgstr, &bright, &underline);
+		fg = color_name_to_value(fgstr, &bright, &underline);
 
 		/* Don't try to parse screwed-up foreground colors. */
 		if (fg == -1) {

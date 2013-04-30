@@ -189,10 +189,11 @@ typedef enum {
 } undo_type;
 
 #ifdef ENABLE_COLOR
+#define COLORWIDTH short
 typedef struct colortype {
-	short fg;
+	COLORWIDTH fg;
 	/* This syntax's foreground color. */
-	short bg;
+	COLORWIDTH bg;
 	/* This syntax's background color. */
 	bool bright;
 	/* Is this color A_BOLD? */
