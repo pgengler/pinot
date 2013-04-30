@@ -1,4 +1,6 @@
 language: c
+before_install:
+  sudo apt-get install gettext-devel
 compiler:
   - gcc
   - clang
