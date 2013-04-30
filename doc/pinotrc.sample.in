@@ -194,6 +194,21 @@
 ## special: it takes no filename regexes, and applies to files that
 ## don't match any other syntax's filename regexes.
 ##
+## header "regexp"
+##
+## If this regular expression matches the first line of a file then this
+## syntax block will be applied, regardless of whether the file matches
+## the filename regular expression. Note that this is only checked at the
+## time the file is opened; if you add, remove, or modify a file's header
+## the syntax highlighting won't automatically update.
+##
+## magic "regexp"
+##
+## If pinot was compiled with libmagic support, then the "magic" for a file
+## is checked against the given regular expression. If it matches, then the
+## syntax block will be applied to the file (again, regardless of whether the
+## file matches the filename regexp for the syntax block).
+##
 ## color foreground,background "regex" ["regex"...]
 ## or
 ## icolor foreground,background "regex" ["regex"...]
