@@ -567,7 +567,7 @@ void do_enter(bool undoing);
 void do_enter_void(void);
 RETSIGTYPE cancel_command(int signal);
 bool execute_command(const char *command);
-int execute_command_silent(const char *command);
+int execute_command_silently(const char *command);
 #ifndef DISABLE_WRAPPING
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
