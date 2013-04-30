@@ -7,16 +7,16 @@ magic "PHP script text"
 color brightgreen "(<\?(php)?|\?>)"
 
 ## functions
-color white "\<[a-z_]*\("
+color white "\b[a-z_]*\("
 
 ## types
-color green "\<(var|float|global|double|bool|char|int|enum|const)\>"
+color green "\b(var|float|global|double|bool|char|int|enum|const)\b"
 
 ## structure
-color brightyellow "\<(class|new|private|public|function|for|foreach|if|while|do|else|elseif|case|default|switch)\>"
+color brightyellow "\b(class|new|private|public|function|for|foreach|if|while|do|else|elseif|case|default|switch)\b"
 
 ## control flow
-color magenta "\<(goto|continue|break|return)\>"
+color magenta "\b(goto|continue|break|return)\b"
 
 ## strings
 color brightyellow "<[^=       ]*>" ""(\.|[^"])*""
@@ -25,7 +25,7 @@ color brightyellow "<[^=       ]*>" ""(\.|[^"])*""
 color brightblue "//.*"
 color brightblue start="/\*" end="\*/"
 #color blue start="<" end=">"
-#color red "&[^;[[:space:]]]*;"
+#color red "&[^;\s]*;"
 
 ## Trailing whitespace
-color ,green "[[:space:]]+$"
+color ,green "\s+$"

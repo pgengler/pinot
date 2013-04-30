@@ -2,17 +2,17 @@
 ##
 syntax "asm" "\.(S|s|asm)$"
 magic "[Aa]ssembl(y|er)"
-color red "\<[A-Z_]{2,}\>"
+color red "\b[A-Z_]{2,}\b"
 color brightgreen "\.(data|subsection|text)"
 color green "\.(align|file|globl|global|hidden|section|size|type|weak)"
 color brightyellow "\.(ascii|asciz|byte|double|float|hword|int|long|short|single|struct|word)"
-icolor brightred "^[[:space:]]*[.0-9A-Z_]*:"
-color brightcyan "^[[:space:]]*#[[:space:]]*(define|undef|include|ifn?def|endif|elif|else|if|warning|error)"
+icolor brightred "^\s*[.0-9A-Z_]*:"
+color brightcyan "^\s*#\s*(define|undef|include|ifn?def|endif|elif|else|if|warning|error)"
 ## Highlight strings (note: VERY resource intensive)
 color brightyellow "<[^= 	]*>" ""(\\.|[^"])*""
-color brightyellow start=""(\\.|[^"])*\\[[:space:]]*$" end="^(\\.|[^"])*""
+color brightyellow start=""(\\.|[^"])*\\\s*$" end="^(\\.|[^"])*""
 ## Highlight comments
 color brightblue "//.*"
 color brightblue start="/\*" end="\*/"
 ## Highlight trailing whitespace
-color ,green "[[:space:]]+$"
+color ,green "\s+$"

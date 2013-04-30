@@ -2,7 +2,7 @@
 ##
 syntax "groff" "\.m[ems]$" "\.rof" "\.tmac$" "^tmac."
 ## The argument of .ds or .nr
-color cyan "^\.(ds|nr) [^[[:space:]]]*"
+color cyan "^\.(ds|nr) [^\s]*"
 ## Single character escapes
 color brightmagenta "\\."
 ## Highlight the argument of \f or \s in the same color
@@ -11,7 +11,7 @@ color brightmagenta "\\f." "\\f\(.." "\\s(\+|\-)?[0-9]"
 color cyan "(\\|\\\\)n(.|\(..)"
 color cyan start="(\\|\\\\)n\[" end="]"
 ## Requests
-color brightgreen "^\.[[:space:]]*[^[[:space:]]]*"
+color brightgreen "^\.\s*[^\s]*"
 ## Comments
 color yellow "^\.\\".*$"
 ## Strings
