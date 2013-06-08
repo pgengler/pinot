@@ -3,14 +3,12 @@
 ##
 syntax "perl" "\.(pl|pm|psgi|cgi)$"
 header "#!/usr/bin/perl"
+
 # Subroutine names
 icolor bold27 "(?<=sub)\s+[0-9A-Z_]+"
 
 # Constants (all-caps barewords)
-#color 205 "\b[A-Z_][0-9A-Z_]+\b"
 color 205 "(?<!->)\b[A-Z_][0-9A-Z_]+\b(?!:)"
-# (exceptions)
-#color black "(->SUPER|STDOUT|STDERR|UNIVERSAL)"
 
 # BEGIN
 color boldblack "BEGIN"
