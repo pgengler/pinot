@@ -4,23 +4,23 @@ INCLUDES = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
 ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = 	pinot
-pinot_SOURCES =	browser.c \
-		chars.c \
-		color.c \
-		cut.c \
-		files.c \
-		global.c \
-		help.c \
-		move.c \
-		pinot.c \
+pinot_SOURCES =	browser.cpp \
+		chars.cpp \
+		color.cpp \
+		cut.cpp \
+		files.cpp \
+		global.cpp \
+		help.cpp \
+		move.cpp \
+		pinot.cpp \
 		pinot.h \
-		prompt.c \
+		prompt.cpp \
 		proto.h \
-		rcfile.c \
-		search.c \
-		text.c \
-		utils.c \
-		winio.c 
+		rcfile.cpp \
+		search.cpp \
+		text.cpp \
+		utils.cpp \
+		winio.cpp
 
 pinot_LDADD = @GLIB_LIBS@ @LIBINTL@
 
