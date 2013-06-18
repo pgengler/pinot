@@ -37,9 +37,9 @@
  * the color pairs. */
 void set_colorpairs(void)
 {
-	const syntaxtype *this_syntax = syntaxes;
+	for (std::list<syntaxtype *>::const_iterator iter = syntaxes.begin(); iter != syntaxes.end(); ++iter) {
+		syntaxtype *this_syntax = *iter;
 
-	for (; this_syntax != NULL; this_syntax = this_syntax->next) {
 		colortype *this_color = this_syntax->color;
 		int color_pair = 1;
 
@@ -149,8 +149,7 @@ void color_update(void)
 			return;
 		}
 
-		for (tmpsyntax = syntaxes; tmpsyntax != NULL;
-		        tmpsyntax = tmpsyntax->next) {
+		for (std::list<syntaxtype *>::const_iterator iter = syntaxes.begin(); iter != syntaxes.end(); ++iter) {
 			if (strcmp(tmpsyntax->desc, syntaxstr) == 0) {
 				openfile->syntax = tmpsyntax;
 				openfile->colorstrings = tmpsyntax->color;

@@ -23,6 +23,7 @@
 
 #include "proto.h"
 
+#include <list>
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
@@ -143,7 +144,7 @@ char *alt_speller = NULL;
 #endif
 
 #ifdef ENABLE_COLOR
-syntaxtype *syntaxes = NULL;
+std::list<syntax *> syntaxes;
 /* The global list of color syntaxes. */
 char *syntaxstr = NULL;
 /* The color syntax name specified on the command line. */
@@ -1617,42 +1618,6 @@ void thanks_for_all_the_fish(void)
 #ifdef ENABLE_COLOR
 	if (syntaxstr != NULL) {
 		free(syntaxstr);
-	}
-	while (syntaxes != NULL) {
-		syntaxtype *bill = syntaxes;
-
-		free(syntaxes->desc);
-		while (syntaxes->extensions != NULL) {
-			exttype *bob = syntaxes->extensions;
-
-			syntaxes->extensions = bob->next;
-			free(bob->ext_regex);
-			if (bob->ext != NULL) {
-				regfree(bob->ext);
-				free(bob->ext);
-			}
-			free(bob);
-		}
-		while (syntaxes->color != NULL) {
-			colortype *bob = syntaxes->color;
-
-			syntaxes->color = bob->next;
-			free(bob->start_regex);
-			if (bob->start != NULL) {
-				regfree(bob->start);
-				free(bob->start);
-			}
-			if (bob->end_regex != NULL) {
-				free(bob->end_regex);
-			}
-			if (bob->end != NULL) {
-				regfree(bob->end);
-				free(bob->end);
-			}
-			free(bob);
-		}
-		syntaxes = syntaxes->next;
-		free(bill);
 	}
 #endif /* ENABLE_COLOR */
 	/* Free the search and replace history lists. */

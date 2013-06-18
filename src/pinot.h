@@ -23,6 +23,8 @@
 #ifndef PINOT_H
 #define PINOT_H 1
 
+#include <list>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
