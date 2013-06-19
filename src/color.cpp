@@ -147,7 +147,7 @@ void color_update(void)
 			return;
 		}
 
-		for (std::list<syntaxtype *>::const_iterator iter = syntaxes.begin(); iter != syntaxes.end(); ++iter) {
+		for (syntaxtype *tmpsyntax : syntaxes) {
 			if (strcmp(tmpsyntax->desc, syntaxstr) == 0) {
 				openfile->syntax = tmpsyntax;
 				openfile->colorstrings = tmpsyntax->color;
@@ -186,8 +186,7 @@ void color_update(void)
 	 * there was no syntax by that name, get the syntax based on the
 	 * file extension, and then look in the header. */
 	if (openfile->colorstrings == NULL) {
-		for (tmpsyntax = syntaxes; tmpsyntax != NULL;
-		        tmpsyntax = tmpsyntax->next) {
+		for (syntaxtype *tmpsyntax : syntaxes) {
 
 			/* If this is the default syntax, it has no associated
 			 * extensions, which we've checked for elsewhere.  Skip over
@@ -233,8 +232,7 @@ void color_update(void)
 			fprintf(stderr, "No match using extension, trying libmagic...\n");
 #endif /* DEBUG */
 
-			for (tmpsyntax = syntaxes; tmpsyntax != NULL;
-			        tmpsyntax = tmpsyntax->next) {
+			for (syntaxtype *tmpsyntax : syntaxes) {
 				for (e = tmpsyntax->magics; e != NULL; e = e->next) {
 					bool not_compiled = (e->ext == NULL);
 					if (not_compiled) {
@@ -264,8 +262,7 @@ void color_update(void)
 #ifdef DEBUG
 			fprintf(stderr, "No match for file extensions, looking at headers...\n");
 #endif
-			for (tmpsyntax = syntaxes; tmpsyntax != NULL;
-			        tmpsyntax = tmpsyntax->next) {
+			for (syntaxtype *tmpsyntax : syntaxes) {
 
 				for (e = tmpsyntax->headers; e != NULL; e = e->next) {
 					bool not_compiled = (e->ext == NULL);
