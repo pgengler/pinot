@@ -37,7 +37,7 @@
  * the color pairs. */
 void set_colorpairs(void)
 {
-	for (syntax *this_syntax : syntaxes) {
+	for (syntaxtype *this_syntax : syntaxes) {
 		colortype *this_color = this_syntax->color;
 		int color_pair = 1;
 
