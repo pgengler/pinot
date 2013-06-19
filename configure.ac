@@ -34,7 +34,7 @@ AC_PROG_LN_S
 AC_ISC_POSIX
 AC_SYS_LARGEFILE
 
-AC_LANG_PUSH([C++])
+AX_CXX_COMPILE_STDCXX_11
 
 dnl Internationalization macros.
 
@@ -46,25 +46,6 @@ dnl Data location.
 
 pkgdatadir=${datadir}/${PACKAGE}
 AC_DEFINE_DIR([PKGDATADIR], [pkgdatadir], [Where data are placed to.])
-
-dnl Checks for compiler support.
-
-AC_COMPILE_IFELSE([AC_LANG_SOURCE(
-  [[template <typename T>
-    struct check
-    {
-      static_assert(sizeof(int) <= sizeof(T), "not big enough");
-    };
-
-    typedef check<check<bool>> right_angle_brackets;
-
-    int a;
-    decltype(a) b;
-
-    typedef check<int> check_type;
-    check_type c;
-    check_type&& cr = static_cast<check_type&&>(c);]])],,
-  AC_MSG_FAILURE(['$CXX $CXXFLAGS' does not accept ISO C++11]))
 
 dnl Checks for header files.
 
