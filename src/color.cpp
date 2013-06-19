@@ -37,9 +37,7 @@
  * the color pairs. */
 void set_colorpairs(void)
 {
-	for (std::list<syntaxtype *>::const_iterator iter = syntaxes.begin(); iter != syntaxes.end(); ++iter) {
-		syntaxtype *this_syntax = *iter;
-
+	std::for_each(sytaxes.begin(), syntaxes.end(), [](syntax *this_syntax) {
 		colortype *this_color = this_syntax->color;
 		int color_pair = 1;
 
@@ -61,7 +59,7 @@ void set_colorpairs(void)
 				color_pair++;
 			}
 		}
-	}
+	});
 }
 
 /* Initialize the color information. */
