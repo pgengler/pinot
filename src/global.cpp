@@ -144,7 +144,7 @@ char *alt_speller = NULL;
 #endif
 
 #ifdef ENABLE_COLOR
-std::list<syntax *> syntaxes;
+SyntaxList syntaxes;
 /* The global list of color syntaxes. */
 char *syntaxstr = NULL;
 /* The color syntax name specified on the command line. */

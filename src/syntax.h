@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #define COLORWIDTH short
 typedef struct colortype {
 	COLORWIDTH fg;
@@ -68,3 +70,4 @@ typedef struct syntaxtype {
 #define CWTF		(1<<6)
 /* Something else */
 
+typedef std::list<syntaxtype *> SyntaxList;
