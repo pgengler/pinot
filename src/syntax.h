@@ -54,8 +54,6 @@ typedef struct syntaxtype {
 	/* The colors used in this syntax. */
 	int nmultis;
 	/* How many multi line strings this syntax has */
-	struct syntaxtype *next;
-	/* Next syntax. */
 } syntaxtype;
 
 #define CNONE 		(1<<1)

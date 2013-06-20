@@ -301,7 +301,6 @@ void parse_syntax(char *ptr)
 	new_syntax->extensions = NULL;
 	new_syntax->headers = NULL;
 	new_syntax->magics = NULL;
-	new_syntax->next = NULL;
 	new_syntax->nmultis = 0;
 
 #ifdef DEBUG
