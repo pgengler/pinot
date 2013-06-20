@@ -258,7 +258,6 @@ bool nregcomp(const char *regex, int cflags)
 void parse_syntax(char *ptr)
 {
 	const char *fileregptr = NULL, *nameptr = NULL;
-	syntaxtype *tmpsyntax, *prev_syntax;
 	exttype *endext = NULL;
 	/* The end of the extensions list for this syntax. */
 
@@ -286,40 +285,16 @@ void parse_syntax(char *ptr)
 
 	/* Search for a duplicate syntax name.  If we find one, free it, so
 	 * that we always use the last syntax with a given name. */
-	prev_syntax = NULL;
-	for (tmpsyntax = syntaxes; tmpsyntax != NULL;
-	        tmpsyntax = tmpsyntax->next) {
+	for (syntaxtype *tmpsyntax : syntaxes) {
 		if (strcmp(nameptr, tmpsyntax->desc) == 0) {
-			syntaxtype *old_syntax = tmpsyntax;
-			if (endsyntax == tmpsyntax) {
-				endsyntax = prev_syntax;
-			}
-
-			tmpsyntax = tmpsyntax->next;
-			if (prev_syntax != NULL) {
-				prev_syntax->next = tmpsyntax;
-			} else {
-				syntaxes = tmpsyntax;
-			}
-
-			free(old_syntax->desc);
-			free(old_syntax);
+			syntaxes.remove(tmpsyntax);
+			free(tmpsyntax->desc);
+			free(tmpsyntax);
 			break;
 		}
-		prev_syntax = tmpsyntax;
 	}
 
-	if (syntaxes == NULL) {
-		syntaxes = (syntaxtype *)nmalloc(sizeof(syntaxtype));
-		endsyntax = syntaxes;
-	} else {
-		endsyntax->next = (syntaxtype *)nmalloc(sizeof(syntaxtype));
-		endsyntax = endsyntax->next;
-#ifdef DEBUG
-		fprintf(stderr, "Adding new syntax after first one\n");
-#endif
-	}
-
+	endsyntax = (syntaxtype *)nmalloc(sizeof(syntaxtype));
 	endsyntax->desc = mallocstrcpy(NULL, nameptr);
 	endsyntax->color = NULL;
 	endcolor = NULL;
@@ -387,6 +362,8 @@ void parse_syntax(char *ptr)
 			free(newext);
 		}
 	}
+
+	syntaxes.push_back(endsyntax);
 
 }
 
