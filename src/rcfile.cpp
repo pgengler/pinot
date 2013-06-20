@@ -105,8 +105,8 @@ static size_t lineno = 0;
 static char *pinotrc = NULL;
 /* The path to the rcfile we're parsing. */
 #ifdef ENABLE_COLOR
-static syntaxtype *endsyntax = NULL;
-/* The end of the list of syntaxes. */
+static syntaxtype *new_syntax = NULL;
+/* current syntax being processed */
 static exttype *endheader = NULL;
 /* End of header list */
 static colortype *endcolor = NULL;
@@ -286,24 +286,23 @@ void parse_syntax(char *ptr)
 	/* Search for a duplicate syntax name.  If we find one, free it, so
 	 * that we always use the last syntax with a given name. */
 	for (syntaxtype *tmpsyntax : syntaxes) {
-		if (strcmp(nameptr, tmpsyntax->desc) == 0) {
+		if (tmpsyntax->desc == nameptr) {
 			syntaxes.remove(tmpsyntax);
-			free(tmpsyntax->desc);
-			free(tmpsyntax);
+			delete tmpsyntax;
 			break;
 		}
 	}
 
-	endsyntax = (syntaxtype *)nmalloc(sizeof(syntaxtype));
-	endsyntax->desc = mallocstrcpy(NULL, nameptr);
-	endsyntax->color = NULL;
+	new_syntax = new syntaxtype;
+	new_syntax->desc = std::string(nameptr);
+	new_syntax->color = NULL;
 	endcolor = NULL;
 	endheader = NULL;
-	endsyntax->extensions = NULL;
-	endsyntax->headers = NULL;
-	endsyntax->magics = NULL;
-	endsyntax->next = NULL;
-	endsyntax->nmultis = 0;
+	new_syntax->extensions = NULL;
+	new_syntax->headers = NULL;
+	new_syntax->magics = NULL;
+	new_syntax->next = NULL;
+	new_syntax->nmultis = 0;
 
 #ifdef DEBUG
 	fprintf(stderr, "Starting a new syntax type: \"%s\"\n", nameptr);
@@ -311,13 +310,13 @@ void parse_syntax(char *ptr)
 
 	/* The "none" syntax is the same as not having a syntax at all, so
 	 * we can't assign any extensions or colors to it. */
-	if (strcmp(endsyntax->desc, "none") == 0) {
+	if (new_syntax->desc == "none") {
 		rcfile_error(N_("The \"none\" syntax is reserved"));
 		return;
 	}
 
 	/* The default syntax should have no associated extensions. */
-	if (strcmp(endsyntax->desc, "default") == 0 && *ptr != '\0') {
+	if (new_syntax->desc == "default" && *ptr != '\0') {
 		rcfile_error(
 		    N_("The \"default\" syntax must take no extensions"));
 		return;
@@ -352,7 +351,7 @@ void parse_syntax(char *ptr)
 			newext->ext = NULL;
 
 			if (endext == NULL) {
-				endsyntax->extensions = newext;
+				new_syntax->extensions = newext;
 			} else {
 				endext->next = newext;
 			}
@@ -363,7 +362,7 @@ void parse_syntax(char *ptr)
 		}
 	}
 
-	syntaxes.push_back(endsyntax);
+	syntaxes.push_back(new_syntax);
 
 }
 
@@ -428,7 +427,7 @@ void parse_magictype(char *ptr)
 			newext->ext = NULL;
 
 			if (endext == NULL) {
-				endsyntax->magics = newext;
+				new_syntax->magics = newext;
 			} else {
 				endext->next = newext;
 			}
@@ -850,7 +849,7 @@ void parse_colors(char *ptr, bool icase)
 			newcolor->next = NULL;
 
 			if (endcolor == NULL) {
-				endsyntax->color = newcolor;
+				new_syntax->color = newcolor;
 #ifdef DEBUG
 				fprintf(stderr, "Starting a new colorstring for fg %hd, bg %hd\n", fg, bg);
 #endif
@@ -899,8 +898,8 @@ void parse_colors(char *ptr, bool icase)
 			                                0)) ? mallocstrcpy(NULL, fgstr) : NULL;
 
 			/* Lame way to skip another static counter */
-			newcolor->id = endsyntax->nmultis;
-			endsyntax->nmultis++;
+			newcolor->id = new_syntax->nmultis;
+			new_syntax->nmultis++;
 		}
 	}
 }
@@ -957,7 +956,7 @@ void parse_headers(char *ptr)
 #endif
 
 			if (endheader == NULL) {
-				endsyntax->headers = newheader;
+				new_syntax->headers = newheader;
 			} else {
 				endheader->next = newheader;
 			}
@@ -1066,9 +1065,9 @@ void parse_rcfile(FILE *rcstream
 				parse_include(ptr);
 			}
 		} else if (strcasecmp(keyword, "syntax") == 0) {
-			if (endsyntax != NULL && endcolor == NULL)
+			if (new_syntax != NULL && endcolor == NULL)
 				rcfile_error(N_("Syntax \"%s\" has no color commands"),
-				             endsyntax->desc);
+				             new_syntax->desc.c_str());
 			parse_syntax(ptr);
 		} else if (strcasecmp(keyword, "magic") == 0) {
 			parse_magictype(ptr);
@@ -1251,9 +1250,9 @@ void parse_rcfile(FILE *rcstream
 	}
 
 #ifdef ENABLE_COLOR
-	if (endsyntax != NULL && endcolor == NULL)
+	if (new_syntax != NULL && endcolor == NULL)
 		rcfile_error(N_("Syntax \"%s\" has no color commands"),
-		             endsyntax->desc);
+		             new_syntax->desc.c_str());
 #endif
 
 	free(buf);

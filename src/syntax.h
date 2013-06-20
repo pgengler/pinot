@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <string>
 
 #define COLORWIDTH short
 typedef struct colortype {
@@ -41,7 +42,7 @@ typedef struct exttype {
 } exttype;
 
 typedef struct syntaxtype {
-	char *desc;
+	std::string desc;
 	/* The name of this syntax. */
 	exttype *extensions;
 	/* The list of extensions that this syntax applies to. */

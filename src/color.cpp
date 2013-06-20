@@ -148,7 +148,7 @@ void color_update(void)
 		}
 
 		for (syntaxtype *tmpsyntax : syntaxes) {
-			if (strcmp(tmpsyntax->desc, syntaxstr) == 0) {
+			if (tmpsyntax->desc == syntaxstr) {
 				openfile->syntax = tmpsyntax;
 				openfile->colorstrings = tmpsyntax->color;
 			}
@@ -191,7 +191,7 @@ void color_update(void)
 			/* If this is the default syntax, it has no associated
 			 * extensions, which we've checked for elsewhere.  Skip over
 			 * it here, but keep track of its color regexes. */
-			if (strcmp(tmpsyntax->desc, "default") == 0) {
+			if (tmpsyntax->desc == "default") {
 				defsyntax = tmpsyntax;
 				defcolor = tmpsyntax->color;
 				continue;
