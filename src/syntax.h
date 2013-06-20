@@ -32,13 +32,15 @@ typedef struct colortype {
 	/* basic id for assigning to lines later */
 } colortype;
 
-typedef struct syntaxmatchtype {
-	std::string ext_regex;
-	/* The extensions that match this syntax. */
-	regex_t *ext;
-	/* The compiled extensions that match this syntax. */
-} syntaxmatchtype;
-typedef std::list<syntaxmatchtype *> SyntaxMatchList;
+class SyntaxMatch {
+	public:
+		std::string ext_regex;
+		/* The extensions that match this syntax. */
+
+		regex_t *ext;
+		/* The compiled extensions that match this syntax. */
+};
+typedef std::list<SyntaxMatch *> SyntaxMatchList;
 
 typedef struct syntaxtype {
 	std::string desc;

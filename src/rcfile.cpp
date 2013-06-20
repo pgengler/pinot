@@ -332,7 +332,7 @@ void parse_syntax(char *ptr)
 
 		/* Save the extension regex if it's valid. */
 		if (nregcomp(fileregptr, REG_NOSUB)) {
-			syntaxmatchtype *newext = new syntaxmatchtype;
+			auto newext = new SyntaxMatch;
 
 			newext->ext_regex = std::string(fileregptr);
 			newext->ext = NULL;
@@ -396,7 +396,7 @@ void parse_magictype(char *ptr)
 
 		/* Save the regex if it's valid. */
 		if (nregcomp(fileregptr, REG_NOSUB)) {
-			syntaxmatchtype *newext = new syntaxmatchtype;
+			auto newext = new SyntaxMatch;
 
 			newext->ext_regex = std::string(fileregptr);
 			newext->ext = NULL;
@@ -910,7 +910,7 @@ void parse_headers(char *ptr)
 
 		/* Save the regex string if it's valid */
 		if (nregcomp(regstr, 0)) {
-			syntaxmatchtype *newheader = new syntaxmatchtype;
+			auto newheader = new SyntaxMatch;
 			newheader->ext_regex = std::string(regstr);
 			newheader->ext = NULL;
 
