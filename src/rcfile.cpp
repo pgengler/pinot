@@ -332,11 +332,7 @@ void parse_syntax(char *ptr)
 
 		/* Save the extension regex if it's valid. */
 		if (nregcomp(fileregptr, REG_NOSUB)) {
-			auto newext = new SyntaxMatch;
-
-			newext->ext_regex = std::string(fileregptr);
-			newext->ext = NULL;
-
+			auto newext = new SyntaxMatch(fileregptr);
 			new_syntax->extensions.push_back(newext);
 		}
 	}
@@ -396,11 +392,7 @@ void parse_magictype(char *ptr)
 
 		/* Save the regex if it's valid. */
 		if (nregcomp(fileregptr, REG_NOSUB)) {
-			auto newext = new SyntaxMatch;
-
-			newext->ext_regex = std::string(fileregptr);
-			newext->ext = NULL;
-
+			auto newext = new SyntaxMatch(fileregptr);
 			new_syntax->magics.push_back(newext);
 		}
 	}
@@ -910,12 +902,10 @@ void parse_headers(char *ptr)
 
 		/* Save the regex string if it's valid */
 		if (nregcomp(regstr, 0)) {
-			auto newheader = new SyntaxMatch;
-			newheader->ext_regex = std::string(regstr);
-			newheader->ext = NULL;
+			auto newheader = new SyntaxMatch(regstr);
 
 #ifdef DEBUG
-			fprintf(stderr, "Starting a new header entry: %s\n", newheader->ext_regex);
+			fprintf(stderr, "Starting a new header entry: %s\n", regstr);
 #endif
 
 			new_syntax->headers.push_back(newheader);

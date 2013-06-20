@@ -106,16 +106,6 @@ void color_init(void)
 	}
 }
 
-/* Cleanup a regex we previously compiled */
-void nfreeregex(regex_t **r)
-{
-	assert(r != NULL);
-
-	regfree(*r);
-	free(*r);
-	*r = NULL;
-}
-
 /* Update the color information based on the current filename. */
 void color_update(void)
 {
@@ -197,28 +187,10 @@ void color_update(void)
 			}
 
 			for (auto e : tmpsyntax->extensions) {
-				bool not_compiled = (e->ext == NULL);
-
-				/* e->ext_regex has already been checked for validity
-				 * elsewhere.  Compile its specified regex if we haven't
-				 * already. */
-				if (not_compiled) {
-					e->ext = (regex_t *)nmalloc(sizeof(regex_t));
-					regcomp(e->ext, fixbounds(e->ext_regex), REG_EXTENDED);
-				}
-
-				/* Set colorstrings if we matched the extension
-				 * regex. */
-				if (regexec(e->ext, openfile->filename, 0, NULL, 0) == 0) {
+				if (e->matches(openfile->filename)) {
 					openfile->syntax = tmpsyntax;
 					openfile->colorstrings = tmpsyntax->color;
 					break;
-				}
-
-				/* Decompile e->ext_regex's specified regex if we aren't
-				 * going to use it. */
-				if (not_compiled) {
-					nfreeregex(&e->ext);
 				}
 			}
 		}
@@ -233,23 +205,10 @@ void color_update(void)
 
 			for (syntaxtype *tmpsyntax : syntaxes) {
 				for (auto e : tmpsyntax->magics) {
-					bool not_compiled = (e->ext == NULL);
-					if (not_compiled) {
-						e->ext = (regex_t *)nmalloc(sizeof(regex_t));
-						regcomp(e->ext, fixbounds(e->ext_regex), REG_EXTENDED);
-					}
-#ifdef DEBUG
-					fprintf(stderr,"Matching regex \"%s\" against \"%s\"\n",e->ext_regex, magicstring);
-#endif /* DEBUG */
-
-					if (magicstring && regexec(e->ext, magicstring, 0, NULL, 0) == 0) {
+					if (magicstring && e->matches(magicstring)) {
 						openfile->syntax = tmpsyntax;
 						openfile->colorstrings = tmpsyntax->color;
 						break;
-					}
-
-					if (not_compiled) {
-						nfreeregex(&e->ext);
 					}
 				}
 			}
@@ -264,34 +223,16 @@ void color_update(void)
 			for (syntaxtype *tmpsyntax : syntaxes) {
 
 				for (auto e : tmpsyntax->headers) {
-					bool not_compiled = (e->ext == NULL);
-
-					/* e->ext_regex has already been checked for validity
-					 * elsewhere.  Compile its specified regex if we haven't
-					 * already. */
-					if (not_compiled) {
-						e->ext = (regex_t *)nmalloc(sizeof(regex_t));
-						regcomp(e->ext, fixbounds(e->ext_regex), REG_EXTENDED);
-					}
 
 					/* Set colorstrings if we matched the extension
 					 * regex. */
-#ifdef DEBUG
-					fprintf(stderr, "Comparing header regex \"%s\" to fileage \"%s\"...\n", e->ext_regex, openfile->fileage->data);
-#endif
-					if (regexec(e->ext, openfile->fileage->data, 0, NULL, 0) == 0) {
+					if (e->matches(openfile->fileage->data)) {
 						openfile->syntax = tmpsyntax;
 						openfile->colorstrings = tmpsyntax->color;
 					}
 
 					if (openfile->colorstrings != NULL) {
 						break;
-					}
-
-					/* Decompile e->ext_regex's specified regex if we aren't
-					 * going to use it. */
-					if (not_compiled) {
-						nfreeregex(&e->ext);
 					}
 				}
 			}

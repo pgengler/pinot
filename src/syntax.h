@@ -3,6 +3,10 @@
 #include <list>
 #include <string>
 
+#include <pcreposix.h>
+
+extern const char *fixbounds(const std::string& r);
+
 #define COLORWIDTH short
 typedef struct colortype {
 	COLORWIDTH fg;
@@ -34,6 +38,13 @@ typedef struct colortype {
 
 class SyntaxMatch {
 	public:
+		SyntaxMatch(const char*);
+		virtual ~SyntaxMatch();
+
+		bool matches(const char*) const;
+	private:
+		void compile();
+
 		std::string ext_regex;
 		/* The extensions that match this syntax. */
 

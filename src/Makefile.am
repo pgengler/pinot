@@ -18,6 +18,7 @@ pinot_SOURCES =	browser.cpp \
 		proto.h \
 		rcfile.cpp \
 		search.cpp \
+		syntax.cpp \
 		text.cpp \
 		utils.cpp \
 		winio.cpp
