@@ -378,7 +378,7 @@ void parse_magictype(char *ptr)
 
 	assert(ptr != NULL);
 
-	if (syntaxes == NULL) {
+	if (syntaxes.size() == 0) {
 		rcfile_error(
 		    N_("Cannot add a magic string regex without a syntax command"));
 		return;
@@ -742,7 +742,7 @@ void parse_colors(char *ptr, bool icase)
 
 	assert(ptr != NULL);
 
-	if (syntaxes == NULL) {
+	if (syntaxes.size() == 0) {
 		rcfile_error(
 		    N_("Cannot add a color command without a syntax command"));
 		return;
@@ -912,7 +912,7 @@ void parse_headers(char *ptr)
 
 	assert(ptr != NULL);
 
-	if (syntaxes == NULL) {
+	if (syntaxes.size() == 0) {
 		rcfile_error(
 		    N_("Cannot add a header regex without a syntax command"));
 		return;
