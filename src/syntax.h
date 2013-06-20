@@ -32,29 +32,29 @@ typedef struct colortype {
 	/* basic id for assigning to lines later */
 } colortype;
 
-typedef struct exttype {
-	char *ext_regex;
+typedef struct syntaxmatchtype {
+	std::string ext_regex;
 	/* The extensions that match this syntax. */
 	regex_t *ext;
 	/* The compiled extensions that match this syntax. */
-	struct exttype *next;
-	/* Next set of extensions. */
-} exttype;
+} syntaxmatchtype;
+typedef std::list<syntaxmatchtype *> SyntaxMatchList;
 
 typedef struct syntaxtype {
 	std::string desc;
 	/* The name of this syntax. */
-	exttype *extensions;
+	SyntaxMatchList extensions;
 	/* The list of extensions that this syntax applies to. */
-	exttype *headers;
+	SyntaxMatchList headers;
 	/* Regexes to match on the 'header' (1st line) of the file */
-	exttype *magics;
+	SyntaxMatchList magics;
 	/* Regexes to match libmagic results */
 	colortype *color;
 	/* The colors used in this syntax. */
 	int nmultis;
 	/* How many multi line strings this syntax has */
 } syntaxtype;
+typedef std::list<syntaxtype *> SyntaxList;
 
 #define CNONE 		(1<<1)
 /* Yay, regex doesn't apply to this line at all! */
@@ -68,5 +68,3 @@ typedef struct syntaxtype {
 /* regex starts and ends within this line */
 #define CWTF		(1<<6)
 /* Something else */
-
-typedef std::list<syntaxtype *> SyntaxList;

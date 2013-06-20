@@ -107,11 +107,8 @@ static char *pinotrc = NULL;
 #ifdef ENABLE_COLOR
 static syntaxtype *new_syntax = NULL;
 /* current syntax being processed */
-static exttype *endheader = NULL;
-/* End of header list */
 static colortype *endcolor = NULL;
 /* The end of the color list for the current syntax. */
-
 #endif
 
 /* We have an error in some part of the rcfile.  Print the error message
@@ -258,8 +255,6 @@ bool nregcomp(const char *regex, int cflags)
 void parse_syntax(char *ptr)
 {
 	const char *fileregptr = NULL, *nameptr = NULL;
-	exttype *endext = NULL;
-	/* The end of the extensions list for this syntax. */
 
 	assert(ptr != NULL);
 
@@ -293,14 +288,10 @@ void parse_syntax(char *ptr)
 		}
 	}
 
+	endcolor = NULL;
 	new_syntax = new syntaxtype;
 	new_syntax->desc = std::string(nameptr);
 	new_syntax->color = NULL;
-	endcolor = NULL;
-	endheader = NULL;
-	new_syntax->extensions = NULL;
-	new_syntax->headers = NULL;
-	new_syntax->magics = NULL;
 	new_syntax->nmultis = 0;
 
 #ifdef DEBUG
@@ -323,9 +314,6 @@ void parse_syntax(char *ptr)
 
 	/* Now load the extensions into their part of the struct. */
 	while (*ptr != '\0') {
-		exttype *newext;
-		/* The new extension structure. */
-
 		while (*ptr != '"' && *ptr != '\0') {
 			ptr++;
 		}
@@ -342,22 +330,14 @@ void parse_syntax(char *ptr)
 			break;
 		}
 
-		newext = (exttype *)nmalloc(sizeof(exttype));
-
 		/* Save the extension regex if it's valid. */
 		if (nregcomp(fileregptr, REG_NOSUB)) {
-			newext->ext_regex = mallocstrcpy(NULL, fileregptr);
+			syntaxmatchtype *newext = new syntaxmatchtype;
+
+			newext->ext_regex = std::string(fileregptr);
 			newext->ext = NULL;
 
-			if (endext == NULL) {
-				new_syntax->extensions = newext;
-			} else {
-				endext->next = newext;
-			}
-			endext = newext;
-			endext->next = NULL;
-		} else {
-			free(newext);
+			new_syntax->extensions.push_back(newext);
 		}
 	}
 
@@ -372,7 +352,6 @@ void parse_magictype(char *ptr)
 {
 #ifdef HAVE_LIBMAGIC
 	const char *fileregptr = NULL;
-	exttype *endext = NULL;
 
 	assert(ptr != NULL);
 
@@ -399,9 +378,6 @@ void parse_magictype(char *ptr)
 
 	/* Now load the extensions into their part of the struct. */
 	while (*ptr != '\0') {
-		exttype *newext;
-		/* The new extension structure. */
-
 		while (*ptr != '"' && *ptr != '\0') {
 			ptr++;
 		}
@@ -418,22 +394,14 @@ void parse_magictype(char *ptr)
 			break;
 		}
 
-		newext = (exttype *)nmalloc(sizeof(exttype));
-
 		/* Save the regex if it's valid. */
 		if (nregcomp(fileregptr, REG_NOSUB)) {
-			newext->ext_regex = mallocstrcpy(NULL, fileregptr);
+			syntaxmatchtype *newext = new syntaxmatchtype;
+
+			newext->ext_regex = std::string(fileregptr);
 			newext->ext = NULL;
 
-			if (endext == NULL) {
-				new_syntax->magics = newext;
-			} else {
-				endext->next = newext;
-			}
-			endext = newext;
-			endext->next = NULL;
-		} else {
-			free(newext);
+			new_syntax->magics.push_back(newext);
 		}
 	}
 #endif /* HAVE_LIBMAGIC */
@@ -924,9 +892,6 @@ void parse_headers(char *ptr)
 	/* Now for the fun part.  Start adding regexes to individual strings
 	 * in the colorstrings array, woo! */
 	while (ptr != NULL && *ptr != '\0') {
-		exttype *newheader;
-		/* The new color structure. */
-
 		if (*ptr != '"') {
 			rcfile_error(
 			    N_("Regex strings must begin and end with a \" character"));
@@ -942,29 +907,19 @@ void parse_headers(char *ptr)
 			break;
 		}
 
-		newheader = (exttype *)nmalloc(sizeof(exttype));
 
 		/* Save the regex string if it's valid */
 		if (nregcomp(regstr, 0)) {
-			newheader->ext_regex = mallocstrcpy(NULL, regstr);
+			syntaxmatchtype *newheader = new syntaxmatchtype;
+			newheader->ext_regex = std::string(regstr);
 			newheader->ext = NULL;
-			newheader->next = NULL;
 
 #ifdef DEBUG
 			fprintf(stderr, "Starting a new header entry: %s\n", newheader->ext_regex);
 #endif
 
-			if (endheader == NULL) {
-				new_syntax->headers = newheader;
-			} else {
-				endheader->next = newheader;
-			}
-
-			endheader = newheader;
-		} else {
-			free(newheader);
+			new_syntax->headers.push_back(newheader);
 		}
-
 	}
 }
 #endif /* ENABLE_COLOR */

@@ -122,7 +122,6 @@ void color_update(void)
 	syntaxtype *tmpsyntax;
 	syntaxtype *defsyntax = NULL;
 	colortype *tmpcolor, *defcolor = NULL;
-	exttype *e;
 
 	/* libmagic structures */
 	/* magicstring will be NULL if we fail to get magic result */
@@ -197,7 +196,7 @@ void color_update(void)
 				continue;
 			}
 
-			for (e = tmpsyntax->extensions; e != NULL; e = e->next) {
+			for (auto e : tmpsyntax->extensions) {
 				bool not_compiled = (e->ext == NULL);
 
 				/* e->ext_regex has already been checked for validity
