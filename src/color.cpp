@@ -232,7 +232,7 @@ void color_update(void)
 #endif /* DEBUG */
 
 			for (syntaxtype *tmpsyntax : syntaxes) {
-				for (e = tmpsyntax->magics; e != NULL; e = e->next) {
+				for (auto e : tmpsyntax->magics) {
 					bool not_compiled = (e->ext == NULL);
 					if (not_compiled) {
 						e->ext = (regex_t *)nmalloc(sizeof(regex_t));
@@ -263,7 +263,7 @@ void color_update(void)
 #endif
 			for (syntaxtype *tmpsyntax : syntaxes) {
 
-				for (e = tmpsyntax->headers; e != NULL; e = e->next) {
+				for (auto e : tmpsyntax->headers) {
 					bool not_compiled = (e->ext == NULL);
 
 					/* e->ext_regex has already been checked for validity
