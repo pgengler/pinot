@@ -270,6 +270,11 @@ bool regexp_bol_or_eol(const regex_t *preg, const char *string)
 	        REG_NOMATCH);
 }
 
+const char *fixbounds(const std::string& r)
+{
+	return fixbounds(r.c_str());
+}
+
 /* Fix the regex if we're on platforms which requires an adjustment
  * from GNU-style to BSD-style word boundaries.  */
 const char *fixbounds(const char *r)
