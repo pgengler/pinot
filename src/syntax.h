@@ -71,6 +71,9 @@ typedef struct syntaxtype {
 
 	int nmultis;
 	/* How many multi line strings this syntax has */
+
+	std::list<std::string> extends;
+	/* Names of other syntaxes which this one extends */
 } syntaxtype;
 typedef std::unordered_map<std::string, syntaxtype *> SyntaxMap;
 
