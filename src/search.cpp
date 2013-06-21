@@ -860,8 +860,7 @@ ssize_t do_replace_loop(
 #ifdef ENABLE_COLOR
 				/* If color syntaxes are available and turned on, we
 				 * need to call edit_refresh(). */
-				if (openfile->colorstrings != NULL &&
-				        !ISSET(NO_COLOR_SYNTAX)) {
+				if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 					edit_refresh();
 				} else
 #endif

@@ -512,8 +512,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 /* Create a new openfilestruct node. */
 openfilestruct *make_new_opennode(void)
 {
-	openfilestruct *newnode =
-	    (openfilestruct *)nmalloc(sizeof(openfilestruct));
+	openfilestruct *newnode = new openfilestruct;
 
 	newnode->filename = NULL;
 	newnode->fileage = NULL;
@@ -564,7 +563,7 @@ void delete_opennode(openfilestruct *fileptr)
 		free(fileptr->current_stat);
 	}
 
-	free(fileptr);
+	delete fileptr;
 }
 
 #ifdef DEBUG
@@ -1775,8 +1774,7 @@ void precalc_multicolorinfo(void)
 #ifdef DEBUG
 	fprintf(stderr, "entering precalc_multicolorinfo()\n");
 #endif
-	if (openfile->colorstrings != NULL && !ISSET(NO_COLOR_SYNTAX)) {
-		const colortype *tmpcolor = openfile->colorstrings;
+	if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 		regmatch_t startmatch, endmatch;
 		filestruct *fileptr, *endptr;
 		time_t last_check = time(NULL), cur_check = 0;
@@ -1788,7 +1786,7 @@ void precalc_multicolorinfo(void)
 		   abort if they hit a key */
 		nodelay(edit, FALSE);
 
-		for (; tmpcolor != NULL; tmpcolor = tmpcolor->next) {
+		for (auto tmpcolor : openfile->colorstrings) {
 
 			/* If it's not a multi-line regex, amscray */
 			if (tmpcolor->end == NULL) {
@@ -1995,7 +1993,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 #ifdef ENABLE_COLOR
 		/* If color syntaxes are available and turned on, we need to
 		 * call edit_refresh(). */
-		if (openfile->colorstrings != NULL && !ISSET(NO_COLOR_SYNTAX)) {
+		if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 			edit_refresh_needed = TRUE;
 		}
 #endif

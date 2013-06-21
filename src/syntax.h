@@ -30,11 +30,10 @@ typedef struct colortype {
 	/* The end (if any) of the regex string. */
 	regex_t *end;
 	/* The compiled end (if any) of the regex string. */
-	struct colortype *next;
-	/* Next set of colors. */
 	int id;
 	/* basic id for assigning to lines later */
 } colortype;
+typedef std::list<colortype *> ColorList;
 
 class SyntaxMatch {
 	public:
@@ -56,14 +55,19 @@ typedef std::list<SyntaxMatch *> SyntaxMatchList;
 typedef struct syntaxtype {
 	std::string desc;
 	/* The name of this syntax. */
+
 	SyntaxMatchList extensions;
 	/* The list of extensions that this syntax applies to. */
+
 	SyntaxMatchList headers;
 	/* Regexes to match on the 'header' (1st line) of the file */
+
 	SyntaxMatchList magics;
 	/* Regexes to match libmagic results */
-	colortype *color;
+
+	ColorList colors;
 	/* The colors used in this syntax. */
+
 	int nmultis;
 	/* How many multi line strings this syntax has */
 } syntaxtype;

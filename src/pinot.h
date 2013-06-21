@@ -272,50 +272,72 @@ typedef struct poshiststruct {
 typedef struct openfilestruct {
 	char *filename;
 	/* The current file's name. */
+
 	filestruct *fileage;
 	/* The current file's first line. */
+
 	filestruct *filebot;
 	/* The current file's last line. */
+
 	filestruct *edittop;
 	/* The current top of the edit window. */
+
 	filestruct *current;
 	/* The current file's current line. */
+
 	size_t totsize;
 	/* The current file's total number of characters. */
+
 	size_t current_x;
 	/* The current file's x-coordinate position. */
+
 	size_t placewewant;
 	/* The current file's place we want. */
+
 	ssize_t current_y;
 	/* The current file's y-coordinate position. */
+
 	bool modified;
 	/* Whether the current file has been modified. */
+
 	bool mark_set;
 	/* Whether the mark is on in the current file. */
+
 	filestruct *mark_begin;
 	/* The current file's beginning marked line, if any. */
+
 	size_t mark_begin_x;
 	/* The current file's beginning marked line's x-coordinate
 	 * position, if any. */
+
 	file_format fmt;
 	/* The current file's format. */
+
 	struct stat *current_stat;
 	/* The current file's stat. */
+
 	undo *undotop;
 	/* Top of the undo list */
+
 	undo *current_undo;
 	/* The current (i.e. n ext) level of undo */
+
 	undo_type last_action;
+
 	const char *lock_filename;
 	/* The path of the lockfile, if we created one */
+
 #ifdef ENABLE_COLOR
 	syntaxtype *syntax;
 	/* The  syntax struct for this file, if any */
-	colortype *colorstrings;
+
+	ColorList colorstrings;
 	/* The current file's associated colors. */
 #endif
+
 	struct openfilestruct *next;
 	/* Next node. */
+
 	struct openfilestruct *prev;
 	/* Previous node. */
 } openfilestruct;

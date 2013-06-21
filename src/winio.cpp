@@ -2576,9 +2576,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 #ifdef ENABLE_COLOR
 	/* If color syntaxes are available and turned on, we need to display
 	 * them. */
-	if (openfile->colorstrings != NULL && !ISSET(NO_COLOR_SYNTAX)) {
-		const colortype *tmpcolor = openfile->colorstrings;
-
+	if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 		/* Set up multi-line color data for this line if it's not yet calculated  */
 		if (fileptr->multidata == NULL && openfile->syntax && openfile->syntax->nmultis > 0) {
 			int i;
@@ -2588,7 +2586,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 			}
 
 		}
-		for (; tmpcolor != NULL; tmpcolor = tmpcolor->next) {
+		for (auto tmpcolor : openfile->colorstrings) {
 			int x_start;
 			/* Starting column for mvwaddnstr.  Zero-based. */
 			int paintlen;

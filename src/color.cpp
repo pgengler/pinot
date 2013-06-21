@@ -38,26 +38,10 @@
 void set_colorpairs(void)
 {
 	for (syntaxtype *this_syntax : syntaxes) {
-		colortype *this_color = this_syntax->color;
 		int color_pair = 1;
 
-		for (; this_color != NULL; this_color = this_color->next) {
-			const colortype *beforenow = this_syntax->color;
-
-			for (; beforenow != this_color &&
-			        (beforenow->fg != this_color->fg ||
-			         beforenow->bg != this_color->bg ||
-			         beforenow->bright != this_color->bright);
-			        beforenow = beforenow->next) {
-				;
-			}
-
-			if (beforenow != this_color) {
-				this_color->pairnum = beforenow->pairnum;
-			} else {
-				this_color->pairnum = color_pair;
-				color_pair++;
-			}
+		for (auto this_color : this_syntax->colors) {
+			this_color->pairnum = color_pair++;
 		}
 	}
 }
@@ -68,7 +52,6 @@ void color_init(void)
 	assert(openfile != NULL);
 
 	if (has_colors()) {
-		const colortype *tmpcolor;
 #ifdef HAVE_USE_DEFAULT_COLORS
 		bool defok;
 #endif
@@ -80,8 +63,7 @@ void color_init(void)
 		defok = (use_default_colors() != ERR);
 #endif
 
-		for (tmpcolor = openfile->colorstrings; tmpcolor != NULL;
-		        tmpcolor = tmpcolor->next) {
+		for (auto tmpcolor : openfile->colorstrings) {
 			short foreground = tmpcolor->fg, background = tmpcolor->bg;
 			if (foreground == -1) {
 #ifdef HAVE_USE_DEFAULT_COLORS
@@ -111,7 +93,7 @@ void color_update(void)
 {
 	syntaxtype *tmpsyntax;
 	syntaxtype *defsyntax = NULL;
-	colortype *tmpcolor, *defcolor = NULL;
+	ColorList default_colors;
 
 	/* libmagic structures */
 	/* magicstring will be NULL if we fail to get magic result */
@@ -126,7 +108,7 @@ void color_update(void)
 	assert(openfile != NULL);
 
 	openfile->syntax = NULL;
-	openfile->colorstrings = NULL;
+	openfile->colorstrings.clear();
 
 	/* If we specified a syntax override string, use it. */
 	if (syntaxstr != NULL) {
@@ -139,10 +121,7 @@ void color_update(void)
 		for (syntaxtype *tmpsyntax : syntaxes) {
 			if (tmpsyntax->desc == syntaxstr) {
 				openfile->syntax = tmpsyntax;
-				openfile->colorstrings = tmpsyntax->color;
-			}
-
-			if (openfile->colorstrings != NULL) {
+				openfile->colorstrings = tmpsyntax->colors;
 				break;
 			}
 		}
@@ -174,7 +153,7 @@ void color_update(void)
 	/* If we didn't specify a syntax override string, or if we did and
 	 * there was no syntax by that name, get the syntax based on the
 	 * file extension, and then look in the header. */
-	if (openfile->colorstrings == NULL) {
+	if (openfile->colorstrings.empty()) {
 		for (syntaxtype *tmpsyntax : syntaxes) {
 
 			/* If this is the default syntax, it has no associated
@@ -182,14 +161,14 @@ void color_update(void)
 			 * it here, but keep track of its color regexes. */
 			if (tmpsyntax->desc == "default") {
 				defsyntax = tmpsyntax;
-				defcolor = tmpsyntax->color;
+				default_colors = tmpsyntax->colors;
 				continue;
 			}
 
 			for (auto e : tmpsyntax->extensions) {
 				if (e->matches(openfile->filename)) {
 					openfile->syntax = tmpsyntax;
-					openfile->colorstrings = tmpsyntax->color;
+					openfile->colorstrings = tmpsyntax->colors;
 					break;
 				}
 			}
@@ -197,7 +176,7 @@ void color_update(void)
 
 		/* Check magic if we don't yet have an answer */
 #ifdef HAVE_LIBMAGIC
-		if (openfile->colorstrings == NULL) {
+		if (openfile->colorstrings.empty()) {
 
 #ifdef DEBUG
 			fprintf(stderr, "No match using extension, trying libmagic...\n");
@@ -207,7 +186,7 @@ void color_update(void)
 				for (auto e : tmpsyntax->magics) {
 					if (magicstring && e->matches(magicstring)) {
 						openfile->syntax = tmpsyntax;
-						openfile->colorstrings = tmpsyntax->color;
+						openfile->colorstrings = tmpsyntax->colors;
 						break;
 					}
 				}
@@ -216,7 +195,7 @@ void color_update(void)
 #endif /* HAVE_LIBMAGIC */
 
 		/* If we haven't matched anything yet, try the headers */
-		if (openfile->colorstrings == NULL) {
+		if (openfile->colorstrings.empty()) {
 #ifdef DEBUG
 			fprintf(stderr, "No match for file extensions, looking at headers...\n");
 #endif
@@ -228,10 +207,7 @@ void color_update(void)
 					 * regex. */
 					if (e->matches(openfile->fileage->data)) {
 						openfile->syntax = tmpsyntax;
-						openfile->colorstrings = tmpsyntax->color;
-					}
-
-					if (openfile->colorstrings != NULL) {
+						openfile->colorstrings = tmpsyntax->colors;
 						break;
 					}
 				}
@@ -242,13 +218,12 @@ void color_update(void)
 
 	/* If we didn't get a syntax based on the file extension, and we
 	 * have a default syntax, use it. */
-	if (openfile->colorstrings == NULL && defcolor != NULL) {
+	if (openfile->colorstrings.empty() && !default_colors.empty()) {
 		openfile->syntax = defsyntax;
-		openfile->colorstrings = defcolor;
+		openfile->colorstrings = default_colors;
 	}
 
-	for (tmpcolor = openfile->colorstrings; tmpcolor != NULL;
-	        tmpcolor = tmpcolor->next) {
+	for (auto tmpcolor : openfile->colorstrings) {
 		/* tmpcolor->start_regex and tmpcolor->end_regex have already
 		 * been checked for validity elsewhere.  Compile their specified
 		 * regexes if we haven't already. */
@@ -340,13 +315,12 @@ void reset_multis(filestruct *fileptr, bool force)
 {
 	int nobegin, noend;
 	regmatch_t startmatch, endmatch;
-	const colortype *tmpcolor = openfile->colorstrings;
 
 	if (!openfile->syntax) {
 		return;
 	}
 
-	for (; tmpcolor != NULL; tmpcolor = tmpcolor->next) {
+	for (auto tmpcolor : openfile->colorstrings) {
 
 		/* If it's not a multi-line regex, amscray */
 		if (tmpcolor->end == NULL) {

@@ -107,8 +107,6 @@ static char *pinotrc = NULL;
 #ifdef ENABLE_COLOR
 static syntaxtype *new_syntax = NULL;
 /* current syntax being processed */
-static colortype *endcolor = NULL;
-/* The end of the color list for the current syntax. */
 #endif
 
 /* We have an error in some part of the rcfile.  Print the error message
@@ -288,10 +286,8 @@ void parse_syntax(char *ptr)
 		}
 	}
 
-	endcolor = NULL;
 	new_syntax = new syntaxtype;
 	new_syntax->desc = std::string(nameptr);
-	new_syntax->color = NULL;
 	new_syntax->nmultis = 0;
 
 #ifdef DEBUG
@@ -761,7 +757,6 @@ void parse_colors(char *ptr, bool icase)
 	/* Now for the fun part.  Start adding regexes to individual strings
 	 * in the colorstrings array, woo! */
 	while (ptr != NULL && *ptr != '\0') {
-		colortype *newcolor;
 		/* The new color structure. */
 		bool cancelled = FALSE;
 		/* The start expression was bad. */
@@ -788,7 +783,7 @@ void parse_colors(char *ptr, bool icase)
 			break;
 		}
 
-		newcolor = (colortype *)nmalloc(sizeof(colortype));
+		auto newcolor = new colortype;
 
 		/* Save the starting regex string if it's valid, and set up the
 		 * color information. */
@@ -805,23 +800,16 @@ void parse_colors(char *ptr, bool icase)
 			newcolor->end_regex = NULL;
 			newcolor->end = NULL;
 
-			newcolor->next = NULL;
-
-			if (endcolor == NULL) {
-				new_syntax->color = newcolor;
+			new_syntax->colors.push_back(newcolor);
 #ifdef DEBUG
+			if (new_syntax->colors.empty()) {
 				fprintf(stderr, "Starting a new colorstring for fg %hd, bg %hd\n", fg, bg);
-#endif
 			} else {
-#ifdef DEBUG
 				fprintf(stderr, "Adding new entry for fg %hd, bg %hd\n", fg, bg);
-#endif
-				endcolor->next = newcolor;
 			}
-
-			endcolor = newcolor;
+#endif
 		} else {
-			free(newcolor);
+			delete newcolor;
 			cancelled = TRUE;
 		}
 
@@ -1009,7 +997,7 @@ void parse_rcfile(FILE *rcstream
 				parse_include(ptr);
 			}
 		} else if (strcasecmp(keyword, "syntax") == 0) {
-			if (new_syntax != NULL && endcolor == NULL)
+			if (new_syntax != NULL && new_syntax->colors.empty())
 				rcfile_error(N_("Syntax \"%s\" has no color commands"),
 				             new_syntax->desc.c_str());
 			parse_syntax(ptr);
@@ -1194,7 +1182,7 @@ void parse_rcfile(FILE *rcstream
 	}
 
 #ifdef ENABLE_COLOR
-	if (new_syntax != NULL && endcolor == NULL)
+	if (new_syntax != NULL && new_syntax->colors.empty())
 		rcfile_error(N_("Syntax \"%s\" has no color commands"),
 		             new_syntax->desc.c_str());
 #endif

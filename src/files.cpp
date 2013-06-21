@@ -78,9 +78,6 @@ void initialize_buffer(void)
 	openfile->undotop = NULL;
 	openfile->current_undo = NULL;
 	openfile->lock_filename = NULL;
-#ifdef ENABLE_COLOR
-	openfile->colorstrings = NULL;
-#endif
 }
 
 /* Initialize the text of the current entry of the openfile
@@ -2220,8 +2217,7 @@ skip_backup:
 
 			/* If color syntaxes are available and turned on, we need to
 			 * call edit_refresh(). */
-			if (openfile->colorstrings != NULL &&
-			        !ISSET(NO_COLOR_SYNTAX)) {
+			if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 				edit_refresh();
 			}
 #endif
