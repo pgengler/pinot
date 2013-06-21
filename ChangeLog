@@ -1,3 +1,13 @@
+0.0.4
+-----
+* Change code from C to C++ (using C++11 features) [a lot of work remains
+  to be done here]
+* Add "extends" command to pinotrc files to allow "syntax" blocks to bring
+  in color definitions from other "syntax" blocks
+* Incorporate minor changes from 'nano'
+* Disable "justify" and "speller" by default
+* Remove support for "tiny" (less featureful) build
+
 0.0.3
 -----
 * Incorporate recent changes to 'nano', most notably limited support for

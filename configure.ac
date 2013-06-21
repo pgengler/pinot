@@ -17,7 +17,7 @@
 # along with pinot; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
-AC_INIT([pinot], [0.0.3], [phil@pgengler.net], [pinot])
+AC_INIT([pinot], [0.0.4], [phil@pgengler.net], [pinot])
 AC_CONFIG_SRCDIR([src/pinot.cpp])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
