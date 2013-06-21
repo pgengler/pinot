@@ -334,6 +334,26 @@ void parse_syntax(char *ptr)
 	syntaxes[nameptr] = new_syntax;
 }
 
+/* Parse an optional "extends" line in a syntax. */
+void parse_extends(char *ptr)
+{
+	assert(ptr != NULL);
+
+	if (syntaxes.empty()) {
+		rcfile_error(N_("Cannot use 'extends' command without a 'syntax' command"));
+		return;
+	}
+
+	if (*ptr == '\0') {
+		rcfile_error(N_("Missing name of syntax to extend"));
+	}
+
+#ifdef DEBUG
+	fprintf(stderr, "Reading a new 'extends': \"%s\"\n", ptr);
+#endif
+
+	new_syntax->extends.push_back(ptr);
+}
 
 /* Parse the next syntax string from the line at ptr, and add it to the
  * global list of color syntaxes. */
@@ -998,6 +1018,8 @@ void parse_rcfile(FILE *rcstream
 				rcfile_error(N_("Syntax \"%s\" has no color commands"),
 				             new_syntax->desc.c_str());
 			parse_syntax(ptr);
+		} else if (strcasecmp(keyword, "extends") == 0) {
+			parse_extends(ptr);
 		} else if (strcasecmp(keyword, "magic") == 0) {
 			parse_magictype(ptr);
 		} else if (strcasecmp(keyword, "header") == 0) {

@@ -484,6 +484,7 @@ char *parse_argument(char *ptr);
 char *parse_next_regex(char *ptr);
 bool nregcomp(const char *regex, int cflags);
 void parse_syntax(char *ptr);
+void parse_extends(char *ptr);
 void parse_magic_syntax(char *ptr);
 void parse_include(char *ptr);
 COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underline);
