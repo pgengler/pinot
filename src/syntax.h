@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include <unordered_map>
 
 #include <pcreposix.h>
 
@@ -71,7 +72,7 @@ typedef struct syntaxtype {
 	int nmultis;
 	/* How many multi line strings this syntax has */
 } syntaxtype;
-typedef std::list<syntaxtype *> SyntaxList;
+typedef std::unordered_map<std::string, syntaxtype *> SyntaxMap;
 
 #define CNONE 		(1<<1)
 /* Yay, regex doesn't apply to this line at all! */

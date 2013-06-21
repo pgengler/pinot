@@ -94,7 +94,7 @@ extern char *alt_speller;
 extern sc *sclist;
 extern subnfunc *allfuncs;
 #ifdef ENABLE_COLOR
-extern SyntaxList syntaxes;
+extern SyntaxMap syntaxes;
 extern char *syntaxstr;
 #endif
 

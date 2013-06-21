@@ -278,12 +278,10 @@ void parse_syntax(char *ptr)
 
 	/* Search for a duplicate syntax name.  If we find one, free it, so
 	 * that we always use the last syntax with a given name. */
-	for (syntaxtype *tmpsyntax : syntaxes) {
-		if (tmpsyntax->desc == nameptr) {
-			syntaxes.remove(tmpsyntax);
-			delete tmpsyntax;
-			break;
-		}
+	auto existing_syntax = syntaxes[nameptr];
+	if (existing_syntax) {
+		delete existing_syntax;
+		existing_syntax = nullptr;
 	}
 
 	new_syntax = new syntaxtype;
@@ -333,8 +331,7 @@ void parse_syntax(char *ptr)
 		}
 	}
 
-	syntaxes.push_back(new_syntax);
-
+	syntaxes[nameptr] = new_syntax;
 }
 
 
@@ -347,7 +344,7 @@ void parse_magictype(char *ptr)
 
 	assert(ptr != NULL);
 
-	if (syntaxes.size() == 0) {
+	if (syntaxes.empty()) {
 		rcfile_error(
 		    N_("Cannot add a magic string regex without a syntax command"));
 		return;
@@ -696,7 +693,7 @@ void parse_colors(char *ptr, bool icase)
 
 	assert(ptr != NULL);
 
-	if (syntaxes.size() == 0) {
+	if (syntaxes.empty()) {
 		rcfile_error(
 		    N_("Cannot add a color command without a syntax command"));
 		return;
@@ -858,7 +855,7 @@ void parse_headers(char *ptr)
 
 	assert(ptr != NULL);
 
-	if (syntaxes.size() == 0) {
+	if (syntaxes.empty()) {
 		rcfile_error(
 		    N_("Cannot add a header regex without a syntax command"));
 		return;

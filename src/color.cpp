@@ -37,7 +37,8 @@
  * the color pairs. */
 void set_colorpairs(void)
 {
-	for (syntaxtype *this_syntax : syntaxes) {
+	for (auto pair : syntaxes) {
+		auto this_syntax = pair.second;
 		int color_pair = 1;
 
 		for (auto this_color : this_syntax->colors) {
@@ -118,7 +119,8 @@ void color_update(void)
 			return;
 		}
 
-		for (syntaxtype *tmpsyntax : syntaxes) {
+		for (auto pair : syntaxes) {
+			auto tmpsyntax = pair.second;
 			if (tmpsyntax->desc == syntaxstr) {
 				openfile->syntax = tmpsyntax;
 				openfile->colorstrings = tmpsyntax->colors;
@@ -154,7 +156,8 @@ void color_update(void)
 	 * there was no syntax by that name, get the syntax based on the
 	 * file extension, and then look in the header. */
 	if (openfile->colorstrings.empty()) {
-		for (syntaxtype *tmpsyntax : syntaxes) {
+		for (auto pair : syntaxes) {
+			auto tmpsyntax = pair.second;
 
 			/* If this is the default syntax, it has no associated
 			 * extensions, which we've checked for elsewhere.  Skip over
@@ -182,7 +185,8 @@ void color_update(void)
 			fprintf(stderr, "No match using extension, trying libmagic...\n");
 #endif /* DEBUG */
 
-			for (syntaxtype *tmpsyntax : syntaxes) {
+			for (auto pair : syntaxes) {
+				auto tmpsyntax = pair.second;
 				for (auto e : tmpsyntax->magics) {
 					if (magicstring && e->matches(magicstring)) {
 						openfile->syntax = tmpsyntax;
@@ -199,7 +203,8 @@ void color_update(void)
 #ifdef DEBUG
 			fprintf(stderr, "No match for file extensions, looking at headers...\n");
 #endif
-			for (syntaxtype *tmpsyntax : syntaxes) {
+			for (auto pair : syntaxes) {
+				auto tmpsyntax = pair.second;
 
 				for (auto e : tmpsyntax->headers) {
 
