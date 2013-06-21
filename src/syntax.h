@@ -8,7 +8,7 @@
 
 #define COLORWIDTH short
 typedef struct colortype {
-	colortype : pairnum(0) { }
+	colortype() : pairnum(0) { }
 
 	COLORWIDTH fg;
 	/* This syntax's foreground color. */
