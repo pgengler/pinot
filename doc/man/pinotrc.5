@@ -252,6 +252,11 @@ to determine which highlighting rules to use for a given file. This
 functionality only works when \fBlibmagic\fP is installed on the 
 system and will be silently ignored otherwise.
 .TP
+.B extends "\fIstr\fP"
+Declare that this syntax extends the named one. All colors from the
+extended syntax are applied to the current syntax, preceding colors
+defined for this syntax.
+.TP
 .B color \fIfgcolor\fP,\fIbgcolor\fP "\fIregex\fP" ...
 For the currently defined syntax, display all expressions matching
 the extended regular expression \fIregex\fP with foreground color
