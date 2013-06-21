@@ -328,8 +328,8 @@ typedef struct openfilestruct {
 	/* The path of the lockfile, if we created one */
 
 #ifdef ENABLE_COLOR
-	syntaxtype *syntax;
-	/* The  syntax struct for this file, if any */
+	Syntax *syntax;
+	/* The syntax class for this file, if any */
 
 	ColorList colorstrings;
 	/* The current file's associated colors. */

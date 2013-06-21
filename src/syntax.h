@@ -53,29 +53,30 @@ class SyntaxMatch {
 };
 typedef std::list<SyntaxMatch *> SyntaxMatchList;
 
-typedef struct syntaxtype {
-	std::string desc;
-	/* The name of this syntax. */
+class Syntax {
+	public:
+		std::string desc;
+		/* The name of this syntax. */
 
-	SyntaxMatchList extensions;
-	/* The list of extensions that this syntax applies to. */
+		SyntaxMatchList extensions;
+		/* The list of extensions that this syntax applies to. */
 
-	SyntaxMatchList headers;
-	/* Regexes to match on the 'header' (1st line) of the file */
+		SyntaxMatchList headers;
+		/* Regexes to match on the 'header' (1st line) of the file */
 
-	SyntaxMatchList magics;
-	/* Regexes to match libmagic results */
+		SyntaxMatchList magics;
+		/* Regexes to match libmagic results */
 
-	ColorList colors;
-	/* The colors used in this syntax. */
+		ColorList colors;
+		/* The colors used in this syntax. */
 
-	int nmultis;
-	/* How many multi line strings this syntax has */
+		int nmultis;
+		/* How many multi line strings this syntax has */
 
-	std::list<std::string> extends;
-	/* Names of other syntaxes which this one extends */
-} syntaxtype;
-typedef std::unordered_map<std::string, syntaxtype *> SyntaxMap;
+		std::list<std::string> extends;
+		/* Names of other syntaxes which this one extends */
+};
+typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
 
 #define CNONE 		(1<<1)
 /* Yay, regex doesn't apply to this line at all! */

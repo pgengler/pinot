@@ -92,8 +92,8 @@ void color_init(void)
 /* Update the color information based on the current filename. */
 void color_update(void)
 {
-	syntaxtype *tmpsyntax;
-	syntaxtype *defsyntax = NULL;
+	Syntax *tmpsyntax;
+	Syntax *defsyntax = NULL;
 	ColorList default_colors;
 
 	/* libmagic structures */

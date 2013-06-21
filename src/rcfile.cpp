@@ -105,7 +105,7 @@ static size_t lineno = 0;
 static char *pinotrc = NULL;
 /* The path to the rcfile we're parsing. */
 #ifdef ENABLE_COLOR
-static syntaxtype *new_syntax = NULL;
+static Syntax *new_syntax = NULL;
 /* current syntax being processed */
 #endif
 
@@ -284,7 +284,7 @@ void parse_syntax(char *ptr)
 		existing_syntax = nullptr;
 	}
 
-	new_syntax = new syntaxtype;
+	new_syntax = new Syntax;
 	new_syntax->desc = std::string(nameptr);
 	new_syntax->nmultis = 0;
 
