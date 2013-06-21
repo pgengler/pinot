@@ -8,6 +8,8 @@
 
 #define COLORWIDTH short
 typedef struct colortype {
+	colortype : pairnum(0) { }
+
 	COLORWIDTH fg;
 	/* This syntax's foreground color. */
 	COLORWIDTH bg;
@@ -18,7 +20,7 @@ typedef struct colortype {
 	/* Is this color A_UNDERLINE? */
 	bool icase;
 	/* Is this regex string case insensitive? */
-	int pairnum = 0;
+	int pairnum;
 	/* The color pair number used for this foreground color and
 	 * background color. */
 	char *start_regex;
