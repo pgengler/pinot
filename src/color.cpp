@@ -42,7 +42,9 @@ void set_colorpairs(void)
 		int color_pair = 1;
 
 		for (auto this_color : this_syntax->colors()) {
-			this_color->pairnum = color_pair++;
+			if (this_color->pairnum == 0) {
+				this_color->pairnum = color_pair++;
+			}
 		}
 	}
 }

@@ -6,8 +6,6 @@
 
 #include <pcreposix.h>
 
-extern const char *fixbounds(const std::string& r);
-
 #define COLORWIDTH short
 typedef struct colortype {
 	COLORWIDTH fg;
@@ -20,7 +18,7 @@ typedef struct colortype {
 	/* Is this color A_UNDERLINE? */
 	bool icase;
 	/* Is this regex string case insensitive? */
-	int pairnum;
+	int pairnum = 0;
 	/* The color pair number used for this foreground color and
 	 * background color. */
 	char *start_regex;
@@ -74,6 +72,7 @@ class Syntax {
 		/* Names of other syntaxes which this one extends */
 
 		ColorList colors() const;
+		ColorList own_colors() const;
 		void add_color(colortype*);
 
 	private:
@@ -94,3 +93,6 @@ typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
 /* regex starts and ends within this line */
 #define CWTF		(1<<6)
 /* Something else */
+
+extern SyntaxMap syntaxes;
+extern const char *fixbounds(const std::string& r);

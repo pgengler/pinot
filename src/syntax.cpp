@@ -38,5 +38,28 @@ void Syntax::add_color(colortype *color)
 
 ColorList Syntax::colors() const
 {
+	ColorList all_colors;
+
+	for (auto syntax_name : extends) {
+		Syntax *syntax = syntaxes[syntax_name];
+		if (!syntax) {
+			// TODO: catch invalid syntax name
+			continue;
+		}
+		for (auto color : syntax->colors()) {
+			all_colors.push_back(color);
+		}
+	}
+
+	// Lastly add the specific colors
+	for (auto color : _colors) {
+		all_colors.push_back(color);
+	}
+
+	return all_colors;
+}
+
+ColorList Syntax::own_colors() const
+{
 	return _colors;
 }

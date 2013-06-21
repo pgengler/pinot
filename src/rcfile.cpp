@@ -280,6 +280,9 @@ void parse_syntax(char *ptr)
 	 * that we always use the last syntax with a given name. */
 	auto existing_syntax = syntaxes[nameptr];
 	if (existing_syntax) {
+#ifdef DEBUG
+		fprintf(stderr, "Found existing syntax with name \"%s\"; overriding with new definition\n", nameptr);
+#endif
 		delete existing_syntax;
 		existing_syntax = nullptr;
 	}
@@ -348,11 +351,22 @@ void parse_extends(char *ptr)
 		rcfile_error(N_("Missing name of syntax to extend"));
 	}
 
+	if (*ptr != '"') {
+		rcfile_error(N_("'extend' names must begin and end with a \" character"));
+		return;
+	}
+
+	char *syntax_name = ptr;
+	if (*syntax_name == '"') {
+		syntax_name++;
+	}
+	ptr = parse_argument(ptr);
+
 #ifdef DEBUG
-	fprintf(stderr, "Reading a new 'extends': \"%s\"\n", ptr);
+	fprintf(stderr, "Reading a new 'extends': \"%s\"\n", syntax_name);
 #endif
 
-	new_syntax->extends.push_back(ptr);
+	new_syntax->extends.push_back(syntax_name);
 }
 
 /* Parse the next syntax string from the line at ptr, and add it to the
@@ -819,7 +833,7 @@ void parse_colors(char *ptr, bool icase)
 
 			new_syntax->add_color(newcolor);
 #ifdef DEBUG
-			if (new_syntax->colors().empty()) {
+			if (new_syntax->own_colors().empty()) {
 				fprintf(stderr, "Starting a new colorstring for fg %hd, bg %hd\n", fg, bg);
 			} else {
 				fprintf(stderr, "Adding new entry for fg %hd, bg %hd\n", fg, bg);
@@ -1014,7 +1028,7 @@ void parse_rcfile(FILE *rcstream
 				parse_include(ptr);
 			}
 		} else if (strcasecmp(keyword, "syntax") == 0) {
-			if (new_syntax != NULL && new_syntax->colors().empty())
+			if (new_syntax != NULL && new_syntax->own_colors().empty())
 				rcfile_error(N_("Syntax \"%s\" has no color commands"),
 				             new_syntax->desc.c_str());
 			parse_syntax(ptr);
@@ -1201,7 +1215,7 @@ void parse_rcfile(FILE *rcstream
 	}
 
 #ifdef ENABLE_COLOR
-	if (new_syntax != NULL && new_syntax->colors().empty())
+	if (new_syntax != NULL && new_syntax->own_colors().empty())
 		rcfile_error(N_("Syntax \"%s\" has no color commands"),
 		             new_syntax->desc.c_str());
 #endif
