@@ -817,9 +817,9 @@ void parse_colors(char *ptr, bool icase)
 			newcolor->end_regex = NULL;
 			newcolor->end = NULL;
 
-			new_syntax->colors.push_back(newcolor);
+			new_syntax->add_color(newcolor);
 #ifdef DEBUG
-			if (new_syntax->colors.empty()) {
+			if (new_syntax->colors().empty()) {
 				fprintf(stderr, "Starting a new colorstring for fg %hd, bg %hd\n", fg, bg);
 			} else {
 				fprintf(stderr, "Adding new entry for fg %hd, bg %hd\n", fg, bg);
@@ -1014,7 +1014,7 @@ void parse_rcfile(FILE *rcstream
 				parse_include(ptr);
 			}
 		} else if (strcasecmp(keyword, "syntax") == 0) {
-			if (new_syntax != NULL && new_syntax->colors.empty())
+			if (new_syntax != NULL && new_syntax->colors().empty())
 				rcfile_error(N_("Syntax \"%s\" has no color commands"),
 				             new_syntax->desc.c_str());
 			parse_syntax(ptr);
@@ -1201,7 +1201,7 @@ void parse_rcfile(FILE *rcstream
 	}
 
 #ifdef ENABLE_COLOR
-	if (new_syntax != NULL && new_syntax->colors.empty())
+	if (new_syntax != NULL && new_syntax->colors().empty())
 		rcfile_error(N_("Syntax \"%s\" has no color commands"),
 		             new_syntax->desc.c_str());
 #endif

@@ -41,7 +41,7 @@ void set_colorpairs(void)
 		auto this_syntax = pair.second;
 		int color_pair = 1;
 
-		for (auto this_color : this_syntax->colors) {
+		for (auto this_color : this_syntax->colors()) {
 			this_color->pairnum = color_pair++;
 		}
 	}
@@ -123,7 +123,7 @@ void color_update(void)
 			auto tmpsyntax = pair.second;
 			if (tmpsyntax->desc == syntaxstr) {
 				openfile->syntax = tmpsyntax;
-				openfile->colorstrings = tmpsyntax->colors;
+				openfile->colorstrings = tmpsyntax->colors();
 				break;
 			}
 		}
@@ -164,14 +164,14 @@ void color_update(void)
 			 * it here, but keep track of its color regexes. */
 			if (tmpsyntax->desc == "default") {
 				defsyntax = tmpsyntax;
-				default_colors = tmpsyntax->colors;
+				default_colors = tmpsyntax->colors();
 				continue;
 			}
 
 			for (auto e : tmpsyntax->extensions) {
 				if (e->matches(openfile->filename)) {
 					openfile->syntax = tmpsyntax;
-					openfile->colorstrings = tmpsyntax->colors;
+					openfile->colorstrings = tmpsyntax->colors();
 					break;
 				}
 			}
@@ -190,7 +190,7 @@ void color_update(void)
 				for (auto e : tmpsyntax->magics) {
 					if (magicstring && e->matches(magicstring)) {
 						openfile->syntax = tmpsyntax;
-						openfile->colorstrings = tmpsyntax->colors;
+						openfile->colorstrings = tmpsyntax->colors();
 						break;
 					}
 				}
@@ -212,7 +212,7 @@ void color_update(void)
 					 * regex. */
 					if (e->matches(openfile->fileage->data)) {
 						openfile->syntax = tmpsyntax;
-						openfile->colorstrings = tmpsyntax->colors;
+						openfile->colorstrings = tmpsyntax->colors();
 						break;
 					}
 				}

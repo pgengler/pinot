@@ -28,3 +28,15 @@ bool SyntaxMatch::matches(const char *str) const
 
 	return (regexec(ext, str, 0, NULL, 0) == 0);
 }
+
+/***********************************/
+
+void Syntax::add_color(colortype *color)
+{
+	_colors.push_back(color);
+}
+
+ColorList Syntax::colors() const
+{
+	return _colors;
+}

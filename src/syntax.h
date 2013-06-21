@@ -67,14 +67,18 @@ class Syntax {
 		SyntaxMatchList magics;
 		/* Regexes to match libmagic results */
 
-		ColorList colors;
-		/* The colors used in this syntax. */
-
 		int nmultis;
 		/* How many multi line strings this syntax has */
 
 		std::list<std::string> extends;
 		/* Names of other syntaxes which this one extends */
+
+		ColorList colors() const;
+		void add_color(colortype*);
+
+	private:
+		ColorList _colors;
+		/* The colors used in this syntax. */
 };
 typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
 
