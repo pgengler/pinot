@@ -11,6 +11,7 @@ pinot_SOURCES =	browser.cpp \
 		files.cpp \
 		global.cpp \
 		help.cpp \
+		macros.h \
 		move.cpp \
 		pinot.cpp \
 		pinot.h \
