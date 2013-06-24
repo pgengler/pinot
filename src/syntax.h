@@ -6,6 +6,8 @@
 
 #include <pcreposix.h>
 
+#include "macros.h"
+
 #define COLORWIDTH short
 typedef struct colortype {
 	colortype() : pairnum(0) { }
