@@ -20,8 +20,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef PINOT_H
-#define PINOT_H 1
+#pragma once
 
 #include <list>
 #include "macros.h"
@@ -718,5 +717,3 @@ enum {
 /* Some exit codes that we might want to check for. */
 #define COMMAND_FAILED_PERMISSION_DENIED 126
 #define COMMAND_FAILED_NOT_FOUND 127
-
-#endif /* !PINOT_H */

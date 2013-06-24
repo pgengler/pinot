@@ -21,8 +21,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef PROTO_H
-#define PROTO_H 1
+#pragma once
 
 #include "pinot.h"
 
@@ -774,6 +773,3 @@ void backwards_void(void);
 void goto_dir_void(void);
 void no_replace_void(void);
 void ext_cmd_void(void);
-
-
-#endif /* !PROTO_H */
