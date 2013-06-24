@@ -84,9 +84,7 @@ void color_init(void)
 
 			init_pair(tmpcolor->pairnum, foreground, background);
 
-#ifdef DEBUG
-			fprintf(stderr, "init_pair(): fg = %hd, bg = %hd\n", tmpcolor->fg, tmpcolor->bg);
-#endif
+			DEBUG_LOG("init_pair(): fg = %hd, bg = %hd\n", tmpcolor->fg, tmpcolor->bg);
 		}
 	}
 }
@@ -147,9 +145,7 @@ void color_update(void)
 				magicerr = magic_error(m);
 				fprintf(stderr, "something went wrong: %s [%s]\n", magicerr, openfile->filename);
 			}
-#ifdef DEBUG
-			fprintf(stderr, "magic string returned: %s\n", magicstring);
-#endif /* DEBUG */
+			DEBUG_LOG("magic string returned: %s\n", magicstring);
 		}
 	}
 #endif /* HAVE_LIBMAGIC */
@@ -183,9 +179,7 @@ void color_update(void)
 #ifdef HAVE_LIBMAGIC
 		if (openfile->colorstrings.empty()) {
 
-#ifdef DEBUG
-			fprintf(stderr, "No match using extension, trying libmagic...\n");
-#endif /* DEBUG */
+			DEBUG_LOG("No match using extension, trying libmagic...\n");
 
 			for (auto pair : syntaxes) {
 				auto tmpsyntax = pair.second;
@@ -202,9 +196,7 @@ void color_update(void)
 
 		/* If we haven't matched anything yet, try the headers */
 		if (openfile->colorstrings.empty()) {
-#ifdef DEBUG
-			fprintf(stderr, "No match for file extensions, looking at headers...\n");
-#endif
+			DEBUG_LOG("No match for file extensions, looking at headers...\n");
 			for (auto pair : syntaxes) {
 				auto tmpsyntax = pair.second;
 

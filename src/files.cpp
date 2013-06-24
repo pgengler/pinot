@@ -206,9 +206,7 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 		return -1;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "In write_lockfile(), write successful (wrote %d bytes)\n", wroteamt);
-#endif /* DEBUG */
+	DEBUG_LOG("In write_lockfile(), write successful (wrote %d bytes)\n", wroteamt);
 
 	if (fclose(filestream) == EOF) {
 		statusbar(_("Error writing lock file %s: %s"),
@@ -255,9 +253,7 @@ int do_lockfile(const char *filename)
 
 	snprintf(lockfilename, lockfilesize, "%s/%s%s%s", lockdir,
 	         locking_prefix, lockbase, locking_suffix);
-#ifdef DEBUG
-	fprintf(stderr, "lock file name is %s\n", lockfilename);
-#endif /* DEBUG */
+	DEBUG_LOG("lock file name is %s\n", lockfilename);
 	if (stat(lockfilename, &fileinfo) != -1) {
 		ssize_t readtot = 0;
 		ssize_t readamt = 0;
@@ -282,13 +278,9 @@ int do_lockfile(const char *filename)
 		strncpy(lockprog, &lockbuf[2], 10);
 		lockpid = lockbuf[25] * 256 + lockbuf[24];
 		strncpy(lockuser, &lockbuf[28], 16);
-#ifdef DEBUG
-		fprintf(stderr, "lockpid = %d\n", lockpid);
-		fprintf(stderr, "program name which created this lock file should be %s\n",
-		        lockprog);
-		fprintf(stderr, "user which created this lock file should be %s\n",
-		        lockuser);
-#endif /* DEBUG */
+		DEBUG_LOG("lockpid = %d\n", lockpid);
+		DEBUG_LOG("program name which created this lock file should be %s\n", lockprog);
+		DEBUG_LOG("user which created this lock file should be %s\n", lockuser);
 		sprintf(promptstr, "File being edited (by %s, PID %d, user %s), continue?",
 		        lockprog, lockpid, lockuser);
 		ans = do_yesno_prompt(FALSE, promptstr);
@@ -439,9 +431,7 @@ void switch_to_prevnext_buffer(bool next_buf)
 	 * value of next_buf. */
 	openfile = next_buf ? openfile->next : openfile->prev;
 
-#ifdef DEBUG
-	fprintf(stderr, "filename is %s\n", openfile->filename);
-#endif
+	DEBUG_LOG("filename is %s\n", openfile->filename);
 
 	/* Update the screen to account for the current buffer. */
 	display_buffer();
@@ -1980,9 +1970,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type
 			goto cleanup_and_exit;
 		}
 
-#ifdef DEBUG
-		fprintf(stderr, "Backing up %s to %s\n", realname, backupname);
-#endif
+		DEBUG_LOG("Backing up %s to %s\n", realname, backupname);
 
 		/* Copy the file. */
 		copy_status = copy_file(f, backup_file);
@@ -2411,9 +2399,7 @@ bool do_writeout(bool exiting)
 					continue;
 				}
 
-#ifdef DEBUG
-			fprintf(stderr, "filename is %s\n", answer);
-#endif
+			DEBUG_LOG("filename is %s\n", answer);
 
 #ifdef PINOT_EXTRA
 			/* If the current file has been modified, we've pressed
@@ -2743,9 +2729,7 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t
 	while ((nextdir = readdir(dir)) != NULL) {
 		bool skip_match = FALSE;
 
-#ifdef DEBUG
-		fprintf(stderr, "Comparing \'%s\'\n", nextdir->d_name);
-#endif
+		DEBUG_LOG("Comparing \'%s\'\n", nextdir->d_name);
 		/* See if this matches. */
 		if (strncmp(nextdir->d_name, filename, filenamelen) == 0 &&
 		        (*filename == '.' || (strcmp(nextdir->d_name, ".") !=

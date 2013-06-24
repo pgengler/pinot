@@ -280,9 +280,7 @@ void parse_syntax(char *ptr)
 	 * that we always use the last syntax with a given name. */
 	auto existing_syntax = syntaxes[nameptr];
 	if (existing_syntax) {
-#ifdef DEBUG
-		fprintf(stderr, "Found existing syntax with name \"%s\"; overriding with new definition\n", nameptr);
-#endif
+		DEBUG_LOG("Found existing syntax with name \"%s\"; overriding with new definition\n", nameptr);
 		delete existing_syntax;
 		existing_syntax = nullptr;
 	}
@@ -291,9 +289,7 @@ void parse_syntax(char *ptr)
 	new_syntax->desc = std::string(nameptr);
 	new_syntax->nmultis = 0;
 
-#ifdef DEBUG
-	fprintf(stderr, "Starting a new syntax type: \"%s\"\n", nameptr);
-#endif
+	DEBUG_LOG("Starting a new syntax type: \"%s\"\n", nameptr);
 
 	/* The "none" syntax is the same as not having a syntax at all, so
 	 * we can't assign any extensions or colors to it. */
@@ -362,9 +358,7 @@ void parse_extends(char *ptr)
 	}
 	ptr = parse_argument(ptr);
 
-#ifdef DEBUG
-	fprintf(stderr, "Reading a new 'extends': \"%s\"\n", syntax_name);
-#endif
+	DEBUG_LOG("Reading a new 'extends': \"%s\"\n", syntax_name);
 
 	new_syntax->extends.push_back(syntax_name);
 }
@@ -395,9 +389,7 @@ void parse_magictype(char *ptr)
 		return;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "Starting a magic type: \"%s\"\n", ptr);
-#endif
+	DEBUG_LOG("Starting a magic type: \"%s\"\n", ptr);
 
 	/* Now load the extensions into their part of the struct. */
 	while (*ptr != '\0') {
@@ -502,20 +494,15 @@ void parse_keybinding(char *ptr)
 	}
 
 
-#ifdef DEBUG
-	fprintf(stderr, "newsc now address %d, menu func assigned = %d, menu = %d\n",
-	        &newsc, newsc->scfunc, menu);
-#endif
+	DEBUG_LOG("newsc now address %d, menu func assigned = %d, menu = %d\n", &newsc, newsc->scfunc, menu);
 
 
 	newsc->keystr = keycopy;
 	newsc->menu = menu;
 	newsc->type = strtokeytype(newsc->keystr);
 	assign_keyinfo(newsc);
-#ifdef DEBUG
-	fprintf(stderr, "s->keystr = \"%s\"\n", newsc->keystr);
-	fprintf(stderr, "s->seq = \"%d\"\n", newsc->seq);
-#endif
+	DEBUG_LOG("s->keystr = \"%s\"\n", newsc->keystr);
+	DEBUG_LOG("s->seq = \"%d\"\n", newsc->seq);
 
 	if (check_bad_binding(newsc)) {
 		rcfile_error(
@@ -529,9 +516,7 @@ void parse_keybinding(char *ptr)
 	for (s = sclist; s != NULL; s = s->next) {
 		if (((s->menu & newsc->menu)) && s->seq == newsc->seq) {
 			s->menu &= ~newsc->menu;
-#ifdef DEBUG
-			fprintf(stderr, "replaced menu entry %d\n", s->menu);
-#endif
+			DEBUG_LOG("replaced menu entry %d\n", s->menu);
 		}
 	}
 	newsc->next = sclist;
@@ -559,9 +544,7 @@ void parse_unbinding(char *ptr)
 		keycopy[i] = toupper(keycopy[i]);
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "Starting unbinding code");
-#endif
+	DEBUG_LOG("Starting unbinding code");
 
 	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
 		rcfile_error(
@@ -588,17 +571,13 @@ void parse_unbinding(char *ptr)
 	}
 
 
-#ifdef DEBUG
-	fprintf(stderr, "unbinding \"%s\" from menu = %d\n", keycopy, menu);
-#endif
+	DEBUG_LOG("unbinding \"%s\" from menu = %d\n", keycopy, menu);
 
 	/* Now find the apropriate entries in the menu to delete */
 	for (s = sclist; s != NULL; s = s->next) {
 		if (((s->menu & menu)) && !strcmp(s->keystr,keycopy)) {
 			s->menu &= ~menu;
-#ifdef DEBUG
-			fprintf(stderr, "deleted menu entry %d\n", s->menu);
-#endif
+			DEBUG_LOG("deleted menu entry %d\n", s->menu);
 		}
 	}
 }
@@ -645,9 +624,7 @@ void parse_include(char *ptr)
 	pinotrc = expanded;
 	lineno = 0;
 
-#ifdef DEBUG
-	fprintf(stderr, "Parsing file \"%s\" (expanded from \"%s\")\n", expanded, option);
-#endif
+	DEBUG_LOG("Parsing file \"%s\" (expanded from \"%s\")\n", expanded, option);
 
 	parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
@@ -923,9 +900,7 @@ void parse_headers(char *ptr)
 		if (nregcomp(regstr, 0)) {
 			auto newheader = new SyntaxMatch(regstr);
 
-#ifdef DEBUG
-			fprintf(stderr, "Starting a new header entry: %s\n", regstr);
-#endif
+			DEBUG_LOG("Starting a new header entry: %s\n", regstr);
 
 			new_syntax->headers.push_back(newheader);
 		}
@@ -1066,9 +1041,7 @@ void parse_rcfile(FILE *rcstream
 
 		for (i = 0; rcopts[i].name != NULL; i++) {
 			if (strcasecmp(option, rcopts[i].name) == 0) {
-#ifdef DEBUG
-				fprintf(stderr, "parse_rcfile(): name = \"%s\"\n", rcopts[i].name);
-#endif
+				DEBUG_LOG("parse_rcfile(): name = \"%s\"\n", rcopts[i].name);
 				if (set == 1) {
 					if (rcopts[i].flag != 0)
 						/* This option has a flag, so it doesn't take an
@@ -1091,9 +1064,7 @@ void parse_rcfile(FILE *rcstream
 						ptr = parse_argument(ptr);
 
 						option = mallocstrcpy(NULL, option);
-#ifdef DEBUG
-						fprintf(stderr, "option = \"%s\"\n", option);
-#endif
+						DEBUG_LOG("option = \"%s\"\n", option);
 
 						/* Make sure option is a valid multibyte
 						 * string. */
@@ -1194,9 +1165,7 @@ void parse_rcfile(FILE *rcstream
 													assert(FALSE);
 												}
 					}
-#ifdef DEBUG
-					fprintf(stderr, "flag = %ld\n", rcopts[i].flag);
-#endif
+					DEBUG_LOG("flag = %ld\n", rcopts[i].flag);
 				} else if (rcopts[i].flag != 0) {
 					UNSET(rcopts[i].flag);
 				} else
@@ -1246,9 +1215,7 @@ void do_rcfile(void)
 			             _("\"%s\" is a device file"), pinotrc);
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "Parsing file \"%s\"\n", pinotrc);
-#endif
+	DEBUG_LOG("Parsing file \"%s\"\n", pinotrc);
 
 	/* Try to open the system-wide pinotrc. */
 	rcstream = fopen(pinotrc, "rb");

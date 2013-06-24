@@ -22,9 +22,7 @@ void SyntaxMatch::compile()
 
 bool SyntaxMatch::matches(const char *str) const
 {
-#ifdef DEBUG
-	fprintf(stderr, "Matching regex \"%s\" against \"%s\"\n", ext_regex, str);
-#endif /* DEBUG */
+	DEBUG_LOG("Matching regex \"%s\" against \"%s\"\n", ext_regex, str);
 
 	return (regexec(ext, str, 0, NULL, 0) == 0);
 }

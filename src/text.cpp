@@ -421,9 +421,7 @@ void redo_cut(undo *u)
 		   than one line again */
 		for (c = u->cutbuffer, t = openfile->current; c->next != NULL && t->next != NULL; ) {
 
-#ifdef DEBUG
-			fprintf(stderr, "Advancing, lineno  = %lu, data = \"%s\"\n", (unsigned long) t->lineno, t->data);
-#endif
+			DEBUG_LOG("Advancing, lineno  = %lu, data = \"%s\"\n", (unsigned long) t->lineno, t->data);
 			c = c->next;
 			t = t->next;
 		}
@@ -467,10 +465,8 @@ void do_undo(void)
 		statusbar(_("Internal error: can't match line %d.  Please save your work"), u->lineno);
 		return;
 	}
-#ifdef DEBUG
-	fprintf(stderr, "data we're about to undo = \"%s\"\n", f->data);
-	fprintf(stderr, "Undo running for type %d\n", u->type);
-#endif
+	DEBUG_LOG("data we're about to undo = \"%s\"\n", f->data);
+	DEBUG_LOG("Undo running for type %d\n", u->type);
 
 	openfile->current_x = u->begin;
 	switch(u->type) {
@@ -609,10 +605,8 @@ void do_redo(void)
 		statusbar(_("Internal error: can't match line %d.  Please save your work"), u->lineno);
 		return;
 	}
-#ifdef DEBUG
-	fprintf(stderr, "data we're about to redo = \"%s\"\n", f->data);
-	fprintf(stderr, "Redo running for type %d\n", u->type);
-#endif
+	DEBUG_LOG("data we're about to redo = \"%s\"\n", f->data);
+	DEBUG_LOG("Redo running for type %d\n", u->type);
 
 	switch(u->type) {
 	case ADD:
@@ -1065,11 +1059,8 @@ void add_undo(undo_type current_action)
 		break;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "fs->current->data = \"%s\", current_x = %lu, u->begin = %d, type = %d\n",
-	        fs->current->data,  (unsigned long) fs->current_x, u->begin, current_action);
-	fprintf(stderr, "left add_undo...\n");
-#endif
+	DEBUG_LOG("fs->current->data = \"%s\", current_x = %lu, u->begin = %d, type = %d\n", fs->current->data,  (unsigned long) fs->current_x, u->begin, current_action);
+	DEBUG_LOG("left add_undo...\n");
 	fs->last_action = current_action;
 }
 
@@ -1113,18 +1104,13 @@ void update_undo(undo_type action)
 
 	switch (u->type) {
 	case ADD:
-#ifdef DEBUG
-		fprintf(stderr, "fs->current->data = \"%s\", current_x = %lu, u->begin = %d\n",
-		        fs->current->data, (unsigned long) fs->current_x, u->begin);
-#endif
+		DEBUG_LOG("fs->current->data = \"%s\", current_x = %lu, u->begin = %d\n", fs->current->data, (unsigned long) fs->current_x, u->begin);
 		len = strlen(u->strdata) + 2;
 		data = (char *) nrealloc((void *) u->strdata, len * sizeof(char *));
 		data[len-2] = fs->current->data[fs->current_x];
 		data[len-1] = '\0';
 		u->strdata = (char *) data;
-#ifdef DEBUG
-		fprintf(stderr, "current undo data now \"%s\"\n", u->strdata);
-#endif
+		DEBUG_LOG("current undo data now \"%s\"\n", u->strdata);
 		break;
 	case DEL:
 		len = strlen(u->strdata) + 2;
@@ -1162,9 +1148,7 @@ void update_undo(undo_type action)
 			add_undo(DEL);
 			return;
 		}
-#ifdef DEBUG
-		fprintf(stderr, "current undo data now \"%s\"\nu->begin = %d\n", u->strdata, u->begin);
-#endif
+		DEBUG_LOG("current undo data now \"%s\"\nu->begin = %d\n", u->strdata, u->begin);
 		break;
 	case CUT:
 		if (!cutbuffer) {
@@ -1200,13 +1184,9 @@ void update_undo(undo_type action)
 		break;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "Done in udpate_undo (type was %d)\n", action);
-#endif
+	DEBUG_LOG("Done in udpate_undo (type was %d)\n", action);
 	if (fs->last_action != action) {
-#ifdef DEBUG
-		fprintf(stderr, "Starting add_undo for new action as it does not match last_action\n");
-#endif
+		DEBUG_LOG("Starting add_undo for new action as it does not match last_action\n");
 		add_undo(action);
 	}
 	fs->last_action = action;

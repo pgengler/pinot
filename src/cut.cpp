@@ -126,9 +126,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 	if (!keep_cutbuffer && cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
 		cutbuffer = NULL;
-#ifdef DEBUG
-		fprintf(stderr, "Blew away cutbuffer =)\n");
-#endif
+		DEBUG_LOG("Blew away cutbuffer =)\n");
 	}
 
 	if (copy_text) {

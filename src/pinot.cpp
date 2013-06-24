@@ -1641,9 +1641,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 							}
 #endif
 							if (edit_refresh_needed) {
-#ifdef DEBUG
-								fprintf(stderr, "running edit_refresh() as edit_refresh_needed is true\n");
-#endif
+								DEBUG_LOG("running edit_refresh() as edit_refresh_needed is true\n");
 								edit_refresh();
 								edit_refresh_needed = FALSE;
 							}
@@ -1695,9 +1693,7 @@ int do_mouse(void)
 
 		sameline = (mouse_y == openfile->current_y);
 
-#ifdef DEBUG
-		fprintf(stderr, "mouse_y = %d, current_y = %d\n", mouse_y, openfile->current_y);
-#endif
+		DEBUG_LOG("mouse_y = %d, current_y = %d\n", mouse_y, openfile->current_y);
 
 		if (ISSET(SOFTWRAP)) {
 			int i = 0;
@@ -1708,22 +1704,16 @@ int do_mouse(void)
 				i += strlenpt(openfile->current->data) / COLS;
 			}
 
-#ifdef DEBUG
-			fprintf(stderr, "do_mouse(): moving to current_y = %d, i %d\n", openfile->current_y, i);
-			fprintf(stderr, "            openfile->current->data = \"%s\"\n", openfile->current->data);
-#endif
+			DEBUG_LOG("do_mouse(): moving to current_y = %d, i %d\n", openfile->current_y, i);
+			DEBUG_LOG("            openfile->current->data = \"%s\"\n", openfile->current->data);
 
 			if (i > mouse_y) {
 				openfile->current = openfile->current->prev;
 				openfile->current_x = actual_x(openfile->current->data, mouse_x + (mouse_y - openfile->current_y) * COLS);
-#ifdef DEBUG
-				fprintf(stderr, "do_mouse(): i > mouse_y, mouse_x = %d, current_x to = %d\n", mouse_x, openfile->current_x);
-#endif
+				DEBUG_LOG("do_mouse(): i > mouse_y, mouse_x = %d, current_x to = %d\n", mouse_x, openfile->current_x);
 			} else {
 				openfile->current_x = actual_x(openfile->current->data, mouse_x);
-#ifdef DEBUG
-				fprintf(stderr, "do_mouse(): i <= mouse_y, mouse_x = %d, setting current_x to = %d\n", mouse_x, openfile->current_x);
-#endif
+				DEBUG_LOG("do_mouse(): i <= mouse_y, mouse_x = %d, setting current_x to = %d\n", mouse_x, openfile->current_x);
 			}
 
 			openfile->placewewant = xplustabs();
@@ -1771,9 +1761,7 @@ void alloc_multidata_if_needed(filestruct *fileptr)
    rendering (with any hope at all...) */
 void precalc_multicolorinfo(void)
 {
-#ifdef DEBUG
-	fprintf(stderr, "entering precalc_multicolorinfo()\n");
-#endif
+	DEBUG_LOG("entering precalc_multicolorinfo()\n");
 	if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 		regmatch_t startmatch, endmatch;
 		filestruct *fileptr, *endptr;
@@ -1792,9 +1780,7 @@ void precalc_multicolorinfo(void)
 			if (tmpcolor->end == NULL) {
 				continue;
 			}
-#ifdef DEBUG
-			fprintf(stderr, "working on color id %d\n", tmpcolor->id);
-#endif
+			DEBUG_LOG("working on color id %d\n", tmpcolor->id);
 
 
 			for (fileptr = openfile->fileage; fileptr != NULL; fileptr = fileptr->next) {
@@ -1802,9 +1788,7 @@ void precalc_multicolorinfo(void)
 				int nostart = 0;
 
 
-#ifdef DEBUG
-				fprintf(stderr, "working on lineno %lu\n", (unsigned long) fileptr->lineno);
-#endif
+				DEBUG_LOG("working on lineno %lu\n", (unsigned long) fileptr->lineno);
 
 				alloc_multidata_if_needed(fileptr);
 
@@ -1819,26 +1803,20 @@ void precalc_multicolorinfo(void)
 					/* Look for end and start marking how many lines are encompassed
 					   whcih should speed up rendering later */
 					startx += startmatch.rm_eo;
-#ifdef DEBUG
-					fprintf(stderr, "match found at pos %d...", startx);
-#endif
+					DEBUG_LOG("match found at pos %d...", startx);
 
 					/* Look on this line first for end */
 					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, 0)  == 0) {
 						startx += endmatch.rm_eo;
 						fileptr->multidata[tmpcolor->id] |= CSTARTENDHERE;
-#ifdef DEBUG
-						fprintf(stderr, "end found on this line\n");
-#endif
+						DEBUG_LOG("end found on this line\n");
 						continue;
 					}
 
 					/* Nice, we didn't find the end regex on this line.  Let's start looking for it */
 					for (endptr = fileptr->next; endptr != NULL; endptr = endptr->next) {
 
-#ifdef DEBUG
-						fprintf(stderr, "advancing to line %lu to find end...\n", (unsigned long) endptr->lineno);
-#endif
+						DEBUG_LOG("advancing to line %lu to find end...\n", (unsigned long) endptr->lineno);
 						/* Check for keyboard input  again */
 						if ((cur_check = time(NULL)) - last_check > 1) {
 							last_check = cur_check;
@@ -1852,47 +1830,33 @@ void precalc_multicolorinfo(void)
 					}
 
 					if (endptr == NULL) {
-#ifdef DEBUG
-						fprintf(stderr, "no end found, breaking out\n");
-#endif
+						DEBUG_LOG("no end found, breaking out\n");
 						break;
 					}
 
 
-#ifdef DEBUG
-					fprintf(stderr, "end found\n");
-#endif
+					DEBUG_LOG("end found\n");
 
 					/* We found it, we found it, la la la la la.  Mark all the
 					lines in between and the ends properly */
 					fileptr->multidata[tmpcolor->id] |= CENDAFTER;
-#ifdef DEBUG
-					fprintf(stderr, "marking line %lu as CENDAFTER\n", (unsigned long) fileptr->lineno);
-#endif
+					DEBUG_LOG("marking line %lu as CENDAFTER\n", (unsigned long) fileptr->lineno);
 					for (fileptr = fileptr->next; fileptr != endptr; fileptr = fileptr->next) {
 						alloc_multidata_if_needed(fileptr);
 						fileptr->multidata[tmpcolor->id] = CWHOLELINE;
-#ifdef DEBUG
-						fprintf(stderr, "marking intermediary line %lu as CWHOLELINE\n", (unsigned long) fileptr->lineno);
-#endif
+						DEBUG_LOG("marking intermediary line %lu as CWHOLELINE\n", (unsigned long) fileptr->lineno);
 					}
 					alloc_multidata_if_needed(endptr);
-#ifdef DEBUG
-					fprintf(stderr, "marking line %lu as BEGINBEFORE\n", (unsigned long) fileptr->lineno);
-#endif
+					DEBUG_LOG("marking line %lu as BEGINBEFORE\n", (unsigned long) fileptr->lineno);
 					endptr->multidata[tmpcolor->id] |= CBEGINBEFORE;
 					/* We should be able to skip all the way to the line of the match.
 					This may introduce more bugs but it's the Right Thing to do */
 					fileptr = endptr;
 					startx = endmatch.rm_eo;
-#ifdef DEBUG
-					fprintf(stderr, "jumping to line %lu pos %d to continue\n", (unsigned long) endptr->lineno, startx);
-#endif
+					DEBUG_LOG("jumping to line %lu pos %d to continue\n", (unsigned long) endptr->lineno, startx);
 				}
 				if (nostart && startx == 0) {
-#ifdef DEBUG
-					fprintf(stderr, "no start found on line %lu, continuing\n", (unsigned long) fileptr->lineno);
-#endif
+					DEBUG_LOG("no start found on line %lu, continuing\n", (unsigned long) fileptr->lineno);
 					fileptr->multidata[tmpcolor->id] = CNONE;
 					continue;
 				}
@@ -2551,9 +2515,7 @@ int main(int argc, char **argv)
 	/* Turn the cursor on for sure. */
 	curs_set(1);
 
-#ifdef DEBUG
-	fprintf(stderr, "Main: set up windows\n");
-#endif
+	DEBUG_LOG("Main: set up windows\n");
 
 	/* Initialize all the windows based on the current screen
 	 * dimensions. */
@@ -2567,9 +2529,7 @@ int main(int argc, char **argv)
 	mouse_init();
 #endif
 
-#ifdef DEBUG
-	fprintf(stderr, "Main: open file\n");
-#endif
+	DEBUG_LOG("Main: open file\n");
 
 	/* If there's a +LINE or +LINE,COLUMN flag here, it is the first
 	 * non-option argument, and it is followed by at least one other
@@ -2644,9 +2604,7 @@ int main(int argc, char **argv)
 	}
 #endif
 
-#ifdef DEBUG
-	fprintf(stderr, "Main: top and bottom win\n");
-#endif
+	DEBUG_LOG("Main: top and bottom win\n");
 
 #ifdef ENABLE_COLOR
 	if (openfile->syntax && openfile->syntax->nmultis > 0) {

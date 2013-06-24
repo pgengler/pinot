@@ -165,6 +165,12 @@
 #define DISABLE_WRAPJUSTIFY 1
 #endif
 
+#ifdef DEBUG
+#define DEBUG_LOG(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define DEBUG_LOG(...)
+#endif
+
 /* Enumeration types. */
 typedef enum {
 	NIX_FILE, DOS_FILE, MAC_FILE

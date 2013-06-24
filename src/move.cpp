@@ -74,19 +74,14 @@ void do_page_up(void)
 		openfile->current = openfile->current->prev;
 		if (ISSET(SOFTWRAP) && openfile->current) {
 			skipped += strlenpt(openfile->current->data) / COLS;
-#ifdef DEBUG
-			fprintf(stderr, "do_page_up: i = %d, skipped = %d based on line %ld len %d\n", i, (unsigned long) skipped,
-			        openfile->current->lineno, strlenpt(openfile->current->data));
-#endif
+			DEBUG_LOG("do_page_up: i = %d, skipped = %d based on line %ld len %d\n", i, (unsigned long) skipped, openfile->current->lineno, strlenpt(openfile->current->data));
 		}
 	}
 
 	openfile->current_x = actual_x(openfile->current->data,
 	                               openfile->placewewant);
 
-#ifdef DEBUG
-	fprintf(stderr, "do_page_up: openfile->current->lineno = %lu, skipped = %d\n", (unsigned long) openfile->current->lineno, skipped);
-#endif
+	DEBUG_LOG("do_page_up: openfile->current->lineno = %lu, skipped = %d\n", (unsigned long) openfile->current->lineno, skipped);
 
 	/* Scroll the edit window up a page. */
 	edit_update(NONE);
@@ -116,9 +111,7 @@ void do_page_down(void)
 	for (i = maxrows - 2; i > 0 && openfile->current !=
 	        openfile->filebot; i--) {
 		openfile->current = openfile->current->next;
-#ifdef DEBUG
-		fprintf(stderr, "do_page_down: moving to line %lu\n", (unsigned long) openfile->current->lineno);
-#endif
+		DEBUG_LOG("do_page_down: moving to line %lu\n", (unsigned long) openfile->current->lineno);
 
 	}
 

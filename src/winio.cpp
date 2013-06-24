@@ -173,9 +173,7 @@ void get_key_buffer(WINDOW *win)
 	/* Switch back to non-blocking input. */
 	nodelay(win, FALSE);
 
-#ifdef DEBUG
-	fprintf(stderr, "get_key_buffer(): key_buffer_len = %lu\n", (unsigned long)key_buffer_len);
-#endif
+	DEBUG_LOG("get_key_buffer(): key_buffer_len = %lu\n", (unsigned long)key_buffer_len);
 }
 
 /* Return the length of the keystroke buffer. */
@@ -646,9 +644,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 		}
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "parse_kbinput(): kbinput = %d, meta_key = %s, func_key = %s, escapes = %d, byte_digits = %d, retval = %d\n", *kbinput, *meta_key ? "TRUE" : "FALSE", *func_key ? "TRUE" : "FALSE", escapes, byte_digits, retval);
-#endif
+	DEBUG_LOG("parse_kbinput(): kbinput = %d, meta_key = %s, func_key = %s, escapes = %d, byte_digits = %d, retval = %d\n", *kbinput, *meta_key ? "TRUE" : "FALSE", *func_key ? "TRUE" : "FALSE", escapes, byte_digits, retval);
 
 	free(kbinput);
 
@@ -1214,9 +1210,7 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 		}
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "get_escape_seq_kbinput(): retval = %d\n", retval);
-#endif
+	DEBUG_LOG("get_escape_seq_kbinput(): retval = %d\n", retval);
 
 	return retval;
 }
@@ -1266,9 +1260,7 @@ int parse_escape_seq_kbinput(WINDOW *win, int kbinput)
 		}
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "parse_escape_seq_kbinput(): kbinput = %d, seq_len = %lu, retval = %d\n", kbinput, (unsigned long)seq_len, retval);
-#endif
+	DEBUG_LOG("parse_escape_seq_kbinput(): kbinput = %d, seq_len = %lu, retval = %d\n", kbinput, (unsigned long)seq_len, retval);
 
 	return retval;
 }
@@ -1345,9 +1337,7 @@ int get_byte_kbinput(int kbinput)
 		byte = 0;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "get_byte_kbinput(): kbinput = %d, byte_digits = %d, byte = %d, retval = %d\n", kbinput, byte_digits, byte, retval);
-#endif
+	DEBUG_LOG("get_byte_kbinput(): kbinput = %d, byte_digits = %d, byte = %d, retval = %d\n", kbinput, byte_digits, byte, retval);
 
 	return retval;
 }
@@ -1454,9 +1444,7 @@ long get_unicode_kbinput(int kbinput)
 		uni = 0;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "get_unicode_kbinput(): kbinput = %d, uni_digits = %d, uni = %ld, retval = %ld\n", kbinput, uni_digits, uni, retval);
-#endif
+	DEBUG_LOG("get_unicode_kbinput(): kbinput = %d, uni_digits = %d, uni = %ld, retval = %ld\n", kbinput, uni_digits, uni, retval);
 
 	return retval;
 }
@@ -1495,9 +1483,7 @@ int get_control_kbinput(int kbinput)
 		retval = kbinput;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "get_control_kbinput(): kbinput = %d, retval = %d\n", kbinput, retval);
-#endif
+	DEBUG_LOG("get_control_kbinput(): kbinput = %d, retval = %d\n", kbinput, retval);
 
 	return retval;
 }
@@ -1831,24 +1817,18 @@ const sc *get_shortcut(int menu, int *kbinput, bool
 {
 	sc *s;
 
-#ifdef DEBUG
-	fprintf(stderr, "get_shortcut(): kbinput = %d, meta_key = %s, func_key = %s\n", *kbinput, *meta_key ? "TRUE" : "FALSE", *func_key ? "TRUE" : "FALSE");
-#endif
+	DEBUG_LOG("get_shortcut(): kbinput = %d, meta_key = %s, func_key = %s\n", *kbinput, *meta_key ? "TRUE" : "FALSE", *func_key ? "TRUE" : "FALSE");
 
 	/* Check for shortcuts. */
 	for (s = sclist; s != NULL; s = s->next) {
 		if ((menu & s->menu)
 		        && ((s->type == META && *meta_key == TRUE && *kbinput == s->seq)
 		            || (s->type != META && *kbinput == s->seq))) {
-#ifdef DEBUG
-			fprintf (stderr, "matched seq \"%s\" and btw meta was %d (menus %d = %d)\n", s->keystr, *meta_key, menu, s->menu);
-#endif
+			DEBUG_LOG("matched seq \"%s\" and btw meta was %d (menus %d = %d)\n", s->keystr, *meta_key, menu, s->menu);
 			return s;
 		}
 	}
-#ifdef DEBUG
-	fprintf (stderr, "matched nothing btw meta was %d\n", *meta_key);
-#endif
+	DEBUG_LOG("matched nothing btw meta was %d\n", *meta_key);
 
 	return NULL;
 }
@@ -2442,15 +2422,11 @@ void bottombars(int menu)
 
 	blank_bottombars();
 
-#ifdef DEBUG
-	fprintf(stderr, "In bottombars, and slen == \"%d\"\n", (int) slen);
-#endif
+	DEBUG_LOG("In bottombars, and slen == \"%d\"\n", (int) slen);
 
 	for (f = allfuncs, i = 0; i < slen && f != NULL; f = f->next) {
 
-#ifdef DEBUG
-		fprintf(stderr, "Checking menu items....");
-#endif
+		DEBUG_LOG("Checking menu items....");
 		if ((f->menus & menu) == 0) {
 			continue;
 		}
@@ -2459,20 +2435,14 @@ void bottombars(int menu)
 			continue;
 		}
 
-#ifdef DEBUG
-		fprintf(stderr, "found one! f->menus = %d, desc = \"%s\"\n", f->menus, f->desc);
-#endif
+		DEBUG_LOG("found one! f->menus = %d, desc = \"%s\"\n", f->menus, f->desc);
 		s = first_sc_for(menu, f->scfunc);
 		if (s == NULL) {
-#ifdef DEBUG
-			fprintf(stderr, "Whoops, guess not, no shortcut key found for func!\n");
-#endif
+			DEBUG_LOG("Whoops, guess not, no shortcut key found for func!\n");
 			continue;
 		}
 		wmove(bottomwin, 1 + i % 2, (i / 2) * colwidth);
-#ifdef DEBUG
-		fprintf(stderr, "Calling onekey with keystr \"%s\" and desc \"%s\"\n", s->keystr, f->desc);
-#endif
+		DEBUG_LOG("Calling onekey with keystr \"%s\" and desc \"%s\"\n", s->keystr, f->desc);
 		onekey(s->keystr, _(f->desc), colwidth + (COLS % colwidth));
 		i++;
 	}
@@ -2998,9 +2968,7 @@ int update_line(filestruct *fileptr, size_t index)
 		int full_length = strlenpt(fileptr->data);
 		for (index += COLS; index <= full_length && line < editwinrows; index += COLS) {
 			line++;
-#ifdef DEBUG
-			fprintf(stderr, "update_line(): Softwrap code, moving to %d index %lu\n", line, (unsigned long) index);
-#endif
+			DEBUG_LOG("update_line(): Softwrap code, moving to %d index %lu\n", line, (unsigned long) index);
 			blank_line(edit, line, 0, COLS);
 
 			/* Expand the line, replacing tabs with spaces, and control
@@ -3065,9 +3033,7 @@ void compute_maxrows(void)
 		maxrows += editwinrows - n;
 	}
 
-#ifdef DEBUG
-	fprintf(stderr, "compute_maxrows(): maxrows = %ld\n", maxrows);
-#endif
+	DEBUG_LOG("compute_maxrows(): maxrows = %ld\n", maxrows);
 }
 
 /* Scroll the edit window in the given direction and the given number
@@ -3095,26 +3061,19 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 	/* If using soft wrapping, we want to scroll down enough to display the entire next
 	    line, if possible... */
 	if (ISSET(SOFTWRAP) && direction == DOWN_DIR) {
-#ifdef DEBUG
-		fprintf(stderr, "Softwrap: Entering check for extracuzsoft\n");
-#endif
+		DEBUG_LOG("Softwrap: Entering check for extracuzsoft\n");
 		for (i = maxrows, foo = openfile->edittop; foo && i > 0; i--, foo = foo->next) {
 			;
 		}
 
 		if (foo) {
 			extracuzsoft += strlenpt(foo->data) / COLS;
-#ifdef DEBUG
-			fprintf(stderr, "Setting extracuzsoft to %lu due to strlen %lu of line %lu\n", (unsigned long) extracuzsoft,
-			        (unsigned long) strlenpt(foo->data), (unsigned long) foo->lineno);
-#endif
+			DEBUG_LOG("Setting extracuzsoft to %lu due to strlen %lu of line %lu\n", (unsigned long) extracuzsoft, (unsigned long) strlenpt(foo->data), (unsigned long) foo->lineno);
 
 			/* Now account for whether the edittop line itself is >COLS, if scrolling down */
 			for (foo = openfile->edittop; foo && extracuzsoft > 0; nlines++) {
 				extracuzsoft -= 1 + strlenpt(foo->data) / COLS;
-#ifdef DEBUG
-				fprintf(stderr, "Edittop adjustment, setting nlines to %lu\n", (unsigned long) nlines);
-#endif
+				DEBUG_LOG("Edittop adjustment, setting nlines to %lu\n", (unsigned long) nlines);
 				if (foo == openfile->filebot) {
 					break;
 				}
@@ -3239,10 +3198,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 	        openfile->edittop->lineno || openfile->current->lineno >=
 	        openfile->edittop->lineno + maxrows) {
 
-#ifdef DEBUG
-		fprintf(stderr, "edit_redraw(): line %lu was offscreen, oldcurrent = %lu edittop = %lu", openfile->current->lineno,
-		        old_current->lineno, openfile->edittop->lineno);
-#endif
+		DEBUG_LOG("edit_redraw(): line %lu was offscreen, oldcurrent = %lu edittop = %lu", openfile->current->lineno, old_current->lineno, openfile->edittop->lineno);
 
 		/* If the mark is on, update all the lines between old_current
 		 * and either the old first line or old last line (depending on
@@ -3332,9 +3288,7 @@ void edit_refresh(void)
 	        openfile->current->lineno >= openfile->edittop->lineno +
 	        maxrows) {
 
-#ifdef DEBUG
-		fprintf(stderr, "edit_refresh(): line = %d, edittop %d + maxrows %d\n", openfile->current->lineno, openfile->edittop->lineno, maxrows);
-#endif
+		DEBUG_LOG("edit_refresh(): line = %d, edittop %d + maxrows %d\n", openfile->current->lineno, openfile->edittop->lineno, maxrows);
 
 		/* Put the top line of the edit window in range of the current
 		 * line. */
@@ -3343,9 +3297,7 @@ void edit_refresh(void)
 
 	foo = openfile->edittop;
 
-#ifdef DEBUG
-	fprintf(stderr, "edit_refresh(): edittop->lineno = %ld\n", (long)openfile->edittop->lineno);
-#endif
+	DEBUG_LOG("edit_refresh(): edittop->lineno = %ld\n", (long)openfile->edittop->lineno);
 
 	for (nlines = 0; nlines < editwinrows && foo != NULL; nlines++) {
 		nlines += update_line(foo, (foo == openfile->current) ?
@@ -3396,9 +3348,7 @@ void edit_update(update_type location)
 		}
 	}
 	openfile->edittop = foo;
-#ifdef DEBUG
-	fprintf(stderr, "edit_udpate(), setting edittop to lineno %d\n", openfile->edittop->lineno);
-#endif
+	DEBUG_LOG("edit_udpate(), setting edittop to lineno %d\n", openfile->edittop->lineno);
 	compute_maxrows();
 	edit_refresh_needed = TRUE;
 }

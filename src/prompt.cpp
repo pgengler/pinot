@@ -971,9 +971,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 
 	currmenu = menu;
 
-#ifdef DEBUG
-	fprintf(stderr, "get_prompt_string: answer = \"%s\", statusbar_x = %lu\n", answer, (unsigned long) statusbar_x);
-#endif
+	DEBUG_LOG("get_prompt_string: answer = \"%s\", statusbar_x = %lu\n", answer, (unsigned long) statusbar_x);
 
 	update_statusbar_line(answer, statusbar_x);
 
@@ -1222,9 +1220,7 @@ int do_prompt(bool allow_tabs,
 	blank_statusbar();
 	wnoutrefresh(bottomwin);
 
-#ifdef DEBUG
-	fprintf(stderr, "answer = \"%s\"\n", answer);
-#endif
+	DEBUG_LOG("answer = \"%s\"\n", answer);
 
 #ifndef DISABLE_TABCOMP
 	/* If we've done tab completion, there might be a list of filename
