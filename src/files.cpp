@@ -2294,9 +2294,6 @@ bool do_writeout(bool exiting)
 	append_type append = OVERWRITE;
 	char *ans;
 	/* The last answer the user typed at the statusbar prompt. */
-#ifdef PINOT_EXTRA
-	static bool did_credits = FALSE;
-#endif
 	bool retval = FALSE, meta_key = FALSE, func_key = FALSE;
 	const sc *s;
 
@@ -2400,22 +2397,6 @@ bool do_writeout(bool exiting)
 				}
 
 			DEBUG_LOG("filename is %s\n", answer);
-
-#ifdef PINOT_EXTRA
-			/* If the current file has been modified, we've pressed
-			 * Ctrl-X at the edit window to exit, we've pressed "y" at
-			 * the "Save modified buffer" prompt to save, we've entered
-			 * "zzy" as the filename to save under (hence "xyzzy"), and
-			 * this is the first time we've done this, show an Easter
-			 * egg.  Display the credits. */
-			if (!did_credits && exiting && !ISSET(TEMP_FILE) &&
-			        strcasecmp(answer, "zzy") == 0) {
-				do_credits();
-				did_credits = TRUE;
-				retval = FALSE;
-				break;
-			}
-#endif
 
 			if (append == OVERWRITE) {
 				size_t answer_len = strlen(answer);

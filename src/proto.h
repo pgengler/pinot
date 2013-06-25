@@ -753,10 +753,6 @@ void disable_nodelay(void);
 extern const char *regexp_msg;
 #endif
 
-#ifdef PINOT_EXTRA
-void do_credits(void);
-#endif
-
 /* May as just throw these here since they are just placeholders */
 void do_cancel(void);
 void case_sens_void(void);
