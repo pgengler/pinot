@@ -967,9 +967,6 @@ void version(void)
 #ifdef DEBUG
 	printf(" --enable-debug");
 #endif
-#ifdef PINOT_EXTRA
-	printf(" --enable-extra");
-#endif
 #ifdef ENABLE_JUSTIFY
 	printf(" --enable-justify");
 #endif

@@ -63,14 +63,6 @@ if test x$debug_support != xyes; then
     AC_DEFINE(NDEBUG, 1, [Shut up assert warnings :-)])
 fi
 
-AC_ARG_ENABLE(extra,
-[  --disable-extra          Disable extra features, currently only easter eggs],
-[if test x$enableval != xno; then
-    AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
-fi],[
-    AC_DEFINE(PINOT_EXTRA, 1, [Define this to enable extra stuff.]) extra_support=yes
-])
-
 AC_ARG_ENABLE(browser,
 [  --disable-browser       Disable built-in file browser],
 [if test x$enableval != xyes; then

@@ -839,10 +839,6 @@ line code.  It also disables the function toggles.
 Enable support for runtime debug output.  This can get pretty messy, so
 chances are you only want this feature to work on the nano source.
 
-@item --enable-extra
-Enable extra features.  At the moment, this is just easter egg-type
-stuff.
-
 @item --enable-color
 Enable support for syntax coloring of files using the nanorc file.  This
 enables nanorc support as well.
