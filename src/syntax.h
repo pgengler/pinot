@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -36,7 +37,8 @@ typedef struct colortype {
 	int id;
 	/* basic id for assigning to lines later */
 } colortype;
-typedef std::list<colortype *> ColorList;
+typedef std::shared_ptr<colortype> ColorPtr;
+typedef std::list<ColorPtr> ColorList;
 
 class SyntaxMatch {
 	public:
