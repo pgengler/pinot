@@ -791,7 +791,7 @@ void parse_colors(char *ptr, bool icase)
 			break;
 		}
 
-		auto newcolor = new colortype;
+		auto newcolor = ColorPtr(new colortype);
 
 		/* Save the starting regex string if it's valid, and set up the
 		 * color information. */
@@ -817,7 +817,6 @@ void parse_colors(char *ptr, bool icase)
 			}
 #endif
 		} else {
-			delete newcolor;
 			cancelled = TRUE;
 		}
 
