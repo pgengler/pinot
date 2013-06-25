@@ -29,7 +29,7 @@ bool SyntaxMatch::matches(const char *str) const
 
 /***********************************/
 
-void Syntax::add_color(colortype *color)
+void Syntax::add_color(ColorPtr color)
 {
 	_colors.push_back(color);
 }

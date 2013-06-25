@@ -79,7 +79,7 @@ class Syntax {
 
 		ColorList colors() const;
 		ColorList own_colors() const;
-		void add_color(colortype*);
+		void add_color(ColorPtr);
 
 	private:
 		ColorList _colors;
