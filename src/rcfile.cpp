@@ -23,6 +23,7 @@
 
 #include "proto.h"
 
+#include <fstream>
 #include <vector>
 
 #include <stdarg.h>
@@ -575,7 +576,6 @@ void parse_unbinding(char *ptr)
 void parse_include(char *ptr)
 {
 	struct stat rcinfo;
-	FILE *rcstream;
 	char *option, *pinotrc_save = pinotrc, *expanded;
 	size_t lineno_save = lineno;
 
@@ -600,7 +600,8 @@ void parse_include(char *ptr)
 	expanded = real_dir_from_tilde(option);
 
 	/* Open the new syntax file. */
-	if ((rcstream = fopen(expanded, "rb")) == NULL) {
+	std::ifstream rcstream(expanded);
+	if (!rcstream.is_open()) {
 		rcfile_error(_("Error reading %s: %s"), expanded, strerror(errno));
 		return;
 	}
@@ -910,7 +911,7 @@ static void check_vitals_mapped(void)
 /* Parse the rcfile, once it has been opened successfully at rcstream,
  * and close it afterwards.  If syntax_only is true, only allow the file
  * to contain color syntax commands: syntax, color, and icolor. */
-void parse_rcfile(FILE *rcstream
+void parse_rcfile(std::ifstream &rcstream
 #ifdef ENABLE_COLOR
                   , bool syntax_only
 #endif
@@ -1133,7 +1134,6 @@ void parse_rcfile(FILE *rcstream
 #endif
 
 	free(buf);
-	fclose(rcstream);
 	lineno = 0;
 
 	check_vitals_mapped();
@@ -1145,7 +1145,6 @@ void parse_rcfile(FILE *rcstream
 void do_rcfile(void)
 {
 	struct stat rcinfo;
-	FILE *rcstream;
 
 	pinotrc = mallocstrcpy(pinotrc, SYSCONFDIR "/pinotrc");
 
@@ -1160,13 +1159,14 @@ void do_rcfile(void)
 	DEBUG_LOG("Parsing file \"%s\"\n", pinotrc);
 
 	/* Try to open the system-wide pinotrc. */
-	rcstream = fopen(pinotrc, "rb");
-	if (rcstream != NULL)
+	std::ifstream rcstream(pinotrc);
+	if (rcstream.is_open()) {
 		parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
 		             , false
 #endif
 		            );
+	}
 
 #ifdef DISABLE_ROOTWRAPPING
 	/* We've already read SYSCONFDIR/pinotrc, if it's there.  If we're
@@ -1197,11 +1197,12 @@ void do_rcfile(void)
 		}
 
 		/* Try to open the current user's pinotrc. */
-		rcstream = fopen(pinotrc, "rb");
-		if (rcstream == NULL) {
+		rcstream.open(pinotrc);
+		if (!rcstream.is_open()) {
 			/* Don't complain about the file's not existing. */
-			if (errno != ENOENT)
+			if (errno != ENOENT) {
 				rcfile_error(N_("Error reading %s: %s"), pinotrc, strerror(errno));
+			}
 		} else
 			parse_rcfile(rcstream
 #ifdef ENABLE_COLOR

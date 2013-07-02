@@ -258,6 +258,62 @@ ssize_t ngetline(char **lineptr, size_t *n, FILE *stream)
 	return getdelim(lineptr, n, '\n', stream);
 }
 #endif
+
+ssize_t getdelim(char **lineptr, size_t *n, char delim, std::istream &stream)
+{
+	size_t indx = 0;
+
+	/* Sanity checks. */
+	if (lineptr == NULL || n == NULL) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	/* Allocate the line the first time. */
+	if (*lineptr == NULL) {
+		*n = MAX_BUF_SIZE;
+		*lineptr = charalloc(*n);
+	}
+
+	while (stream.good()) {
+		char c = (char)stream.get();
+		if (!stream.good()) {
+			break;
+		}
+		/* Check if more memory is needed. */
+		if (indx >= *n) {
+			*n += MAX_BUF_SIZE;
+			*lineptr = charealloc(*lineptr, *n);
+		}
+
+		/* Put the result in the line. */
+		(*lineptr)[indx++] = c;
+
+		/* Bail out. */
+		if (c == delim) {
+			break;
+		}
+	}
+
+	/* Make room for the null character. */
+	if (indx >= *n) {
+		*n += MAX_BUF_SIZE;
+		*lineptr = charealloc(*lineptr, *n);
+	}
+
+	/* Null-terminate the buffer. */
+	null_at(lineptr, indx++);
+	*n = indx;
+
+	/* The last line may not have the delimiter.  We have to return what
+	 * we got, and the error will be seen on the next iteration. */
+	return (!stream.good() && (indx - 1) == 0) ? -1 : indx - 1;
+}
+
+ssize_t getline(char **lineptr, size_t *n, std::istream &stream)
+{
+	return getdelim(lineptr, n, '\n', stream);
+}
 #endif /* ENABLE_PINOTRC */
 
 #ifdef HAVE_PCREPOSIX_H

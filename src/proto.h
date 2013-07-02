@@ -491,7 +491,7 @@ void parse_colors(char *ptr, bool icase);
 void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
 #endif
-void parse_rcfile(FILE *rcstream
+void parse_rcfile(std::ifstream &rcstream
 #ifdef ENABLE_COLOR
                   , bool syntax_only
 #endif
@@ -620,6 +620,8 @@ ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
 #ifndef HAVE_GETDELIM
 ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 #endif
+ssize_t getdelim(char **lineptr, size_t *n, char delim, std::istream &stream);
+ssize_t getline(char **lineptr, size_t *n, std::istream &stream);
 #endif
 #ifdef HAVE_PCREPOSIX_H
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);
