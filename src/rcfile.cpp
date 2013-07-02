@@ -98,7 +98,7 @@ static const rcoption rcopts[] = {
 	{NULL, 0}
 };
 
-static bool errors = FALSE;
+static bool errors = false;
 /* Whether we got any errors while parsing an rcfile. */
 static size_t lineno = 0;
 /* If we did, the line number where the last error occurred. */
@@ -122,7 +122,7 @@ void rcfile_error(const char *msg, ...)
 
 	fprintf(stderr, "\n");
 	if (lineno > 0) {
-		errors = TRUE;
+		errors = true;
 		fprintf(stderr, _("Error in %s on line %lu: "), pinotrc, (unsigned long)lineno);
 	}
 
@@ -228,7 +228,7 @@ char *parse_next_regex(char *ptr)
 }
 
 /* Compile the regular expression regex to see if it's valid.  Return
- * TRUE if it is, or FALSE otherwise. */
+ * true if it is, or false otherwise. */
 bool nregcomp(const char *regex, int cflags)
 {
 	regex_t preg;
@@ -614,7 +614,7 @@ void parse_include(char *ptr)
 
 	parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
-	             , TRUE
+	             , true
 #endif
 	            );
 
@@ -626,7 +626,7 @@ void parse_include(char *ptr)
 }
 
 /* Return the numeric value corresponding to the color named in colorname,
- * and set bright to TRUE if that color is bright (similarly for underline. */
+ * and set bright to true if that color is bright (similarly for underline. */
 COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underline)
 {
 	COLORWIDTH mcolor = -1;
@@ -634,10 +634,10 @@ COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underl
 	assert(colorname != NULL && bright != NULL && underline != NULL);
 
 	if (strncasecmp(colorname, "bright", 6) == 0) {
-		*bright = TRUE;
+		*bright = true;
 		colorname += 6;
 	} else if (strncasecmp(colorname, "bold", 4) == 0) {
-		*bright = TRUE;
+		*bright = true;
 		colorname += 4;
 	}
 
@@ -649,7 +649,7 @@ COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underl
 	}
 
 	if (strncasecmp(colorname, "under", 5) == 0) {
-		*underline = TRUE;
+		*underline = true;
 		colorname += 5;
 	}
 
@@ -680,12 +680,12 @@ COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underl
 }
 
 /* Parse the color string in the line at ptr, and add it to the current
- * file's associated colors.  If icase is TRUE, treat the color string
+ * file's associated colors.  If icase is true, treat the color string
  * as case insensitive. */
 void parse_colors(char *ptr, bool icase)
 {
 	COLORWIDTH fg, bg;
-	bool bright = FALSE, underline = FALSE, no_fgcolor = FALSE;
+	bool bright = false, underline = false, no_fgcolor = false;
 	char *fgstr;
 
 	assert(ptr != NULL);
@@ -712,7 +712,7 @@ void parse_colors(char *ptr, bool icase)
 			/* If we have a background color without a foreground color,
 			 * parse it properly. */
 			bgcolorname = fgstr + 1;
-			no_fgcolor = TRUE;
+			no_fgcolor = true;
 		}
 		if (strncasecmp(bgcolorname, "bright", 6) == 0 || strncasecmp(bgcolorname, "bold", 4) == 0) {
 			rcfile_error(N_("Background color \"%s\" cannot be bright"), bgcolorname);
@@ -747,14 +747,14 @@ void parse_colors(char *ptr, bool icase)
 	 * in the colorstrings array, woo! */
 	while (ptr != NULL && *ptr != '\0') {
 		/* The new color structure. */
-		bool cancelled = FALSE;
+		bool cancelled = false;
 		/* The start expression was bad. */
-		bool expectend = FALSE;
+		bool expectend = false;
 		/* Do we expect an end= line? */
 
 		if (strncasecmp(ptr, "start=", 6) == 0) {
 			ptr += 6;
-			expectend = TRUE;
+			expectend = true;
 		}
 
 		if (*ptr != '"') {
@@ -797,7 +797,7 @@ void parse_colors(char *ptr, bool icase)
 			}
 #endif
 		} else {
-			cancelled = TRUE;
+			cancelled = true;
 		}
 
 		if (expectend) {
@@ -908,7 +908,7 @@ static void check_vitals_mapped(void)
 }
 
 /* Parse the rcfile, once it has been opened successfully at rcstream,
- * and close it afterwards.  If syntax_only is TRUE, only allow the file
+ * and close it afterwards.  If syntax_only is true, only allow the file
  * to contain color syntax commands: syntax, color, and icolor. */
 void parse_rcfile(FILE *rcstream
 #ifdef ENABLE_COLOR
@@ -981,9 +981,9 @@ void parse_rcfile(FILE *rcstream
 		} else if (strcasecmp(keyword, "header") == 0) {
 			parse_headers(ptr);
 		} else if (strcasecmp(keyword, "color") == 0) {
-			parse_colors(ptr, FALSE);
+			parse_colors(ptr, false);
 		} else if (strcasecmp(keyword, "icolor") == 0) {
-			parse_colors(ptr, TRUE);
+			parse_colors(ptr, true);
 		} else if (strcasecmp(keyword, "bind") == 0) {
 			parse_keybinding(ptr);
 		} else if (strcasecmp(keyword, "unbind") == 0) {
@@ -1104,7 +1104,7 @@ void parse_rcfile(FILE *rcstream
 														free(option);
 													}
 												} else {
-													assert(FALSE);
+													assert(false);
 												}
 					}
 					DEBUG_LOG("flag = %ld\n", rcopts[i].flag);
@@ -1162,7 +1162,7 @@ void do_rcfile(void)
 	if (rcstream != NULL)
 		parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
-		             , FALSE
+		             , false
 #endif
 		            );
 
@@ -1203,7 +1203,7 @@ void do_rcfile(void)
 		} else
 			parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
-			             , FALSE
+			             , false
 #endif
 			            );
 	}
@@ -1212,7 +1212,7 @@ void do_rcfile(void)
 	pinotrc = NULL;
 
 	if (errors && !ISSET(QUIET)) {
-		errors = FALSE;
+		errors = false;
 		fprintf(stderr, _("\nPress Enter to continue starting pinot.\n"));
 		while (getchar() != '\n') {
 			;
