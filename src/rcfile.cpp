@@ -23,6 +23,8 @@
 
 #include "proto.h"
 
+#include <vector>
+
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
@@ -32,7 +34,7 @@
 
 #ifdef ENABLE_PINOTRC
 
-static const rcoption rcopts[] = {
+std::vector<rcoption> rcopts = {
 	{"boldtext", BOLD_TEXT},
 #ifdef ENABLE_JUSTIFY
 	{"brackets", 0},
@@ -95,7 +97,6 @@ static const rcoption rcopts[] = {
 	{"whitespace", 0},
 	{"wordbounds", WORD_BOUNDS},
 	{"softwrap", SOFTWRAP},
-	{NULL, 0}
 };
 
 static bool errors = false;
@@ -371,8 +372,7 @@ void parse_magictype(char *ptr)
 	assert(ptr != NULL);
 
 	if (syntaxes.empty()) {
-		rcfile_error(
-		    N_("Cannot add a magic string regex without a syntax command"));
+		rcfile_error(N_("Cannot add a magic string regex without a syntax command"));
 		return;
 	}
 
@@ -1006,18 +1006,20 @@ void parse_rcfile(FILE *rcstream
 		option = ptr;
 		ptr = parse_next_word(ptr);
 
-		for (i = 0; rcopts[i].name != NULL; i++) {
-			if (strcasecmp(option, rcopts[i].name) == 0) {
-				DEBUG_LOG("parse_rcfile(): name = \"%s\"\n", rcopts[i].name);
+		bool found = false;
+		for (auto iter = rcopts.begin(); iter != rcopts.end(); ++iter) {
+			auto rcopt = *iter;
+			if (rcopt.name == option) {
+				found = true;
+				DEBUG_LOG("parse_rcfile(): name = \"%s\"\n", rcopt.name.c_str());
 				if (set == 1) {
-					if (rcopts[i].flag != 0)
-					{
+					if (rcopt.flag != 0) {
 						/* This option has a flag, so it doesn't take an argument. */
-						SET(rcopts[i].flag);
+						SET(rcopt.flag);
 					} else {
 						/* This option doesn't have a flag, so it takes an argument. */
 						if (*ptr == '\0') {
-							rcfile_error(N_("Option \"%s\" requires an argument"), rcopts[i].name);
+							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
 							break;
 						}
 						option = ptr;
@@ -1029,20 +1031,19 @@ void parse_rcfile(FILE *rcstream
 						option = mallocstrcpy(NULL, option);
 						DEBUG_LOG("option = \"%s\"\n", option);
 
-						/* Make sure option is a valid multibyte
-						 * string. */
+						/* Make sure option is a valid multibyte string. */
 						if (!is_valid_mbstring(option)) {
 							rcfile_error(N_("Option is not a valid multibyte string"));
 							break;
 						}
 
 #ifndef DISABLE_OPERATINGDIR
-						if (strcasecmp(rcopts[i].name, "operatingdir") == 0) {
+						if (rcopt.name == "operatingdir") {
 							operating_dir = option;
 						} else
 #endif
 #ifndef DISABLE_WRAPJUSTIFY
-							if (strcasecmp(rcopts[i].name, "fill") == 0) {
+							if (rcopt.name == "fill") {
 								if (!parse_num(option, &wrap_at)) {
 									rcfile_error(N_("Requested fill size \"%s\" is invalid"), option);
 									wrap_at = -CHARS_FROM_EOL;
@@ -1051,14 +1052,14 @@ void parse_rcfile(FILE *rcstream
 								}
 							} else
 #endif
-								if (strcasecmp(rcopts[i].name, "matchbrackets") == 0) {
+								if (rcopt.name == "matchbrackets") {
 									matchbrackets = option;
 									if (has_blank_mbchars(matchbrackets)) {
 										rcfile_error(N_("Non-blank characters required"));
 										free(matchbrackets);
 										matchbrackets = NULL;
 									}
-								} else if (strcasecmp(rcopts[i].name, "whitespace") == 0) {
+								} else if (rcopt.name == "whitespace") {
 									whitespace = option;
 									if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
 										rcfile_error(N_("Two single-column characters required"));
@@ -1070,33 +1071,33 @@ void parse_rcfile(FILE *rcstream
 									}
 								} else
 #ifdef ENABLE_JUSTIFY
-									if (strcasecmp(rcopts[i].name, "punct") == 0) {
+									if (rcopt.name == "punct") {
 										punct = option;
 										if (has_blank_mbchars(punct)) {
 											rcfile_error(N_("Non-blank characters required"));
 											free(punct);
 											punct = NULL;
 										}
-									} else if (strcasecmp(rcopts[i].name, "brackets") == 0) {
+									} else if (rcopt.name == "brackets") {
 										brackets = option;
 										if (has_blank_mbchars(brackets)) {
 											rcfile_error(N_("Non-blank characters required"));
 											free(brackets);
 											brackets = NULL;
 										}
-									} else if (strcasecmp(rcopts[i].name, "quotestr") == 0) {
+									} else if (rcopt.name == "quotestr") {
 										quotestr = option;
 									} else
 #endif
-										if (strcasecmp(rcopts[i].name, "backupdir") == 0) {
+										if (rcopt.name == "backupdir") {
 											backup_dir = option;
 										} else
 #ifdef ENABLE_SPELLER
-											if (strcasecmp(rcopts[i].name, "speller") == 0) {
+											if (rcopt.name == "speller") {
 												alt_speller = option;
 											} else
 #endif
-												if (strcasecmp(rcopts[i].name, "tabsize") == 0) {
+												if (rcopt.name == "tabsize") {
 													if (!parse_num(option, &tabsize) || tabsize <= 0) {
 														rcfile_error(N_("Requested tab size \"%s\" is invalid"), option);
 														tabsize = -1;
@@ -1107,19 +1108,20 @@ void parse_rcfile(FILE *rcstream
 													assert(false);
 												}
 					}
-					DEBUG_LOG("flag = %ld\n", rcopts[i].flag);
-				} else if (rcopts[i].flag != 0) {
-					UNSET(rcopts[i].flag);
-				} else
-					rcfile_error(N_("Cannot unset flag \"%s\""), rcopts[i].name);
+					DEBUG_LOG("flag = %ld\n", rcopt.flag);
+				} else if (rcopt.flag != 0) {
+					UNSET(rcopt.flag);
+				} else {
+					rcfile_error(N_("Cannot unset flag \"%s\""), rcopt.name.c_str());
+				}
 				/* Looks like we still need this specific hack for undo */
-				if (strcasecmp(rcopts[i].name, "undo") == 0) {
+				if (rcopt.name == "undo") {
 					shortcut_init(0);
 				}
 				break;
 			}
 		}
-		if (rcopts[i].name == NULL) {
+		if (!found) {
 			rcfile_error(N_("Unknown flag \"%s\""), option);
 		}
 	}

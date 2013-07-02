@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <list>
+#include <string>
 #include "macros.h"
 
 #ifdef HAVE_CONFIG_H
@@ -344,7 +344,7 @@ typedef struct shortcut {
 
 #ifdef ENABLE_PINOTRC
 typedef struct rcoption {
-	const char *name;
+	std::string name;
 	/* The name of the rcfile option. */
 	long flag;
 	/* The flag associated with it, if any. */
