@@ -262,8 +262,7 @@ void parse_syntax(char *ptr)
 	}
 
 	if (*ptr != '"') {
-		rcfile_error(
-		    N_("Regex strings must begin and end with a \" character"));
+		rcfile_error(N_("Regex strings must begin and end with a \" character"));
 		return;
 	}
 
@@ -300,8 +299,7 @@ void parse_syntax(char *ptr)
 
 	/* The default syntax should have no associated extensions. */
 	if (new_syntax->desc == "default" && *ptr != '\0') {
-		rcfile_error(
-		    N_("The \"default\" syntax must take no extensions"));
+		rcfile_error(N_("The \"default\" syntax must take no extensions"));
 		return;
 	}
 
@@ -384,8 +382,7 @@ void parse_magictype(char *ptr)
 	}
 
 	if (*ptr != '"') {
-		rcfile_error(
-		    N_("Regex strings must begin and end with a \" character"));
+		rcfile_error(N_("Regex strings must begin and end with a \" character"));
 		return;
 	}
 
@@ -454,8 +451,7 @@ void parse_keybinding(char *ptr)
 	}
 
 	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
-		rcfile_error(
-		    N_("keybindings must begin with \"^\", \"M\", or \"F\""));
+		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
 		return;
 	}
 
@@ -463,8 +459,7 @@ void parse_keybinding(char *ptr)
 	ptr = parse_next_word(ptr);
 
 	if (!strcmp(funcptr, "")) {
-		rcfile_error(
-		    N_("Must specify function to bind key to"));
+		rcfile_error(N_("Must specify function to bind key to"));
 		return;
 	}
 
@@ -472,24 +467,21 @@ void parse_keybinding(char *ptr)
 	ptr = parse_next_word(ptr);
 
 	if (!strcmp(menuptr, "")) {
-		rcfile_error(
-		    /* Note to translators, do not translate the word "all"
-		       in the sentence below, everything else is fine */
-		    N_("Must specify menu to bind key to (or \"all\")"));
+		/* Note to translators, do not translate the word "all"
+		   in the sentence below, everything else is fine */
+		rcfile_error(N_("Must specify menu to bind key to (or \"all\")"));
 		return;
 	}
 
 	menu = strtomenu(menuptr);
 	newsc = strtosc(menu, funcptr);
 	if (newsc == NULL) {
-		rcfile_error(
-		    N_("Could not map name \"%s\" to a function"), funcptr);
+		rcfile_error(N_("Could not map name \"%s\" to a function"), funcptr);
 		return;
 	}
 
 	if (menu < 1) {
-		rcfile_error(
-		    N_("Could not map name \"%s\" to a menu"), menuptr);
+		rcfile_error(N_("Could not map name \"%s\" to a menu"), menuptr);
 		return;
 	}
 
@@ -505,8 +497,7 @@ void parse_keybinding(char *ptr)
 	DEBUG_LOG("s->seq = \"%d\"\n", newsc->seq);
 
 	if (check_bad_binding(newsc)) {
-		rcfile_error(
-		    N_("Sorry, keystr \"%s\" is an illegal binding"), newsc->keystr);
+		rcfile_error(N_("Sorry, keystr \"%s\" is an illegal binding"), newsc->keystr);
 		return;
 	}
 
@@ -547,8 +538,7 @@ void parse_unbinding(char *ptr)
 	DEBUG_LOG("Starting unbinding code");
 
 	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
-		rcfile_error(
-		    N_("keybindings must begin with \"^\", \"M\", or \"F\""));
+		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
 		return;
 	}
 
@@ -556,17 +546,15 @@ void parse_unbinding(char *ptr)
 	ptr = parse_next_word(ptr);
 
 	if (!strcmp(menuptr, "")) {
-		rcfile_error(
-		    /* Note to translators, do not translate the word "all"
-		       in the sentence below, everything else is fine */
-		    N_("Must specify menu to bind key to (or \"all\")"));
+		/* Note to translators, do not translate the word "all"
+		   in the sentence below, everything else is fine */
+		rcfile_error(N_("Must specify menu to bind key to (or \"all\")"));
 		return;
 	}
 
 	menu = strtomenu(menuptr);
 	if (menu < 1) {
-		rcfile_error(
-		    N_("Could not map name \"%s\" to a menu"), menuptr);
+		rcfile_error(N_("Could not map name \"%s\" to a menu"), menuptr);
 		return;
 	}
 
@@ -602,8 +590,7 @@ void parse_include(char *ptr)
 
 	/* Don't open directories, character files, or block files. */
 	if (stat(option, &rcinfo) != -1) {
-		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) ||
-		        S_ISBLK(rcinfo.st_mode)) {
+		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
 			rcfile_error(S_ISDIR(rcinfo.st_mode) ?
 			             _("\"%s\" is a directory") :
 			             _("\"%s\" is a device file"), option);
@@ -614,8 +601,7 @@ void parse_include(char *ptr)
 
 	/* Open the new syntax file. */
 	if ((rcstream = fopen(expanded, "rb")) == NULL) {
-		rcfile_error(_("Error reading %s: %s"), expanded,
-		             strerror(errno));
+		rcfile_error(_("Error reading %s: %s"), expanded, strerror(errno));
 		return;
 	}
 
@@ -705,8 +691,7 @@ void parse_colors(char *ptr, bool icase)
 	assert(ptr != NULL);
 
 	if (syntaxes.empty()) {
-		rcfile_error(
-		    N_("Cannot add a color command without a syntax command"));
+		rcfile_error(N_("Cannot add a color command without a syntax command"));
 		return;
 	}
 
@@ -730,15 +715,11 @@ void parse_colors(char *ptr, bool icase)
 			no_fgcolor = TRUE;
 		}
 		if (strncasecmp(bgcolorname, "bright", 6) == 0 || strncasecmp(bgcolorname, "bold", 4) == 0) {
-			rcfile_error(
-			    N_("Background color \"%s\" cannot be bright"),
-			    bgcolorname);
+			rcfile_error(N_("Background color \"%s\" cannot be bright"), bgcolorname);
 			return;
 		}
 		if (strncasecmp(bgcolorname, "under", 5) == 0) {
-			rcfile_error(
-			    N_("Background color \"%s\" cannot be underline"),
-			    bgcolorname);
+			rcfile_error(N_("Background color \"%s\" cannot be underline"), bgcolorname);
 			return;
 		}
 		bg = color_name_to_value(bgcolorname, &bright, &underline);
@@ -777,8 +758,7 @@ void parse_colors(char *ptr, bool icase)
 		}
 
 		if (*ptr != '"') {
-			rcfile_error(
-			    N_("Regex strings must begin and end with a \" character"));
+			rcfile_error(N_("Regex strings must begin and end with a \" character"));
 			ptr = parse_next_regex(ptr);
 			continue;
 		}
@@ -822,14 +802,12 @@ void parse_colors(char *ptr, bool icase)
 
 		if (expectend) {
 			if (ptr == NULL || strncasecmp(ptr, "end=", 4) != 0) {
-				rcfile_error(
-				    N_("\"start=\" requires a corresponding \"end=\""));
+				rcfile_error(N_("\"start=\" requires a corresponding \"end=\""));
 				return;
 			}
 			ptr += 4;
 			if (*ptr != '"') {
-				rcfile_error(
-				    N_("Regex strings must begin and end with a \" character"));
+				rcfile_error(N_("Regex strings must begin and end with a \" character"));
 				continue;
 			}
 
@@ -848,8 +826,7 @@ void parse_colors(char *ptr, bool icase)
 			}
 
 			/* Save the ending regex string if it's valid. */
-			newcolor->end_regex = (nregcomp(fgstr, icase ? REG_ICASE :
-			                                0)) ? mallocstrcpy(NULL, fgstr) : NULL;
+			newcolor->end_regex = (nregcomp(fgstr, icase ? REG_ICASE : 0)) ? mallocstrcpy(NULL, fgstr) : NULL;
 
 			/* Lame way to skip another static counter */
 			newcolor->id = new_syntax->nmultis;
@@ -866,8 +843,7 @@ void parse_headers(char *ptr)
 	assert(ptr != NULL);
 
 	if (syntaxes.empty()) {
-		rcfile_error(
-		    N_("Cannot add a header regex without a syntax command"));
+		rcfile_error(N_("Cannot add a header regex without a syntax command"));
 		return;
 	}
 
@@ -880,8 +856,7 @@ void parse_headers(char *ptr)
 	 * in the colorstrings array, woo! */
 	while (ptr != NULL && *ptr != '\0') {
 		if (*ptr != '"') {
-			rcfile_error(
-			    N_("Regex strings must begin and end with a \" character"));
+			rcfile_error(N_("Regex strings must begin and end with a \" character"));
 			ptr = parse_next_regex(ptr);
 			continue;
 		}
@@ -922,8 +897,7 @@ static void check_vitals_mapped(void)
 			if (f->scfunc == vitals[v] && f->menus & inmenus[v]) {
 				const sc *s = first_sc_for(inmenus[v], f->scfunc);
 				if (!s) {
-					rcfile_error(N_("Fatal error: no keys mapped for function \"%s\""),
-					             f->desc);
+					rcfile_error(N_("Fatal error: no keys mapped for function \"%s\""), f->desc);
 					fprintf(stderr, N_("Exiting.  Please use pinot with the -I option if needed to adjust your pinotrc settings\n"));
 					exit(1);
 				}
@@ -975,36 +949,30 @@ void parse_rcfile(FILE *rcstream
 		/* Try to parse the keyword. */
 		if (strcasecmp(keyword, "set") == 0) {
 #ifdef ENABLE_COLOR
-			if (syntax_only)
-				rcfile_error(
-				    N_("Command \"%s\" not allowed in included file"),
-				    keyword);
-			else
+			if (syntax_only) {
+				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
+			} else
 #endif
 				set = 1;
 		} else if (strcasecmp(keyword, "unset") == 0) {
 #ifdef ENABLE_COLOR
-			if (syntax_only)
-				rcfile_error(
-				    N_("Command \"%s\" not allowed in included file"),
-				    keyword);
-			else
+			if (syntax_only) {
+				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
+			} else
 #endif
 				set = -1;
 		}
 #ifdef ENABLE_COLOR
 		else if (strcasecmp(keyword, "include") == 0) {
-			if (syntax_only)
-				rcfile_error(
-				    N_("Command \"%s\" not allowed in included file"),
-				    keyword);
-			else {
+			if (syntax_only) {
+				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
+			} else {
 				parse_include(ptr);
 			}
 		} else if (strcasecmp(keyword, "syntax") == 0) {
-			if (new_syntax != NULL && new_syntax->own_colors().empty())
-				rcfile_error(N_("Syntax \"%s\" has no color commands"),
-				             new_syntax->desc.c_str());
+			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
+				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
+			}
 			parse_syntax(ptr);
 		} else if (strcasecmp(keyword, "extends") == 0) {
 			parse_extends(ptr);
@@ -1043,17 +1011,13 @@ void parse_rcfile(FILE *rcstream
 				DEBUG_LOG("parse_rcfile(): name = \"%s\"\n", rcopts[i].name);
 				if (set == 1) {
 					if (rcopts[i].flag != 0)
-						/* This option has a flag, so it doesn't take an
-						 * argument. */
 					{
+						/* This option has a flag, so it doesn't take an argument. */
 						SET(rcopts[i].flag);
 					} else {
-						/* This option doesn't have a flag, so it takes
-						 * an argument. */
+						/* This option doesn't have a flag, so it takes an argument. */
 						if (*ptr == '\0') {
-							rcfile_error(
-							    N_("Option \"%s\" requires an argument"),
-							    rcopts[i].name);
+							rcfile_error(N_("Option \"%s\" requires an argument"), rcopts[i].name);
 							break;
 						}
 						option = ptr;
@@ -1068,8 +1032,7 @@ void parse_rcfile(FILE *rcstream
 						/* Make sure option is a valid multibyte
 						 * string. */
 						if (!is_valid_mbstring(option)) {
-							rcfile_error(
-							    N_("Option is not a valid multibyte string"));
+							rcfile_error(N_("Option is not a valid multibyte string"));
 							break;
 						}
 
@@ -1081,67 +1044,51 @@ void parse_rcfile(FILE *rcstream
 #ifndef DISABLE_WRAPJUSTIFY
 							if (strcasecmp(rcopts[i].name, "fill") == 0) {
 								if (!parse_num(option, &wrap_at)) {
-									rcfile_error(
-									    N_("Requested fill size \"%s\" is invalid"),
-									    option);
+									rcfile_error(N_("Requested fill size \"%s\" is invalid"), option);
 									wrap_at = -CHARS_FROM_EOL;
 								} else {
 									free(option);
 								}
 							} else
 #endif
-								if (strcasecmp(rcopts[i].name,
-								               "matchbrackets") == 0) {
+								if (strcasecmp(rcopts[i].name, "matchbrackets") == 0) {
 									matchbrackets = option;
 									if (has_blank_mbchars(matchbrackets)) {
-										rcfile_error(
-										    N_("Non-blank characters required"));
+										rcfile_error(N_("Non-blank characters required"));
 										free(matchbrackets);
 										matchbrackets = NULL;
 									}
-								} else if (strcasecmp(rcopts[i].name,
-								                      "whitespace") == 0) {
+								} else if (strcasecmp(rcopts[i].name, "whitespace") == 0) {
 									whitespace = option;
-									if (mbstrlen(whitespace) != 2 ||
-									        strlenpt(whitespace) != 2) {
-										rcfile_error(
-										    N_("Two single-column characters required"));
+									if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
+										rcfile_error(N_("Two single-column characters required"));
 										free(whitespace);
 										whitespace = NULL;
 									} else {
-										whitespace_len[0] =
-										    parse_mbchar(whitespace, NULL,
-										                 NULL);
-										whitespace_len[1] =
-										    parse_mbchar(whitespace +
-										                 whitespace_len[0], NULL, NULL);
+										whitespace_len[0] = parse_mbchar(whitespace, NULL, NULL);
+										whitespace_len[1] = parse_mbchar(whitespace + whitespace_len[0], NULL, NULL);
 									}
 								} else
 #ifdef ENABLE_JUSTIFY
 									if (strcasecmp(rcopts[i].name, "punct") == 0) {
 										punct = option;
 										if (has_blank_mbchars(punct)) {
-											rcfile_error(
-											    N_("Non-blank characters required"));
+											rcfile_error(N_("Non-blank characters required"));
 											free(punct);
 											punct = NULL;
 										}
-									} else if (strcasecmp(rcopts[i].name,
-									                      "brackets") == 0) {
+									} else if (strcasecmp(rcopts[i].name, "brackets") == 0) {
 										brackets = option;
 										if (has_blank_mbchars(brackets)) {
-											rcfile_error(
-											    N_("Non-blank characters required"));
+											rcfile_error(N_("Non-blank characters required"));
 											free(brackets);
 											brackets = NULL;
 										}
-									} else if (strcasecmp(rcopts[i].name,
-									                      "quotestr") == 0) {
+									} else if (strcasecmp(rcopts[i].name, "quotestr") == 0) {
 										quotestr = option;
 									} else
 #endif
-										if (strcasecmp(rcopts[i].name,
-										               "backupdir") == 0) {
+										if (strcasecmp(rcopts[i].name, "backupdir") == 0) {
 											backup_dir = option;
 										} else
 #ifdef ENABLE_SPELLER
@@ -1149,13 +1096,9 @@ void parse_rcfile(FILE *rcstream
 												alt_speller = option;
 											} else
 #endif
-												if (strcasecmp(rcopts[i].name,
-												               "tabsize") == 0) {
-													if (!parse_num(option, &tabsize) ||
-													        tabsize <= 0) {
-														rcfile_error(
-														    N_("Requested tab size \"%s\" is invalid"),
-														    option);
+												if (strcasecmp(rcopts[i].name, "tabsize") == 0) {
+													if (!parse_num(option, &tabsize) || tabsize <= 0) {
+														rcfile_error(N_("Requested tab size \"%s\" is invalid"), option);
 														tabsize = -1;
 													} else {
 														free(option);
@@ -1168,8 +1111,7 @@ void parse_rcfile(FILE *rcstream
 				} else if (rcopts[i].flag != 0) {
 					UNSET(rcopts[i].flag);
 				} else
-					rcfile_error(N_("Cannot unset flag \"%s\""),
-					             rcopts[i].name);
+					rcfile_error(N_("Cannot unset flag \"%s\""), rcopts[i].name);
 				/* Looks like we still need this specific hack for undo */
 				if (strcasecmp(rcopts[i].name, "undo") == 0) {
 					shortcut_init(0);
@@ -1183,9 +1125,9 @@ void parse_rcfile(FILE *rcstream
 	}
 
 #ifdef ENABLE_COLOR
-	if (new_syntax != NULL && new_syntax->own_colors().empty())
-		rcfile_error(N_("Syntax \"%s\" has no color commands"),
-		             new_syntax->desc.c_str());
+	if (new_syntax != NULL && new_syntax->own_colors().empty()) {
+		rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
+	}
 #endif
 
 	free(buf);
@@ -1207,8 +1149,7 @@ void do_rcfile(void)
 
 	/* Don't open directories, character files, or block files. */
 	if (stat(pinotrc, &rcinfo) != -1) {
-		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) ||
-		        S_ISBLK(rcinfo.st_mode))
+		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode))
 			rcfile_error(S_ISDIR(rcinfo.st_mode) ?
 			             _("\"%s\" is a directory") :
 			             _("\"%s\" is a device file"), pinotrc);
@@ -1247,8 +1188,7 @@ void do_rcfile(void)
 
 		/* Don't open directories, character files, or block files. */
 		if (stat(pinotrc, &rcinfo) != -1) {
-			if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) ||
-			        S_ISBLK(rcinfo.st_mode))
+			if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode))
 				rcfile_error(S_ISDIR(rcinfo.st_mode) ?
 				             _("\"%s\" is a directory") :
 				             _("\"%s\" is a device file"), pinotrc);
@@ -1259,8 +1199,7 @@ void do_rcfile(void)
 		if (rcstream == NULL) {
 			/* Don't complain about the file's not existing. */
 			if (errno != ENOENT)
-				rcfile_error(N_("Error reading %s: %s"), pinotrc,
-				             strerror(errno));
+				rcfile_error(N_("Error reading %s: %s"), pinotrc, strerror(errno));
 		} else
 			parse_rcfile(rcstream
 #ifdef ENABLE_COLOR
@@ -1274,8 +1213,7 @@ void do_rcfile(void)
 
 	if (errors && !ISSET(QUIET)) {
 		errors = FALSE;
-		fprintf(stderr,
-		        _("\nPress Enter to continue starting pinot.\n"));
+		fprintf(stderr, _("\nPress Enter to continue starting pinot.\n"));
 		while (getchar() != '\n') {
 			;
 		}
