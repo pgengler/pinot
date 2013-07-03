@@ -87,9 +87,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#ifdef HAVE_PCREPOSIX_H
 #include <pcreposix.h>
-#endif
 #include <setjmp.h>
 #include <assert.h>
 

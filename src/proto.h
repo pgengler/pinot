@@ -65,13 +65,9 @@ extern undo_type last_action;
 extern char *punct;
 extern char *brackets;
 extern char *quotestr;
-#ifdef HAVE_PCREPOSIX_H
 extern regex_t quotereg;
 extern int quoterc;
 extern char *quoteerr;
-#else
-extern size_t quotelen;
-#endif
 #endif
 extern bool nodelay_mode;
 extern char *answer;
@@ -109,10 +105,8 @@ extern filestruct *replacebot;
 extern poshiststruct *poshistory;
 void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos);
 
-#ifdef HAVE_PCREPOSIX_H
 extern regex_t search_regexp;
 extern regmatch_t regmatches[10];
-#endif
 
 extern int reverse_attr;
 
@@ -491,10 +485,8 @@ void do_rcfile(void);
 #endif
 
 /* All functions in search.c. */
-#ifdef HAVE_PCREPOSIX_H
 bool regexp_init(const char *regexp);
 void regexp_cleanup(void);
-#endif
 void not_found_msg(const char *str);
 void search_replace_abort(void);
 void search_init_globals(void);
@@ -508,9 +500,7 @@ bool findnextstr(
 void findnextstr_wrap_reset(void);
 void do_search(void);
 void do_research(void);
-#ifdef HAVE_PCREPOSIX_H
 int replace_regexp(char *string, bool create);
-#endif
 char *replace_line(const char *needle);
 ssize_t do_replace_loop(
 #ifdef ENABLE_SPELLER
@@ -614,11 +604,9 @@ ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 ssize_t getdelim(char **lineptr, size_t *n, char delim, std::istream &stream);
 ssize_t getline(char **lineptr, size_t *n, std::istream &stream);
 #endif
-#ifdef HAVE_PCREPOSIX_H
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);
 const char *fixbounds(const char *r);
 const char *fixbounds(const std::string& r);
-#endif
 #ifdef ENABLE_SPELLER
 bool is_whole_word(size_t pos, const char *buf, const char *word);
 #endif
@@ -742,9 +730,7 @@ extern const char *new_buffer_msg;
 void enable_nodelay(void);
 void disable_nodelay(void);
 
-#ifdef HAVE_PCREPOSIX_H
 extern const char *regexp_msg;
-#endif
 
 /* May as just throw these here since they are just placeholders */
 void do_cancel(void);

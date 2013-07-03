@@ -68,9 +68,7 @@ std::vector<rcoption> rcopts = {
 #endif
 	{"rebinddelete", REBIND_DELETE, false},
 	{"rebindkeypad", REBIND_KEYPAD, false},
-#ifdef HAVE_PCREPOSIX_H
 	{"regexp", USE_REGEXP, false},
-#endif
 #ifdef ENABLE_SPELLER
 	{"speller", 0, false},
 #endif

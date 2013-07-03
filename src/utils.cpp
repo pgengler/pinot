@@ -316,7 +316,6 @@ ssize_t getline(char **lineptr, size_t *n, std::istream &stream)
 }
 #endif /* ENABLE_PINOTRC */
 
-#ifdef HAVE_PCREPOSIX_H
 /* Do the compiled regex in preg and the regex in string match the
  * beginning or end of a line? */
 bool regexp_bol_or_eol(const regex_t *preg, const char *string)
@@ -364,8 +363,6 @@ const char *fixbounds(const char *r)
 	return r;
 }
 
-#endif
-
 #ifdef ENABLE_SPELLER
 /* Is the word starting at position pos in buf a whole word? */
 bool is_whole_word(size_t pos, const char *buf, const char *word)
@@ -410,7 +407,6 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 
 	assert(haystack != NULL && needle != NULL && start != NULL);
 
-#ifdef HAVE_PCREPOSIX_H
 	if (ISSET(USE_REGEXP)) {
 		if (ISSET(BACKWARDS_SEARCH)) {
 			if (regexec(&search_regexp, haystack, 1, regmatches,
@@ -438,7 +434,6 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 		}
 		return NULL;
 	}
-#endif /* HAVE_PCREPOSIX_H */
 	if (ISSET(CASE_SENSITIVE)) {
 		if (ISSET(BACKWARDS_SEARCH)) {
 			return revstrstr(haystack, needle, start);

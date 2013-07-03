@@ -837,18 +837,14 @@ int filesearch_init(void)
 	              browser_refresh, "%s%s%s%s%s%s", _("Search"),
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
-	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
-	              "",
-#ifdef HAVE_PCREPOSIX_H
+	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") : "",
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
-	              ISSET(USE_REGEXP) ? _(" [Regexp]") :
-#endif
-	              "",
+	              ISSET(USE_REGEXP) ? _(" [Regexp]") : "",
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
-	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") :
-	              "", "", buf);
+	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "",
+								"", buf);
 
 	/* Release buf now that we don't need it anymore. */
 	free(buf);
@@ -864,14 +860,11 @@ int filesearch_init(void)
 	} else {
 		s = get_shortcut(MBROWSER, &i, &meta_key, &func_key);
 		if (i == -2 || i == 0) {
-#ifdef HAVE_PCREPOSIX_H
 			/* Use last_search if answer is an empty string, or
 			 * answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == -2) ?
-			                                      last_search : answer)) {
+			if (ISSET(USE_REGEXP) && !regexp_init((i == -2) ? last_search : answer)) {
 				return -1;
 			}
-#endif
 		} else if (s && s->scfunc == case_sens_void) {
 			TOGGLE(CASE_SENSITIVE);
 			backupstring = mallocstrcpy(backupstring, answer);
@@ -880,15 +873,15 @@ int filesearch_init(void)
 			TOGGLE(BACKWARDS_SEARCH);
 			backupstring = mallocstrcpy(backupstring, answer);
 			return 1;
-		} else
-#ifdef HAVE_PCREPOSIX_H
+		} else {
 			if (s && s->scfunc == regexp_void) {
 				TOGGLE(USE_REGEXP);
 				backupstring = mallocstrcpy(backupstring, answer);
 				return 1;
-			} else
-#endif
+			} else {
 				return -1;
+			}
+		}
 	}
 
 	return 0;
@@ -980,9 +973,7 @@ void filesearch_abort(void)
 {
 	currmenu = MBROWSER;
 	bottombars(MBROWSER);
-#ifdef HAVE_PCREPOSIX_H
 	regexp_cleanup();
-#endif
 }
 
 /* Search for a filename. */
@@ -1047,12 +1038,10 @@ void do_fileresearch(void)
 	search_init_globals();
 
 	if (last_search[0] != '\0') {
-#ifdef HAVE_PCREPOSIX_H
 		/* Since answer is "", use last_search! */
 		if (ISSET(USE_REGEXP) && !regexp_init(last_search)) {
 			return;
 		}
-#endif
 
 		findnextfile_wrap_reset();
 		didfind = findnextfile(FALSE, begin, answer);
