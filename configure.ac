@@ -117,32 +117,6 @@ AC_ARG_ENABLE(wrapping-as-root,
     AC_DEFINE(DISABLE_ROOTWRAPPING, 1, [Define this to disable text wrapping as root by default.])
 fi])
 
-AC_ARG_ENABLE(color,
-[  --disable-color          Disable color and syntax highlighting],
-if test x$enableval != xno; then
-    if test x$ac_cv_header_pcreposix_h = xyes; then
-	AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
-    else
-	AC_MSG_ERROR([
-*** The header file pcreposix.h was not found.  If you wish to use color
-*** support this header file is required.  Please either install C
-*** libraries that include the pcreposix.h file or call the configure
-*** script with --disable-color.])
-    fi
-fi, 
-	if test x$ac_cv_header_pcreposix_h = xyes; then
-	    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
-	else
-	    AC_MSG_ERROR([
-*** The header file pcreposix.h was not found.  If you wish to use color
-*** support this header file is required.  Please either install C
-*** libraries that include the pcreposix.h file or call the configure
-*** script with --disable-color.])
-	fi
-)
-
 AC_ARG_ENABLE(multibuffer,
 [  --disable-multibuffer    Disable multiple file buffers],
 [if test x$enableval != xno; then
@@ -573,6 +547,10 @@ AC_MSG_WARN([*** Can't check for macro redefinability when cross-compiling]))
 
 AC_CHECK_HEADERS(pcreposix.h)
 AC_CHECK_LIB(pcreposix, regcomp)
+if test x$ac_cv_header_pcreposix_h = xno; then
+    AC_MSG_ERROR([*** The header file pcreposix.h was not found.])
+fi
+
 AC_CHECK_LIB(magic, magic_open)
 
 # Check for groff html support
