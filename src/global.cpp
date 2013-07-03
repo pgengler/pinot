@@ -143,13 +143,10 @@ char *alt_speller = NULL;
 /* The command to use for the alternate spell checker. */
 #endif
 
-#ifdef ENABLE_COLOR
 SyntaxMap syntaxes;
 /* The global list of color syntaxes. */
 char *syntaxstr = NULL;
 /* The color syntax name specified on the command line. */
-
-#endif
 
 bool edit_refresh_needed = 0;
 /* Did a command mangle enough of the buffer refresh that we
@@ -1607,11 +1604,9 @@ void thanks_for_all_the_fish(void)
 		free_openfilestruct(openfile);
 	}
 #endif
-#ifdef ENABLE_COLOR
 	if (syntaxstr != NULL) {
 		free(syntaxstr);
 	}
-#endif /* ENABLE_COLOR */
 	/* Free the search and replace history lists. */
 	if (searchage != NULL) {
 		free_filestruct(searchage);

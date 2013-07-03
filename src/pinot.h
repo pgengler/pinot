@@ -162,10 +162,7 @@ typedef enum {
 	ADD, DEL, REPLACE, SPLIT, UNSPLIT, CUT, UNCUT, ENTER, INSERT, OTHER
 } undo_type;
 
-#ifdef ENABLE_COLOR
 #include "syntax.h"
-#endif /* ENABLE_COLOR */
-
 
 /* Structure types. */
 typedef struct filestruct {
@@ -177,9 +174,7 @@ typedef struct filestruct {
 	/* Next node. */
 	struct filestruct *prev;
 	/* Previous node. */
-#ifdef ENABLE_COLOR
 	short *multidata;		/* Array of which multi-line regexes apply to this line */
-#endif
 } filestruct;
 
 typedef struct partition {
@@ -299,13 +294,11 @@ typedef struct openfilestruct {
 	const char *lock_filename;
 	/* The path of the lockfile, if we created one */
 
-#ifdef ENABLE_COLOR
 	Syntax *syntax;
 	/* The syntax class for this file, if any */
 
 	ColorList colorstrings;
 	/* The current file's associated colors. */
-#endif
 
 	struct openfilestruct *next;
 	/* Next node. */

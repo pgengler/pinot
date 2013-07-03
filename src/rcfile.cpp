@@ -106,10 +106,8 @@ static size_t lineno = 0;
 /* If we did, the line number where the last error occurred. */
 static char *pinotrc = NULL;
 /* The path to the rcfile we're parsing. */
-#ifdef ENABLE_COLOR
 static Syntax *new_syntax = NULL;
 /* current syntax being processed */
-#endif
 
 /* We have an error in some part of the rcfile.  Print the error message
  * on stderr, and then make the user hit Enter to continue starting
@@ -198,7 +196,6 @@ char *parse_argument(char *ptr)
 	return ptr;
 }
 
-#ifdef ENABLE_COLOR
 /* Parse the next regex string from the line at ptr, and return it. */
 char *parse_next_regex(char *ptr)
 {
@@ -613,11 +610,7 @@ void parse_include(char *ptr)
 
 	DEBUG_LOG("Parsing file \"%s\" (expanded from \"%s\")\n", expanded, option);
 
-	parse_rcfile(rcstream
-#ifdef ENABLE_COLOR
-	             , true
-#endif
-	            );
+	parse_rcfile(rcstream, true);
 
 	/* We're done with the new syntax file.  Restore the original
 	 * filename and line number position. */
@@ -881,7 +874,6 @@ void parse_headers(char *ptr)
 		}
 	}
 }
-#endif /* ENABLE_COLOR */
 
 /* Check whether the user has unmapped every shortcut for a
 sequence we consider 'vital', like the exit function */
@@ -911,11 +903,7 @@ static void check_vitals_mapped(void)
 /* Parse the rcfile, once it has been opened successfully at rcstream,
  * and close it afterwards.  If syntax_only is true, only allow the file
  * to contain color syntax commands: syntax, color, and icolor. */
-void parse_rcfile(std::ifstream &rcstream
-#ifdef ENABLE_COLOR
-                  , bool syntax_only
-#endif
-                 )
+void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 {
 	char *buf = NULL;
 	ssize_t len;
@@ -949,22 +937,16 @@ void parse_rcfile(std::ifstream &rcstream
 
 		/* Try to parse the keyword. */
 		if (strcasecmp(keyword, "set") == 0) {
-#ifdef ENABLE_COLOR
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else
-#endif
 				set = 1;
 		} else if (strcasecmp(keyword, "unset") == 0) {
-#ifdef ENABLE_COLOR
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else
-#endif
 				set = -1;
-		}
-#ifdef ENABLE_COLOR
-		else if (strcasecmp(keyword, "include") == 0) {
+		} else if (strcasecmp(keyword, "include") == 0) {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else {
@@ -989,9 +971,7 @@ void parse_rcfile(std::ifstream &rcstream
 			parse_keybinding(ptr);
 		} else if (strcasecmp(keyword, "unbind") == 0) {
 			parse_unbinding(ptr);
-		}
-#endif /* ENABLE_COLOR */
-		else {
+		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword);
 		}
 
@@ -1127,11 +1107,9 @@ void parse_rcfile(std::ifstream &rcstream
 		}
 	}
 
-#ifdef ENABLE_COLOR
 	if (new_syntax != NULL && new_syntax->own_colors().empty()) {
 		rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 	}
-#endif
 
 	free(buf);
 	lineno = 0;
@@ -1161,11 +1139,7 @@ void do_rcfile(void)
 	/* Try to open the system-wide pinotrc. */
 	std::ifstream rcstream(pinotrc);
 	if (rcstream.is_open()) {
-		parse_rcfile(rcstream
-#ifdef ENABLE_COLOR
-		             , false
-#endif
-		            );
+		parse_rcfile(rcstream, false);
 	}
 
 #ifdef DISABLE_ROOTWRAPPING
@@ -1203,12 +1177,9 @@ void do_rcfile(void)
 			if (errno != ENOENT) {
 				rcfile_error(N_("Error reading %s: %s"), pinotrc, strerror(errno));
 			}
-		} else
-			parse_rcfile(rcstream
-#ifdef ENABLE_COLOR
-			             , false
-#endif
-			            );
+		} else {
+			parse_rcfile(rcstream, false);
+		}
 	}
 
 	free(pinotrc);
@@ -1222,9 +1193,7 @@ void do_rcfile(void)
 		}
 	}
 
-#ifdef ENABLE_COLOR
 	set_colorpairs();
-#endif
 }
 
 #endif /* ENABLE_PINOTRC */
