@@ -36,68 +36,68 @@
 #ifdef ENABLE_PINOTRC
 
 std::vector<rcoption> rcopts = {
-	{"boldtext", BOLD_TEXT},
+	{"boldtext", BOLD_TEXT, false},
 #ifdef ENABLE_JUSTIFY
-	{"brackets", 0},
+	{"brackets", 0, false},
 #endif
-	{"const", CONST_UPDATE},
+	{"const", CONST_UPDATE, false},
 #ifndef DISABLE_WRAPJUSTIFY
-	{"fill", 0},
+	{"fill", 0, true},
 #endif
-	{"locking", LOCKING},
+	{"locking", LOCKING, false},
 #ifndef DISABLE_MOUSE
-	{"mouse", USE_MOUSE},
+	{"mouse", USE_MOUSE, false},
 #endif
 #ifdef ENABLE_MULTIBUFFER
-	{"multibuffer", MULTIBUFFER},
+	{"multibuffer", MULTIBUFFER, false},
 #endif
-	{"morespace", MORE_SPACE},
-	{"nofollow", NOFOLLOW_SYMLINKS},
-	{"nohelp", NO_HELP},
-	{"nonewlines", NO_NEWLINES},
+	{"morespace", MORE_SPACE, false},
+	{"nofollow", NOFOLLOW_SYMLINKS, false},
+	{"nohelp", NO_HELP, false},
+	{"nonewlines", NO_NEWLINES, false},
 #ifndef DISABLE_WRAPPING
-	{"nowrap", NO_WRAP},
+	{"nowrap", NO_WRAP, false},
 #endif
 #ifndef DISABLE_OPERATINGDIR
-	{"operatingdir", 0},
+	{"operatingdir", 0, false},
 #endif
-	{"preserve", PRESERVE},
+	{"preserve", PRESERVE, false},
 #ifdef ENABLE_JUSTIFY
-	{"punct", 0},
-	{"quotestr", 0},
+	{"punct", 0, false},
+	{"quotestr", 0, false},
 #endif
-	{"rebinddelete", REBIND_DELETE},
-	{"rebindkeypad", REBIND_KEYPAD},
+	{"rebinddelete", REBIND_DELETE, false},
+	{"rebindkeypad", REBIND_KEYPAD, false},
 #ifdef HAVE_PCREPOSIX_H
-	{"regexp", USE_REGEXP},
+	{"regexp", USE_REGEXP, false},
 #endif
 #ifdef ENABLE_SPELLER
-	{"speller", 0},
+	{"speller", 0, false},
 #endif
-	{"suspend", SUSPEND},
-	{"tabsize", 0},
-	{"tempfile", TEMP_FILE},
-	{"view", VIEW_MODE},
-	{"autoindent", AUTOINDENT},
-	{"backup", BACKUP_FILE},
-	{"allow_insecure_backup", INSECURE_BACKUP},
-	{"backupdir", 0},
-	{"backwards", BACKWARDS_SEARCH},
-	{"casesensitive", CASE_SENSITIVE},
-	{"cut", CUT_TO_END},
-	{"historylog", HISTORYLOG},
-	{"matchbrackets", 0},
-	{"noconvert", NO_CONVERT},
-	{"poslog", POS_HISTORY},
-	{"quiet", QUIET},
-	{"quickblank", QUICK_BLANK},
-	{"smarthome", SMART_HOME},
-	{"smooth", SMOOTH_SCROLL},
-	{"tabstospaces", TABS_TO_SPACES},
-	{"undo", UNDOABLE},
-	{"whitespace", 0},
-	{"wordbounds", WORD_BOUNDS},
-	{"softwrap", SOFTWRAP},
+	{"suspend", SUSPEND, false},
+	{"tabsize", 0, true},
+	{"tempfile", TEMP_FILE, false},
+	{"view", VIEW_MODE, false},
+	{"autoindent", AUTOINDENT, true},
+	{"backup", BACKUP_FILE, false},
+	{"allow_insecure_backup", INSECURE_BACKUP, false},
+	{"backupdir", 0, false},
+	{"backwards", BACKWARDS_SEARCH, false},
+	{"casesensitive", CASE_SENSITIVE, false},
+	{"cut", CUT_TO_END, false},
+	{"historylog", HISTORYLOG, false},
+	{"matchbrackets", 0, true},
+	{"noconvert", NO_CONVERT, false},
+	{"poslog", POS_HISTORY, false},
+	{"quiet", QUIET, false},
+	{"quickblank", QUICK_BLANK, false},
+	{"smarthome", SMART_HOME, false},
+	{"smooth", SMOOTH_SCROLL, false},
+	{"tabstospaces", TABS_TO_SPACES, true},
+	{"undo", UNDOABLE, false},
+	{"whitespace", 0, false},
+	{"wordbounds", WORD_BOUNDS, false},
+	{"softwrap", SOFTWRAP, true},
 };
 
 static bool errors = false;

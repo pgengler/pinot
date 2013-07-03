@@ -349,6 +349,8 @@ typedef struct rcoption {
 	/* The name of the rcfile option. */
 	long flag;
 	/* The flag associated with it, if any. */
+	bool allow_per_file;
+	/* Whether this option is allowed on a per-syntax basis (true) or globally only (false) */
 } rcoption;
 
 #endif
