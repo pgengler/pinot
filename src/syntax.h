@@ -71,7 +71,7 @@ class Syntax {
 		SyntaxMatchList magics;
 		/* Regexes to match libmagic results */
 
-		int nmultis;
+		int nmultis { 0 };
 		/* How many multi line strings this syntax has */
 
 		std::list<std::string> extends;
