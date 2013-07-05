@@ -281,8 +281,7 @@ void parse_syntax(char *ptr)
 		existing_syntax = nullptr;
 	}
 
-	new_syntax = new Syntax;
-	new_syntax->desc = std::string(nameptr);
+	new_syntax = new Syntax(nameptr);
 
 	DEBUG_LOG("Starting a new syntax type: \"%s\"\n", nameptr);
 

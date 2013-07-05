@@ -59,6 +59,8 @@ typedef std::list<SyntaxMatch *> SyntaxMatchList;
 
 class Syntax {
 	public:
+		Syntax(const char *desc);
+
 		std::string desc;
 		/* The name of this syntax. */
 

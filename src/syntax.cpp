@@ -29,6 +29,11 @@ bool SyntaxMatch::matches(const char *str) const
 
 /***********************************/
 
+Syntax::Syntax(const char *desc)
+{
+	this->desc = std::string(desc);
+}
+
 void Syntax::add_color(ColorPtr color)
 {
 	_colors.push_back(color);
