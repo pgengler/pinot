@@ -35,7 +35,7 @@
 /* Mark a string that will be sent to gettext() later. */
 
 #ifdef DEBUG
-#define DEBUG_LOG(...) fprintf(stderr, __VA_ARGS__)
+#define DEBUG_LOG(...) { fprintf(stderr, "%s:%d: ", __FILE__, __LINE__); fprintf(stderr, __VA_ARGS__); }
 #else
 #define DEBUG_LOG(...)
 #endif
