@@ -1800,7 +1800,7 @@ void precalc_multicolorinfo(void)
 					/* Look for end and start marking how many lines are encompassed
 					   whcih should speed up rendering later */
 					startx += startmatch.rm_eo;
-					DEBUG_LOG("match found at pos %d...", startx);
+					DEBUG_LOG("match found at pos %d...\n", startx);
 
 					/* Look on this line first for end */
 					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, 0)  == 0) {

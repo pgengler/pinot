@@ -297,7 +297,7 @@ void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *h
 	f->blank_after = blank_after;
 #endif
 
-	DEBUG_LOG("Added func \"%s\"", f->desc);
+	DEBUG_LOG("Added func \"%s\"\n", f->desc);
 }
 
 const sc *first_sc_for(int menu, void (*func)(void))

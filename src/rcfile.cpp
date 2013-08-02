@@ -544,7 +544,7 @@ void parse_unbinding(char *ptr)
 		keycopy[i] = toupper(keycopy[i]);
 	}
 
-	DEBUG_LOG("Starting unbinding code");
+	DEBUG_LOG("Starting unbinding code\n");
 
 	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
 		rcfile_error(

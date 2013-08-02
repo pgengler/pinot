@@ -2424,9 +2424,9 @@ void bottombars(int menu)
 
 	DEBUG_LOG("In bottombars, and slen == \"%d\"\n", (int) slen);
 
+	DEBUG_LOG("Checking menu items....\n");
 	for (f = allfuncs, i = 0; i < slen && f != NULL; f = f->next) {
 
-		DEBUG_LOG("Checking menu items....");
 		if ((f->menus & menu) == 0) {
 			continue;
 		}
@@ -3198,7 +3198,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 	        openfile->edittop->lineno || openfile->current->lineno >=
 	        openfile->edittop->lineno + maxrows) {
 
-		DEBUG_LOG("edit_redraw(): line %lu was offscreen, oldcurrent = %lu edittop = %lu", openfile->current->lineno, old_current->lineno, openfile->edittop->lineno);
+		DEBUG_LOG("edit_redraw(): line %lu was offscreen, oldcurrent = %lu edittop = %lu\n", openfile->current->lineno, old_current->lineno, openfile->edittop->lineno);
 
 		/* If the mark is on, update all the lines between old_current
 		 * and either the old first line or old last line (depending on
