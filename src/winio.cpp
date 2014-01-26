@@ -122,7 +122,7 @@ void get_key_buffer(WINDOW *win)
 
 	errcount = 0;
 	if (nodelay_mode) {
-		if ((input =  wgetch(win)) == ERR) {
+		if ((input = wgetch(win)) == ERR) {
 			return;
 		}
 	} else
@@ -163,8 +163,7 @@ void get_key_buffer(WINDOW *win)
 		/* Otherwise, increment the length of the keystroke buffer, and
 		 * save the value of the keystroke at the end of it. */
 		key_buffer_len++;
-		key_buffer = (int *)nrealloc(key_buffer, key_buffer_len *
-		                             sizeof(int));
+		key_buffer = (int *)nrealloc(key_buffer, key_buffer_len * sizeof(int));
 		key_buffer[key_buffer_len - 1] = input;
 
 		allow_pending_sigwinch(FALSE);
@@ -204,14 +203,12 @@ void unget_input(int *input, size_t input_len)
 	 * and reallocate the keystroke buffer so that it has enough room
 	 * for input. */
 	key_buffer_len += input_len;
-	key_buffer = (int *)nrealloc(key_buffer, key_buffer_len *
-	                             sizeof(int));
+	key_buffer = (int *)nrealloc(key_buffer, key_buffer_len * sizeof(int));
 
 	/* If the keystroke buffer wasn't empty before, move its beginning
 	 * forward far enough so that we can add input to its beginning. */
 	if (key_buffer_len > input_len)
-		memmove(key_buffer + input_len, key_buffer,
-		        (key_buffer_len - input_len) * sizeof(int));
+		memmove(key_buffer + input_len, key_buffer, (key_buffer_len - input_len) * sizeof(int));
 
 	/* Copy input to the beginning of the keystroke buffer. */
 	memcpy(key_buffer, input, input_len * sizeof(int));
@@ -283,10 +280,8 @@ int *get_input(WINDOW *win, size_t input_len)
 		 * far enough so that the keystrokes in input are no longer at its
 		 * beginning. */
 	} else {
-		memmove(key_buffer, key_buffer + input_len, key_buffer_len *
-		        sizeof(int));
-		key_buffer = (int *)nrealloc(key_buffer, key_buffer_len *
-		                             sizeof(int));
+		memmove(key_buffer, key_buffer + input_len, key_buffer_len * sizeof(int));
+		key_buffer = (int *)nrealloc(key_buffer, key_buffer_len * sizeof(int));
 	}
 
 	return input;
@@ -386,14 +381,11 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 				 * there are other keystrokes waiting: escape
 				 * sequence mode.  Interpret the escape
 				 * sequence. */
-				retval = parse_escape_seq_kbinput(win,
-				                                  *kbinput);
+				retval = parse_escape_seq_kbinput(win, *kbinput);
 			break;
 		case 2:
 			if (get_key_buffer_len() == 0) {
-				if (('0' <= *kbinput && *kbinput <= '2' &&
-				        byte_digits == 0) || ('0' <= *kbinput &&
-				                              *kbinput <= '9' && byte_digits > 0)) {
+				if (('0' <= *kbinput && *kbinput <= '2' && byte_digits == 0) || ('0' <= *kbinput && *kbinput <= '9' && byte_digits > 0)) {
 					/* Two escapes followed by one or more
 					 * decimal digits, and there aren't any
 					 * other keystrokes waiting: byte sequence
@@ -424,11 +416,9 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 
 						/* Put back the multibyte equivalent of
 						 * the byte value. */
-						byte_mb = make_mbchar((long)byte,
-						                      &byte_mb_len);
+						byte_mb = make_mbchar((long)byte, &byte_mb_len);
 
-						seq = (int *)nmalloc(byte_mb_len *
-						                     sizeof(int));
+						seq = (int *)nmalloc(byte_mb_len * sizeof(int));
 
 						for (i = 0; i < byte_mb_len; i++) {
 							seq[i] = (unsigned char)byte_mb[i];
@@ -472,8 +462,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 				 * interpret the escape sequence. */
 				escapes = 0;
 				*meta_key = TRUE;
-				retval = parse_escape_seq_kbinput(win,
-				                                  *kbinput);
+				retval = parse_escape_seq_kbinput(win, *kbinput);
 			}
 			break;
 		case 3:
@@ -492,9 +481,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 				 * control character and escape sequence mode.
 				 * Interpret the escape sequence, and interpret
 				 * the result as a control sequence. */
-				retval = get_control_kbinput(
-				             parse_escape_seq_kbinput(win,
-				                                      *kbinput));
+				retval = get_control_kbinput(parse_escape_seq_kbinput(win, *kbinput));
 			break;
 		}
 	}
@@ -502,8 +489,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 	if (retval != ERR) {
 		switch (retval) {
 		case PINOT_CONTROL_8:
-			retval = ISSET(REBIND_DELETE) ? sc_seq_or(do_delete, 0) :
-			         sc_seq_or(do_backspace, 0);
+			retval = ISSET(REBIND_DELETE) ? sc_seq_or(do_delete, 0) : sc_seq_or(do_backspace, 0);
 			break;
 		case KEY_DOWN:
 #ifdef KEY_SDOWN
@@ -616,7 +602,7 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 #ifdef KEY_SUSPEND
 			/* Slang doesn't support KEY_SUSPEND. */
 		case KEY_SUSPEND:
-			retval =  sc_seq_or(do_suspend_void, 0);
+			retval = sc_seq_or(do_suspend_void, 0);
 			break;
 #endif
 #ifdef PDCURSES
@@ -673,30 +659,22 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 							case '2':
 								if (seq_len >= 5) {
 									switch (seq[4]) {
-									case 'A': /* Esc O 1 ; 2 A == Shift-Up on
-				   * Terminal. */
-									case 'B': /* Esc O 1 ; 2 B == Shift-Down on
-				   * Terminal. */
-									case 'C': /* Esc O 1 ; 2 C == Shift-Right on
-				   * Terminal. */
-									case 'D': /* Esc O 1 ; 2 D == Shift-Left on
-				   * Terminal. */
+									case 'A': /* Esc O 1 ; 2 A == Shift-Up on Terminal. */
+									case 'B': /* Esc O 1 ; 2 B == Shift-Down on Terminal. */
+									case 'C': /* Esc O 1 ; 2 C == Shift-Right on Terminal. */
+									case 'D': /* Esc O 1 ; 2 D == Shift-Left on Terminal. */
 										retval = get_escape_seq_abcd(seq[4]);
 										break;
-									case 'P': /* Esc O 1 ; 2 P == F13 on
-				   * Terminal. */
+									case 'P': /* Esc O 1 ; 2 P == F13 on Terminal. */
 										retval = KEY_F(13);
 										break;
-									case 'Q': /* Esc O 1 ; 2 Q == F14 on
-				   * Terminal. */
+									case 'Q': /* Esc O 1 ; 2 Q == F14 on Terminal. */
 										retval = KEY_F(14);
 										break;
-									case 'R': /* Esc O 1 ; 2 R == F15 on
-				   * Terminal. */
+									case 'R': /* Esc O 1 ; 2 R == F15 on Terminal. */
 										retval = KEY_F(15);
 										break;
-									case 'S': /* Esc O 1 ; 2 S == F16 on
-				   * Terminal. */
+									case 'S': /* Esc O 1 ; 2 S == F16 on Terminal. */
 										retval = KEY_F(16);
 										break;
 									}
@@ -705,14 +683,10 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 							case '5':
 								if (seq_len >= 5) {
 									switch (seq[4]) {
-									case 'A': /* Esc O 1 ; 5 A == Ctrl-Up on
-				   * Terminal. */
-									case 'B': /* Esc O 1 ; 5 B == Ctrl-Down on
-				   * Terminal. */
-									case 'C': /* Esc O 1 ; 5 C == Ctrl-Right on
-				   * Terminal. */
-									case 'D': /* Esc O 1 ; 5 D == Ctrl-Left on
-				   * Terminal. */
+									case 'A': /* Esc O 1 ; 5 A == Ctrl-Up on Terminal. */
+									case 'B': /* Esc O 1 ; 5 B == Ctrl-Down on Terminal. */
+									case 'C': /* Esc O 1 ; 5 C == Ctrl-Right on Terminal. */
+									case 'D': /* Esc O 1 ; 5 D == Ctrl-Left on Terminal. */
 										retval = get_escape_seq_abcd(seq[4]);
 										break;
 									}
@@ -727,36 +701,28 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 			case '2':
 				if (seq_len >= 3) {
 					switch (seq[2]) {
-					case 'P': /* Esc O 2 P == F13 on
-					   * xterm. */
+					case 'P': /* Esc O 2 P == F13 on xterm. */
 						retval = KEY_F(13);
 						break;
-					case 'Q': /* Esc O 2 Q == F14 on
-					   * xterm. */
+					case 'Q': /* Esc O 2 Q == F14 on xterm. */
 						retval = KEY_F(14);
 						break;
-					case 'R': /* Esc O 2 R == F15 on
-					   * xterm. */
+					case 'R': /* Esc O 2 R == F15 on xterm. */
 						retval = KEY_F(15);
 						break;
-					case 'S': /* Esc O 2 S == F16 on
-					   * xterm. */
+					case 'S': /* Esc O 2 S == F16 on xterm. */
 						retval = KEY_F(16);
 						break;
 					}
 				}
 				break;
 			case 'A': /* Esc O A == Up on VT100/VT320/xterm. */
-			case 'B': /* Esc O B == Down on
-			       * VT100/VT320/xterm. */
-			case 'C': /* Esc O C == Right on
-			       * VT100/VT320/xterm. */
-			case 'D': /* Esc O D == Left on
-			       * VT100/VT320/xterm. */
+			case 'B': /* Esc O B == Down on VT100/VT320/xterm. */
+			case 'C': /* Esc O C == Right on VT100/VT320/xterm. */
+			case 'D': /* Esc O D == Left on VT100/VT320/xterm. */
 				retval = get_escape_seq_abcd(seq[1]);
 				break;
-			case 'E': /* Esc O E == Center (5) on numeric keypad
-			       * with NumLock off on xterm. */
+			case 'E': /* Esc O E == Center (5) on numeric keypad with NumLock off on xterm. */
 				retval = KEY_B2;
 				break;
 			case 'F': /* Esc O F == End on xterm/Terminal. */
@@ -765,25 +731,19 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 			case 'H': /* Esc O H == Home on xterm/Terminal. */
 				retval = sc_seq_or(do_home, 0);;
 				break;
-			case 'M': /* Esc O M == Enter on numeric keypad with
-			       * NumLock off on VT100/VT220/VT320/xterm/
-			       * rxvt/Eterm. */
+			case 'M': /* Esc O M == Enter on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm. */
 				retval = sc_seq_or(do_home, 0);;
 				break;
-			case 'P': /* Esc O P == F1 on VT100/VT220/VT320/Mach
-			       * console. */
+			case 'P': /* Esc O P == F1 on VT100/VT220/VT320/Mach console. */
 				retval = KEY_F(1);
 				break;
-			case 'Q': /* Esc O Q == F2 on VT100/VT220/VT320/Mach
-			       * console. */
+			case 'Q': /* Esc O Q == F2 on VT100/VT220/VT320/Mach console. */
 				retval = KEY_F(2);
 				break;
-			case 'R': /* Esc O R == F3 on VT100/VT220/VT320/Mach
-			       * console. */
+			case 'R': /* Esc O R == F3 on VT100/VT220/VT320/Mach console. */
 				retval = KEY_F(3);
 				break;
-			case 'S': /* Esc O S == F4 on VT100/VT220/VT320/Mach
-			       * console. */
+			case 'S': /* Esc O S == F4 on VT100/VT220/VT320/Mach console. */
 				retval = KEY_F(4);
 				break;
 			case 'T': /* Esc O T == F5 on Mach console. */
@@ -810,84 +770,52 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 			case 'd': /* Esc O d == Ctrl-Left on rxvt. */
 				retval = get_escape_seq_abcd(seq[1]);
 				break;
-			case 'j': /* Esc O j == '*' on numeric keypad with
-			       * NumLock off on VT100/VT220/VT320/xterm/
-			       * rxvt/Eterm/Terminal. */
+			case 'j': /* Esc O j == '*' on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm/Terminal. */
 				retval = '*';
 				break;
-			case 'k': /* Esc O k == '+' on numeric keypad with
-			       * NumLock off on VT100/VT220/VT320/xterm/
-			       * rxvt/Eterm/Terminal. */
+			case 'k': /* Esc O k == '+' on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm/Terminal. */
 				retval = '+';
 				break;
-			case 'l': /* Esc O l == ',' on numeric keypad with
-			       * NumLock off on VT100/VT220/VT320/xterm/
-			       * rxvt/Eterm/Terminal. */
+			case 'l': /* Esc O l == ',' on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm/Terminal. */
 				retval = ',';
 				break;
-			case 'm': /* Esc O m == '-' on numeric keypad with
-			       * NumLock off on VT100/VT220/VT320/xterm/
-			       * rxvt/Eterm/Terminal. */
+			case 'm': /* Esc O m == '-' on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm/Terminal. */
 				retval = '-';
 				break;
-			case 'n': /* Esc O n == Delete (.) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * xterm/rxvt/Eterm/Terminal. */
-				retval = sc_seq_or(do_delete, 0);;
+			case 'n': /* Esc O n == Delete (.) on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm/Terminal. */
+				retval = sc_seq_or(do_delete, 0);
 				break;
-			case 'o': /* Esc O o == '/' on numeric keypad with
-			       * NumLock off on VT100/VT220/VT320/xterm/
-			       * rxvt/Eterm/Terminal. */
+			case 'o': /* Esc O o == '/' on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm/Terminal. */
 				retval = '/';
 				break;
-			case 'p': /* Esc O p == Insert (0) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
-				retval = sc_seq_or(do_insertfile_void, 0);;
+			case 'p': /* Esc O p == Insert (0) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
+				retval = sc_seq_or(do_insertfile_void, 0);
 				break;
-			case 'q': /* Esc O q == End (1) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
-				retval = sc_seq_or(do_end, 0);;
+			case 'q': /* Esc O q == End (1) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
+				retval = sc_seq_or(do_end, 0);
 				break;
-			case 'r': /* Esc O r == Down (2) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
-				retval = sc_seq_or(do_down_void, 0);;
+			case 'r': /* Esc O r == Down (2) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
+				retval = sc_seq_or(do_down_void, 0);
 				break;
-			case 's': /* Esc O s == PageDown (3) on numeric
-			       * keypad with NumLock off on VT100/VT220/
-			       * VT320/rxvt/Eterm/Terminal. */
-				retval = sc_seq_or(do_page_down, 0);;
+			case 's': /* Esc O s == PageDown (3) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
+				retval = sc_seq_or(do_page_down, 0);
 				break;
-			case 't': /* Esc O t == Left (4) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
-				retval = sc_seq_or(do_left, 0);;
+			case 't': /* Esc O t == Left (4) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
+				retval = sc_seq_or(do_left, 0);
 				break;
-			case 'u': /* Esc O u == Center (5) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm. */
+			case 'u': /* Esc O u == Center (5) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm. */
 				retval = KEY_B2;
 				break;
-			case 'v': /* Esc O v == Right (6) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
+			case 'v': /* Esc O v == Right (6) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
 				retval = sc_seq_or(do_right, 0);
 				break;
-			case 'w': /* Esc O w == Home (7) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
+			case 'w': /* Esc O w == Home (7) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
 				retval = sc_seq_or(do_home, 0);
 				break;
-			case 'x': /* Esc O x == Up (8) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
+			case 'x': /* Esc O x == Up (8) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
 				retval = sc_seq_or(do_up_void, 0);
 				break;
-			case 'y': /* Esc O y == PageUp (9) on numeric keypad
-			       * with NumLock off on VT100/VT220/VT320/
-			       * rxvt/Eterm/Terminal. */
+			case 'y': /* Esc O y == PageUp (9) on numeric keypad with NumLock off on VT100/VT220/VT320/rxvt/Eterm/Terminal. */
 				retval = sc_seq_or(do_page_up, 0);
 				break;
 			}
@@ -907,39 +835,28 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 			case '1':
 				if (seq_len >= 3) {
 					switch (seq[2]) {
-					case '1': /* Esc [ 1 1 ~ == F1 on rxvt/
-					   * Eterm. */
+					case '1': /* Esc [ 1 1 ~ == F1 on rxvt/Eterm. */
 						retval = KEY_F(1);
 						break;
-					case '2': /* Esc [ 1 2 ~ == F2 on rxvt/
-					   * Eterm. */
+					case '2': /* Esc [ 1 2 ~ == F2 on rxvt/Eterm. */
 						retval = KEY_F(2);
 						break;
-					case '3': /* Esc [ 1 3 ~ == F3 on rxvt/
-					   * Eterm. */
+					case '3': /* Esc [ 1 3 ~ == F3 on rxvt/Eterm. */
 						retval = KEY_F(3);
 						break;
-					case '4': /* Esc [ 1 4 ~ == F4 on rxvt/
-					   * Eterm. */
+					case '4': /* Esc [ 1 4 ~ == F4 on rxvt/Eterm. */
 						retval = KEY_F(4);
 						break;
-					case '5': /* Esc [ 1 5 ~ == F5 on xterm/
-					   * rxvt/Eterm. */
+					case '5': /* Esc [ 1 5 ~ == F5 on xterm/rxvt/Eterm. */
 						retval = KEY_F(5);
 						break;
-					case '7': /* Esc [ 1 7 ~ == F6 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '7': /* Esc [ 1 7 ~ == F6 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(6);
 						break;
-					case '8': /* Esc [ 1 8 ~ == F7 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '8': /* Esc [ 1 8 ~ == F7 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(7);
 						break;
-					case '9': /* Esc [ 1 9 ~ == F8 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '9': /* Esc [ 1 9 ~ == F8 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(8);
 						break;
 					case ';':
@@ -948,14 +865,10 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 							case '2':
 								if (seq_len >= 5) {
 									switch (seq[4]) {
-									case 'A': /* Esc [ 1 ; 2 A == Shift-Up on
-				   * xterm. */
-									case 'B': /* Esc [ 1 ; 2 B == Shift-Down on
-				   * xterm. */
-									case 'C': /* Esc [ 1 ; 2 C == Shift-Right on
-				   * xterm. */
-									case 'D': /* Esc [ 1 ; 2 D == Shift-Left on
-				   * xterm. */
+									case 'A': /* Esc [ 1 ; 2 A == Shift-Up on xterm. */
+									case 'B': /* Esc [ 1 ; 2 B == Shift-Down on xterm. */
+									case 'C': /* Esc [ 1 ; 2 C == Shift-Right on xterm. */
+									case 'D': /* Esc [ 1 ; 2 D == Shift-Left on xterm. */
 										retval = get_escape_seq_abcd(seq[4]);
 										break;
 									}
@@ -964,14 +877,10 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 							case '5':
 								if (seq_len >= 5) {
 									switch (seq[4]) {
-									case 'A': /* Esc [ 1 ; 5 A == Ctrl-Up on
-				   * xterm. */
-									case 'B': /* Esc [ 1 ; 5 B == Ctrl-Down on
-				   * xterm. */
-									case 'C': /* Esc [ 1 ; 5 C == Ctrl-Right on
-				   * xterm. */
-									case 'D': /* Esc [ 1 ; 5 D == Ctrl-Left on
-				   * xterm. */
+									case 'A': /* Esc [ 1 ; 5 A == Ctrl-Up on xterm. */
+									case 'B': /* Esc [ 1 ; 5 B == Ctrl-Down on xterm. */
+									case 'C': /* Esc [ 1 ; 5 C == Ctrl-Right on xterm. */
+									case 'D': /* Esc [ 1 ; 5 D == Ctrl-Left on xterm. */
 										retval = get_escape_seq_abcd(seq[4]);
 										break;
 									}
@@ -980,9 +889,8 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 							}
 						}
 						break;
-					default: /* Esc [ 1 ~ == Home on
-					  * VT320/Linux console. */
-						retval = sc_seq_or(do_home, 0);;
+					default: /* Esc [ 1 ~ == Home on VT320/Linux console. */
+						retval = sc_seq_or(do_home, 0);
 						break;
 					}
 				}
@@ -990,71 +898,47 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 			case '2':
 				if (seq_len >= 3) {
 					switch (seq[2]) {
-					case '0': /* Esc [ 2 0 ~ == F9 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '0': /* Esc [ 2 0 ~ == F9 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(9);
 						break;
-					case '1': /* Esc [ 2 1 ~ == F10 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '1': /* Esc [ 2 1 ~ == F10 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(10);
 						break;
-					case '3': /* Esc [ 2 3 ~ == F11 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '3': /* Esc [ 2 3 ~ == F11 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(11);
 						break;
-					case '4': /* Esc [ 2 4 ~ == F12 on
-					   * VT220/VT320/Linux console/
-					   * xterm/rxvt/Eterm. */
+					case '4': /* Esc [ 2 4 ~ == F12 on VT220/VT320/Linux console/xterm/rxvt/Eterm. */
 						retval = KEY_F(12);
 						break;
-					case '5': /* Esc [ 2 5 ~ == F13 on
-					   * VT220/VT320/Linux console/
-					   * rxvt/Eterm. */
+					case '5': /* Esc [ 2 5 ~ == F13 on VT220/VT320/Linux console/rxvt/Eterm. */
 						retval = KEY_F(13);
 						break;
-					case '6': /* Esc [ 2 6 ~ == F14 on
-					   * VT220/VT320/Linux console/
-					   * rxvt/Eterm. */
+					case '6': /* Esc [ 2 6 ~ == F14 on VT220/VT320/Linux console/rxvt/Eterm. */
 						retval = KEY_F(14);
 						break;
-					case '8': /* Esc [ 2 8 ~ == F15 on
-					   * VT220/VT320/Linux console/
-					   * rxvt/Eterm. */
+					case '8': /* Esc [ 2 8 ~ == F15 on VT220/VT320/Linux console/rxvt/Eterm. */
 						retval = KEY_F(15);
 						break;
-					case '9': /* Esc [ 2 9 ~ == F16 on
-					   * VT220/VT320/Linux console/
-					   * rxvt/Eterm. */
+					case '9': /* Esc [ 2 9 ~ == F16 on VT220/VT320/Linux console/rxvt/Eterm. */
 						retval = KEY_F(16);
 						break;
-					default: /* Esc [ 2 ~ == Insert on
-					  * VT220/VT320/Linux console/
-					  * xterm/Terminal. */
-						retval = sc_seq_or(do_insertfile_void, 0);;
+					default: /* Esc [ 2 ~ == Insert on VT220/VT320/Linux console/xterm/Terminal. */
+						retval = sc_seq_or(do_insertfile_void, 0);
 						break;
 					}
 				}
 				break;
-			case '3': /* Esc [ 3 ~ == Delete on VT220/VT320/
-			       * Linux console/xterm/Terminal. */
-				retval = sc_seq_or(do_delete, 0);;
+			case '3': /* Esc [ 3 ~ == Delete on VT220/VT320/Linux console/xterm/Terminal. */
+				retval = sc_seq_or(do_delete, 0);
 				break;
-			case '4': /* Esc [ 4 ~ == End on VT220/VT320/Linux
-			       * console/xterm. */
-				retval = sc_seq_or(do_end, 0);;
+			case '4': /* Esc [ 4 ~ == End on VT220/VT320/Linux console/xterm. */
+				retval = sc_seq_or(do_end, 0);
 				break;
-			case '5': /* Esc [ 5 ~ == PageUp on VT220/VT320/
-			       * Linux console/xterm/Terminal;
-			       * Esc [ 5 ^ == PageUp on Eterm. */
-				retval = sc_seq_or(do_page_up, 0);;
+			case '5': /* Esc [ 5 ~ == PageUp on VT220/VT320/Linux console/xterm/Terminal; Esc [ 5 ^ == PageUp on Eterm. */
+				retval = sc_seq_or(do_page_up, 0);
 				break;
-			case '6': /* Esc [ 6 ~ == PageDown on VT220/VT320/
-			       * Linux console/xterm/Terminal;
-			        * Esc [ 6 ^ == PageDown on Eterm. */
-				retval = sc_seq_or(do_page_down, 0);;
+			case '6': /* Esc [ 6 ~ == PageDown on VT220/VT320/Linux console/xterm/Terminal; Esc [ 6 ^ == PageDown on Eterm. */
+				retval = sc_seq_or(do_page_down, 0);
 				break;
 			case '7': /* Esc [ 7 ~ == Home on rxvt. */
 				retval = sc_seq_or(do_home, 0);
@@ -1063,48 +947,33 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 				retval = sc_seq_or(do_end, 0);
 				break;
 			case '9': /* Esc [ 9 == Delete on Mach console. */
-				retval = sc_seq_or(do_delete, 0);;
+				retval = sc_seq_or(do_delete, 0);
 				break;
 			case '@': /* Esc [ @ == Insert on Mach console. */
-				retval = sc_seq_or(do_insertfile_void, 0);;
+				retval = sc_seq_or(do_insertfile_void, 0);
 				break;
-			case 'A': /* Esc [ A == Up on ANSI/VT220/Linux
-			       * console/FreeBSD console/Mach console/
-			       * rxvt/Eterm/Terminal. */
-			case 'B': /* Esc [ B == Down on ANSI/VT220/Linux
-			       * console/FreeBSD console/Mach console/
-			       * rxvt/Eterm/Terminal. */
-			case 'C': /* Esc [ C == Right on ANSI/VT220/Linux
-			       * console/FreeBSD console/Mach console/
-			       * rxvt/Eterm/Terminal. */
-			case 'D': /* Esc [ D == Left on ANSI/VT220/Linux
-			       * console/FreeBSD console/Mach console/
-			       * rxvt/Eterm/Terminal. */
+			case 'A': /* Esc [ A == Up on ANSI/VT220/Linux console/FreeBSD console/Mach console/rxvt/Eterm/Terminal. */
+			case 'B': /* Esc [ B == Down on ANSI/VT220/Linux console/FreeBSD console/Mach console/rxvt/Eterm/Terminal. */
+			case 'C': /* Esc [ C == Right on ANSI/VT220/Linux console/FreeBSD console/Mach console/rxvt/Eterm/Terminal. */
+			case 'D': /* Esc [ D == Left on ANSI/VT220/Linux console/FreeBSD console/Mach console/rxvt/Eterm/Terminal. */
 				retval = get_escape_seq_abcd(seq[1]);
 				break;
-			case 'E': /* Esc [ E == Center (5) on numeric keypad
-			       * with NumLock off on FreeBSD console/
-			       * Terminal. */
+			case 'E': /* Esc [ E == Center (5) on numeric keypad with NumLock off on FreeBSD console/Terminal. */
 				retval = KEY_B2;
 				break;
-			case 'F': /* Esc [ F == End on FreeBSD
-			       * console/Eterm. */
+			case 'F': /* Esc [ F == End on FreeBSD console/Eterm. */
 				retval = sc_seq_or(do_end, 0);
 				break;
-			case 'G': /* Esc [ G == PageDown on FreeBSD
-			       * console. */
+			case 'G': /* Esc [ G == PageDown on FreeBSD console. */
 				retval = sc_seq_or(do_page_down, 0);
 				break;
-			case 'H': /* Esc [ H == Home on ANSI/VT220/FreeBSD
-			       * console/Mach console/Eterm. */
+			case 'H': /* Esc [ H == Home on ANSI/VT220/FreeBSD console/Mach console/Eterm. */
 				retval = sc_seq_or(do_home, 0);
 				break;
-			case 'I': /* Esc [ I == PageUp on FreeBSD
-			       * console. */
+			case 'I': /* Esc [ I == PageUp on FreeBSD console. */
 				retval = sc_seq_or(do_page_up, 0);
 				break;
-			case 'L': /* Esc [ L == Insert on ANSI/FreeBSD
-			       * console. */
+			case 'L': /* Esc [ L == Insert on ANSI/FreeBSD console. */
 				retval = sc_seq_or(do_insertfile_void, 0);
 				break;
 			case 'M': /* Esc [ M == F1 on FreeBSD console. */
@@ -1116,20 +985,16 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 			case 'O':
 				if (seq_len >= 3) {
 					switch (seq[2]) {
-					case 'P': /* Esc [ O P == F1 on
-					   * xterm. */
+					case 'P': /* Esc [ O P == F1 on xterm. */
 						retval = KEY_F(1);
 						break;
-					case 'Q': /* Esc [ O Q == F2 on
-					   * xterm. */
+					case 'Q': /* Esc [ O Q == F2 on xterm. */
 						retval = KEY_F(2);
 						break;
-					case 'R': /* Esc [ O R == F3 on
-					   * xterm. */
+					case 'R': /* Esc [ O R == F3 on xterm. */
 						retval = KEY_F(3);
 						break;
-					case 'S': /* Esc [ O S == F4 on
-					   * xterm. */
+					case 'S': /* Esc [ O S == F4 on xterm. */
 						retval = KEY_F(4);
 						break;
 					}
@@ -1174,32 +1039,26 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 				break;
 			case 'a': /* Esc [ a == Shift-Up on rxvt/Eterm. */
 			case 'b': /* Esc [ b == Shift-Down on rxvt/Eterm. */
-			case 'c': /* Esc [ c == Shift-Right on rxvt/
-			       * Eterm. */
+			case 'c': /* Esc [ c == Shift-Right on rxvt/Eterm. */
 			case 'd': /* Esc [ d == Shift-Left on rxvt/Eterm. */
 				retval = get_escape_seq_abcd(seq[1]);
 				break;
 			case '[':
 				if (seq_len >= 3) {
 					switch (seq[2]) {
-					case 'A': /* Esc [ [ A == F1 on Linux
-					   * console. */
+					case 'A': /* Esc [ [ A == F1 on Linux console. */
 						retval = KEY_F(1);
 						break;
-					case 'B': /* Esc [ [ B == F2 on Linux
-					   * console. */
+					case 'B': /* Esc [ [ B == F2 on Linux console. */
 						retval = KEY_F(2);
 						break;
-					case 'C': /* Esc [ [ C == F3 on Linux
-					   * console. */
+					case 'C': /* Esc [ [ C == F3 on Linux console. */
 						retval = KEY_F(3);
 						break;
-					case 'D': /* Esc [ [ D == F4 on Linux
-					   * console. */
+					case 'D': /* Esc [ [ D == F4 on Linux console. */
 						retval = KEY_F(4);
 						break;
-					case 'E': /* Esc [ [ E == F5 on Linux
-					   * console. */
+					case 'E': /* Esc [ [ E == F5 on Linux console. */
 						retval = KEY_F(5);
 						break;
 					}
@@ -1222,13 +1081,13 @@ int get_escape_seq_abcd(int kbinput)
 {
 	switch (tolower(kbinput)) {
 	case 'a':
-		return sc_seq_or(do_up_void, 0);;
+		return sc_seq_or(do_up_void, 0);
 	case 'b':
-		return sc_seq_or(do_down_void, 0);;
+		return sc_seq_or(do_down_void, 0);
 	case 'c':
-		return sc_seq_or(do_right, 0);;
+		return sc_seq_or(do_right, 0);
 	case 'd':
-		return sc_seq_or(do_left, 0);;
+		return sc_seq_or(do_left, 0);
 	default:
 		return ERR;
 	}
@@ -1293,8 +1152,7 @@ int get_byte_kbinput(int kbinput)
 		 * was two, and may be any decimal value if the first was
 		 * zero or one.  Put it in the 10's position of the byte
 		 * sequence holder. */
-		if (('0' <= kbinput && kbinput <= '5') || (byte < 200 &&
-		        '6' <= kbinput && kbinput <= '9')) {
+		if (('0' <= kbinput && kbinput <= '5') || (byte < 200 && '6' <= kbinput && kbinput <= '9')) {
 			byte += (kbinput - '0') * 10;
 		} else
 			/* This isn't the second digit of a byte sequence.
@@ -1309,8 +1167,7 @@ int get_byte_kbinput(int kbinput)
 		 * be any decimal value if the first was zero or one and the
 		 * second was between six and nine.  Put it in the 1's
 		 * position of the byte sequence holder. */
-		if (('0' <= kbinput && kbinput <= '5') || (byte < 250 &&
-		        '6' <= kbinput && kbinput <= '9')) {
+		if (('0' <= kbinput && kbinput <= '5') || (byte < 250 && '6' <= kbinput && kbinput <= '9')) {
 			byte += kbinput - '0';
 			/* If this character is a valid decimal value, then the
 			 * byte sequence is complete. */
@@ -1330,8 +1187,7 @@ int get_byte_kbinput(int kbinput)
 		break;
 	}
 
-	/* If we have a result, reset the byte digit counter and the byte
-	 * sequence holder. */
+	/* If we have a result, reset the byte digit counter and the byte sequence holder. */
 	if (retval != ERR) {
 		byte_digits = 0;
 		byte = 0;
@@ -1404,14 +1260,12 @@ long get_unicode_kbinput(int kbinput)
 		break;
 	case 3:
 		/* Third digit: This may be any hexadecimal value.  Put it
-		 * in the 0x1000's position of the Unicode sequence
-		 * holder. */
+		 * in the 0x1000's position of the Unicode sequence holder. */
 		retval = add_unicode_digit(kbinput, 0x1000, &uni);
 		break;
 	case 4:
 		/* Fourth digit: This may be any hexadecimal value.  Put it
-		 * in the 0x100's position of the Unicode sequence
-		 * holder. */
+		 * in the 0x100's position of the Unicode sequence holder. */
 		retval = add_unicode_digit(kbinput, 0x100, &uni);
 		break;
 	case 5:
@@ -1431,8 +1285,7 @@ long get_unicode_kbinput(int kbinput)
 		break;
 	default:
 		/* If there are more than six digits, return this character
-		 * as the result.  (Maybe we should produce an error
-		 * instead?) */
+		 * as the result.  (Maybe we should produce an error instead?) */
 		retval = kbinput;
 		break;
 	}
@@ -1669,8 +1522,7 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
 			/* The y-coordinate relative to the beginning of the
 			 * shortcut list in bottomwin. */
 			size_t currslen;
-			/* The number of shortcuts in the current shortcut
-			 * list. */
+			/* The number of shortcuts in the current shortcut list. */
 
 			/* Translate the mouse event coordinates so that they're
 			 * relative to bottomwin. */
@@ -1784,9 +1636,7 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
 			 * moving up three lines, and one downward roll of the mouse
 			 * wheel is equivalent to moving down three lines. */
 			for (i = 0; i < 3; i++)
-				unget_kbinput((mevent.bstate & BUTTON4_PRESSED) ?
-				              sc_seq_or(up_void, 0) : sc_seq_or(DO_DOWN_VOID, 0), FALSE,
-				              FALSE);
+				unget_kbinput((mevent.bstate & BUTTON4_PRESSED) ? sc_seq_or(up_void, 0) : sc_seq_or(DO_DOWN_VOID, 0), FALSE, FALSE);
 
 			return 1;
 		} else
@@ -1812,8 +1662,7 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
  * example, passing in a meta key sequence that corresponds to a
  * function with a control key, a function key, and a meta key sequence
  * will return the control key corresponding to that function. */
-const sc *get_shortcut(int menu, int *kbinput, bool
-                       *meta_key, bool *func_key)
+const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key)
 {
 	sc *s;
 
@@ -1821,9 +1670,7 @@ const sc *get_shortcut(int menu, int *kbinput, bool
 
 	/* Check for shortcuts. */
 	for (s = sclist; s != NULL; s = s->next) {
-		if ((menu & s->menu)
-		        && ((s->type == META && *meta_key == TRUE && *kbinput == s->seq)
-		            || (s->type != META && *kbinput == s->seq))) {
+		if ((menu & s->menu) && ((s->type == META && *meta_key == TRUE && *kbinput == s->seq) || (s->type != META && *kbinput == s->seq))) {
 			DEBUG_LOG("matched seq \"%s\" and btw meta was %d (menus %d = %d)\n", s->keystr, *meta_key, menu, s->menu);
 			return s;
 		}
@@ -1938,8 +1785,7 @@ void check_statusblank(void)
  * string is dynamically allocated, and should be freed.  If dollars is
  * TRUE, the caller might put "$" at the beginning or end of the line if
  * it's too long. */
-char *display_string(const char *buf, size_t start_col, size_t len, bool
-                     dollars)
+char *display_string(const char *buf, size_t start_col, size_t len, bool dollars)
 {
 	size_t start_index;
 	/* Index in buf of the first character shown. */
@@ -1989,8 +1835,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 
 	index = 0;
 
-	if (buf[start_index] != '\0' && buf[start_index] != '\t' &&
-	        (column < start_col || (dollars && column > 0))) {
+	if (buf[start_index] != '\0' && buf[start_index] != '\t' && (column < start_col || (dollars && column > 0))) {
 		/* We don't display all of buf[start_index] since it starts to
 		 * the left of the screen. */
 		buf_mb_len = parse_mbchar(buf + start_index, buf_mb, NULL);
@@ -2000,8 +1845,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 				char *ctrl_buf_mb = charalloc(mb_cur_max());
 				int ctrl_buf_mb_len, i;
 
-				ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb,
-				                            &ctrl_buf_mb_len);
+				ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb, &ctrl_buf_mb_len);
 
 				for (i = 0; i < ctrl_buf_mb_len; i++) {
 					converted[index++] = ctrl_buf_mb[i];
@@ -2067,8 +1911,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 			converted[index++] = '^';
 			start_col++;
 
-			ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb,
-			                            &ctrl_buf_mb_len);
+			ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb, &ctrl_buf_mb_len);
 
 			for (i = 0; i < ctrl_buf_mb_len; i++) {
 				converted[index++] = ctrl_buf_mb[i];
@@ -2083,8 +1926,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 			if (ISSET(WHITESPACE_DISPLAY)) {
 				int i;
 
-				for (i = whitespace_len[0]; i < whitespace_len[0] +
-				        whitespace_len[1]; i++) {
+				for (i = whitespace_len[0]; i < whitespace_len[0] + whitespace_len[1]; i++) {
 					converted[index++] = whitespace[i];
 				}
 			} else
@@ -2098,8 +1940,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool
 			char *nctrl_buf_mb = charalloc(mb_cur_max());
 			int nctrl_buf_mb_len, i;
 
-			nctrl_buf_mb = mbrep(buf_mb, nctrl_buf_mb,
-			                     &nctrl_buf_mb_len);
+			nctrl_buf_mb = mbrep(buf_mb, nctrl_buf_mb, &nctrl_buf_mb_len);
 
 			for (i = 0; i < nctrl_buf_mb_len; i++) {
 				converted[index++] = nctrl_buf_mb[i];
@@ -2180,8 +2021,7 @@ void titlebar(const char *path)
 	if (space >= 4) {
 		/* Add a space after the version message, and account for both
 		 * it and the two spaces before it. */
-		mvwaddnstr(topwin, 0, 2, PACKAGE_STRING,
-		           actual_x(PACKAGE_STRING, verlen));
+		mvwaddnstr(topwin, 0, 2, PACKAGE_STRING, actual_x(PACKAGE_STRING, verlen));
 		verlen += 3;
 
 		/* Account for the full length of the version message. */
@@ -2194,11 +2034,9 @@ void titlebar(const char *path)
 		state = "";
 	} else
 #endif
-		state = openfile->modified ? _("Modified") : ISSET(VIEW_MODE) ?
-		        _("View") : "";
+		state = openfile->modified ? _("Modified") : ISSET(VIEW_MODE) ? _("View") : "";
 
-	statelen = strlenpt((*state == '\0' && path == NULL) ?
-	                    _("Modified") : state);
+	statelen = strlenpt((*state == '\0' && path == NULL) ? _("Modified") : state);
 
 	/* If possible, add a space before state. */
 	if (space > 0 && statelen < space) {
@@ -2262,8 +2100,7 @@ void titlebar(const char *path)
 	/* If dots is TRUE, we will display something like "File:
 	 * ...ename". */
 	if (dots) {
-		mvwaddnstr(topwin, 0, verlen - 1, prefix, actual_x(prefix,
-		           prefixlen));
+		mvwaddnstr(topwin, 0, verlen - 1, prefix, actual_x(prefix, prefixlen));
 		if (space <= -3 || newfie) {
 			goto the_end;
 		}
@@ -2278,8 +2115,7 @@ void titlebar(const char *path)
 		/* The length of the expanded filename. */
 
 		/* There is room for the whole filename, so we center it. */
-		mvwaddnstr(topwin, 0, verlen + ((space - exppathlen) / 3),
-		           prefix, actual_x(prefix, prefixlen));
+		mvwaddnstr(topwin, 0, verlen + ((space - exppathlen) / 3), prefix, actual_x(prefix, prefixlen));
 		if (!newfie) {
 			waddch(topwin, ' ');
 			waddstr(topwin, exppath);
@@ -2295,8 +2131,7 @@ the_end:
 		} else {
 			assert(COLS - statelen - 1 >= 0);
 
-			mvwaddnstr(topwin, 0, COLS - statelen - 1, state,
-			           actual_x(state, statelen));
+			mvwaddnstr(topwin, 0, COLS - statelen - 1, state, actual_x(state, statelen));
 		}
 	}
 
@@ -2322,8 +2157,7 @@ void set_modified(void)
 				/* Translators: Try to keep this at most 80 characters. */
 				statusbar(_("Warning: Modifying a file which is not locked, check directory permission?"));
 			} else {
-				write_lockfile(openfile->lock_filename,
-				               get_full_path(openfile->filename), TRUE);
+				write_lockfile(openfile->lock_filename, get_full_path(openfile->filename), TRUE);
 			}
 		}
 	}
@@ -2509,8 +2343,7 @@ void reset_cursor(void)
 			wmove(edit, openfile->current_y, xpt % COLS);
 		}
 	} else {
-		openfile->current_y = openfile->current->lineno -
-		                      openfile->edittop->lineno;
+		openfile->current_y = openfile->current->lineno - openfile->edittop->lineno;
 
 		if (openfile->current_y < editwinrows) {
 			wmove(edit, openfile->current_y, xpt - get_page_start(xpt));
@@ -2526,8 +2359,7 @@ void reset_cursor(void)
  * character of this page.  That is, the first character of converted
  * corresponds to character number actual_x(fileptr->data, start) of the
  * line. */
-void edit_draw(filestruct *fileptr, const char *converted, int
-               line, size_t start)
+void edit_draw(filestruct *fileptr, const char *converted, int line, size_t start)
 {
 	size_t startpos = actual_x(fileptr->data, start);
 	/* The position in fileptr->data of the leftmost character
@@ -2597,9 +2429,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 					 * unless k is zero.  If regexec() returns
 					 * REG_NOMATCH, there are no more matches in the
 					 * line. */
-					if (regexec(tmpcolor->start, &fileptr->data[k], 1,
-					            &startmatch, (k == 0) ? 0 : REG_NOTBOL) ==
-					        REG_NOMATCH) {
+					if (regexec(tmpcolor->start, &fileptr->data[k], 1, &startmatch, (k == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
 						break;
 					}
 
@@ -2613,15 +2443,11 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 					if (startmatch.rm_so == startmatch.rm_eo) {
 						startmatch.rm_eo++;
 					} else if (startmatch.rm_so < endpos && startmatch.rm_eo > startpos) {
-						x_start = (startmatch.rm_so <= startpos) ? 0 :
-						          strnlenpt(fileptr->data,
-						                    startmatch.rm_so) - start;
+						x_start = (startmatch.rm_so <= startpos) ? 0 : strnlenpt(fileptr->data, startmatch.rm_so) - start;
 
 						index = actual_x(converted, x_start);
 
-						paintlen = actual_x(converted + index,
-						                    strnlenpt(fileptr->data,
-						                              startmatch.rm_eo) - start - x_start);
+						paintlen = actual_x(converted + index, strnlenpt(fileptr->data, startmatch.rm_eo) - start - x_start);
 
 						assert(0 <= x_start && 0 <= paintlen);
 
@@ -2657,19 +2483,15 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 					continue;
 				} else if (md == CBEGINBEFORE) {
 					regexec(tmpcolor->end, fileptr->data, 1, &endmatch, 0);
-					paintlen = actual_x(converted, strnlenpt(fileptr->data,
-					                    endmatch.rm_eo) - start);
+					paintlen = actual_x(converted, strnlenpt(fileptr->data, endmatch.rm_eo) - start);
 					mvwaddnstr(edit, line, 0, converted, paintlen);
 					continue;
 				}
 
-				while (start_line != NULL && regexec(tmpcolor->start,
-				                                     start_line->data, 1, &startmatch, 0) ==
-				        REG_NOMATCH) {
+				while (start_line != NULL && regexec(tmpcolor->start, start_line->data, 1, &startmatch, 0) == REG_NOMATCH) {
 					/* If there is an end on this line, there is no need
 					 * to look for starts on earlier lines. */
-					if (regexec(tmpcolor->end, start_line->data, 0,
-					            NULL, 0) == 0) {
+					if (regexec(tmpcolor->end, start_line->data, 0, NULL, 0) == 0) {
 						goto step_two;
 					}
 					start_line = start_line->prev;
@@ -2690,18 +2512,13 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 					while (TRUE) {
 						start_col += startmatch.rm_so;
 						startmatch.rm_eo -= startmatch.rm_so;
-						if (regexec(tmpcolor->end, start_line->data +
-						            start_col + startmatch.rm_eo, 0, NULL,
-						            (start_col + startmatch.rm_eo == 0) ?
-						            0 : REG_NOTBOL) == REG_NOMATCH)
+						if (regexec(tmpcolor->end, start_line->data + start_col + startmatch.rm_eo, 0, NULL, (start_col + startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH)
 							/* No end found after this start. */
 						{
 							break;
 						}
 						start_col++;
-						if (regexec(tmpcolor->start, start_line->data +
-						            start_col, 1, &startmatch,
-						            REG_NOTBOL) == REG_NOMATCH)
+						if (regexec(tmpcolor->start, start_line->data + start_col, 1, &startmatch, REG_NOTBOL) == REG_NOMATCH)
 							/* No later start on this line. */
 						{
 							goto step_two;
@@ -2715,14 +2532,12 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 					 * end after the start at all?  We don't paint
 					 * unterminated starts. */
 					end_line = fileptr;
-					while (end_line != NULL && regexec(tmpcolor->end,
-					                                   end_line->data, 1, &endmatch, 0) == REG_NOMATCH) {
+					while (end_line != NULL && regexec(tmpcolor->end, end_line->data, 1, &endmatch, 0) == REG_NOMATCH) {
 						end_line = end_line->next;
 					}
 
 					/* No end found, or it is too early. */
-					if (end_line == NULL || (end_line == fileptr &&
-					                         endmatch.rm_eo <= startpos)) {
+					if (end_line == NULL || (end_line == fileptr && endmatch.rm_eo <= startpos)) {
 						goto step_two;
 					}
 
@@ -2737,9 +2552,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int
 						paintlen = -1;
 						fileptr->multidata[tmpcolor->id] = CWHOLELINE;
 					} else {
-						paintlen = actual_x(converted,
-						                    strnlenpt(fileptr->data,
-						                              endmatch.rm_eo) - start);
+						paintlen = actual_x(converted, strnlenpt(fileptr->data, endmatch.rm_eo) - start);
 						fileptr->multidata[tmpcolor->id] = CBEGINBEFORE;
 					}
 					mvwaddnstr(edit, line, 0, converted, paintlen);
@@ -2748,10 +2561,7 @@ step_two:
 					start_col = 0;
 
 					while (start_col < endpos) {
-						if (regexec(tmpcolor->start, fileptr->data +
-						            start_col, 1, &startmatch, (start_col ==
-						                                        0) ? 0 : REG_NOTBOL) == REG_NOMATCH ||
-						        start_col + startmatch.rm_so >= endpos)
+						if (regexec(tmpcolor->start, fileptr->data + start_col, 1, &startmatch, (start_col == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH || start_col + startmatch.rm_so >= endpos)
 							/* No more starts on this line. */
 						{
 							break;
@@ -2761,16 +2571,11 @@ step_two:
 						startmatch.rm_so += start_col;
 						startmatch.rm_eo += start_col;
 
-						x_start = (startmatch.rm_so <= startpos) ? 0 :
-						          strnlenpt(fileptr->data,
-						                    startmatch.rm_so) - start;
+						x_start = (startmatch.rm_so <= startpos) ? 0 : strnlenpt(fileptr->data, startmatch.rm_so) - start;
 
 						index = actual_x(converted, x_start);
 
-						if (regexec(tmpcolor->end, fileptr->data +
-						            startmatch.rm_eo, 1, &endmatch,
-						            (startmatch.rm_eo == 0) ? 0 :
-						            REG_NOTBOL) == 0) {
+						if (regexec(tmpcolor->end, fileptr->data + startmatch.rm_eo, 1, &endmatch, (startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == 0) {
 							/* Translate the end match to be relative to
 							 * the beginning of the line. */
 							endmatch.rm_so += startmatch.rm_eo;
@@ -2778,17 +2583,12 @@ step_two:
 							/* There is an end on this line.  But does
 							 * it appear on this page, and is the match
 							 * more than zero characters long? */
-							if (endmatch.rm_eo > startpos &&
-							        endmatch.rm_eo > startmatch.rm_so) {
-								paintlen = actual_x(converted + index,
-								                    strnlenpt(fileptr->data,
-								                              endmatch.rm_eo) - start -
-								                    x_start);
+							if (endmatch.rm_eo > startpos && endmatch.rm_eo > startmatch.rm_so) {
+								paintlen = actual_x(converted + index, strnlenpt(fileptr->data, endmatch.rm_eo) - start - x_start);
 
 								assert(0 <= x_start && x_start < COLS);
 
-								mvwaddnstr(edit, line, x_start,
-								           converted + index, paintlen);
+								mvwaddnstr(edit, line, x_start, converted + index, paintlen);
 								if (paintlen > 0) {
 									fileptr->multidata[tmpcolor->id] = CSTARTENDHERE;
 								}
@@ -2800,17 +2600,14 @@ step_two:
 							 * lines. */
 							end_line = fileptr->next;
 
-							while (end_line != NULL &&
-							        regexec(tmpcolor->end, end_line->data,
-							                0, NULL, 0) == REG_NOMATCH) {
+							while (end_line != NULL && regexec(tmpcolor->end, end_line->data, 0, NULL, 0) == REG_NOMATCH) {
 								end_line = end_line->next;
 							}
 
 							if (end_line != NULL) {
 								assert(0 <= x_start && x_start < COLS);
 
-								mvwaddnstr(edit, line, x_start,
-								           converted + index, -1);
+								mvwaddnstr(edit, line, x_start, converted + index, -1);
 								/* We painted to the end of the line, so
 								 * don't bother checking any more
 								 * starts. */
@@ -2876,8 +2673,7 @@ step_two:
 			if (bot_x >= endpos) {
 				paintlen = -1;
 			} else
-				paintlen = strnlenpt(fileptr->data, bot_x) - (x_start +
-				           start);
+				paintlen = strnlenpt(fileptr->data, bot_x) - (x_start + start);
 
 			/* If x_start is before the beginning of the page, shift
 			 * paintlen x_start characters to compensate, and put
@@ -2896,8 +2692,7 @@ step_two:
 			}
 
 			wattron(edit, reverse_attr);
-			mvwaddnstr(edit, line, x_start, converted + index,
-			           paintlen);
+			mvwaddnstr(edit, line, x_start, converted + index, paintlen);
 			wattroff(edit, reverse_attr);
 		}
 	}
@@ -2997,9 +2792,7 @@ int update_line(filestruct *fileptr, size_t index)
  * placewewant are on different pages. */
 bool need_horizontal_update(size_t pww_save)
 {
-	return openfile->mark_set ||
-	       get_page_start(pww_save) !=
-	       get_page_start(openfile->placewewant);
+	return openfile->mark_set || get_page_start(pww_save) != get_page_start(openfile->placewewant);
 }
 
 /* Return TRUE if we need an update after moving vertically, and FALSE
@@ -3007,9 +2800,7 @@ bool need_horizontal_update(size_t pww_save)
  * placewewant are on different pages. */
 bool need_vertical_update(size_t pww_save)
 {
-	return openfile->mark_set ||
-	       get_page_start(pww_save) !=
-	       get_page_start(openfile->placewewant);
+	return openfile->mark_set || get_page_start(pww_save) != get_page_start(openfile->placewewant);
 }
 
 /* When edittop changes, try and figure out how many lines
@@ -3106,7 +2897,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 		/* Don't over-scroll on long lines */
 		if (ISSET(SOFTWRAP)) {
 			ssize_t len = strlenpt(openfile->edittop->data) / COLS;
-			i -=  len;
+			i -= len;
 			if (len > 0) {
 				do_redraw = TRUE;
 			}
@@ -3137,10 +2928,8 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 
 	/* If the top or bottom line of the file is now visible in the edit
 	 * window, we need to draw the entire edit window. */
-	if ((direction == UP_DIR && openfile->edittop ==
-	        openfile->fileage) || (direction == DOWN_DIR &&
-	                               openfile->edittop->lineno + editwinrows - 1 >=
-	                               openfile->filebot->lineno)) {
+	if ((direction == UP_DIR && openfile->edittop == openfile->fileage)
+		|| (direction == DOWN_DIR && openfile->edittop->lineno + editwinrows - 1 >= openfile->filebot->lineno)) {
 		nlines = editwinrows;
 	}
 
@@ -3159,8 +2948,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 	 * region. */
 	foo = openfile->edittop;
 
-	/* If we scrolled down, move down to the line before the scrolled
-	 * region. */
+	/* If we scrolled down, move down to the line before the scrolled region. */
 	if (direction == DOWN_DIR) {
 		for (i = editwinrows - nlines; i > 0 && foo != NULL; i--) {
 			foo = foo->next;
@@ -3173,14 +2961,12 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 	 * blank, so we don't need to draw it unless the mark is on or we're
 	 * not on the first page. */
 	for (i = nlines; i > 0 && foo != NULL; i--) {
-		if ((i == nlines && direction == DOWN_DIR) || (i == 1 &&
-		        direction == UP_DIR)) {
+		if ((i == nlines && direction == DOWN_DIR) || (i == 1 && direction == UP_DIR)) {
 			if (do_redraw)
-				update_line(foo, (foo == openfile->current) ?
-				            openfile->current_x : 0);
-		} else
-			update_line(foo, (foo == openfile->current) ?
-			            openfile->current_x : 0);
+				update_line(foo, (foo == openfile->current) ? openfile->current_x : 0);
+		} else {
+			update_line(foo, (foo == openfile->current) ? openfile->current_x : 0);
+		}
 		foo = foo->next;
 	}
 }
@@ -3189,8 +2975,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
  * updated.  Use this if we've moved without changing any text. */
 void edit_redraw(filestruct *old_current, size_t pww_save)
 {
-	bool do_redraw = need_vertical_update(0) ||
-	                 need_vertical_update(pww_save);
+	bool do_redraw = need_vertical_update(0) || need_vertical_update(pww_save);
 	filestruct *foo = NULL;
 
 	/* If either old_current or current is offscreen, scroll the edit
@@ -3213,18 +2998,14 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			if (old_edittop->lineno < openfile->edittop->lineno) {
 				old_lineno = old_edittop->lineno;
 			} else
-				old_lineno = (old_edittop->lineno + maxrows <=
-				              openfile->filebot->lineno) ?
-				             old_edittop->lineno + editwinrows :
-				             openfile->filebot->lineno;
+				old_lineno = (old_edittop->lineno + maxrows <= openfile->filebot->lineno) ? old_edittop->lineno + editwinrows : openfile->filebot->lineno;
 
 			foo = old_current;
 
 			while (foo->lineno != old_lineno) {
 				update_line(foo, 0);
 
-				foo = (foo->lineno > old_lineno) ? foo->prev :
-				      foo->next;
+				foo = (foo->lineno > old_lineno) ? foo->prev : foo->next;
 			}
 		}
 
@@ -3246,8 +3027,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			while (foo->lineno != openfile->current->lineno) {
 				update_line(foo, 0);
 
-				foo = (foo->lineno > openfile->current->lineno) ?
-				      foo->prev : foo->next;
+				foo = (foo->lineno > openfile->current->lineno) ? foo->prev : foo->next;
 			}
 		}
 
@@ -3268,8 +3048,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 			break;
 		}
 
-		foo = (foo->lineno > openfile->current->lineno) ? foo->prev :
-		      foo->next;
+		foo = (foo->lineno > openfile->current->lineno) ? foo->prev : foo->next;
 	}
 
 	if (do_redraw) {
@@ -3287,14 +3066,11 @@ void edit_refresh(void)
 	/* Figure out what maxrows should really be */
 	compute_maxrows();
 
-	if (openfile->current->lineno < openfile->edittop->lineno ||
-	        openfile->current->lineno >= openfile->edittop->lineno +
-	        maxrows) {
+	if (openfile->current->lineno < openfile->edittop->lineno || openfile->current->lineno >= openfile->edittop->lineno + maxrows) {
 
 		DEBUG_LOG("edit_refresh(): line = %d, edittop %d + maxrows %d\n", openfile->current->lineno, openfile->edittop->lineno, maxrows);
 
-		/* Put the top line of the edit window in range of the current
-		 * line. */
+		/* Put the top line of the edit window in range of the current line. */
 		edit_update(CENTER);
 	}
 
@@ -3303,8 +3079,7 @@ void edit_refresh(void)
 	DEBUG_LOG("edit_refresh(): edittop->lineno = %ld\n", (long)openfile->edittop->lineno);
 
 	for (nlines = 0; nlines < editwinrows && foo != NULL; nlines++) {
-		nlines += update_line(foo, (foo == openfile->current) ?
-		                      openfile->current_x : 0);
+		nlines += update_line(foo, (foo == openfile->current) ? openfile->current_x : 0);
 		foo = foo->next;
 	}
 
@@ -3420,11 +3195,9 @@ void do_cursorpos(bool constant)
 
 	/* Display the current cursor position on the statusbar, and set
 	 * disable_cursorpos to FALSE. */
-	linepct = 100 * openfile->current->lineno /
-	          openfile->filebot->lineno;
+	linepct = 100 * openfile->current->lineno / openfile->filebot->lineno;
 	colpct = 100 * cur_xpt / cur_lenpt;
-	charpct = (openfile->totsize == 0) ? 0 : 100 * i /
-	          openfile->totsize;
+	charpct = (openfile->totsize == 0) ? 0 : 100 * i / openfile->totsize;
 
 	statusbar(
 	    _("line %ld/%ld (%d%%), col %lu/%lu (%d%%), char %lu/%lu (%d%%)"),
