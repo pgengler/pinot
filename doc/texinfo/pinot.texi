@@ -13,7 +13,7 @@
 
 @dircategory Editors
 @direntry
-  pinot: (pinot).                 Small and friendly text editor.
+* pinot: (pinot).                 Small and friendly text editor.
 @end direntry
 
 @c tex
@@ -711,7 +711,7 @@ Read in self-contained color syntaxes from "syntaxfile".  Note that
 @end table
 
 
-@node The File Browser, Pinotrc Files, Top
+@node The File Browser, Building and Configure Options, Pinotrc Files, Top
 @chapter The File Browser
 
 When reading or writing files, pressing ^T will invoke the file browser.
@@ -727,36 +727,7 @@ enter and display the contents of the directory.  If the object is a
 file, this filename and path are copied to the statusbar, and the file
 browser exits.
 
-@item Writing, Appending, or Prepending Selected Text to Files
-Text selected using the marking key (^^) can be written out, appended,
-or prepended to a new or existing file using the WriteOut key (^O).
-
-@item Toggles
-Many options which alter the functionality of the program can be
-"toggled" on or off using Meta key sequences, meaning the program does
-not have to be restarted to turn a particular feature of the editor on
-or off.  Please see the internal help function (^G) for a list of what
-functions can be toggled for a particular version of @code{pinot}.  See
-@xref{Feature Toggles}, for more info.
-
-@item Cursor Position Display
-The output of the "Display Cursor Position" in @code{pinot} displays
-the given column position, as well as the row and total character
-position of the cursor.
-
-@item Interactive Replace and Spell Checker
-It is worth noting that @code{pinot}'s replace function is interactive,
-i.e. it does not stop after one search string is found and automatically
-replace it.  The @code{pinot} implementation will pause at each search
-string found and query whether to replace this instance or not.  The
-internal spell checker operates similarly.  Note that there is no way to
-force these functions to behave in the Pico fashion.  As of version
-1.1.99pre1, misspelled words are sorted and trimmed for uniqueness in
-the internal spell checker such that the words 'apple' and 'Apple' will
-be prompted for correction separately.
-@end table
-
-@node Building and Configure Options, Top
+@node Building and Configure Options, , The File Browser, Top
 @chapter Building and Configure Options
 
 Building @code{pinot} from source is fairly straightforward if you are
@@ -816,7 +787,7 @@ between them on the fly.
 @item --enable-pinotrc
 Enable support for reading the pinotrc file at startup.  You can store
 custom settings in the pinotrc file rather than having to pass command
-line options to get desired behavior.  See @xref{pinotrc Files}, for
+line options to get desired behavior.  See @xref{Pinotrc Files}, for
 more info.
 
 @item --enble-speller
