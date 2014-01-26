@@ -1,4 +1,4 @@
-info_TEXINFOS = nano.texi
+info_TEXINFOS = pinot.texi
 
 MAKEINFO = makeinfo --no-split
 
