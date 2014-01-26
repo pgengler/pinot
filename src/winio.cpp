@@ -2315,7 +2315,10 @@ void set_modified(void)
 		openfile->modified = TRUE;
 		titlebar(NULL);
 		if (ISSET(LOCKING)) {
-			if (openfile->lock_filename == NULL) {
+			if (strcmp(openfile->filename, "") != 0) {
+				/* Don't bother with a lockfile if there isn't an actual file open */
+				return;
+			} else if (openfile->lock_filename == NULL) {
 				/* Translators: Try to keep this at most 80 characters. */
 				statusbar(_("Warning: Modifying a file which is not locked, check directory permission?"));
 			} else {
