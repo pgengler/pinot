@@ -259,6 +259,10 @@ void do_indent(ssize_t cols)
 		size_t line_len = strlen(f->data);
 		size_t indent_len = indent_length(f->data);
 
+		if (line_len == 0) {
+			continue;
+		}
+
 		if (!unindent) {
 			/* If we're indenting, add the characters in line_indent to
 			 * the beginning of the non-whitespace text of this line. */
