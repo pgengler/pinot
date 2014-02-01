@@ -729,10 +729,10 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 				retval = sc_seq_or(do_end, 0);
 				break;
 			case 'H': /* Esc O H == Home on xterm/Terminal. */
-				retval = sc_seq_or(do_home, 0);;
+				retval = sc_seq_or(do_home, 0);
 				break;
 			case 'M': /* Esc O M == Enter on numeric keypad with NumLock off on VT100/VT220/VT320/xterm/rxvt/Eterm. */
-				retval = sc_seq_or(do_home, 0);;
+				retval = sc_seq_or(do_home, 0);
 				break;
 			case 'P': /* Esc O P == F1 on VT100/VT220/VT320/Mach console. */
 				retval = KEY_F(1);
