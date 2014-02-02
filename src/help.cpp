@@ -497,11 +497,13 @@ void help_init(void)
 	}
 
 	/* And the toggles... */
-	if (currmenu == MMAIN)
-		for (s = sclist; s != NULL; s = s->next)
-			if (s->scfunc == do_toggle_void)
-				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n",
-				               s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
+	if (currmenu == MMAIN) {
+		for (s = sclist; s != NULL; s = s->next) {
+			if (s->scfunc == do_toggle_void) {
+				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n", s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
+			}
+		}
+	}
 
 
 #ifdef ENABLE_PINOTRC
