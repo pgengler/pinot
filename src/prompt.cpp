@@ -38,8 +38,7 @@ static size_t old_statusbar_x = (size_t)-1;
 static size_t old_pww = (size_t)-1;
 /* The old place we want in answer, if any. */
 static bool reset_statusbar_x = FALSE;
-/* Should we reset the cursor position at the statusbar
- * prompt? */
+/* Should we reset the cursor position at the statusbar prompt? */
 
 /* Read in a character, interpret it as a shortcut or toggle if
  * necessary, and return it.  Set meta_key to TRUE if the character is a
@@ -51,9 +50,7 @@ static bool reset_statusbar_x = FALSE;
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys.  refresh_func is the function we will call to
  * refresh the edit window. */
-int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
-                       bool *ran_func, bool *finished, bool allow_funcs, void
-                       (*refresh_func)(void))
+int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
 {
 	int input;
 	/* The character we read in. */
@@ -114,11 +111,9 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 			/* If we're using restricted mode, the filename isn't blank,
 			 * and we're at the "Write File" prompt, disable text
 			 * input. */
-			if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' ||
-			        currmenu != MWRITEFILE) {
+			if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
 				kbinput_len++;
-				kbinput = (int *)nrealloc(kbinput, kbinput_len *
-				                          sizeof(int));
+				kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
 				kbinput[kbinput_len - 1] = input;
 			}
 		}
@@ -140,8 +135,7 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 				}
 				output[i] = '\0';
 
-				do_statusbar_output(output, kbinput_len, &got_enter,
-				                    FALSE);
+				do_statusbar_output(output, kbinput_len, &got_enter, FALSE);
 
 				free(output);
 
@@ -161,17 +155,14 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 				/* If we're using restricted mode, the filename
 				 * isn't blank, and we're at the "Write File"
 				 * prompt, disable Cut. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] ==
-				        '\0' || currmenu != MWRITEFILE) {
+				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
 					do_statusbar_cut_text();
 				}
 			} else if (s->scfunc == do_right) {
 				do_statusbar_right();
 			} else if (s->scfunc == do_left) {
 				do_statusbar_left();
-			}
-
-			else if (s->scfunc == do_next_word_void) {
+			} else if (s->scfunc == do_next_word_void) {
 				do_statusbar_next_word(FALSE);
 			} else if (s->scfunc == do_prev_word_void) {
 				do_statusbar_prev_word(FALSE);
@@ -179,17 +170,13 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 				do_statusbar_home();
 			} else if (s->scfunc == do_end) {
 				do_statusbar_end();
-			}
-
-			else if (s->scfunc == do_find_bracket) {
+			} else if (s->scfunc == do_find_bracket) {
 				do_statusbar_find_bracket();
 			} else if (s->scfunc == do_verbatim_input) {
 				/* If we're using restricted mode, the filename
 				 * isn't blank, and we're at the "Write File"
 				 * prompt, disable verbatim input. */
-				if (!ISSET(RESTRICTED) ||
-				        openfile->filename[0] == '\0' ||
-				        currmenu != MWRITEFILE) {
+				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
 					bool got_enter;
 					/* Whether we got the Enter key. */
 
@@ -209,16 +196,14 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
 				/* If we're using restricted mode, the filename
 				 * isn't blank, and we're at the "Write File"
 				 * prompt, disable Delete. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] ==
-				        '\0' || currmenu != MWRITEFILE) {
+				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
 					do_statusbar_delete();
 				}
 			} else if (s->scfunc == do_backspace) {
 				/* If we're using restricted mode, the filename
 				 * isn't blank, and we're at the "Write File"
 				 * prompt, disable Backspace. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] ==
-				        '\0' || currmenu != MWRITEFILE) {
+				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
 					do_statusbar_backspace();
 				}
 			} else {
@@ -251,8 +236,7 @@ int do_statusbar_mouse(void)
 	int retval = get_mouseinput(&mouse_x, &mouse_y, TRUE);
 
 	/* We can click on the statusbar window text to move the cursor. */
-	if (retval == 0 && wmouse_trafo(bottomwin, &mouse_y, &mouse_x,
-	                                FALSE)) {
+	if (retval == 0 && wmouse_trafo(bottomwin, &mouse_y, &mouse_x, FALSE)) {
 		size_t start_col;
 
 		assert(prompt != NULL);
@@ -263,9 +247,7 @@ int do_statusbar_mouse(void)
 		if (mouse_x >= start_col && mouse_y == 0) {
 			size_t pww_save = statusbar_pww;
 
-			statusbar_x = actual_x(answer,
-			                       get_statusbar_page_start(start_col, start_col +
-			                               statusbar_xplustabs()) + mouse_x - start_col);
+			statusbar_x = actual_x(answer, get_statusbar_page_start(start_col, start_col + statusbar_xplustabs()) + mouse_x - start_col);
 			statusbar_pww = statusbar_xplustabs();
 
 			if (need_statusbar_horizontal_update(pww_save)) {
@@ -282,8 +264,7 @@ int do_statusbar_mouse(void)
  * statusbar prompt, setting got_enter to TRUE if we get a newline, and
  * filtering out all ASCII control characters if allow_cntrls is
  * TRUE. */
-void do_statusbar_output(char *output, size_t output_len, bool
-                         *got_enter, bool allow_cntrls)
+void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls)
 {
 	size_t answer_len, i = 0;
 	char *char_buf = charalloc(mb_cur_max());
@@ -319,10 +300,8 @@ void do_statusbar_output(char *output, size_t output_len, bool
 
 		i += char_buf_len;
 
-		/* If allow_cntrls is FALSE, filter out an ASCII control
-		 * character. */
-		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i -
-		        char_buf_len))) {
+		/* If allow_cntrls is FALSE, filter out an ASCII control character. */
+		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
 			continue;
 		}
 
@@ -331,9 +310,7 @@ void do_statusbar_output(char *output, size_t output_len, bool
 
 		assert(statusbar_x <= answer_len);
 
-		charmove(answer + statusbar_x + char_buf_len,
-		         answer + statusbar_x, answer_len - statusbar_x +
-		         char_buf_len);
+		charmove(answer + statusbar_x + char_buf_len, answer + statusbar_x, answer_len - statusbar_x + char_buf_len);
 		strncpy(answer + statusbar_x, char_buf, char_buf_len);
 		answer_len += char_buf_len;
 
@@ -360,8 +337,7 @@ void do_statusbar_home(void)
 
 		statusbar_x = indent_length(answer);
 
-		if (statusbar_x == statusbar_x_save ||
-		        statusbar_x == strlen(answer)) {
+		if (statusbar_x == statusbar_x_save || statusbar_x == strlen(answer)) {
 			statusbar_x = 0;
 		}
 
@@ -434,15 +410,12 @@ void do_statusbar_delete(void)
 	statusbar_pww = statusbar_xplustabs();
 
 	if (answer[statusbar_x] != '\0') {
-		int char_buf_len = parse_mbchar(answer + statusbar_x, NULL,
-		                                NULL);
+		int char_buf_len = parse_mbchar(answer + statusbar_x, NULL, NULL);
 		size_t line_len = strlen(answer + statusbar_x);
 
 		assert(statusbar_x < strlen(answer));
 
-		charmove(answer + statusbar_x, answer + statusbar_x +
-		         char_buf_len, strlen(answer) - statusbar_x -
-		         char_buf_len + 1);
+		charmove(answer + statusbar_x, answer + statusbar_x + char_buf_len, strlen(answer) - statusbar_x - char_buf_len + 1);
 
 		null_at(&answer, statusbar_x + line_len - char_buf_len);
 
@@ -485,8 +458,7 @@ bool do_statusbar_next_word(bool allow_punct)
 	while (!end_line) {
 		char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
 
-		/* If we've found it, stop moving forward through the current
-		 * line. */
+		/* If we've found it, stop moving forward through the current line. */
 		if (!is_word_mbchar(char_mb, allow_punct)) {
 			break;
 		}
@@ -512,8 +484,7 @@ bool do_statusbar_next_word(bool allow_punct)
 	while (!end_line) {
 		char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
 
-		/* If we've found it, stop moving forward through the current
-		 * line. */
+		/* If we've found it, stop moving forward through the current line. */
 		if (is_word_mbchar(char_mb, allow_punct)) {
 			break;
 		}
@@ -607,8 +578,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 		}
 
 		while (!begin_line) {
-			char_mb_len = parse_mbchar(answer + statusbar_x, char_mb,
-			                           NULL);
+			char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
 
 			/* If we've found it, stop moving backward through the
 			 * current line. */
@@ -673,8 +643,7 @@ void do_statusbar_verbatim_input(bool *got_enter)
  * reverse is TRUE, search backwards for the leftmost bracket.
  * Otherwise, search forwards for the rightmost bracket.  Return TRUE if
  * we found a match, and FALSE otherwise. */
-bool find_statusbar_bracket_match(bool reverse, const char
-                                  *bracket_set)
+bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 {
 	const char *rev_start = NULL, *found = NULL;
 
@@ -683,8 +652,7 @@ bool find_statusbar_bracket_match(bool reverse, const char
 	/* rev_start might end up 1 character before the start or after the
 	 * end of the line.  This won't be a problem because we'll skip over
 	 * it below in that case. */
-	rev_start = reverse ? answer + (statusbar_x - 1) : answer +
-	            (statusbar_x + 1);
+	rev_start = reverse ? answer + (statusbar_x - 1) : answer + (statusbar_x + 1);
 
 	while (TRUE) {
 		/* Look for either of the two characters in bracket_set.
@@ -701,8 +669,7 @@ bool find_statusbar_bracket_match(bool reverse, const char
 			break;
 		}
 
-		/* We've reached the start or end of the statusbar text, so
-		 * get out. */
+		/* We've reached the start or end of the statusbar text, so get out. */
 		return FALSE;
 	}
 
@@ -766,8 +733,7 @@ void do_statusbar_find_bracket(void)
 	mbmatchhalf = mbstrlen(matchbrackets) / 2;
 
 	for (i = 0; i < mbmatchhalf; i++)
-		matchhalf += parse_mbchar(matchbrackets + matchhalf, NULL,
-		                          NULL);
+		matchhalf += parse_mbchar(matchbrackets + matchhalf, NULL, NULL);
 
 	reverse = ((ch - matchbrackets) >= matchhalf);
 
@@ -779,8 +745,7 @@ void do_statusbar_find_bracket(void)
 
 	while (mbmatchhalf > 0) {
 		if (reverse)
-			wanted_ch = matchbrackets + move_mbleft(matchbrackets,
-			                                        wanted_ch - matchbrackets);
+			wanted_ch = matchbrackets + move_mbleft(matchbrackets, wanted_ch - matchbrackets);
 		else {
 			wanted_ch += move_mbright(wanted_ch, 0);
 		}
@@ -845,9 +810,9 @@ size_t get_statusbar_page_start(size_t start_col, size_t column)
 {
 	if (column == start_col || column < COLS - 1) {
 		return 0;
-	} else
-		return column - start_col - (column - start_col) % (COLS -
-		        start_col - 1);
+	} else {
+		return column - start_col - (column - start_col) % (COLS - start_col - 1);
+	}
 }
 
 /* Put the cursor in the statusbar prompt at statusbar_x. */
@@ -856,8 +821,7 @@ void reset_statusbar_cursor(void)
 	size_t start_col = strlenpt(prompt) + 2;
 	size_t xpt = statusbar_xplustabs();
 
-	wmove(bottomwin, 0, start_col + xpt -
-	      get_statusbar_page_start(start_col, start_col + xpt));
+	wmove(bottomwin, 0, start_col + xpt - get_statusbar_page_start(start_col, start_col + xpt));
 }
 
 /* Repaint the statusbar when getting a character in
@@ -882,8 +846,7 @@ void update_statusbar_line(const char *curranswer, size_t index)
 	waddch(bottomwin, ':');
 	waddch(bottomwin, (page_start == 0) ? ' ' : '$');
 
-	expanded = display_string(curranswer, page_start, COLS - start_col -
-	                          1, FALSE);
+	expanded = display_string(curranswer, page_start, COLS - start_col - 1, FALSE);
 	waddstr(bottomwin, expanded);
 	free(expanded);
 
@@ -900,12 +863,10 @@ bool need_statusbar_horizontal_update(size_t pww_save)
 {
 	size_t start_col = strlenpt(prompt) + 2;
 
-	return get_statusbar_page_start(start_col, start_col + pww_save) !=
-	       get_statusbar_page_start(start_col, start_col + statusbar_pww);
+	return get_statusbar_page_start(start_col, start_col + pww_save) != get_statusbar_page_start(start_col, start_col + statusbar_pww);
 }
 
-/* Unconditionally redraw the entire screen, and then refresh it using
- * refresh_func(). */
+/* Unconditionally redraw the entire screen, and then refresh it using refresh_func(). */
 void total_statusbar_refresh(void (*refresh_func)(void))
 {
 	total_redraw();
@@ -975,8 +936,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 
 	update_statusbar_line(answer, statusbar_x);
 
-	/* Refresh the edit window and the statusbar before getting
-	 * input. */
+	/* Refresh the edit window and the statusbar before getting input. */
 	wnoutrefresh(edit);
 	wnoutrefresh(bottomwin);
 
@@ -986,16 +946,16 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 	 * this case, disable all keys that would change the text if the
 	 * filename isn't blank and we're at the "Write File" prompt. */
 	while (1) {
-		kbinput = do_statusbar_input(meta_key, func_key, &have_shortcut,
-		                             &ran_func, &finished, TRUE, refresh_func);
+		kbinput = do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func);
 		assert(statusbar_x <= strlen(answer));
 
 		s = get_shortcut(currmenu, &kbinput, meta_key, func_key);
 
-		if (s)
+		if (s) {
 			if (s->scfunc == do_cancel || s->scfunc == do_enter_void) {
 				break;
 			}
+		}
 
 #ifndef DISABLE_TABCOMP
 		if (s && s->scfunc != do_tab) {
@@ -1011,14 +971,12 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 				}
 
 				if (complete_len > 0) {
-					answer = mallocstrcpy(answer,
-					                      get_history_completion(history_list,
-					                              answer, complete_len));
+					answer = mallocstrcpy(answer, get_history_completion(history_list, answer, complete_len));
 					statusbar_x = strlen(answer);
 				}
-			} else if (allow_tabs)
-				answer = input_tab(answer, allow_files,
-				                   &statusbar_x, &tabbed, refresh_func, list);
+			} else if (allow_tabs) {
+				answer = input_tab(answer, allow_files, &statusbar_x, &tabbed, refresh_func, list);
+			}
 
 			update_statusbar_line(answer, statusbar_x);
 		} else
@@ -1028,16 +986,14 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					/* If we're scrolling up at the bottom of the
 					 * history list and answer isn't blank, save answer
 					 * in magichistory. */
-					if ((*history_list)->next == NULL &&
-					        answer[0] != '\0')
-						magichistory = mallocstrcpy(magichistory,
-						                            answer);
+					if ((*history_list)->next == NULL && answer[0] != '\0') {
+						magichistory = mallocstrcpy(magichistory, answer);
+					}
 
 					/* Get the older search from the history list and
 					 * save it in answer.  If there is no older search,
 					 * don't do anything. */
-					if ((history =
-					            get_history_older(history_list)) != NULL) {
+					if ((history = get_history_older(history_list)) != NULL) {
 						answer = mallocstrcpy(answer, history);
 						statusbar_x = strlen(answer);
 					}
@@ -1056,8 +1012,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					/* Get the newer search from the history list and
 					 * save it in answer.  If there is no newer search,
 					 * don't do anything. */
-					if ((history =
-					            get_history_newer(history_list)) != NULL) {
+					if ((history = get_history_newer(history_list)) != NULL) {
 						answer = mallocstrcpy(answer, history);
 						statusbar_x = strlen(answer);
 					}
@@ -1066,8 +1021,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 					 * the history list, answer is blank, and
 					 * magichistory is set, save magichistory in
 					 * answer. */
-					if ((*history_list)->next == NULL &&
-					        *answer == '\0' && magichistory != NULL) {
+					if ((*history_list)->next == NULL && *answer == '\0' && magichistory != NULL) {
 						answer = mallocstrcpy(answer, magichistory);
 						statusbar_x = strlen(answer);
 					}
@@ -1125,8 +1079,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 	 * we've finished putting in an answer, reset the statusbar cursor
 	 * position too. */
 	if (s) {
-		if (s->scfunc ==  do_cancel || s->scfunc == do_enter_void ||
-		        ran_func) {
+		if (s->scfunc ==  do_cancel || s->scfunc == do_enter_void || ran_func) {
 			statusbar_x = old_statusbar_x;
 			statusbar_pww = old_pww;
 
@@ -1306,8 +1259,7 @@ int do_yesno_prompt(bool all, const char *msg)
 
 	wattroff(bottomwin, reverse_attr);
 
-	/* Refresh the edit window and the statusbar before getting
-	 * input. */
+	/* Refresh the edit window and the statusbar before getting input. */
 	wnoutrefresh(edit);
 	wnoutrefresh(bottomwin);
 
@@ -1329,10 +1281,7 @@ int do_yesno_prompt(bool all, const char *msg)
 		else if (kbinput == KEY_MOUSE) {
 			/* We can click on the Yes/No/All shortcut list to
 			 * select an answer. */
-			if (get_mouseinput(&mouse_x, &mouse_y, FALSE) == 0 &&
-			        wmouse_trafo(bottomwin, &mouse_y, &mouse_x,
-			                     FALSE) && mouse_x < (width * 2) &&
-			        mouse_y > 0) {
+			if (get_mouseinput(&mouse_x, &mouse_y, FALSE) == 0 && wmouse_trafo(bottomwin, &mouse_y, &mouse_x, FALSE) && mouse_x < (width * 2) && mouse_y > 0) {
 				int x = mouse_x / width;
 				/* Calculate the x-coordinate relative to the
 				 * two columns of the Yes/No/All shortcuts in
