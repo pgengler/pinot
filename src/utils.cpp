@@ -207,8 +207,7 @@ ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream)
 	int c;
 
 	/* Sanity checks. */
-	if (lineptr == NULL || n == NULL || stream == NULL ||
-	        fileno(stream) == -1) {
+	if (lineptr == NULL || n == NULL || stream == NULL || fileno(stream) == -1) {
 		errno = EINVAL;
 		return -1;
 	}
@@ -266,8 +265,7 @@ ssize_t ngetline(char **lineptr, size_t *n, FILE *stream)
 bool regexp_bol_or_eol(const regex_t *preg, const char *string)
 {
 	return (regexec(preg, string, 0, NULL, 0) == 0 &&
-	        regexec(preg, string, 0, NULL, REG_NOTBOL | REG_NOTEOL) ==
-	        REG_NOMATCH);
+	        regexec(preg, string, 0, NULL, REG_NOTBOL | REG_NOTEOL) == REG_NOMATCH);
 }
 
 const char *fixbounds(const std::string& r)
@@ -327,8 +325,7 @@ bool is_whole_word(size_t pos, const char *buf, const char *word)
 	 * word isn't a non-punctuation "word" character, and if we're at
 	 * the end of the line or the character after the word isn't a
 	 * non-punctuation "word" character, we have a whole word. */
-	retval = (pos == 0 || !is_word_mbchar(p, FALSE)) &&
-	         (word_end == strlen(buf) || !is_word_mbchar(r, FALSE));
+	retval = (pos == 0 || !is_word_mbchar(p, FALSE)) && (word_end == strlen(buf) || !is_word_mbchar(r, FALSE));
 
 	free(p);
 	free(r);
@@ -343,8 +340,7 @@ bool is_whole_word(size_t pos, const char *buf, const char *word)
  * fill in the global variable regmatches with at most 9 subexpression
  * matches.  Also, all .rm_so elements are relative to the start of the
  * whole match, so regmatches[0].rm_so == 0. */
-const char *strstrwrapper(const char *haystack, const char *needle,
-                          const char *start)
+const char *strstrwrapper(const char *haystack, const char *needle, const char *start)
 {
 	/* start can be 1 character before the start or after the end of the
 	 * line.  In either case, we just say no match was found. */
@@ -357,24 +353,19 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 #ifdef HAVE_PCREPOSIX_H
 	if (ISSET(USE_REGEXP)) {
 		if (ISSET(BACKWARDS_SEARCH)) {
-			if (regexec(&search_regexp, haystack, 1, regmatches,
-			            0) == 0 && haystack + regmatches[0].rm_so <= start) {
+			if (regexec(&search_regexp, haystack, 1, regmatches, 0) == 0 && haystack + regmatches[0].rm_so <= start) {
 				const char *retval = haystack + regmatches[0].rm_so;
 
 				/* Search forward until there are no more matches. */
-				while (regexec(&search_regexp, retval + 1, 1,
-				               regmatches, REG_NOTBOL) == 0 &&
-				        retval + regmatches[0].rm_so + 1 <= start) {
+				while (regexec(&search_regexp, retval + 1, 1, regmatches, REG_NOTBOL) == 0 && retval + regmatches[0].rm_so + 1 <= start) {
 					retval += regmatches[0].rm_so + 1;
 				}
-				/* Finally, put the subexpression matches in global
-				 * variable regmatches.  The REG_NOTBOL flag doesn't
-				 * matter now. */
+				/* Finally, put the subexpression matches in global variable
+				 * regmatches.  The REG_NOTBOL flag doesn't matter now. */
 				regexec(&search_regexp, retval, 10, regmatches, 0);
 				return retval;
 			}
-		} else if (regexec(&search_regexp, start, 10, regmatches,
-		                   (start > haystack) ? REG_NOTBOL : 0) == 0) {
+		} else if (regexec(&search_regexp, start, 10, regmatches, (start > haystack) ? REG_NOTBOL : 0) == 0) {
 			const char *retval = start + regmatches[0].rm_so;
 
 			regexec(&search_regexp, retval, 10, regmatches, 0);
@@ -456,8 +447,7 @@ char *mallocstrncpy(char *dest, const char *src, size_t n)
  * "dest = mallocstrcpy(dest, src);". */
 char *mallocstrcpy(char *dest, const char *src)
 {
-	return mallocstrncpy(dest, src, (src == NULL) ? 1 :
-	                     strlen(src) + 1);
+	return mallocstrncpy(dest, src, (src == NULL) ? 1 : strlen(src) + 1);
 }
 
 /* Free the malloc()ed string at dest and return the malloc()ed string
@@ -574,8 +564,7 @@ void new_magicline(void)
  * filebot. */
 void remove_magicline(void)
 {
-	if (openfile->filebot->data[0] == '\0' &&
-	        openfile->filebot != openfile->fileage) {
+	if (openfile->filebot->data[0] == '\0' && openfile->filebot != openfile->fileage) {
 		assert(openfile->filebot != openfile->edittop && openfile->filebot != openfile->current);
 
 		openfile->filebot = openfile->filebot->prev;
@@ -590,14 +579,11 @@ void remove_magicline(void)
  * right_side_up isn't NULL, set it to TRUE if the mark begins with
  * (mark_begin, mark_begin_x) and ends with (current, current_x), or
  * FALSE otherwise. */
-void mark_order(const filestruct **top, size_t *top_x, const filestruct
-                **bot, size_t *bot_x, bool *right_side_up)
+void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, size_t *bot_x, bool *right_side_up)
 {
 	assert(top != NULL && top_x != NULL && bot != NULL && bot_x != NULL);
 
-	if ((openfile->current->lineno == openfile->mark_begin->lineno &&
-	        openfile->current_x > openfile->mark_begin_x) ||
-	        openfile->current->lineno > openfile->mark_begin->lineno) {
+	if ((openfile->current->lineno == openfile->mark_begin->lineno && openfile->current_x > openfile->mark_begin_x) || openfile->current->lineno > openfile->mark_begin->lineno) {
 		*top = openfile->mark_begin;
 		*top_x = openfile->mark_begin_x;
 		*bot = openfile->current;
@@ -616,8 +602,7 @@ void mark_order(const filestruct **top, size_t *top_x, const filestruct
 	}
 }
 
-/* Calculate the number of characters between begin and end, and return
- * it. */
+/* Calculate the number of characters between begin and end, and return it. */
 size_t get_totsize(const filestruct *begin, const filestruct *end)
 {
 	size_t totsize = 0;
@@ -692,8 +677,7 @@ void dump_filestruct_reverse(void)
 	const filestruct *fileptr = openfile->filebot;
 
 	while (fileptr != NULL) {
-		fprintf(stderr, "(%ld) %s\n", (long)fileptr->lineno,
-		        fileptr->data);
+		fprintf(stderr, "(%ld) %s\n", (long)fileptr->lineno, fileptr->data);
 		fileptr = fileptr->prev;
 	}
 }
