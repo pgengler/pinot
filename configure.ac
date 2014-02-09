@@ -111,14 +111,6 @@ AC_ARG_ENABLE(wrapping-as-root,
     AC_DEFINE(DISABLE_ROOTWRAPPING, 1, [Define this to disable text wrapping as root by default.])
 fi])
 
-AC_ARG_ENABLE(multibuffer,
-[  --disable-multibuffer    Disable multiple file buffers],
-[if test x$enableval != xno; then
-    AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
-fi],[
-    AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
-])
-
 AC_MSG_CHECKING([whether to enable UTF-8 support])
 AC_ARG_ENABLE(utf8,
 [  --enable-utf8           Enable UTF-8 support],
