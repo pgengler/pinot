@@ -337,7 +337,7 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 	sc *s;
 
 	if (sclist == NULL) {
-		sclist = (sc *) nmalloc(sizeof(sc));
+		sclist = new sc;
 		s = sclist;
 		s->next = NULL;
 	} else {
@@ -348,7 +348,7 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 
 		if (s->menu != menu || s->keystr != scstring) { /* i.e. this is not a replace... */
 			DEBUG_LOG("No match found...\n");
-			s->next = (sc *)nmalloc(sizeof(sc));
+			s->next = new sc;
 			s = s->next;
 			s->next = NULL;
 		}
@@ -1093,7 +1093,7 @@ sc *strtosc(int menu, char *input)
 {
 	sc *s;
 
-	s = (sc *)nmalloc(sizeof(sc));
+	s = new sc;
 	s->execute = TRUE; /* overridden as needed below */
 
 
@@ -1321,7 +1321,7 @@ sc *strtosc(int menu, char *input)
 			s->execute = FALSE;
 #endif
 		} else {
-			free(s);
+			delete s;
 			return NULL;
 		}
 	}
