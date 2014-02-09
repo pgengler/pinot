@@ -225,12 +225,12 @@ void color_update(void)
 		 * been checked for validity elsewhere.  Compile their specified
 		 * regexes if we haven't already. */
 		if (tmpcolor->start == NULL) {
-			tmpcolor->start = (regex_t *)nmalloc(sizeof(regex_t));
+			tmpcolor->start = new regex_t;
 			regcomp(tmpcolor->start, fixbounds(tmpcolor->start_regex), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 
 		if (tmpcolor->end_regex != NULL && tmpcolor->end == NULL) {
-			tmpcolor->end = (regex_t *)nmalloc(sizeof(regex_t));
+			tmpcolor->end = new regex_t;
 			regcomp(tmpcolor->end, fixbounds(tmpcolor->end_regex), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 	}
