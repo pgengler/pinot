@@ -45,10 +45,8 @@
 static int oldinterval = -1;
 /* Used to store the user's original mouse click interval. */
 #endif
-#ifdef ENABLE_PINOTRC
 static bool no_rcfiles = FALSE;
 /* Should we ignore all rcfiles? */
-#endif
 static struct termios oldterm;
 /* The user's original terminal settings. */
 static struct sigaction act;
@@ -579,7 +577,6 @@ void finish(void)
 	/* Restore the old terminal settings. */
 	tcsetattr(0, TCSANOW, &oldterm);
 
-#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles && ISSET(HISTORYLOG)) {
 		save_history();
 	}
@@ -587,7 +584,6 @@ void finish(void)
 		update_poshistory(openfile->filename, openfile->current->lineno, xplustabs()+1);
 		save_poshistory();
 	}
-#endif
 
 #ifdef DEBUG
 	thanks_for_all_the_fish();
@@ -811,11 +807,9 @@ void usage(void)
 #ifdef ENABLE_MULTIBUFFER
 	print_opt("-F", "--multibuffer", N_("Enable multiple file buffers"));
 #endif
-#ifdef ENABLE_PINOTRC
 	print_opt("-G", "--locking", N_("Use (vim-style) lock files"));
 	print_opt("-H", "--historylog", N_("Log & read search/replace string history"));
 	print_opt("-I", "--ignorercfiles", N_("Don't look at pinotorc files"));
-#endif
 	print_opt("-K", "--rebindkeypad", N_("Fix numeric keypad key confusion problem"));
 	print_opt("-L", "--nonewlines", N_("Don't add newlines to the ends of files"));
 	print_opt("-N", "--noconvert", N_("Don't convert files from DOS/Mac format"));
@@ -911,9 +905,6 @@ void version(void)
 #endif
 #ifdef ENABLE_MULTIBUFFER
 	printf(" --enable-multibuffer");
-#endif
-#ifdef ENABLE_PINOTRC
-	printf(" --enable-pinotrc");
 #endif
 #ifdef ENABLE_SPELLER
 	printf(" --enable-speller");
@@ -1279,12 +1270,10 @@ void do_toggle(int flag)
 	case SUSPEND:
 		signal_init();
 		break;
-#ifdef ENABLE_PINOTRC
 	case WHITESPACE_DISPLAY:
 		titlebar(NULL);
 		edit_refresh();
 		break;
-#endif
 	case NO_COLOR_SYNTAX:
 		edit_refresh();
 		break;
@@ -1914,9 +1903,7 @@ int main(int argc, char **argv)
 #ifdef ENABLE_MULTIBUFFER
 		{"multibuffer", 0, NULL, 'F'},
 #endif
-#ifdef ENABLE_PINOTRC
 		{"ignorercfiles", 0, NULL, 'I'},
-#endif
 		{"rebindkeypad", 0, NULL, 'K'},
 		{"nonewlines", 0, NULL, 'L'},
 		{"morespace", 0, NULL, 'O'},
@@ -1992,14 +1979,6 @@ int main(int argc, char **argv)
 	textdomain(PACKAGE);
 #endif
 
-#if !defined(ENABLE_PINOTRC) && defined(DISABLE_ROOTWRAPPING)
-	/* If we don't have rcfile support, --disable-wrapping-as-root is
-	 * used, and we're root, turn wrapping off. */
-	if (geteuid() == PINOT_ROOT_UID) {
-		SET(NO_WRAP);
-	}
-#endif
-
 	while ((optchr =
 #ifdef HAVE_GETOPT_LONG
 	            getopt_long(argc, argv, "h?ABC:DEFGHIKLNOPQ:RST:UVWY:abcdefgijklmo:pqr:s:tuvwxz$", long_options, NULL)
@@ -2037,7 +2016,6 @@ int main(int argc, char **argv)
 			SET(MULTIBUFFER);
 			break;
 #endif
-#ifdef ENABLE_PINOTRC
 		case 'G':
 			SET(LOCKING);
 			break;
@@ -2047,7 +2025,6 @@ int main(int argc, char **argv)
 		case 'I':
 			no_rcfiles = TRUE;
 			break;
-#endif
 		case 'K':
 			SET(REBIND_KEYPAD);
 			break;
@@ -2184,9 +2161,7 @@ int main(int argc, char **argv)
 	if (ISSET(RESTRICTED)) {
 		UNSET(SUSPEND);
 		UNSET(BACKUP_FILE);
-#ifdef ENABLE_PINOTRC
 		no_rcfiles = TRUE;
-#endif
 	}
 
 
@@ -2197,7 +2172,6 @@ int main(int argc, char **argv)
 	/* We've read through the command line options.  Now back up the flags
 	 * and values that are set, and read the rcfile(s).  If the values
 	 * haven't changed afterward, restore the backed-up values. */
-#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles) {
 #ifndef DISABLE_OPERATINGDIR
 		char *operating_dir_cpy = operating_dir;
@@ -2278,7 +2252,6 @@ int main(int argc, char **argv)
 		SET(NO_WRAP);
 	}
 #endif
-#endif /* ENABLE_PINOTRC */
 
 #ifndef DISABLE_WRAPPING
 	/* Overwrite an rcfile "set nowrap" or --disable-wrapping-as-root
@@ -2296,7 +2269,6 @@ int main(int argc, char **argv)
 
 	/* Set up the search/replace history. */
 	history_init();
-#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles) {
 		if (ISSET(HISTORYLOG) || ISSET(POS_HISTORY)) {
 			if (check_dotpinot() == 0) {
@@ -2311,7 +2283,6 @@ int main(int argc, char **argv)
 			load_poshistory();
 		}
 	}
-#endif /* ENABLE_PINOTRC */
 
 	/* Set up the backup directory (unless we're using restricted mode,
 	 * in which case backups are disabled, since they would allow
@@ -2385,14 +2356,12 @@ int main(int argc, char **argv)
 		matchbrackets = mallocstrcpy(NULL, "(<[{)>]}");
 	}
 
-#ifdef ENABLE_PINOTRC
 	/* If whitespace wasn't specified, set its default value. */
 	if (whitespace == NULL) {
 		whitespace = mallocstrcpy(NULL, "  ");
 		whitespace_len[0] = 1;
 		whitespace_len[1] = 1;
 	}
-#endif
 
 	/* If tabsize wasn't specified, set its default value. */
 	if (tabsize == -1) {

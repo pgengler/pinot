@@ -336,15 +336,12 @@ typedef struct shortcut {
 	/* Next shortcut. */
 } shortcut;
 
-#ifdef ENABLE_PINOTRC
 typedef struct rcoption {
 	const char *name;
 	/* The name of the rcfile option. */
 	long flag;
 	/* The flag associated with it, if any. */
 } rcoption;
-
-#endif
 
 typedef struct sc {
 	char *keystr;

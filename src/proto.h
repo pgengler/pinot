@@ -55,11 +55,9 @@ extern openfilestruct *openfile;
 
 extern char *matchbrackets;
 
-#ifdef ENABLE_PINOTRC
 extern char *whitespace;
 extern int whitespace_len[2];
 extern undo_type last_action;
-#endif
 
 #ifdef ENABLE_JUSTIFY
 extern char *punct;
@@ -199,16 +197,12 @@ char *revstrpbrk(const char *s, const char *accept, const char
                  *rev_start);
 char *mbrevstrpbrk(const char *s, const char *accept, const char
                    *rev_start);
-#ifdef ENABLE_PINOTRC
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
-#endif
 #ifdef ENABLE_UTF8
 bool is_valid_unicode(wchar_t wc);
 #endif
-#ifdef ENABLE_PINOTRC
 bool is_valid_mbstring(const char *s);
-#endif
 
 /* All functions in color.c. */
 void set_colorpairs(void);
@@ -282,7 +276,6 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool
                 *lastwastab, void (*refresh_func)(void), bool *list);
 #endif
 const char *tail(const char *foo);
-#ifdef ENABLE_PINOTRC
 char *histfilename(void);
 void load_history(void);
 bool writehist(FILE *hist, filestruct *histhead);
@@ -291,7 +284,6 @@ int check_dotpinot(void);
 void load_poshistory(void);
 void save_poshistory(void);
 int check_poshistory(const char *file, ssize_t *line, ssize_t *column);
-#endif
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);
@@ -471,7 +463,6 @@ void do_prompt_abort(void);
 int do_yesno_prompt(bool all, const char *msg);
 
 /* All functions in rcfile.c. */
-#ifdef ENABLE_PINOTRC
 void rcfile_error(const char *msg, ...);
 char *parse_next_word(char *ptr);
 char *parse_argument(char *ptr);
@@ -485,7 +476,6 @@ COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underl
 void parse_colors(char *ptr, bool icase);
 void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
-#endif
 void parse_rcfile(FILE *rcstream, bool syntax_only);
 void do_rcfile(void);
 
@@ -527,9 +517,7 @@ void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t
 #endif
 bool find_bracket_match(bool reverse, const char *bracket_set);
 void do_find_bracket(void);
-#ifdef ENABLE_PINOTRC
 bool history_has_changed(void);
-#endif
 void history_init(void);
 void history_reset(const filestruct *h);
 filestruct *find_history(const filestruct *h_start, const filestruct
@@ -603,13 +591,11 @@ void align(char **str);
 void null_at(char **data, size_t index);
 void unsunder(char *str, size_t true_len);
 void sunder(char *str);
-#ifdef ENABLE_PINOTRC
 #ifndef HAVE_GETLINE
 ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
 #endif
 #ifndef HAVE_GETDELIM
 ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
-#endif
 #endif
 #ifdef HAVE_PCREPOSIX_H
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);

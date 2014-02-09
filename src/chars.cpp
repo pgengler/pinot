@@ -956,7 +956,6 @@ bool is_valid_unicode(wchar_t wc)
 }
 #endif
 
-#ifdef ENABLE_PINOTRC
 /* Check if the string s is a valid multibyte string.  Return TRUE if it
  * is, and FALSE otherwise. */
 bool is_valid_mbstring(const char *s)
@@ -969,4 +968,3 @@ bool is_valid_mbstring(const char *s)
 #endif
 	    TRUE;
 }
-#endif /* ENABLE_PINOTRC */

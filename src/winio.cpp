@@ -1886,16 +1886,15 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 
 		/* If buf contains a tab character, interpret it. */
 		if (*buf_mb == '\t') {
-#ifdef ENABLE_PINOTRC
 			if (ISSET(WHITESPACE_DISPLAY)) {
 				int i;
 
 				for (i = 0; i < whitespace_len[0]; i++) {
 					converted[index++] = whitespace[i];
 				}
-			} else
-#endif
+			} else {
 				converted[index++] = ' ';
+			}
 			start_col++;
 			while (start_col % tabsize != 0) {
 				converted[index++] = ' ';
@@ -1922,16 +1921,15 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 			free(ctrl_buf_mb);
 			/* If buf contains a space character, interpret it. */
 		} else if (*buf_mb == ' ') {
-#ifdef ENABLE_PINOTRC
 			if (ISSET(WHITESPACE_DISPLAY)) {
 				int i;
 
 				for (i = whitespace_len[0]; i < whitespace_len[0] + whitespace_len[1]; i++) {
 					converted[index++] = whitespace[i];
 				}
-			} else
-#endif
+			} else {
 				converted[index++] = ' ';
+			}
 			start_col++;
 			/* If buf contains a non-control character, interpret it.  If
 			 * buf contains an invalid multibyte non-control character,
@@ -2171,9 +2169,7 @@ void statusbar(const char *msg, ...)
 	va_list ap;
 	char *bar, *foo;
 	size_t start_x, foo_len;
-#ifdef ENABLE_PINOTRC
 	bool old_whitespace;
-#endif
 
 	va_start(ap, msg);
 
@@ -2187,19 +2183,15 @@ void statusbar(const char *msg, ...)
 
 	blank_statusbar();
 
-#ifdef ENABLE_PINOTRC
 	old_whitespace = ISSET(WHITESPACE_DISPLAY);
 	UNSET(WHITESPACE_DISPLAY);
-#endif
 	bar = charalloc(mb_cur_max() * (COLS - 3));
 	vsnprintf(bar, mb_cur_max() * (COLS - 3), msg, ap);
 	va_end(ap);
 	foo = display_string(bar, 0, COLS - 4, FALSE);
-#ifdef ENABLE_PINOTRC
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
-#endif
 	free(bar);
 	foo_len = strlenpt(foo);
 	start_x = (COLS - foo_len - 4) / 2;

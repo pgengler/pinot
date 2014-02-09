@@ -30,8 +30,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#ifdef ENABLE_PINOTRC
-
 static const rcoption rcopts[] = {
 	{"boldtext", BOLD_TEXT},
 #ifdef ENABLE_JUSTIFY
@@ -1179,5 +1177,3 @@ void do_rcfile(void)
 
 	set_colorpairs();
 }
-
-#endif /* ENABLE_PINOTRC */

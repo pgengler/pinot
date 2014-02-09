@@ -236,11 +236,8 @@ void help_init(void)
 	const sc *s;
 	int scsfound = 0;
 
-#ifdef ENABLE_PINOTRC
 	bool old_whitespace = ISSET(WHITESPACE_DISPLAY);
-
 	UNSET(WHITESPACE_DISPLAY);
-#endif
 
 	/* First, set up the initial help text for the current function. */
 	if (currmenu == MWHEREIS || currmenu == MREPLACE || currmenu == MREPLACE2) {
@@ -506,11 +503,9 @@ void help_init(void)
 	}
 
 
-#ifdef ENABLE_PINOTRC
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
-#endif
 
 	/* If all went well, we didn't overwrite the allocated space for
 	 * help_text. */

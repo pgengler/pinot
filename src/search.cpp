@@ -32,10 +32,8 @@
 
 static bool search_last_line = FALSE;
 /* Have we gone past the last line while searching? */
-#ifdef ENABLE_PINOTRC
 static bool history_changed = FALSE;
 /* Have any of the history lists changed? */
-#endif
 #ifdef HAVE_PCREPOSIX_H
 static bool regexp_compiled = FALSE;
 /* Have we compiled any regular expressions? */
@@ -1223,13 +1221,11 @@ void do_find_bracket(void)
 	free(found_ch);
 }
 
-#ifdef ENABLE_PINOTRC
 /* Indicate whether any of the history lists have changed. */
 bool history_has_changed(void)
 {
 	return history_changed;
 }
-#endif
 
 /* Initialize the search and replace history lists. */
 void history_init(void)
@@ -1328,10 +1324,8 @@ void update_history(filestruct **h, const char *s)
 	*hbot = (*hbot)->next;
 	(*hbot)->data = mallocstrcpy(NULL, "");
 
-#ifdef ENABLE_PINOTRC
 	/* Indicate that the history's been changed. */
 	history_changed = TRUE;
-#endif
 
 	/* Set the current position in the list to the bottom. */
 	*h = *hbot;

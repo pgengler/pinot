@@ -85,13 +85,11 @@ char *matchbrackets = NULL;
 /* The opening and closing brackets that can be found by bracket
  * searches. */
 
-#ifdef ENABLE_PINOTRC
 char *whitespace = NULL;
 /* The characters used when displaying the first characters of
  * tabs and spaces. */
 int whitespace_len[2];
 /* The length of these characters. */
-#endif
 
 #ifdef ENABLE_JUSTIFY
 char *punct = NULL;
@@ -1348,7 +1346,6 @@ sc *strtosc(int menu, char *input)
 
 }
 
-#ifdef ENABLE_PINOTRC
 /* Same thing as abnove but for the menu */
 int strtomenu(char *input)
 {
@@ -1384,7 +1381,6 @@ int strtomenu(char *input)
 
 	return -1;
 }
-#endif
 
 
 #ifdef DEBUG
@@ -1459,11 +1455,9 @@ void thanks_for_all_the_fish(void)
 	if (replaceage != NULL) {
 		free_filestruct(replaceage);
 	}
-#ifdef ENABLE_PINOTRC
 	if (homedir != NULL) {
 		free(homedir);
 	}
-#endif
 }
 
 #endif /* DEBUG */

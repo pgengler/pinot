@@ -2811,10 +2811,8 @@ const char *tail(const char *foo)
 	return tmp;
 }
 
-#ifdef ENABLE_PINOTRC
 /* Return the constructed dorfile path, or NULL if we can't find the home
- * directory.  The string is dynamically allocated, and should be
- * freed. */
+ * directory.  The string is dynamically allocated, and should be freed. */
 char *construct_filename(const char *str)
 {
 	char *newstr = NULL;
@@ -3161,5 +3159,3 @@ void load_poshistory(void)
 		free(pinothist);
 	}
 }
-
-#endif /* ENABLE_PINOTRC */
