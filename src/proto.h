@@ -287,18 +287,9 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column);
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);
-void toggle_init_one(int val
-#ifndef DISABLE_HELP
-                     , const char *desc, bool blank_after
-#endif
-                     , long flag);
+void toggle_init_one(int val, const char *desc, bool blank_after, long flag);
 void toggle_init(void);
-void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc
-#ifndef DISABLE_HELP
-                 , const char *help, bool blank_after
-#endif
-                 , int metaval, int funcval, int miscval, bool view, void
-                 (*func)(void));
+void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc, const char *help, bool blank_after, int metaval, int funcval, int miscval, bool view, void (*func)(void));
 void shortcut_init(bool unjustify);
 void free_shortcutage(shortcut **shortcutage);
 #ifdef DEBUG
@@ -310,12 +301,10 @@ void thanks_for_all_the_fish(void);
 void do_browser_help(void);
 #endif
 void do_help_void(void);
-#ifndef DISABLE_HELP
 void do_help(void (*refresh_func)(void));
 void help_init(void);
 void parse_help_input(int *kbinput, bool *meta_key, bool *func_key);
 size_t help_line_len(const char *ptr);
-#endif
 
 /* All functions in move.c. */
 void do_first_line(void);
@@ -550,12 +539,8 @@ int execute_command_silently(const char *command);
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
 #endif
-#if !defined(DISABLE_HELP) || !defined(DISABLE_WRAPJUSTIFY)
-ssize_t break_line(const char *line, ssize_t goal
-#ifndef DISABLE_HELP
-                   , bool newln
-#endif
-                  );
+#ifndef DISABLE_WRAPJUSTIFY
+ssize_t break_line(const char *line, ssize_t goal, bool newln);
 #endif
 size_t indent_length(const char *line);
 #ifdef ENABLE_JUSTIFY

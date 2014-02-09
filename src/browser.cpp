@@ -65,7 +65,7 @@ char *do_browser(char *path, DIR *dir)
 
 	curs_set(0);
 	blank_statusbar();
-#if !defined(DISABLE_HELP) || !defined(DISABLE_MOUSE)
+#ifndef DISABLE_MOUSE
 	currmenu = MBROWSER;
 #endif
 	bottombars(MBROWSER);
@@ -176,12 +176,8 @@ change_browser_directory:
 		if (f->scfunc == total_refresh) {
 			total_redraw();
 		} else if (f->scfunc == do_help_void) {
-#ifndef DISABLE_HELP
 			do_browser_help();
 			curs_set(0);
-#else
-			pinot_disabled_msg();
-#endif
 			/* Search for a filename. */
 		} else if (f->scfunc == do_search) {
 			curs_set(1);
@@ -223,7 +219,7 @@ change_browser_directory:
 			              browser_refresh, N_("Go To Directory"));
 
 			curs_set(0);
-#if !defined(DISABLE_HELP) || !defined(DISABLE_MOUSE)
+#ifndef DISABLE_MOUSE
 			currmenu = MBROWSER;
 #endif
 			bottombars(MBROWSER);
@@ -563,9 +559,7 @@ void parse_browser_input(int *kbinput, bool *meta_key, bool *func_key)
 			*kbinput = sc_seq_or(do_page_up, 0);
 			break;
 		case '?':
-#ifndef DISABLE_HELP
 			*kbinput = sc_seq_or(do_help_void, 0);
-#endif
 			break;
 			/* Cancel equivalent to Exit here. */
 		case 'E':

@@ -197,11 +197,7 @@ size_t length_of_list(int menu)
 	size_t i = 0;
 
 	for (f = allfuncs; f != NULL; f = f->next)
-		if ((f->menus & menu) != 0
-#ifndef DISABLE_HELP
-		        && strlen(f->help) > 0
-#endif
-		   ) {
+		if ((f->menus & menu) != 0 && strlen(f->help) > 0) {
 			i++;
 		}
 	return i;
@@ -286,10 +282,8 @@ void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *h
 	f->menus = menus;
 	f->desc = desc;
 	f->viewok = viewok;
-#ifndef DISABLE_HELP
 	f->help = help;
 	f->blank_after = blank_after;
-#endif
 
 	DEBUG_LOG("Added func \"%s\"\n", f->desc);
 }
@@ -523,7 +517,6 @@ void shortcut_init(bool unjustify)
 #ifdef ENABLE_JUSTIFY
 	const char *pinot_justify_msg = N_("Justify the current paragraph");
 #endif
-#ifndef DISABLE_HELP
 	/* TRANSLATORS: The next long series of strings are shortcut descriptions;
 	 * they are best kept shorter than 56 characters, but may be longer. */
 	const char *pinot_cancel_msg = N_("Cancel the current function");
@@ -613,13 +606,9 @@ void shortcut_init(bool unjustify)
 	const char *pinot_backfile_msg = N_("Go to the previous file in the list");
 	const char *pinot_gotodir_msg = N_("Go to directory");
 #endif
-#endif /* !DISABLE_HELP */
 
-#ifndef DISABLE_HELP
+// FIXME
 #define IFSCHELP(help) help
-#else
-#define IFSCHELP(help) ""
-#endif
 
 	while (allfuncs != NULL) {
 		subnfunc *f = allfuncs;
@@ -847,13 +836,9 @@ void shortcut_init(bool unjustify)
 	add_to_funcs(new_buffer_void, MEXTCMD, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), FALSE, NOVIEW);
 #endif
 
-#ifndef DISABLE_HELP
 	add_to_funcs(edit_refresh, MHELP, refresh_msg, pinot_refresh_msg, FALSE, VIEW);
 
 	add_to_funcs(do_exit, MHELP, exit_msg, IFSCHELP(pinot_exit_msg), FALSE, VIEW);
-
-
-#endif
 
 #ifndef DISABLE_BROWSER
 
@@ -1112,11 +1097,9 @@ sc *strtosc(int menu, char *input)
 	s->execute = TRUE; /* overridden as needed below */
 
 
-#ifndef DISABLE_HELP
 	if (!strcasecmp(input, "help")) {
 		s->scfunc = do_help_void;
-	} else
-#endif
+	} else {
 		if (!strcasecmp(input, "cancel")) {
 			s->scfunc = do_cancel;
 			s->execute = FALSE;
@@ -1341,6 +1324,7 @@ sc *strtosc(int menu, char *input)
 			free(s);
 			return NULL;
 		}
+	}
 
 	return s;
 

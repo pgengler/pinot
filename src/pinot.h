@@ -310,13 +310,11 @@ typedef struct openfilestruct {
 typedef struct shortcut {
 	const char *desc;
 	/* The function's description, e.g. "Page Up". */
-#ifndef DISABLE_HELP
 	const char *help;
 	/* The help file entry text for this function. */
 	bool blank_after;
 	/* Whether there should be a blank line after the help entry
 	 * text for this function. */
-#endif
 	/* Note: Key values that aren't used should be set to
 	 * PINOT_NO_KEY. */
 	int ctrlval;
@@ -370,13 +368,11 @@ typedef struct subnfunc {
 	/* In what menus does this function applu */
 	const char *desc;
 	/* The function's description, e.g. "Page Up". */
-#ifndef DISABLE_HELP
 	const char *help;
 	/* The help file entry text for this function. */
 	bool blank_after;
 	/* Whether there should be a blank line after the help entry
 	 * text for this function. */
-#endif
 	bool viewok;
 	/* Is this function allowed when in view mode? */
 	long toggle;

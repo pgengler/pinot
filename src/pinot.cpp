@@ -876,9 +876,6 @@ void version(void)
 #ifdef DISABLE_BROWSER
 	printf(" --disable-browser");
 #endif
-#ifdef DISABLE_HELP
-	printf(" --disable-help");
-#endif
 #ifdef DISABLE_MOUSE
 	printf(" --disable-mouse");
 #endif

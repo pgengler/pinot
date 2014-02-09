@@ -27,8 +27,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifndef DISABLE_HELP
-
 static char *help_text = NULL;
 /* The text displayed in the help window. */
 
@@ -565,20 +563,9 @@ size_t help_line_len(const char *ptr)
 	return retval;
 }
 
-#endif /* !DISABLE_HELP */
-
 /* Start the help browser for the edit window. */
 void do_help_void(void)
 {
-
-#ifndef DISABLE_HELP
 	/* Start the help browser for the edit window. */
 	do_help(&edit_refresh);
-#else
-	if (currmenu == MMAIN) {
-		pinot_disabled_msg();
-	} else {
-		beep();
-	}
-#endif
 }

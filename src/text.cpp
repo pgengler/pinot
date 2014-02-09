@@ -985,11 +985,7 @@ void add_undo(undo_type current_action)
 		break;
 #ifndef DISABLE_WRAPPING
 	case SPLIT:
-		wrap_loc = break_line(openfile->current->data, fill
-#ifndef DISABLE_HELP
-		                      , FALSE
-#endif
-		                     );
+		wrap_loc = break_line(openfile->current->data, fill, FALSE);
 		u->strdata = mallocstrcpy(NULL, &openfile->current->data[wrap_loc]);
 		/* Don't both saving the next line if we're not prepending as a new line
 		   will be created */
@@ -1213,11 +1209,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	line_len = strlen(line->data);
 
 	/* Find the last blank where we can break the line. */
-	wrap_loc = break_line(line->data, fill
-#ifndef DISABLE_HELP
-	                      , FALSE
-#endif
-	                     );
+	wrap_loc = break_line(line->data, fill, FALSE);
 
 	/* If we couldn't break the line, or we've reached the end of it, we
 	 * don't wrap. */
@@ -1395,17 +1387,13 @@ bool do_wrap(filestruct *line, bool undoing)
 }
 #endif /* !DISABLE_WRAPPING */
 
-#if !defined(DISABLE_HELP) || !defined(DISABLE_WRAPJUSTIFY)
+#ifndef DISABLE_WRAPJUSTIFY
 /* We are trying to break a chunk off line.  We find the last blank such
  * that the display length to there is at most (goal + 1).  If there is
  * no such blank, then we find the first blank.  We then take the last
  * blank in that group of blanks.  The terminating '\0' counts as a
  * blank, as does a '\n' if newline is TRUE. */
-ssize_t break_line(const char *line, ssize_t goal
-#ifndef DISABLE_HELP
-                   , bool newln
-#endif
-                  )
+ssize_t break_line(const char *line, ssize_t goal, bool newln)
 {
 	ssize_t blank_loc = -1;
 	/* Current tentative return value.  Index of the last blank we
@@ -1421,18 +1409,12 @@ ssize_t break_line(const char *line, ssize_t goal
 	while (*line != '\0' && goal >= cur_pos) {
 		line_len = parse_mbchar(line, NULL, &cur_pos);
 
-		if (is_blank_mbchar(line)
-#ifndef DISABLE_HELP
-		        || (newln && *line == '\n')
-#endif
-		   ) {
+		if (is_blank_mbchar(line) || (newln && *line == '\n')) {
 			blank_loc = cur_loc;
 
-#ifndef DISABLE_HELP
 			if (newln && *line == '\n') {
 				break;
 			}
-#endif
 		}
 
 		line += line_len;
@@ -1444,14 +1426,12 @@ ssize_t break_line(const char *line, ssize_t goal
 		return cur_loc;
 	}
 
-#ifndef DISABLE_HELP
 	if (newln && blank_loc <= 0) {
 		/* If blank was not found or was found only first character,
 		 * force line break. */
 		cur_loc -= line_len;
 		return cur_loc;
 	}
-#endif
 
 	if (blank_loc == -1) {
 		/* No blank was found that was short enough. */
@@ -1461,11 +1441,7 @@ ssize_t break_line(const char *line, ssize_t goal
 		while (*line != '\0') {
 			line_len = parse_mbchar(line, NULL, NULL);
 
-			if (is_blank_mbchar(line)
-#ifndef DISABLE_HELP
-			        || (newln && *line == '\n')
-#endif
-			   ) {
+			if (is_blank_mbchar(line) || (newln && *line == '\n')) {
 				if (!found_blank) {
 					found_blank = TRUE;
 				}
@@ -1487,16 +1463,10 @@ ssize_t break_line(const char *line, ssize_t goal
 	line_len = parse_mbchar(line, NULL, NULL);
 	line += line_len;
 
-	while (*line != '\0' && (is_blank_mbchar(line)
-#ifndef DISABLE_HELP
-	                         || (newln && *line == '\n')
-#endif
-	                        )) {
-#ifndef DISABLE_HELP
+	while (*line != '\0' && (is_blank_mbchar(line) || (newln && *line == '\n'))) {
 		if (newln && *line == '\n') {
 			break;
 		}
-#endif
 
 		line_len = parse_mbchar(line, NULL, NULL);
 
@@ -1506,7 +1476,7 @@ ssize_t break_line(const char *line, ssize_t goal
 
 	return blank_loc;
 }
-#endif /* !DISABLE_HELP || !DISABLE_WRAPJUSTIFY */
+#endif /* !DISABLE_WRAPJUSTIFY */
 
 /* The "indentation" of a line is the whitespace between the quote part
  * and the non-whitespace of the line. */
@@ -2178,11 +2148,7 @@ void do_justify(bool full_justify)
 
 			/* If this line is too long, try to wrap it to the next line
 			 * to make it short enough. */
-			break_pos = break_line(openfile->current->data + indent_len, fill - strnlenpt(openfile->current->data, indent_len)
-#ifndef DISABLE_HELP
-			                       , FALSE
-#endif
-			                      );
+			break_pos = break_line(openfile->current->data + indent_len, fill - strnlenpt(openfile->current->data, indent_len), FALSE);
 
 			/* We can't break the line, or don't need to, so get out. */
 			if (break_pos == -1 || break_pos + indent_len == line_len) {
