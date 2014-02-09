@@ -24,6 +24,8 @@
 #include "proto.h"
 
 #include <fstream>
+#include <string>
+#include <sstream>
 #include <vector>
 
 #include <stdarg.h>
@@ -897,61 +899,60 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 	while (!std::getline(rcstream, line).eof()) {
 		lineno++;
 
-		char *ptr, *keyword, *option;
-		int set = 0;
-		size_t i;
-
-		char *ptr = line.c_str();
-		while (isblank(*ptr)) {
-			ptr++;
-		}
-
-		/* If we have a blank line or a comment, skip to the next line. */
-		if (*ptr == '\0' || *ptr == '#') {
+		if (line.empty() || line[0] == '#') {
 			continue;
 		}
 
-		/* Otherwise, skip to the next space. */
-		keyword = ptr;
-		ptr = parse_next_word(ptr);
+		std::stringstream linestream;
+		linestream << linestream;
+
+		// Read keyword
+		std::string keyword;
+		linestream >> keyword;
+
+		// --------
+
+		char *ptr, *option;
+		int set = 0;
+		size_t i;
 
 		/* Try to parse the keyword. */
-		if (strcasecmp(keyword, "set") == 0) {
+		if (keyword == "set") {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else {
 				set = 1;
 			}
-		} else if (strcasecmp(keyword, "unset") == 0) {
+		} else if (keyword == "unset") {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else {
 				set = -1;
 			}
-		}	else if (strcasecmp(keyword, "include") == 0) {
+		}	else if (keyword == "include") {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else {
 				parse_include(ptr);
 			}
-		} else if (strcasecmp(keyword, "syntax") == 0) {
+		} else if (keyword == "syntax") {
 			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
 				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 			}
 			parse_syntax(ptr);
-		} else if (strcasecmp(keyword, "extends") == 0) {
+		} else if (keyword == "extends") {
 			parse_extends(ptr);
-		} else if (strcasecmp(keyword, "magic") == 0) {
+		} else if (keyword == "magic") {
 			parse_magictype(ptr);
-		} else if (strcasecmp(keyword, "header") == 0) {
+		} else if (keyword == "header") {
 			parse_headers(ptr);
-		} else if (strcasecmp(keyword, "color") == 0) {
+		} else if (keyword == "color") {
 			parse_colors(ptr, false);
-		} else if (strcasecmp(keyword, "icolor") == 0) {
+		} else if (keyword == "icolor") {
 			parse_colors(ptr, true);
-		} else if (strcasecmp(keyword, "bind") == 0) {
+		} else if (keyword == "bind") {
 			parse_keybinding(ptr);
-		} else if (strcasecmp(keyword, "unbind") == 0) {
+		} else if (keyword == "unbind") {
 			parse_unbinding(ptr);
 		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword);
@@ -966,13 +967,11 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			continue;
 		}
 
-		option = ptr;
-		ptr = parse_next_word(ptr);
+		linestream >> option;
 
 		bool found = false;
-		for (auto iter = rcopts.begin(); iter != rcopts.end(); ++iter) {
-			auto rcopt = *iter;
-			if (rcopt.name == option) {
+		for (auto rcopt : rcopts) {
+ 			if (rcopt.name == option) {
 				found = true;
 				DEBUG_LOG("parse_rcfile(): name = \"%s\"\n", rcopt.name.c_str());
 				if (set == 1) {
@@ -981,52 +980,43 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						SET(rcopt.flag);
 					} else {
 						/* This option doesn't have a flag, so it takes an argument. */
-						if (*ptr == '\0') {
+						std::string argument = linestream.str();
+
+						if (argument.empty()) {
 							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
 							break;
 						}
-						option = ptr;
-						if (*option == '"') {
-							option++;
-						}
-						ptr = parse_argument(ptr);
-
-						option = mallocstrcpy(NULL, option);
-						DEBUG_LOG("option = \"%s\"\n", option);
+						DEBUG_LOG("argument = \"%s\"\n", argument.c_str());
 
 						/* Make sure option is a valid multibyte string. */
-						if (!is_valid_mbstring(option)) {
+						if (!is_valid_mbstring(argument.c_str())) {
 							rcfile_error(N_("Option is not a valid multibyte string"));
 							break;
 						}
 
 #ifndef DISABLE_OPERATINGDIR
 						if (rcopt.name == "operatingdir") {
-							operating_dir = option;
+							operating_dir = argument.c_str();
 						} else
 #endif
 #ifndef DISABLE_WRAPJUSTIFY
 						if (rcopt.name == "fill") {
-							if (!parse_num(option, &wrap_at)) {
-								rcfile_error(N_("Requested fill size \"%s\" is invalid"), option);
+							if (!parse_num(argument.c_str(), &wrap_at)) {
+								rcfile_error(N_("Requested fill size \"%s\" is invalid"), argument.c_str());
 								wrap_at = -CHARS_FROM_EOL;
-							} else {
-								free(option);
 							}
 						} else
 #endif
 						if (rcopt.name == "matchbrackets") {
-							matchbrackets = option;
+							matchbrackets = argument.c_str();
 							if (has_blank_mbchars(matchbrackets)) {
 								rcfile_error(N_("Non-blank characters required"));
-								free(matchbrackets);
 								matchbrackets = NULL;
 							}
 						} else if (rcopt.name == "whitespace") {
-							whitespace = option;
+							whitespace = argument.c_str();
 							if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
 								rcfile_error(N_("Two single-column characters required"));
-								free(whitespace);
 								whitespace = NULL;
 							} else {
 								whitespace_len[0] = parse_mbchar(whitespace, NULL, NULL);
@@ -1035,37 +1025,33 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						} else
 #ifdef ENABLE_JUSTIFY
 						if (rcopt.name == "punct") {
-							punct = option;
+							punct = argument.c_str();
 							if (has_blank_mbchars(punct)) {
 								rcfile_error(N_("Non-blank characters required"));
-								free(punct);
 								punct = NULL;
 							}
 						} else if (rcopt.name == "brackets") {
-							brackets = option;
+							brackets = argument.c_str();
 							if (has_blank_mbchars(brackets)) {
 								rcfile_error(N_("Non-blank characters required"));
-								free(brackets);
 								brackets = NULL;
 							}
 						} else if (rcopt.name == "quotestr") {
-							quotestr = option;
+							quotestr = argument.c_str();
 						} else
 #endif
 						if (rcopt.name == "backupdir") {
-							backup_dir = option;
+							backup_dir = argument.c_str();
 						} else
 #ifdef ENABLE_SPELLER
 						if (rcopt.name == "speller") {
-							alt_speller = option;
+							alt_speller = argument.c_str();
 						} else
 #endif
 						if (rcopt.name == "tabsize") {
-							if (!parse_num(option, &tabsize) || tabsize <= 0) {
-								rcfile_error(N_("Requested tab size \"%s\" is invalid"), option);
+							if (!parse_num(arguent.c_str(), &tabsize) || tabsize <= 0) {
+								rcfile_error(N_("Requested tab size \"%s\" is invalid"), argument.c_str());
 								tabsize = -1;
-							} else {
-								free(option);
 							}
 						} else {
 							assert(false);
