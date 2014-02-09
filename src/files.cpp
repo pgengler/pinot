@@ -324,7 +324,7 @@ void open_buffer(const char *filename, bool undoable)
 	if (rc > 0) {
 		read_file(f, rc, filename, undoable, new_buffer);
 		if (openfile->current_stat == NULL) {
-			openfile->current_stat = (struct stat *)nmalloc(sizeof(struct stat));
+			openfile->current_stat = new struct stat;
 			stat(filename, openfile->current_stat);
 		}
 	}
@@ -2107,7 +2107,7 @@ skip_backup:
 
 		/* Update current_stat to reference the file as it is now. */
 		if (openfile->current_stat == NULL) {
-			openfile->current_stat = (struct stat *)nmalloc(sizeof(struct stat));
+			openfile->current_stat = new struct stat;
 		}
 		if (!openfile->mark_set) {
 			stat(realname, openfile->current_stat);

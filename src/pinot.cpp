@@ -533,7 +533,7 @@ void delete_opennode(openfilestruct *fileptr)
 	free(fileptr->filename);
 	free_filestruct(fileptr->fileage);
 	if (fileptr->current_stat != NULL) {
-		free(fileptr->current_stat);
+		delete fileptr->current_stat;
 	}
 
 	delete fileptr;
