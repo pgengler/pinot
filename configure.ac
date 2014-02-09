@@ -117,46 +117,12 @@ AC_ARG_ENABLE(wrapping-as-root,
     AC_DEFINE(DISABLE_ROOTWRAPPING, 1, [Define this to disable text wrapping as root by default.])
 fi])
 
-AC_ARG_ENABLE(color,
-[  --disable-color          Disable color and syntax highlighting],
-if test x$enableval != xno; then
-    if test x$ac_cv_header_pcreposix_h = xyes; then
-	AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-	AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
-    else
-	AC_MSG_ERROR([
-*** The header file pcreposix.h was not found.  If you wish to use color
-*** support this header file is required.  Please either install C
-*** libraries that include the pcreposix.h file or call the configure
-*** script with --disable-color.])
-    fi
-fi, 
-	if test x$ac_cv_header_pcreposix_h = xyes; then
-	    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-	    AC_DEFINE(ENABLE_COLOR, 1, [Define this to have syntax highlighting, requires pcreposix.h and ENABLE_PINOTRC too!]) color_support=yes
-	else
-	    AC_MSG_ERROR([
-*** The header file pcreposix.h was not found.  If you wish to use color
-*** support this header file is required.  Please either install C
-*** libraries that include the pcreposix.h file or call the configure
-*** script with --disable-color.])
-	fi
-)
-
 AC_ARG_ENABLE(multibuffer,
 [  --disable-multibuffer    Disable multiple file buffers],
 [if test x$enableval != xno; then
     AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
 fi],[
     AC_DEFINE(ENABLE_MULTIBUFFER, 1, [Define this to enable multiple file buffers.]) multibuffer_support=yes
-])
-
-AC_ARG_ENABLE(pinotrc,
-[  --disable-pinotrc         Disable use of .pinotrc files],
-[if test x$enableval != xno; then
-    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
-fi],[
-    AC_DEFINE(ENABLE_PINOTRC, 1, [Define this to use .pinotrc files.]) pinotrc_support=yes
 ])
 
 AC_MSG_CHECKING([whether to enable UTF-8 support])
@@ -366,9 +332,6 @@ if test x$CURSES_LIB_NAME = xslang; then
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
 fi
 
-AM_CONDITIONAL(USE_COLOR, test x$color_support = xyes)
-AM_CONDITIONAL(USE_PINOTRC, test x$pinotrc_support = xyes)
-
 AC_ARG_ENABLE(altrcname,
 [  --enable-altrcname          Specify alternate rcfile name (default: .pinotrc)],
 [if test x$enableval != no; then
@@ -487,75 +450,6 @@ else
 *** character support.])
     fi
 fi
-
-if test x$color_support = xyes; then
-	# now check for the end of word boundary support (/< and />)
-	AC_MSG_CHECKING([for GNU-style word boundary regex support])
-	AC_ARG_WITH(wordbounds,
-        [  --with-wordbounds            Use GNU-style word boundary delimiters],
-	[ case "$with_wordbounds" in
-	    no)
-		AC_MSG_RESULT(no)
-		;;
-	    *)
-		AC_MSG_RESULT(yes)
-		# We explicitly don't check if the user forced the option, because
-		# this is needed for cross compilers and we cant test the target
-		AC_DEFINE(GNU_WORDBOUNDS, 1, [Define if the system supports GNU-style word boundaries in regexes.]) gnu_wordbounds=yes,
-                ;;
-          esac
-        ], [
-	    AC_TRY_RUN([
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <regex.h>
-int main(void)
-{
-    regex_t r;
-    size_t nmatch;
-    regmatch_t pmatch;
-
-    if (regcomp(&r, "\\\\>", REG_EXTENDED|REG_NOSUB))
-        return 1;
-    if (regexec(&r, "word boundary", nmatch, &pmatch, 0))
-        return 1;
-    return 0;
-}],
-	    AC_MSG_RESULT(yes)
-	    AC_DEFINE(GNU_WORDBOUNDS, 1, [Define if the system supports GNU-style word boundaries in regexes.]) gnu_wordbounds=yes,
-	    AC_MSG_RESULT(no),
-	    AC_MSG_WARN([*** Can't check for GNU-style word boundary support when cross-compiling])
-	)
-])
-
-#    if test x$CURSES_LIB_NAME = xcurses; then
-	AC_MSG_CHECKING([whether _XOPEN_SOURCE_EXTENDED is needed])
-	AC_TRY_RUN([
-#include <curses.h>
-int main(void)
-{
-    int testcolor = COLOR_WHITE;
-    return 0;
-}], AC_MSG_RESULT(no),
-        AC_TRY_RUN([
-#ifndef _XOPEN_SOURCE_EXTENDED
-#define _XOPEN_SOURCE_EXTENDED 1
-#endif
-#include <curses.h>
-int main(void)
-{
-    int testcolor = COLOR_WHITE;
-    return 0;
-}],
-	AC_DEFINE(NEED_XOPEN_SOURCE_EXTENDED, 1, [Define this if you need the _XOPEN_SOURCE_EXTENDED macro for color support])
-	AC_MSG_RESULT(yes),
-	AC_MSG_RESULT(not sure)
-	AC_MSG_WARN([*** Couldn't successfully compile basic color test with or without _XOPEN_SOURCE_EXTENDED])
-	AC_MSG_WARN([*** This build may not compile. Consider configuring with --disable-color or installing ncurses])),
-	AC_MSG_WARN([*** Can't check need for _XOPEN_SOURCE_EXTENDED when cross-compiling]))
-    fi
-#fi
 
 AC_MSG_CHECKING([whether LINES and COLS can be redefined])
 AC_TRY_RUN([
