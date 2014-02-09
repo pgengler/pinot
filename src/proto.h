@@ -55,11 +55,9 @@ extern openfilestruct *openfile;
 
 extern char *matchbrackets;
 
-#ifdef ENABLE_PINOTRC
 extern char *whitespace;
 extern int whitespace_len[2];
 extern undo_type last_action;
-#endif
 
 #ifdef ENABLE_JUSTIFY
 extern char *punct;
@@ -88,7 +86,6 @@ extern char *alt_speller;
 
 extern sc *sclist;
 extern subnfunc *allfuncs;
-
 extern SyntaxMap syntaxes;
 extern char *syntaxstr;
 
@@ -194,16 +191,12 @@ char *revstrpbrk(const char *s, const char *accept, const char
                  *rev_start);
 char *mbrevstrpbrk(const char *s, const char *accept, const char
                    *rev_start);
-#ifdef ENABLE_PINOTRC
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
-#endif
 #ifdef ENABLE_UTF8
 bool is_valid_unicode(wchar_t wc);
 #endif
-#ifdef ENABLE_PINOTRC
 bool is_valid_mbstring(const char *s);
-#endif
 
 /* All functions in color.c. */
 void set_colorpairs(void);
@@ -231,14 +224,11 @@ void open_buffer(const char *filename, bool undoable);
 void replace_buffer(const char *filename);
 #endif
 void display_buffer(void);
-#ifdef ENABLE_MULTIBUFFER
 void switch_to_prevnext_buffer(bool next);
 void switch_to_prev_buffer_void(void);
 void switch_to_next_buffer_void(void);
 bool close_buffer(void);
-#endif
-filestruct *read_line(char *buf, filestruct *prevnode, bool
-                      *first_line_ins, size_t buf_len);
+filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, size_t buf_len);
 void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkwritable);
 int open_file(const char *filename, bool newfie, FILE **f);
 char *get_next_filename(const char *name, const char *suffix);
@@ -277,7 +267,6 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool
                 *lastwastab, void (*refresh_func)(void), bool *list);
 #endif
 const char *tail(const char *foo);
-#ifdef ENABLE_PINOTRC
 char *histfilename(void);
 void load_history(void);
 bool writehist(FILE *hist, filestruct *histhead);
@@ -286,22 +275,12 @@ int check_dotpinot(void);
 void load_poshistory(void);
 void save_poshistory(void);
 int check_poshistory(const char *file, ssize_t *line, ssize_t *column);
-#endif
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);
-void toggle_init_one(int val
-#ifndef DISABLE_HELP
-                     , const char *desc, bool blank_after
-#endif
-                     , long flag);
+void toggle_init_one(int val, const char *desc, bool blank_after, long flag);
 void toggle_init(void);
-void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc
-#ifndef DISABLE_HELP
-                 , const char *help, bool blank_after
-#endif
-                 , int metaval, int funcval, int miscval, bool view, void
-                 (*func)(void));
+void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc, const char *help, bool blank_after, int metaval, int funcval, int miscval, bool view, void (*func)(void));
 void shortcut_init(bool unjustify);
 void free_shortcutage(shortcut **shortcutage);
 #ifdef DEBUG
@@ -313,12 +292,10 @@ void thanks_for_all_the_fish(void);
 void do_browser_help(void);
 #endif
 void do_help_void(void);
-#ifndef DISABLE_HELP
 void do_help(void (*refresh_func)(void));
 void help_init(void);
 void parse_help_input(int *kbinput, bool *meta_key, bool *func_key);
 size_t help_line_len(const char *ptr);
-#endif
 
 /* All functions in move.c. */
 void do_first_line(void);
@@ -466,7 +443,6 @@ void do_prompt_abort(void);
 int do_yesno_prompt(bool all, const char *msg);
 
 /* All functions in rcfile.c. */
-#ifdef ENABLE_PINOTRC
 void rcfile_error(const char *msg, ...);
 char *parse_next_word(char *ptr);
 char *parse_argument(char *ptr);
@@ -482,7 +458,6 @@ void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
 void parse_rcfile(std::ifstream &rcstream, bool syntax_only);
 void do_rcfile(void);
-#endif
 
 /* All functions in search.c. */
 bool regexp_init(const char *regexp);
@@ -518,9 +493,7 @@ void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t
 #endif
 bool find_bracket_match(bool reverse, const char *bracket_set);
 void do_find_bracket(void);
-#ifdef ENABLE_PINOTRC
 bool history_has_changed(void);
-#endif
 void history_init(void);
 void history_reset(const filestruct *h);
 filestruct *find_history(const filestruct *h_start, const filestruct
@@ -553,12 +526,8 @@ int execute_command_silently(const char *command);
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
 #endif
-#if !defined(DISABLE_HELP) || !defined(DISABLE_WRAPJUSTIFY)
-ssize_t break_line(const char *line, ssize_t goal
-#ifndef DISABLE_HELP
-                   , bool newln
-#endif
-                  );
+#ifndef DISABLE_WRAPJUSTIFY
+ssize_t break_line(const char *line, ssize_t goal, bool newln);
 #endif
 size_t indent_length(const char *line);
 #ifdef ENABLE_JUSTIFY
@@ -594,7 +563,6 @@ void align(char **str);
 void null_at(char **data, size_t index);
 void unsunder(char *str, size_t true_len);
 void sunder(char *str);
-#ifdef ENABLE_PINOTRC
 #ifndef HAVE_GETLINE
 ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
 #endif
@@ -603,7 +571,6 @@ ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 #endif
 ssize_t getdelim(char **lineptr, size_t *n, char delim, std::istream &stream);
 ssize_t getline(char **lineptr, size_t *n, std::istream &stream);
-#endif
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);
 const char *fixbounds(const char *r);
 const char *fixbounds(const std::string& r);

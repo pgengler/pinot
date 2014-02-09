@@ -55,8 +55,7 @@ void do_page_up(void)
 	/* If there's less than a page of text left on the screen, put the
 	 * cursor at the beginning of the first line of the file, and then
 	 * update the edit window. */
-	if (openfile->current->lineno == 1 || (!ISSET(SOFTWRAP) &&
-	                                       openfile->current->lineno <= editwinrows - 2)) {
+	if (openfile->current->lineno == 1 || (!ISSET(SOFTWRAP) && openfile->current->lineno <= editwinrows - 2)) {
 		do_first_line();
 		return;
 	}
@@ -69,8 +68,7 @@ void do_page_up(void)
 		openfile->placewewant = openfile->current_y = 0;
 	}
 
-	for (i = editwinrows - 2; i - skipped > 0 && openfile->current !=
-	        openfile->fileage; i--) {
+	for (i = editwinrows - 2; i - skipped > 0 && openfile->current != openfile->fileage; i--) {
 		openfile->current = openfile->current->prev;
 		if (ISSET(SOFTWRAP) && openfile->current) {
 			skipped += strlenpt(openfile->current->data) / COLS;
@@ -78,8 +76,7 @@ void do_page_up(void)
 		}
 	}
 
-	openfile->current_x = actual_x(openfile->current->data,
-	                               openfile->placewewant);
+	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
 	DEBUG_LOG("do_page_up: openfile->current->lineno = %lu, skipped = %d\n", (unsigned long) openfile->current->lineno, skipped);
 
@@ -95,8 +92,7 @@ void do_page_down(void)
 	/* If there's less than a page of text left on the screen, put the
 	 * cursor at the beginning of the last line of the file, and then
 	 * update the edit window. */
-	if (openfile->current->lineno + maxrows - 2 >=
-	        openfile->filebot->lineno) {
+	if (openfile->current->lineno + maxrows - 2 >= openfile->filebot->lineno) {
 		do_last_line();
 		return;
 	}
@@ -108,15 +104,12 @@ void do_page_down(void)
 		openfile->placewewant = openfile->current_y = 0;
 	}
 
-	for (i = maxrows - 2; i > 0 && openfile->current !=
-	        openfile->filebot; i--) {
+	for (i = maxrows - 2; i > 0 && openfile->current != openfile->filebot; i--) {
 		openfile->current = openfile->current->next;
 		DEBUG_LOG("do_page_down: moving to line %lu\n", (unsigned long) openfile->current->lineno);
-
 	}
 
-	openfile->current_x = actual_x(openfile->current->data,
-	                               openfile->placewewant);
+	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
 	/* Scroll the edit window down a page. */
 	edit_update(NONE);
@@ -164,14 +157,11 @@ void do_para_end(bool allow_update)
 	filestruct *const current_save = openfile->current;
 	const size_t pww_save = openfile->placewewant;
 
-	while (openfile->current != openfile->filebot &&
-	        !inpar(openfile->current)) {
+	while (openfile->current != openfile->filebot && !inpar(openfile->current)) {
 		openfile->current = openfile->current->next;
 	}
 
-	while (openfile->current != openfile->filebot &&
-	        inpar(openfile->current->next) &&
-	        !begpar(openfile->current->next)) {
+	while (openfile->current != openfile->filebot && inpar(openfile->current->next) && !begpar(openfile->current->next)) {
 		openfile->current = openfile->current->next;
 		openfile->current_y++;
 	}
@@ -218,11 +208,9 @@ bool do_next_word(bool allow_punct, bool allow_update)
 	/* Move forward until we find the character after the last letter of
 	 * the current word. */
 	while (!end_line) {
-		char_mb_len = parse_mbchar(openfile->current->data +
-		                           openfile->current_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
 
-		/* If we've found it, stop moving forward through the current
-		 * line. */
+		/* If we've found it, stop moving forward through the current line. */
 		if (!is_word_mbchar(char_mb, allow_punct)) {
 			break;
 		}
@@ -248,8 +236,7 @@ bool do_next_word(bool allow_punct, bool allow_update)
 	for (; openfile->current != NULL;
 	        openfile->current = openfile->current->next) {
 		while (!end_line) {
-			char_mb_len = parse_mbchar(openfile->current->data +
-			                           openfile->current_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
 
 			/* If we've found it, stop moving forward through the
 			 * current line. */
@@ -321,8 +308,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	/* Move backward until we find the character before the first letter
 	 * of the current word. */
 	while (!begin_line) {
-		char_mb_len = parse_mbchar(openfile->current->data +
-		                           openfile->current_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
 
 		/* If we've found it, stop moving backward through the current
 		 * line. */
@@ -337,8 +323,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 		if (openfile->current_x == 0) {
 			begin_line = TRUE;
 		} else
-			openfile->current_x = move_mbleft(openfile->current->data,
-			                                  openfile->current_x);
+			openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 	}
 
 	/* Move backward until we find the last letter of the previous
@@ -346,17 +331,13 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	if (openfile->current_x == 0) {
 		begin_line = TRUE;
 	} else
-		openfile->current_x = move_mbleft(openfile->current->data,
-		                                  openfile->current_x);
+		openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 
-	for (; openfile->current != NULL;
-	        openfile->current = openfile->current->prev) {
+	for (; openfile->current != NULL; openfile->current = openfile->current->prev) {
 		while (!begin_line) {
-			char_mb_len = parse_mbchar(openfile->current->data +
-			                           openfile->current_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
 
-			/* If we've found it, stop moving backward through the
-			 * current line. */
+			/* If we've found it, stop moving backward through the current line. */
 			if (is_word_mbchar(char_mb, allow_punct)) {
 				break;
 			}
@@ -364,13 +345,10 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 			if (openfile->current_x == 0) {
 				begin_line = TRUE;
 			} else
-				openfile->current_x =
-				    move_mbleft(openfile->current->data,
-				                openfile->current_x);
+				openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 		}
 
-		/* If we've found it, stop moving backward to the ends of
-		 * previous lines. */
+		/* If we've found it, stop moving backward to the ends of previous lines. */
 		if (!begin_line) {
 			break;
 		}
@@ -390,26 +368,23 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	else if (!begin_line) {
 		if (openfile->current_x == 0) {
 			begin_line = TRUE;
-		} else
-			openfile->current_x = move_mbleft(openfile->current->data,
-			                                  openfile->current_x);
+		} else {
+			openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
+		}
 
 		while (!begin_line) {
-			char_mb_len = parse_mbchar(openfile->current->data +
-			                           openfile->current_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
 
-			/* If we've found it, stop moving backward through the
-			 * current line. */
+			/* If we've found it, stop moving backward through the current line. */
 			if (!is_word_mbchar(char_mb, allow_punct)) {
 				break;
 			}
 
 			if (openfile->current_x == 0) {
 				begin_line = TRUE;
-			} else
-				openfile->current_x =
-				    move_mbleft(openfile->current->data,
-				                openfile->current_x);
+			} else {
+				openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
+			}
 		}
 
 		/* If we've found it, move forward to the first letter of the
@@ -453,8 +428,7 @@ void do_home(void)
 
 		openfile->current_x = indent_length(openfile->current->data);
 
-		if (openfile->current_x == current_x_save ||
-		        openfile->current->data[openfile->current_x] == '\0') {
+		if (openfile->current_x == current_x_save || openfile->current->data[openfile->current_x] == '\0') {
 			openfile->current_x = 0;
 		}
 
@@ -496,8 +470,7 @@ void do_up(bool scroll_only)
 
 	/* Move the current line of the edit window up. */
 	openfile->current = openfile->current->prev;
-	openfile->current_x = actual_x(openfile->current->data,
-	                               openfile->placewewant);
+	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
 	/* If scroll_only is FALSE and if we're on the first line of the
 	 * edit window, scroll the edit window up one line if we're in
@@ -548,8 +521,7 @@ void do_down(bool scroll_only)
 
 	/* Move the current line of the edit window down. */
 	openfile->current = openfile->current->next;
-	openfile->current_x = actual_x(openfile->current->data,
-	                               openfile->placewewant);
+	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
 	if (ISSET(SOFTWRAP)) {
 		if (openfile->current->lineno - openfile->edittop->lineno >= maxrows) {
@@ -596,10 +568,9 @@ void do_left(void)
 {
 	size_t pww_save = openfile->placewewant;
 
-	if (openfile->current_x > 0)
-		openfile->current_x = move_mbleft(openfile->current->data,
-		                                  openfile->current_x);
-	else if (openfile->current != openfile->fileage) {
+	if (openfile->current_x > 0) {
+		openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
+	} else if (openfile->current != openfile->fileage) {
 		do_up_void();
 		openfile->current_x = strlen(openfile->current->data);
 	}
@@ -618,10 +589,9 @@ void do_right(void)
 
 	assert(openfile->current_x <= strlen(openfile->current->data));
 
-	if (openfile->current->data[openfile->current_x] != '\0')
-		openfile->current_x = move_mbright(openfile->current->data,
-		                                   openfile->current_x);
-	else if (openfile->current != openfile->filebot) {
+	if (openfile->current->data[openfile->current_x] != '\0') {
+		openfile->current_x = move_mbright(openfile->current->data, openfile->current_x);
+	} else if (openfile->current != openfile->filebot) {
 		do_down_void();
 		openfile->current_x = 0;
 	}

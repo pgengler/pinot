@@ -45,10 +45,8 @@
 static int oldinterval = -1;
 /* Used to store the user's original mouse click interval. */
 #endif
-#ifdef ENABLE_PINOTRC
 static bool no_rcfiles = FALSE;
 /* Should we ignore all rcfiles? */
-#endif
 static struct termios oldterm;
 /* The user's original terminal settings. */
 static struct sigaction act;
@@ -58,7 +56,7 @@ static struct sigaction act;
  * to the new line. */
 filestruct *make_new_node(filestruct *prevnode)
 {
-	filestruct *newnode = (filestruct *)nmalloc(sizeof(filestruct));
+	filestruct *newnode = new filestruct;
 
 	newnode->data = NULL;
 	newnode->prev = prevnode;
@@ -77,7 +75,7 @@ filestruct *copy_node(const filestruct *src)
 
 	assert(src != NULL);
 
-	dst = (filestruct *)nmalloc(sizeof(filestruct));
+	dst = new filestruct;
 
 	dst->data = mallocstrcpy(NULL, src->data);
 	dst->next = src->next;
@@ -89,8 +87,7 @@ filestruct *copy_node(const filestruct *src)
 }
 
 /* Splice a node into an existing filestruct. */
-void splice_node(filestruct *begin, filestruct *newnode, filestruct
-                 *end)
+void splice_node(filestruct *begin, filestruct *newnode, filestruct *end)
 {
 	assert(newnode != NULL && begin != NULL);
 
@@ -128,7 +125,7 @@ void delete_node(filestruct *fileptr)
 		free(fileptr->multidata);
 	}
 
-	free(fileptr);
+	delete fileptr;
 }
 
 /* Duplicate a whole filestruct. */
@@ -187,8 +184,7 @@ void renumber(filestruct *fileptr)
 
 /* Partition a filestruct so that it begins at (top, top_x) and ends at
  * (bot, bot_x). */
-partition *partition_filestruct(filestruct *top, size_t top_x,
-                                filestruct *bot, size_t bot_x)
+partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, size_t bot_x)
 {
 	partition *p;
 
@@ -232,8 +228,7 @@ partition *partition_filestruct(filestruct *top, size_t top_x,
 	null_at(&bot->data, bot_x);
 
 	/* Remove all text before top_x at the top of the partition. */
-	charmove(top->data, top->data + top_x, strlen(top->data) -
-	         top_x + 1);
+	charmove(top->data, top->data + top_x, strlen(top->data) - top_x + 1);
 	align(&top->data);
 
 	/* Return the partition. */
@@ -256,8 +251,7 @@ void unpartition_filestruct(partition **p)
 	if (openfile->fileage->prev != NULL) {
 		openfile->fileage->prev->next = openfile->fileage;
 	}
-	openfile->fileage->data = charealloc(openfile->fileage->data,
-	                                     strlen((*p)->top_data) + strlen(openfile->fileage->data) + 1);
+	openfile->fileage->data = charealloc(openfile->fileage->data, strlen((*p)->top_data) + strlen(openfile->fileage->data) + 1);
 	strcpy(openfile->fileage->data, (*p)->top_data);
 	free((*p)->top_data);
 	strcat(openfile->fileage->data, tmp);
@@ -270,8 +264,7 @@ void unpartition_filestruct(partition **p)
 	if (openfile->filebot->next != NULL) {
 		openfile->filebot->next->prev = openfile->filebot;
 	}
-	openfile->filebot->data = charealloc(openfile->filebot->data,
-	                                     strlen(openfile->filebot->data) + strlen((*p)->bot_data) + 1);
+	openfile->filebot->data = charealloc(openfile->filebot->data, strlen(openfile->filebot->data) + strlen((*p)->bot_data) + 1);
 	strcat(openfile->filebot->data, (*p)->bot_data);
 	free((*p)->bot_data);
 
@@ -293,8 +286,7 @@ void unpartition_filestruct(partition **p)
  * current filestruct to a filestruct beginning with file_top and ending
  * with file_bot.  If no text is between (top, top_x) and (bot, bot_x),
  * don't do anything. */
-void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
-                        filestruct *top, size_t top_x, filestruct *bot, size_t bot_x)
+void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct *top, size_t top_x, filestruct *bot, size_t bot_x)
 {
 	filestruct *top_save;
 	bool edittop_inside;
@@ -312,9 +304,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 	 * the edit window is inside the partition, and keep track of
 	 * whether the mark begins inside the partition. */
 	filepart = partition_filestruct(top, top_x, bot, bot_x);
-	edittop_inside = (openfile->edittop->lineno >=
-	                  openfile->fileage->lineno && openfile->edittop->lineno <=
-	                  openfile->filebot->lineno);
+	edittop_inside = (openfile->edittop->lineno >= openfile->fileage->lineno && openfile->edittop->lineno <= openfile->filebot->lineno);
 	if (openfile->mark_set)
 		mark_inside = (openfile->mark_begin->lineno >=
 		               openfile->fileage->lineno &&
@@ -343,9 +333,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 
 		/* Otherwise, tack the text in top onto the text at the end of
 		 * file_bot. */
-		(*file_bot)->data = charealloc((*file_bot)->data,
-		                               strlen((*file_bot)->data) +
-		                               strlen(openfile->fileage->data) + 1);
+		(*file_bot)->data = charealloc((*file_bot)->data, strlen((*file_bot)->data) + strlen(openfile->fileage->data) + 1);
 		strcat((*file_bot)->data, openfile->fileage->data);
 
 		/* Attach the line after top to the line after file_bot.  Then,
@@ -357,16 +345,14 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 			*file_bot = openfile->filebot;
 		}
 
-		/* Renumber starting with the line after the original
-		 * file_bot. */
+		/* Renumber starting with the line after the original file_bot. */
 		if (file_bot_save->next != NULL) {
 			renumber(file_bot_save->next);
 		}
 	}
 
-	/* Since the text has now been saved, remove it from the
-	 * filestruct. */
-	openfile->fileage = (filestruct *)nmalloc(sizeof(filestruct));
+	/* Since the text has now been saved, remove it from the filestruct. */
+	openfile->fileage = new filestruct;
 	openfile->fileage->data = mallocstrcpy(NULL, "");
 	openfile->filebot = openfile->fileage;
 
@@ -394,8 +380,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
 		edit_update(NONE);
 	}
 
-	/* Renumber starting with the beginning line of the old
-	 * partition. */
+	/* Renumber starting with the beginning line of the old partition. */
 	renumber(top_save);
 
 	/* If the NO_NEWLINES flag isn't set, and the text doesn't end with
@@ -423,8 +408,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 		filestruct *top, *bot;
 		size_t top_x, bot_x;
 
-		mark_order((const filestruct **)&top, &top_x,
-		           (const filestruct **)&bot, &bot_x, &right_side_up);
+		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
 
 		single_line = (top == bot);
 	}
@@ -432,8 +416,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 	/* Partition the filestruct so that it contains no text, and keep
 	 * track of whether the top of the edit window is inside the
 	 * partition. */
-	filepart = partition_filestruct(openfile->current,
-	                                openfile->current_x, openfile->current, openfile->current_x);
+	filepart = partition_filestruct(openfile->current, openfile->current_x, openfile->current, openfile->current_x);
 	edittop_inside = (openfile->edittop == openfile->fileage);
 
 	/* Put the top and bottom of the filestruct at copies of file_top
@@ -470,8 +453,7 @@ void copy_from_filestruct(filestruct *file_top, filestruct *file_bot)
 
 	/* Get the number of characters in the copied text, and add it to
 	 * totsize. */
-	openfile->totsize += get_totsize(openfile->fileage,
-	                                 openfile->filebot);
+	openfile->totsize += get_totsize(openfile->fileage, openfile->filebot);
 
 	/* Update the current y-coordinate to account for the number of
 	 * lines the copied text has, less one since the first line will be
@@ -519,8 +501,7 @@ openfilestruct *make_new_opennode(void)
 }
 
 /* Splice a node into an existing openfilestruct. */
-void splice_opennode(openfilestruct *begin, openfilestruct *newnode,
-                     openfilestruct *end)
+void splice_opennode(openfilestruct *begin, openfilestruct *newnode, openfilestruct *end)
 {
 	assert(newnode != NULL && begin != NULL);
 
@@ -552,7 +533,7 @@ void delete_opennode(openfilestruct *fileptr)
 	free(fileptr->filename);
 	free_filestruct(fileptr->fileage);
 	if (fileptr->current_stat != NULL) {
-		free(fileptr->current_stat);
+		delete fileptr->current_stat;
 	}
 
 	delete fileptr;
@@ -596,7 +577,6 @@ void finish(void)
 	/* Restore the old terminal settings. */
 	tcsetattr(0, TCSANOW, &oldterm);
 
-#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles && ISSET(HISTORYLOG)) {
 		save_history();
 	}
@@ -604,7 +584,6 @@ void finish(void)
 		update_poshistory(openfile->filename, openfile->current->lineno, xplustabs()+1);
 		save_poshistory();
 	}
-#endif
 
 #ifdef DEBUG
 	thanks_for_all_the_fish();
@@ -638,7 +617,6 @@ void die(const char *msg, ...)
 		die_save_file(openfile->filename, openfile->current_stat);
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	/* Save all of the other modified file buffers, if any. */
 	if (openfile != NULL) {
 		openfilestruct *tmp = openfile;
@@ -652,7 +630,6 @@ void die(const char *msg, ...)
 			}
 		}
 	}
-#endif
 
 	/* Get out. */
 	exit(1);
@@ -686,11 +663,9 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 	if (!failed) {
 		fprintf(stderr, _("\nBuffer written to %s\n"), retval);
 	} else if (retval[0] != '\0')
-		fprintf(stderr, _("\nBuffer not written to %s: %s\n"), retval,
-		        strerror(errno));
+		fprintf(stderr, _("\nBuffer not written to %s: %s\n"), retval, strerror(errno));
 	else
-		fprintf(stderr, _("\nBuffer not written: %s\n"),
-		        _("Too many backup files?"));
+		fprintf(stderr, _("\nBuffer not written: %s\n"), _("Too many backup files?"));
 
 	/* Try and chmod/chown the save file to the values of the original file, but
 	   dont worry if it fails because we're supposed to be bailing as fast
@@ -737,8 +712,7 @@ void window_init(void)
 	/* Set up the windows. */
 	topwin = newwin(2 - no_more_space(), COLS, 0, 0);
 	edit = newwin(editwinrows, COLS, 2 - no_more_space(), 0);
-	bottomwin = newwin(3 - no_help(), COLS, editwinrows + (2 -
-	                   no_more_space()), 0);
+	bottomwin = newwin(3 - no_help(), COLS, editwinrows + (2 - no_more_space()), 0);
 
 	/* Turn the keypad on for the windows, if necessary. */
 	if (!ISSET(REBIND_KEYPAD)) {
@@ -822,81 +796,51 @@ void usage(void)
 #endif
 	);
 	print_opt("-h, -?", "--help", N_("Show this message"));
-	print_opt(_("+LINE,COLUMN"), "",
-	          N_("Start at line LINE, column COLUMN"));
+	print_opt(_("+LINE,COLUMN"), "", N_("Start at line LINE, column COLUMN"));
 	print_opt("-A", "--smarthome", N_("Enable smart home key"));
 	print_opt("-B", "--backup", N_("Save backups of existing files"));
-	print_opt(_("-C <dir>"), _("--backupdir=<dir>"),
-	          N_("Directory for saving unique backup files"));
-	print_opt("-D", "--boldtext",
-	          N_("Use bold instead of reverse video text"));
-	print_opt("-E", "--tabstospaces",
-	          N_("Convert typed tabs to spaces"));
-#ifdef ENABLE_MULTIBUFFER
+	print_opt(_("-C <dir>"), _("--backupdir=<dir>"), N_("Directory for saving unique backup files"));
+	print_opt("-D", "--boldtext", N_("Use bold instead of reverse video text"));
+	print_opt("-E", "--tabstospaces", N_("Convert typed tabs to spaces"));
 	print_opt("-F", "--multibuffer", N_("Enable multiple file buffers"));
-#endif
-#ifdef ENABLE_PINOTRC
-	print_opt("-G", "--locking",
-	          N_("Use (vim-style) lock files"));
-	print_opt("-H", "--historylog",
-	          N_("Log & read search/replace string history"));
-	print_opt("-I", "--ignorercfiles",
-	          N_("Don't look at pinotorc files"));
-#endif
-	print_opt("-K", "--rebindkeypad",
-	          N_("Fix numeric keypad key confusion problem"));
-	print_opt("-L", "--nonewlines",
-	          N_("Don't add newlines to the ends of files"));
-	print_opt("-N", "--noconvert",
-	          N_("Don't convert files from DOS/Mac format"));
+	print_opt("-G", "--locking", N_("Use (vim-style) lock files"));
+	print_opt("-H", "--historylog", N_("Log & read search/replace string history"));
+	print_opt("-I", "--ignorercfiles", N_("Don't look at pinotorc files"));
+	print_opt("-K", "--rebindkeypad", N_("Fix numeric keypad key confusion problem"));
+	print_opt("-L", "--nonewlines", N_("Don't add newlines to the ends of files"));
+	print_opt("-N", "--noconvert", N_("Don't convert files from DOS/Mac format"));
 	print_opt("-O", "--morespace", N_("Use one more line for editing"));
-	print_opt("-P", "--poslog",
-	          N_("Log & read location of cursor position"));
+	print_opt("-P", "--poslog", N_("Log & read location of cursor position"));
 #ifdef ENABLE_JUSTIFY
-	print_opt(_("-Q <str>"), _("--quotestr=<str>"),
-	          N_("Quoting string"));
+	print_opt(_("-Q <str>"), _("--quotestr=<str>"), N_("Quoting string"));
 #endif
 	print_opt("-R", "--restricted", N_("Restricted mode"));
-	print_opt("-S", "--smooth",
-	          N_("Scroll by line instead of half-screen"));
-	print_opt(_("-T <#cols>"), _("--tabsize=<#cols>"),
-	          N_("Set width of a tab to #cols columns"));
+	print_opt("-S", "--smooth", N_("Scroll by line instead of half-screen"));
+	print_opt(_("-T <#cols>"), _("--tabsize=<#cols>"), N_("Set width of a tab to #cols columns"));
 	print_opt("-U", "--quickblank", N_("Do quick statusbar blanking"));
-	print_opt("-V", "--version",
-	          N_("Print version information and exit"));
-	print_opt("-W", "--wordbounds",
-	          N_("Detect word boundaries more accurately"));
-	print_opt(_("-Y <str>"), _("--syntax=<str>"),
-	          N_("Syntax definition to use for coloring"));
+	print_opt("-V", "--version", N_("Print version information and exit"));
+	print_opt("-W", "--wordbounds", N_("Detect word boundaries more accurately"));
+	print_opt(_("-Y <str>"), _("--syntax=<str>"), N_("Syntax definition to use for coloring"));
 	print_opt("-c", "--const", N_("Constantly show cursor position"));
-	print_opt("-d", "--rebinddelete",
-	          N_("Fix Backspace/Delete confusion problem"));
-	print_opt("-i", "--autoindent",
-	          N_("Automatically indent new lines"));
+	print_opt("-d", "--rebinddelete", N_("Fix Backspace/Delete confusion problem"));
+	print_opt("-i", "--autoindent", N_("Automatically indent new lines"));
 	print_opt("-k", "--cut", N_("Cut from cursor to end of line"));
-	print_opt("-l", "--nofollow",
-	          N_("Don't follow symbolic links, overwrite"));
+	print_opt("-l", "--nofollow", N_("Don't follow symbolic links, overwrite"));
 #ifndef DISABLE_MOUSE
 	print_opt("-m", "--mouse", N_("Enable the use of the mouse"));
 #endif
 #ifndef DISABLE_OPERATINGDIR
-	print_opt(_("-o <dir>"), _("--operatingdir=<dir>"),
-	          N_("Set operating directory"));
+	print_opt(_("-o <dir>"), _("--operatingdir=<dir>"), N_("Set operating directory"));
 #endif
-	print_opt("-p", "--preserve",
-	          N_("Preserve XON (^Q) and XOFF (^S) keys"));
-	print_opt("-q", "--quiet",
-	          N_("Silently ignore startup issues like rc file errors"));
+	print_opt("-p", "--preserve", N_("Preserve XON (^Q) and XOFF (^S) keys"));
+	print_opt("-q", "--quiet", N_("Silently ignore startup issues like rc file errors"));
 #ifndef DISABLE_WRAPJUSTIFY
-	print_opt(_("-r <#cols>"), _("--fill=<#cols>"),
-	          N_("Set wrapping point at column #cols"));
+	print_opt(_("-r <#cols>"), _("--fill=<#cols>"), N_("Set wrapping point at column #cols"));
 #endif
 #ifdef ENABLE_SPELLER
-	print_opt(_("-s <prog>"), _("--speller=<prog>"),
-	          N_("Enable alternate speller"));
+	print_opt(_("-s <prog>"), _("--speller=<prog>"), N_("Enable alternate speller"));
 #endif
-	print_opt("-t", "--tempfile",
-	          N_("Auto save on exit, don't prompt"));
+	print_opt("-t", "--tempfile", N_("Auto save on exit, don't prompt"));
 	print_opt("-u", "--undo", N_("Allow generic undo [EXPERIMENTAL]"));
 
 	print_opt("-v", "--view", N_("View mode (read-only)"));
@@ -919,19 +863,14 @@ void usage(void)
  * it was compiled with. */
 void version(void)
 {
-	printf(_(" pinot version %s (compiled %s, %s)\n"), VERSION,
-	       __TIME__, __DATE__);
+	printf(_(" pinot version %s (compiled %s, %s)\n"), VERSION, __TIME__, __DATE__);
 	printf(" (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,\n");
 	printf(" 2008, 2009 Free Software Foundation, Inc.\n");
-	printf(
-	    _(" Email: phil@pgengler.net	Web: http://github.com/pgengler"));
+	printf( _(" Email: phil@pgengler.net	Web: http://github.com/pgengler"));
 	printf(_("\n Compiled options:"));
 
 #ifdef DISABLE_BROWSER
 	printf(" --disable-browser");
-#endif
-#ifdef DISABLE_HELP
-	printf(" --disable-help");
 #endif
 #ifdef DISABLE_MOUSE
 	printf(" --disable-mouse");
@@ -956,12 +895,6 @@ void version(void)
 #endif
 #ifdef ENABLE_JUSTIFY
 	printf(" --enable-justify");
-#endif
-#ifdef ENABLE_MULTIBUFFER
-	printf(" --enable-multibuffer");
-#endif
-#ifdef ENABLE_PINOTRC
-	printf(" --enable-pinotrc");
 #endif
 #ifdef ENABLE_SPELLER
 	printf(" --enable-speller");
@@ -1006,19 +939,16 @@ void do_exit(void)
 {
 	int i;
 
-	/* If the file hasn't been modified, pretend the user chose not to
-	 * save. */
 	if (!openfile->modified) {
+		/* If the file hasn't been modified, pretend the user chose not to save. */
 		i = 0;
-	}
-	/* If the TEMP_FILE flag is set, pretend the user chose to save. */
-	else if (ISSET(TEMP_FILE)) {
+	}	else if (ISSET(TEMP_FILE)) {
+		/* If the TEMP_FILE flag is set, pretend the user chose to save. */
 		i = 1;
+	} else {
+		/* Otherwise, ask the user whether or not to save. */
+		i = do_yesno_prompt(FALSE, _("Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "));
 	}
-	/* Otherwise, ask the user whether or not to save. */
-	else
-		i = do_yesno_prompt(FALSE,
-		                    _("Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "));
 
 #ifdef DEBUG
 	dump_filestruct(openfile->fileage);
@@ -1030,11 +960,10 @@ void do_exit(void)
 		if (ISSET(LOCKING) && openfile->lock_filename) {
 			delete_lockfile(openfile->lock_filename);
 		}
-#ifdef ENABLE_MULTIBUFFER
 		/* Exit only if there are no more open file buffers. */
-		if (!close_buffer())
-#endif
+		if (!close_buffer()) {
 			finish();
+		}
 		/* If the user canceled, we go on. */
 	} else if (i != 1) {
 		statusbar(_("Cancelled"));
@@ -1330,12 +1259,10 @@ void do_toggle(int flag)
 	case SUSPEND:
 		signal_init();
 		break;
-#ifdef ENABLE_PINOTRC
 	case WHITESPACE_DISPLAY:
 		titlebar(NULL);
 		edit_refresh();
 		break;
-#endif
 	case NO_COLOR_SYNTAX:
 		edit_refresh();
 		break;
@@ -1346,11 +1273,10 @@ void do_toggle(int flag)
 
 	enabled = ISSET(flag);
 
-	if (flag ==  NO_HELP
+	if (flag ==  NO_HELP || flag == NO_COLOR_SYNTAX
 #ifndef DISABLE_WRAPPING
 	        || flag == NO_WRAP
 #endif
-	        || flag == NO_COLOR_SYNTAX
 	   ) {
 		enabled = !enabled;
 	}
@@ -1476,8 +1402,7 @@ void terminal_init(void)
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys. */
-int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
-             *ran_func, bool *finished, bool allow_funcs)
+int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool *finished, bool allow_funcs)
 {
 	int input;
 	/* The character we read in. */
@@ -1542,8 +1467,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 				print_view_warning();
 			} else {
 				kbinput_len++;
-				kbinput = (int *)nrealloc(kbinput, kbinput_len *
-				                          sizeof(int));
+				kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
 				kbinput[kbinput_len - 1] = input;
 
 			}
@@ -1559,8 +1483,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 			/* If we got a shortcut or toggle, and it's not the shortcut
 			 * for verbatim input, turn off prepending of wrapped
 			 * text. */
-			if (have_shortcut && (!have_shortcut || s == NULL || s->scfunc !=
-			                      do_verbatim_input)) {
+			if (have_shortcut && (!have_shortcut || s == NULL || s->scfunc != do_verbatim_input)) {
 				wrap_reset();
 			}
 #endif
@@ -1614,8 +1537,7 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool
 							do_toggle(s->toggle);
 						} else {
 							s->scfunc();
-							if (f && !f->viewok && openfile->syntax != NULL
-							        && openfile->syntax->nmultis > 0) {
+							if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
 								reset_multis(openfile->current, FALSE);
 							}
 							if (edit_refresh_needed) {
@@ -1675,9 +1597,7 @@ int do_mouse(void)
 
 		if (ISSET(SOFTWRAP)) {
 			int i = 0;
-			for (openfile->current = openfile->edittop;
-			        openfile->current->next && i < mouse_y;
-			        openfile->current = openfile->current->next, i++) {
+			for (openfile->current = openfile->edittop; openfile->current->next && i < mouse_y; openfile->current = openfile->current->next, i++) {
 				openfile->current_y = i;
 				i += strlenpt(openfile->current->data) / COLS;
 			}
@@ -1698,24 +1618,20 @@ int do_mouse(void)
 
 		} else {
 			/* Move to where the click occurred. */
-			for (; openfile->current_y < mouse_y && openfile->current !=
-			        openfile->filebot; openfile->current_y++) {
+			for (; openfile->current_y < mouse_y && openfile->current != openfile->filebot; openfile->current_y++) {
 				openfile->current = openfile->current->next;
 			}
-			for (; openfile->current_y > mouse_y && openfile->current !=
-			        openfile->fileage; openfile->current_y--) {
+			for (; openfile->current_y > mouse_y && openfile->current != openfile->fileage; openfile->current_y--) {
 				openfile->current = openfile->current->prev;
 			}
 
-			openfile->current_x = actual_x(openfile->current->data,
-			                               get_page_start(xplustabs()) + mouse_x);
+			openfile->current_x = actual_x(openfile->current->data, get_page_start(xplustabs()) + mouse_x);
 
 			openfile->placewewant = xplustabs();
 		}
 
-		/* Clicking where the cursor is toggles the mark, as does
-		 * clicking beyond the line length with the cursor at the end of
-		 * the line. */
+		/* Clicking where the cursor is toggles the mark, as does clicking
+		 * beyond the line length with the cursor at the end of the line. */
 		if (sameline && openfile->current_x == current_x_save) {
 			do_mark();
 		}
@@ -1780,7 +1696,7 @@ void precalc_multicolorinfo(void)
 					/* Look for end and start marking how many lines are encompassed
 					   whcih should speed up rendering later */
 					startx += startmatch.rm_eo;
-					DEBUG_LOG("match found at pos %d...", startx);
+					DEBUG_LOG("match found at pos %d...\n", startx);
 
 					/* Look on this line first for end */
 					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, 0)  == 0) {
@@ -1883,21 +1799,18 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 		/* If allow_cntrls is FALSE, filter out an ASCII control
 		 * character. */
-		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i -
-		        char_buf_len))) {
+		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
 			continue;
 		}
 
 		/* If the NO_NEWLINES flag isn't set, when a character is
 		 * added to the magicline, it means we need a new magicline. */
-		if (!ISSET(NO_NEWLINES) && openfile->filebot ==
-		        openfile->current) {
+		if (!ISSET(NO_NEWLINES) && openfile->filebot == openfile->current) {
 			new_magicline();
 		}
 
 		/* More dangerousness fun =) */
-		openfile->current->data = charealloc(openfile->current->data,
-		                                     current_len + (char_buf_len * 2));
+		openfile->current->data = charealloc(openfile->current->data, current_len + (char_buf_len * 2));
 
 		assert(openfile->current_x <= current_len);
 
@@ -1905,8 +1818,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		         char_buf_len, openfile->current->data +
 		         openfile->current_x, current_len - openfile->current_x +
 		         char_buf_len);
-		strncpy(openfile->current->data + openfile->current_x, char_buf,
-		        char_buf_len);
+		strncpy(openfile->current->data + openfile->current_x, char_buf, char_buf_len);
 		current_len += char_buf_len;
 		openfile->totsize++;
 		set_modified();
@@ -1914,9 +1826,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		update_undo(ADD);
 
 		/* Note that current_x has not yet been incremented. */
-		if (openfile->mark_set && openfile->current ==
-		        openfile->mark_begin && openfile->current_x <
-		        openfile->mark_begin_x) {
+		if (openfile->mark_set && openfile->current == openfile->mark_begin && openfile->current_x < openfile->mark_begin_x) {
 			openfile->mark_begin_x += char_buf_len;
 		}
 
@@ -1939,10 +1849,11 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 	/* Well we might also need a full refresh if we've changed the
 	   line length to be a new multiple of COLS */
-	if (ISSET(SOFTWRAP) && edit_refresh_needed == FALSE)
+	if (ISSET(SOFTWRAP) && edit_refresh_needed == FALSE) {
 		if (strlenpt(openfile->current->data) / COLS  != orig_lenpt / COLS) {
 			edit_refresh_needed = TRUE;
 		}
+	}
 
 	free(char_buf);
 
@@ -1969,21 +1880,15 @@ int main(int argc, char **argv)
 	bool fill_used = FALSE;
 	/* Was the fill option used? */
 #endif
-#ifdef ENABLE_MULTIBUFFER
 	bool old_multibuffer;
 	/* The old value of the multibuffer option, restored after we
 	 * load all files on the command line. */
-#endif
 #ifdef HAVE_GETOPT_LONG
 	const struct option long_options[] = {
 		{"help", 0, NULL, 'h'},
 		{"boldtext", 0, NULL, 'D'},
-#ifdef ENABLE_MULTIBUFFER
 		{"multibuffer", 0, NULL, 'F'},
-#endif
-#ifdef ENABLE_PINOTRC
 		{"ignorercfiles", 0, NULL, 'I'},
-#endif
 		{"rebindkeypad", 0, NULL, 'K'},
 		{"nonewlines", 0, NULL, 'L'},
 		{"morespace", 0, NULL, 'O'},
@@ -2043,8 +1948,7 @@ int main(int argc, char **argv)
 		 * UTF-8. */
 		char *locale = setlocale(LC_ALL, "");
 
-		if (locale != NULL && (strcmp(nl_langinfo(CODESET),
-		                              "UTF-8") == 0)) {
+		if (locale != NULL && (strcmp(nl_langinfo(CODESET), "UTF-8") == 0)) {
 #ifdef USE_SLANG
 			SLutf8_enable(1);
 #endif
@@ -2060,19 +1964,9 @@ int main(int argc, char **argv)
 	textdomain(PACKAGE);
 #endif
 
-#if !defined(ENABLE_PINOTRC) && defined(DISABLE_ROOTWRAPPING)
-	/* If we don't have rcfile support, --disable-wrapping-as-root is
-	 * used, and we're root, turn wrapping off. */
-	if (geteuid() == PINOT_ROOT_UID) {
-		SET(NO_WRAP);
-	}
-#endif
-
 	while ((optchr =
 #ifdef HAVE_GETOPT_LONG
-	            getopt_long(argc, argv,
-	                        "h?ABC:DEFGHIKLNOPQ:RST:UVWY:abcdefgijklmo:pqr:s:tuvwxz$",
-	                        long_options, NULL)
+	            getopt_long(argc, argv, "h?ABC:DEFGHIKLNOPQ:RST:UVWY:abcdefgijklmo:pqr:s:tuvwxz$", long_options, NULL)
 #else
 	            getopt(argc, argv,
 	                   "h?ABC:DEFGHIKLNOPQ:RST:UVWY:abcdefgijklmo:pqr:s:tuvwxz$")
@@ -2102,12 +1996,9 @@ int main(int argc, char **argv)
 		case 'E':
 			SET(TABS_TO_SPACES);
 			break;
-#ifdef ENABLE_MULTIBUFFER
 		case 'F':
 			SET(MULTIBUFFER);
 			break;
-#endif
-#ifdef ENABLE_PINOTRC
 		case 'G':
 			SET(LOCKING);
 			break;
@@ -2117,7 +2008,6 @@ int main(int argc, char **argv)
 		case 'I':
 			no_rcfiles = TRUE;
 			break;
-#endif
 		case 'K':
 			SET(REBIND_KEYPAD);
 			break;
@@ -2254,9 +2144,7 @@ int main(int argc, char **argv)
 	if (ISSET(RESTRICTED)) {
 		UNSET(SUSPEND);
 		UNSET(BACKUP_FILE);
-#ifdef ENABLE_PINOTRC
 		no_rcfiles = TRUE;
-#endif
 	}
 
 
@@ -2267,7 +2155,6 @@ int main(int argc, char **argv)
 	/* We've read through the command line options.  Now back up the flags
 	 * and values that are set, and read the rcfile(s).  If the values
 	 * haven't changed afterward, restore the backed-up values. */
-#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles) {
 #ifndef DISABLE_OPERATINGDIR
 		char *operating_dir_cpy = operating_dir;
@@ -2348,7 +2235,6 @@ int main(int argc, char **argv)
 		SET(NO_WRAP);
 	}
 #endif
-#endif /* ENABLE_PINOTRC */
 
 #ifndef DISABLE_WRAPPING
 	/* Overwrite an rcfile "set nowrap" or --disable-wrapping-as-root
@@ -2366,7 +2252,6 @@ int main(int argc, char **argv)
 
 	/* Set up the search/replace history. */
 	history_init();
-#ifdef ENABLE_PINOTRC
 	if (!no_rcfiles) {
 		if (ISSET(HISTORYLOG) || ISSET(POS_HISTORY)) {
 			if (check_dotpinot() == 0) {
@@ -2381,7 +2266,6 @@ int main(int argc, char **argv)
 			load_poshistory();
 		}
 	}
-#endif /* ENABLE_PINOTRC */
 
 	/* Set up the backup directory (unless we're using restricted mode,
 	 * in which case backups are disabled, since they would allow
@@ -2446,14 +2330,12 @@ int main(int argc, char **argv)
 		matchbrackets = mallocstrcpy(NULL, "(<[{)>]}");
 	}
 
-#ifdef ENABLE_PINOTRC
 	/* If whitespace wasn't specified, set its default value. */
 	if (whitespace == NULL) {
 		whitespace = mallocstrcpy(NULL, "  ");
 		whitespace_len[0] = 1;
 		whitespace_len[1] = 1;
 	}
-#endif
 
 	/* If tabsize wasn't specified, set its default value. */
 	if (tabsize == -1) {
@@ -2504,7 +2386,6 @@ int main(int argc, char **argv)
 		optind++;
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	old_multibuffer = ISSET(MULTIBUFFER);
 	SET(MULTIBUFFER);
 
@@ -2518,28 +2399,25 @@ int main(int argc, char **argv)
 			/* If there's a +LINE or +LINE,COLUMN flag here, it is
 			 * followed by at least one other argument, the filename it
 			 * applies to. */
-			if (i < argc - 1 && argv[i][0] == '+' && iline == 1 &&
-			        icol == 1) {
+			if (i < argc - 1 && argv[i][0] == '+' && iline == 1 && icol == 1) {
 				parse_line_column(&argv[i][1], &iline, &icol);
 			} else {
 				open_buffer(argv[i], FALSE);
 
 				if (iline > 1 || icol > 1) {
-					do_gotolinecolumn(iline, icol, FALSE, FALSE, FALSE,
-					                  FALSE);
+					do_gotolinecolumn(iline, icol, FALSE, FALSE, FALSE, FALSE);
 					iline = 1;
 					icol = 1;
 				} else {
 					/* See if we have a POS history to use if we haven't overridden it */
 					ssize_t savedposline, savedposcol;
-					if (check_poshistory(argv[i], &savedposline, &savedposcol))
-						do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE,
-						                  FALSE);
+					if (check_poshistory(argv[i], &savedposline, &savedposcol)) {
+						do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
+					}
 				}
 			}
 		}
 	}
-#endif
 
 	/* Read the first file on the command line into either the current
 	 * buffer or a new buffer, depending on whether multibuffer mode is
@@ -2557,11 +2435,9 @@ int main(int argc, char **argv)
 		UNSET(VIEW_MODE);
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	if (!old_multibuffer) {
 		UNSET(MULTIBUFFER);
 	}
-#endif
 
 	DEBUG_LOG("Main: top and bottom win\n");
 
@@ -2570,8 +2446,7 @@ int main(int argc, char **argv)
 	}
 
 	if (startline > 1 || startcol > 1)
-		do_gotolinecolumn(startline, startcol, FALSE, FALSE, FALSE,
-		                  FALSE);
+		do_gotolinecolumn(startline, startcol, FALSE, FALSE, FALSE, FALSE);
 	else {
 		/* See if we have a POS history to use if we haven't overridden it */
 		ssize_t savedposline, savedposcol;
@@ -2614,8 +2489,7 @@ int main(int argc, char **argv)
 		currmenu = MMAIN;
 
 		/* Read in and interpret characters. */
-		do_input(&meta_key, &func_key, &s_or_t, &ran_func, &finished,
-		         TRUE);
+		do_input(&meta_key, &func_key, &s_or_t, &ran_func, &finished, TRUE);
 	}
 
 	/* We should never get here. */

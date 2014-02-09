@@ -65,7 +65,7 @@ char *do_browser(char *path, DIR *dir)
 
 	curs_set(0);
 	blank_statusbar();
-#if !defined(DISABLE_HELP) || !defined(DISABLE_MOUSE)
+#ifndef DISABLE_MOUSE
 	currmenu = MBROWSER;
 #endif
 	bottombars(MBROWSER);
@@ -135,13 +135,10 @@ change_browser_directory:
 
 			/* We can click on the edit window to select a
 			 * filename. */
-			if (get_mouseinput(&mouse_x, &mouse_y, TRUE) == 0 &&
-			        wmouse_trafo(edit, &mouse_y, &mouse_x, FALSE)) {
+			if (get_mouseinput(&mouse_x, &mouse_y, TRUE) == 0 && wmouse_trafo(edit, &mouse_y, &mouse_x, FALSE)) {
 				/* longest is the width of each column.  There
 				 * are two spaces between each column. */
-				selected = (fileline / editwinrows) *
-				           (editwinrows * width) + (mouse_y *
-				                                    width) + (mouse_x / (longest + 2));
+				selected = (fileline / editwinrows) * (editwinrows * width) + (mouse_y * width) + (mouse_x / (longest + 2));
 
 				/* If they clicked beyond the end of a row,
 				 * select the filename at the end of that
@@ -179,12 +176,8 @@ change_browser_directory:
 		if (f->scfunc == total_refresh) {
 			total_redraw();
 		} else if (f->scfunc == do_help_void) {
-#ifndef DISABLE_HELP
 			do_browser_help();
 			curs_set(0);
-#else
-			pinot_disabled_msg();
-#endif
 			/* Search for a filename. */
 		} else if (f->scfunc == do_search) {
 			curs_set(1);
@@ -194,16 +187,13 @@ change_browser_directory:
 		} else if (f->scfunc == do_research) {
 			do_fileresearch();
 		} else if (f->scfunc == do_page_up) {
-			if (selected >= (editwinrows + fileline % editwinrows) *
-			        width)
-				selected -= (editwinrows + fileline % editwinrows) *
-				            width;
-			else {
+			if (selected >= (editwinrows + fileline % editwinrows) * width) {
+				selected -= (editwinrows + fileline % editwinrows) * width;
+			} else {
 				selected = 0;
 			}
 		} else if (f->scfunc == do_page_down) {
-			selected += (editwinrows - fileline % editwinrows) *
-			            width;
+			selected += (editwinrows - fileline % editwinrows) * width;
 			if (selected > filelist_len - 1) {
 				selected = filelist_len - 1;
 			}
@@ -229,7 +219,7 @@ change_browser_directory:
 			              browser_refresh, N_("Go To Directory"));
 
 			curs_set(0);
-#if !defined(DISABLE_HELP) || !defined(DISABLE_MOUSE)
+#ifndef DISABLE_MOUSE
 			currmenu = MBROWSER;
 #endif
 			bottombars(MBROWSER);
@@ -252,28 +242,23 @@ change_browser_directory:
 				continue;
 			}
 
-			/* We have a directory.  Blank out ans, since we're done
-			 * with it. */
+			/* We have a directory.  Blank out ans, since we're done with it. */
 			ans = mallocstrcpy(ans, "");
 
-			/* Convert newlines to nulls, just before we go to the
-			 * directory. */
+			/* Convert newlines to nulls, just before we go to the directory. */
 			sunder(answer);
 			align(&answer);
 
 			new_path = real_dir_from_tilde(answer);
 
 			if (new_path[0] != '/') {
-				new_path = charealloc(new_path, strlen(path) +
-				                      strlen(answer) + 1);
+				new_path = charealloc(new_path, strlen(path) + strlen(answer) + 1);
 				sprintf(new_path, "%s%s", path, answer);
 			}
 
 #ifndef DISABLE_OPERATINGDIR
 			if (check_operating_dir(new_path, FALSE)) {
-				statusbar(
-				    _("Can't go outside of %s in restricted mode"),
-				    operating_dir);
+				statusbar(_("Can't go outside of %s in restricted mode"), operating_dir);
 				free(new_path);
 				continue;
 			}
@@ -281,10 +266,8 @@ change_browser_directory:
 
 			dir = opendir(new_path);
 			if (dir == NULL) {
-				/* We can't open this directory for some reason.
-				 * Complain. */
-				statusbar(_("Error reading %s: %s"), answer,
-				          strerror(errno));
+				/* We can't open this directory for some reason. Complain. */
+				statusbar(_("Error reading %s: %s"), answer, strerror(errno));
 				beep();
 				free(new_path);
 				continue;
@@ -323,25 +306,20 @@ change_browser_directory:
 			 * directory if it's ".." or if it's a symlink to a
 			 * directory outside the operating directory. */
 			if (check_operating_dir(filelist[selected], FALSE)) {
-				statusbar(
-				    _("Can't go outside of %s in restricted mode"),
-				    operating_dir);
+				statusbar(_("Can't go outside of %s in restricted mode"), operating_dir);
 				beep();
 				continue;
 			}
 #endif
 
 			if (stat(filelist[selected], &st) == -1) {
-				/* We can't open this file for some reason.
-				 * Complain. */
-				statusbar(_("Error reading %s: %s"),
-				          filelist[selected], strerror(errno));
+				/* We can't open this file for some reason. Complain. */
+				statusbar(_("Error reading %s: %s"), filelist[selected], strerror(errno));
 				beep();
 				continue;
 			}
 
-			/* If we've successfully opened a file, we're done, so
-			 * get out. */
+			/* If we've successfully opened a file, we're done, so get out. */
 			if (!S_ISDIR(st.st_mode)) {
 				retval = mallocstrcpy(NULL, filelist[selected]);
 				abort = TRUE;
@@ -350,15 +328,12 @@ change_browser_directory:
 				 * "..", save the current directory in prev_dir, so that
 				 * we can select it later. */
 			} else if (strcmp(tail(filelist[selected]), "..") == 0)
-				prev_dir = mallocstrcpy(NULL,
-				                        striponedir(filelist[selected]));
+				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected]));
 
 			dir = opendir(filelist[selected]);
 			if (dir == NULL) {
-				/* We can't open this directory for some reason.
-				 * Complain. */
-				statusbar(_("Error reading %s: %s"),
-				          filelist[selected], strerror(errno));
+				/* We can't open this directory for some reason. Complain. */
+				statusbar(_("Error reading %s: %s"), filelist[selected], strerror(errno));
 				beep();
 				continue;
 			}
@@ -584,9 +559,7 @@ void parse_browser_input(int *kbinput, bool *meta_key, bool *func_key)
 			*kbinput = sc_seq_or(do_page_up, 0);
 			break;
 		case '?':
-#ifndef DISABLE_HELP
 			*kbinput = sc_seq_or(do_help_void, 0);
-#endif
 			break;
 			/* Cancel equivalent to Exit here. */
 		case 'E':
@@ -616,11 +589,9 @@ void browser_refresh(void)
 	static int uimax_digits = -1;
 	size_t i;
 	int col = 0;
-	/* The maximum number of columns that the filenames will take
-	 * up. */
+	/* The maximum number of columns that the filenames will take up. */
 	int line = 0;
-	/* The maximum number of lines that the filenames will take
-	 * up. */
+	/* The maximum number of lines that the filenames will take up. */
 	char *foo;
 	/* The file information that we'll display. */
 
@@ -646,14 +617,12 @@ void browser_refresh(void)
 		/* The maximum length of the file information in
 		 * columns: seven for "--", "(dir)", or the file size,
 		 * and 12 for "(parent dir)". */
-		bool dots = (COLS >= 15 && filetaillen >= longest -
-		             foomaxlen - 1);
+		bool dots = (COLS >= 15 && filetaillen >= longest - foomaxlen - 1);
 		/* Do we put an ellipsis before the filename?  Don't set
 		 * this to TRUE if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
 		 * filename other than ".."). */
-		char *disp = display_string(filetail, dots ? filetaillen -
-		                            longest + foomaxlen + 4 : 0, longest, FALSE);
+		char *disp = display_string(filetail, dots ? filetaillen - longest + foomaxlen + 4 : 0, longest, FALSE);
 		/* If we put an ellipsis before the filename, reserve
 		 * one column for padding, plus seven columns for "--",
 		 * "(dir)", or the file size, plus three columns for the
@@ -667,8 +636,7 @@ void browser_refresh(void)
 
 		blank_line(edit, line, col, longest);
 
-		/* If dots is TRUE, we will display something like
-		 * "...ename". */
+		/* If dots is TRUE, we will display something like "...ename". */
 		if (dots) {
 			mvwaddstr(edit, line, col, "...");
 		}
@@ -686,20 +654,17 @@ void browser_refresh(void)
 			 * point to a directory, display "--". */
 			if (stat(filelist[i], &st) == -1 || !S_ISDIR(st.st_mode)) {
 				foo = mallocstrcpy(NULL, "--");
-			}
+			} else {
 			/* If the file is a symlink that points to a directory,
 			 * display it as a directory. */
-			else
-				/* TRANSLATORS: Try to keep this at most 7
-				 * characters. */
-			{
+			/* TRANSLATORS: Try to keep this at most 7
+			 * characters. */
 				foo = mallocstrcpy(NULL, _("(dir)"));
 			}
 		} else if (S_ISDIR(st.st_mode)) {
 			/* If the file is a directory, display it as such. */
 			if (strcmp(filetail, "..") == 0) {
-				/* TRANSLATORS: Try to keep this at most 12
-				 * characters. */
+				/* TRANSLATORS: Try to keep this at most 12 characters. */
 				foo = mallocstrcpy(NULL, _("(parent dir)"));
 				foomaxlen = 12;
 			} else {
@@ -741,8 +706,7 @@ void browser_refresh(void)
 
 		mvwaddstr(edit, line, col - foolen, foo);
 
-		/* Finish highlighting the currently selected file or
-		 * directory. */
+		/* Finish highlighting the currently selected file or directory. */
 		if (i == selected) {
 			wattroff(edit, reverse_attr);
 		}
@@ -773,8 +737,7 @@ bool browser_select_filename(const char *needle)
 	size_t currselected;
 	bool found = FALSE;
 
-	for (currselected = 0; currselected < filelist_len;
-	        currselected++) {
+	for (currselected = 0; currselected < filelist_len; currselected++) {
 		if (strcmp(filelist[currselected], needle) == 0) {
 			found = TRUE;
 			break;
@@ -819,8 +782,7 @@ int filesearch_init(void)
 		buf = charalloc(strlen(disp) + 7);
 		/* We use (COLS / 3) here because we need to see more on the
 		 * line. */
-		sprintf(buf, " [%s%s]", disp,
-		        (strlenpt(last_search) > COLS / 3) ? "..." : "");
+		sprintf(buf, " [%s%s]", disp, (strlenpt(last_search) > COLS / 3) ? "..." : "");
 		free(disp);
 	} else {
 		buf = mallocstrcpy(NULL, "");
@@ -853,8 +815,7 @@ int filesearch_init(void)
 	backupstring = NULL;
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == -1 || (i < 0 && *last_search == '\0') || (i == 0 &&
-	        *answer == '\0')) {
+	if (i == -1 || (i < 0 && *last_search == '\0') || (i == 0 && *answer == '\0')) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
@@ -984,13 +945,11 @@ void do_filesearch(void)
 	bool didfind;
 
 	i = filesearch_init();
-	if (i == -1)	/* Cancel, blank search string, or regcomp()
-			 * failed. */
-	{
+	if (i == -1) {
+		/* Cancel, blank search string, or regcomp() failed. */
 		filesearch_abort();
-	} else if (i == 1)	/* Case Sensitive, Backwards, or Regexp search
-			 * toggle. */
-	{
+	} else if (i == 1) {
+		/* Case Sensitive, Backwards, or Regexp search toggle. */
 		do_filesearch();
 	}
 
@@ -1005,8 +964,7 @@ void do_filesearch(void)
 		last_search = mallocstrcpy(last_search, answer);
 	}
 
-	/* If answer is not "", add this search string to the search history
-	 * list. */
+	/* If answer is not "", add this search string to the search history list. */
 	if (answer[0] != '\0') {
 		update_history(&search_history, answer);
 	}
@@ -1014,8 +972,7 @@ void do_filesearch(void)
 	findnextfile_wrap_reset();
 	didfind = findnextfile(FALSE, begin, answer);
 
-	/* Check to see if there's only one occurrence of the string and
-	 * we're on it now. */
+	/* Check to see if there's only one occurrence of the string and we're on it now. */
 	if (selected == begin && didfind) {
 		/* Do the search again, skipping over the current line.  We
 		 * should only end up back at the same position if the string

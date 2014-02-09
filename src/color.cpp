@@ -225,15 +225,13 @@ void color_update(void)
 		 * been checked for validity elsewhere.  Compile their specified
 		 * regexes if we haven't already. */
 		if (tmpcolor->start == NULL) {
-			tmpcolor->start = (regex_t *)nmalloc(sizeof(regex_t));
-			regcomp(tmpcolor->start, fixbounds(tmpcolor->start_regex),
-			        REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
+			tmpcolor->start = new regex_t;
+			regcomp(tmpcolor->start, fixbounds(tmpcolor->start_regex), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 
 		if (tmpcolor->end_regex != NULL && tmpcolor->end == NULL) {
-			tmpcolor->end = (regex_t *)nmalloc(sizeof(regex_t));
-			regcomp(tmpcolor->end, fixbounds(tmpcolor->end_regex),
-			        REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
+			tmpcolor->end = new regex_t;
+			regcomp(tmpcolor->end, fixbounds(tmpcolor->end_regex), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 	}
 }
@@ -342,8 +340,7 @@ void reset_multis(filestruct *fileptr, bool force)
 			if (nobegin && noend) {
 				continue;
 			}
-		}  else if (fileptr->multidata[tmpcolor->id] & CBEGINBEFORE && !noend
-		            && (nobegin || endmatch.rm_eo > startmatch.rm_eo)) {
+		}  else if (fileptr->multidata[tmpcolor->id] & CBEGINBEFORE && !noend && (nobegin || endmatch.rm_eo > startmatch.rm_eo)) {
 			reset_multis_after(fileptr, tmpcolor->id);
 			continue;
 		}

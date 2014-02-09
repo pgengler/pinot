@@ -71,10 +71,8 @@ void do_delete(void)
 	openfile->placewewant = xplustabs();
 
 	if (openfile->current->data[openfile->current_x] != '\0') {
-		int char_buf_len = parse_mbchar(openfile->current->data +
-		                                openfile->current_x, NULL, NULL);
-		size_t line_len = strlen(openfile->current->data +
-		                         openfile->current_x);
+		int char_buf_len = parse_mbchar(openfile->current->data + openfile->current_x, NULL, NULL);
+		size_t line_len = strlen(openfile->current->data + openfile->current_x);
 
 		assert(openfile->current_x < strlen(openfile->current->data));
 
@@ -83,15 +81,10 @@ void do_delete(void)
 		}
 
 		/* Let's get dangerous. */
-		charmove(&openfile->current->data[openfile->current_x],
-		         &openfile->current->data[openfile->current_x +
-		                                  char_buf_len], line_len - char_buf_len + 1);
+		charmove(&openfile->current->data[openfile->current_x], &openfile->current->data[openfile->current_x + char_buf_len], line_len - char_buf_len + 1);
 
-		null_at(&openfile->current->data, openfile->current_x +
-		        line_len - char_buf_len);
-		if (openfile->mark_set && openfile->mark_begin ==
-		        openfile->current && openfile->current_x <
-		        openfile->mark_begin_x) {
+		null_at(&openfile->current->data, openfile->current_x + line_len - char_buf_len);
+		if (openfile->mark_set && openfile->mark_begin == openfile->current && openfile->current_x < openfile->mark_begin_x) {
 			openfile->mark_begin_x -= char_buf_len;
 		}
 		openfile->totsize--;
@@ -100,18 +93,14 @@ void do_delete(void)
 
 		assert(openfile->current_x == strlen(openfile->current->data));
 
-		/* If we're deleting at the end of a line, we need to call
-		 * edit_refresh(). */
+		/* If we're deleting at the end of a line, we need to call edit_refresh(). */
 		if (openfile->current->data[openfile->current_x] == '\0') {
 			edit_refresh_needed = TRUE;
 		}
 
-		openfile->current->data = charealloc(openfile->current->data,
-		                                     openfile->current_x + strlen(foo->data) + 1);
-		strcpy(openfile->current->data + openfile->current_x,
-		       foo->data);
-		if (openfile->mark_set && openfile->mark_begin ==
-		        openfile->current->next) {
+		openfile->current->data = charealloc(openfile->current->data, openfile->current_x + strlen(foo->data) + 1);
+		strcpy(openfile->current->data + openfile->current_x, foo->data);
+		if (openfile->mark_set && openfile->mark_begin == openfile->current->next) {
 			openfile->mark_begin = openfile->current;
 			openfile->mark_begin_x += openfile->current_x;
 		}
@@ -127,8 +116,7 @@ void do_delete(void)
 		/* If the NO_NEWLINES flag isn't set, and text has been added to
 		 * the magicline as a result of deleting at the end of the line
 		 * before filebot, add a new magicline. */
-		if (!ISSET(NO_NEWLINES) && openfile->current ==
-		        openfile->filebot && openfile->current->data[0] != '\0') {
+		if (!ISSET(NO_NEWLINES) && openfile->current == openfile->filebot && openfile->current->data[0] != '\0') {
 			new_magicline();
 		}
 	} else {
@@ -151,8 +139,7 @@ void do_delete(void)
  * character, and then delete the character under the cursor. */
 void do_backspace(void)
 {
-	if (openfile->current != openfile->fileage ||
-	        openfile->current_x > 0) {
+	if (openfile->current != openfile->fileage || openfile->current_x > 0) {
 		do_left();
 		do_delete();
 	}
@@ -198,8 +185,7 @@ void do_indent(ssize_t cols)
 	char *line_indent = NULL;
 	/* The text added to each line in order to indent it. */
 	size_t line_indent_len = 0;
-	/* The length of the text added to each line in order to indent
-	 * it. */
+	/* The length of the text added to each line in order to indent it. */
 	filestruct *top, *bot, *f;
 	size_t top_x, bot_x;
 
@@ -210,8 +196,7 @@ void do_indent(ssize_t cols)
 		return;
 	}
 
-	/* If cols is negative, make it positive and set unindent to
-	 * TRUE. */
+	/* If cols is negative, make it positive and set unindent to TRUE. */
 	if (cols < 0) {
 		cols = -cols;
 		unindent = TRUE;
@@ -221,12 +206,11 @@ void do_indent(ssize_t cols)
 		indent_changed = TRUE;
 	}
 
-	/* If the mark is on, use all lines covered by the mark. */
-	if (openfile->mark_set)
-		mark_order((const filestruct **)&top, &top_x,
-		           (const filestruct **)&bot, &bot_x, NULL);
-	/* Otherwise, use the current line. */
-	else {
+	if (openfile->mark_set) {
+		/* If the mark is on, use all lines covered by the mark. */
+		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, NULL);
+	} else {
+		/* Otherwise, use the current line. */
 		top = openfile->current;
 		bot = top;
 	}
@@ -240,8 +224,7 @@ void do_indent(ssize_t cols)
 			charset(line_indent, ' ', cols);
 			line_indent_len = cols;
 		} else {
-			/* Set the indentation to (cols / tabsize) tabs and (cols %
-			 * tabsize) spaces. */
+			/* Set the indentation to (cols / tabsize) tabs and (cols % tabsize) spaces. */
 			size_t num_tabs = cols / tabsize;
 			size_t num_spaces = cols % tabsize;
 
@@ -259,24 +242,24 @@ void do_indent(ssize_t cols)
 		size_t line_len = strlen(f->data);
 		size_t indent_len = indent_length(f->data);
 
+		if (line_len == 0) {
+			continue;
+		}
+
 		if (!unindent) {
 			/* If we're indenting, add the characters in line_indent to
 			 * the beginning of the non-whitespace text of this line. */
-			f->data = charealloc(f->data, line_len +
-			                     line_indent_len + 1);
-			charmove(&f->data[indent_len + line_indent_len],
-			         &f->data[indent_len], line_len - indent_len + 1);
+			f->data = charealloc(f->data, line_len + line_indent_len + 1);
+			charmove(&f->data[indent_len + line_indent_len], &f->data[indent_len], line_len - indent_len + 1);
 			strncpy(f->data + indent_len, line_indent, line_indent_len);
 			openfile->totsize += line_indent_len;
 
 			/* Keep track of the change in the current line. */
-			if (openfile->mark_set && f == openfile->mark_begin &&
-			        openfile->mark_begin_x >= indent_len) {
+			if (openfile->mark_set && f == openfile->mark_begin && openfile->mark_begin_x >= indent_len) {
 				openfile->mark_begin_x += line_indent_len;
 			}
 
-			if (f == openfile->current && openfile->current_x >=
-			        indent_len) {
+			if (f == openfile->current && openfile->current_x >= indent_len) {
 				openfile->current_x += line_indent_len;
 			}
 
@@ -287,12 +270,10 @@ void do_indent(ssize_t cols)
 			}
 		} else {
 			size_t indent_col = strnlenpt(f->data, indent_len);
-			/* The length in columns of the indentation on this
-			 * line. */
+			/* The length in columns of the indentation on this line. */
 
 			if (cols <= indent_col) {
-				size_t indent_new = actual_x(f->data, indent_col -
-				                             cols);
+				size_t indent_new = actual_x(f->data, indent_col - cols);
 				/* The length of the indentation remaining on
 				 * this line after we unindent. */
 				size_t indent_shift = indent_len - indent_new;
@@ -302,14 +283,12 @@ void do_indent(ssize_t cols)
 				/* If we're unindenting, and there's at least cols
 				 * columns' worth of indentation at the beginning of the
 				 * non-whitespace text of this line, remove it. */
-				charmove(&f->data[indent_new], &f->data[indent_len],
-				         line_len - indent_shift - indent_new + 1);
+				charmove(&f->data[indent_new], &f->data[indent_len], line_len - indent_shift - indent_new + 1);
 				null_at(&f->data, line_len - indent_shift + 1);
 				openfile->totsize -= indent_shift;
 
 				/* Keep track of the change in the current line. */
-				if (openfile->mark_set && f == openfile->mark_begin &&
-				        openfile->mark_begin_x > indent_new) {
+				if (openfile->mark_set && f == openfile->mark_begin && openfile->mark_begin_x > indent_new) {
 					if (openfile->mark_begin_x <= indent_len) {
 						openfile->mark_begin_x = indent_new;
 					} else {
@@ -317,8 +296,7 @@ void do_indent(ssize_t cols)
 					}
 				}
 
-				if (f == openfile->current && openfile->current_x >
-				        indent_new) {
+				if (f == openfile->current && openfile->current_x > indent_new) {
 					if (openfile->current_x <= indent_len) {
 						openfile->current_x = indent_new;
 					} else {
@@ -334,9 +312,8 @@ void do_indent(ssize_t cols)
 		}
 	}
 
-	if (!unindent)
+	if (!unindent) {
 		/* Clean up. */
-	{
 		free(line_indent);
 	}
 
@@ -452,15 +429,15 @@ void do_undo(void)
 		return;
 	}
 
-
-	if (u->lineno <= f->lineno)
+	if (u->lineno <= f->lineno) {
 		for (; f->prev != NULL && f->lineno != u->lineno; f = f->prev) {
 			;
 		}
-	else
+	} else {
 		for (; f->next != NULL && f->lineno != u->lineno; f = f->next) {
 			;
 		}
+	}
 	if (f->lineno != u->lineno) {
 		statusbar(_("Internal error: can't match line %d.  Please save your work"), u->lineno);
 		return;
@@ -714,10 +691,8 @@ void do_enter(bool undoing)
 		}
 	}
 
-	newnode->data = charalloc(strlen(openfile->current->data +
-	                                 openfile->current_x) + extra + 1);
-	strcpy(&newnode->data[extra], openfile->current->data +
-	       openfile->current_x);
+	newnode->data = charalloc(strlen(openfile->current->data + openfile->current_x) + extra + 1);
+	strcpy(&newnode->data[extra], openfile->current->data + openfile->current_x);
 
 	if (ISSET(AUTOINDENT)) {
 		strncpy(newnode->data, openfile->current->data, extra);
@@ -726,9 +701,7 @@ void do_enter(bool undoing)
 
 	null_at(&openfile->current->data, openfile->current_x);
 
-	if (openfile->mark_set && openfile->current ==
-	        openfile->mark_begin && openfile->current_x <
-	        openfile->mark_begin_x) {
+	if (openfile->mark_set && openfile->current == openfile->mark_begin && openfile->current_x < openfile->mark_begin_x) {
 		openfile->mark_begin = newnode;
 		openfile->mark_begin_x += extra - openfile->current_x;
 	}
@@ -738,8 +711,7 @@ void do_enter(bool undoing)
 	if (openfile->current == openfile->filebot) {
 		openfile->filebot = newnode;
 	}
-	splice_node(openfile->current, newnode,
-	            openfile->current->next);
+	splice_node(openfile->current, newnode, openfile->current->next);
 
 	renumber(openfile->current);
 	openfile->current = newnode;
@@ -784,9 +756,8 @@ bool execute_command(const char *command)
 		return FALSE;
 	}
 
-	/* Check $SHELL for the shell to use.  If it isn't set, use
-	 * /bin/sh.  Note that $SHELL should contain only a path, with no
-	 * arguments. */
+	/* Check $SHELL for the shell to use.  If it isn't set, use /bin/sh.
+	 * Note that $SHELL should contain only a path, with no arguments. */
 	shellenv = getenv("SHELL");
 	if (shellenv == NULL) {
 		shellenv = (char *) "/bin/sh";
@@ -874,9 +845,8 @@ int execute_command_silently(const char *command)
 		return FALSE;
 	}
 
-	/* Check $SHELL for the shell to use.  If it isn't set, use
-	 * /bin/sh.  Note that $SHELL should contain only a path, with no
-	 * arguments. */
+	/* Check $SHELL for the shell to use.  If it isn't set, use /bin/sh.
+	 * Note that $SHELL should contain only a path, with no arguments. */
 	shellenv = getenv("SHELL");
 	if (shellenv == NULL) {
 		shellenv = (char *) "/bin/sh";
@@ -954,8 +924,7 @@ void add_undo(undo_type current_action)
 	/* Ugh, if we were called while cutting not-to-end, non-marked and on the same lineno,
 	   we need to  abort here */
 	u = fs->current_undo;
-	if (current_action == CUT && u && u->type == CUT
-	        && !u->mark_set && u->lineno == fs->current->lineno) {
+	if (current_action == CUT && u && u->type == CUT && !u->mark_set && u->lineno == fs->current->lineno) {
 		return;
 	}
 
@@ -1016,11 +985,7 @@ void add_undo(undo_type current_action)
 		break;
 #ifndef DISABLE_WRAPPING
 	case SPLIT:
-		wrap_loc = break_line(openfile->current->data, fill
-#ifndef DISABLE_HELP
-		                      , FALSE
-#endif
-		                     );
+		wrap_loc = break_line(openfile->current->data, fill, FALSE);
 		u->strdata = mallocstrcpy(NULL, &openfile->current->data[wrap_loc]);
 		/* Don't both saving the next line if we're not prepending as a new line
 		   will be created */
@@ -1081,8 +1046,7 @@ void update_undo(undo_type action)
 	}
 
 #ifdef DEBUG
-	fprintf(stderr, "action = %d, fs->last_action = %d,  openfile->current->lineno = %lu",
-	        action, fs->last_action, (unsigned long) openfile->current->lineno);
+	fprintf(stderr, "action = %d, fs->last_action = %d,  openfile->current->lineno = %lu", action, fs->last_action, (unsigned long) openfile->current->lineno);
 	if (fs->current_undo) {
 		fprintf(stderr, "fs->current_undo->lineno = %lu\n",  (unsigned long) fs->current_undo->lineno);
 	} else {
@@ -1092,9 +1056,7 @@ void update_undo(undo_type action)
 
 	/* Change to an add if we're not using the same undo struct
 	   that we should be using */
-	if (action != fs->last_action
-	        || (action != CUT && action != INSERT && action != SPLIT
-	            && openfile->current->lineno != fs->current_undo->lineno)) {
+	if (action != fs->last_action || (action != CUT && action != INSERT && action != SPLIT && openfile->current->lineno != fs->current_undo->lineno)) {
 		add_undo(action);
 		return;
 	}
@@ -1125,7 +1087,7 @@ void update_undo(undo_type action)
 			}
 			data = charalloc(len);
 			strcpy(data, u->strdata);
-			data[len-2] = fs->current->data[fs->current_x];;
+			data[len-2] = fs->current->data[fs->current_x];
 			data[len-1] = '\0';
 			free(u->strdata);
 			u->strdata = data;
@@ -1247,11 +1209,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	line_len = strlen(line->data);
 
 	/* Find the last blank where we can break the line. */
-	wrap_loc = break_line(line->data, fill
-#ifndef DISABLE_HELP
-	                      , FALSE
-#endif
-	                     );
+	wrap_loc = break_line(line->data, fill, FALSE);
 
 	/* If we couldn't break the line, or we've reached the end of it, we
 	 * don't wrap. */
@@ -1299,8 +1257,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	 * flag is set, there is a next line, and prepending would not make
 	 * the line too long. */
 	if (prepend_wrap && line != openfile->filebot) {
-		const char *end = after_break + move_mbleft(after_break,
-		                  after_break_len);
+		const char *end = after_break + move_mbleft(after_break, after_break_len);
 
 		/* If after_break doesn't end in a blank, make sure it ends in a
 		 * space. */
@@ -1330,8 +1287,7 @@ bool do_wrap(filestruct *line, bool undoing)
 
 	if (ISSET(AUTOINDENT)) {
 		if (prepending) {
-			/* If we're prepending, the indentation will come from the
-			 * next line. */
+			/* If we're prepending, the indentation will come from the next line. */
 			indent_string = next_line;
 			indent_len = indent_length(indent_string);
 			next_line += indent_len;
@@ -1379,8 +1335,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	} else {
 		/* Otherwise, make a new line and copy the text after where we
 		 * broke this line to the beginning of the new line. */
-		splice_node(openfile->current, make_new_node(openfile->current),
-		            openfile->current->next);
+		splice_node(openfile->current, make_new_node(openfile->current), openfile->current->next);
 
 		/* If the current line is the last line of the file, move the
 		 * last line of the file down to the next line. */
@@ -1420,8 +1375,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	 * down.  If it was on the next line and we prepended to that line,
 	 * we move it right. */
 	if (openfile->mark_set) {
-		if (openfile->mark_begin == line && openfile->mark_begin_x >
-		        wrap_loc) {
+		if (openfile->mark_begin == line && openfile->mark_begin_x > wrap_loc) {
 			openfile->mark_begin = line->next;
 			openfile->mark_begin_x -= wrap_loc - indent_len + 1;
 		} else if (prepending && openfile->mark_begin == line->next) {
@@ -1433,17 +1387,13 @@ bool do_wrap(filestruct *line, bool undoing)
 }
 #endif /* !DISABLE_WRAPPING */
 
-#if !defined(DISABLE_HELP) || !defined(DISABLE_WRAPJUSTIFY)
+#ifndef DISABLE_WRAPJUSTIFY
 /* We are trying to break a chunk off line.  We find the last blank such
  * that the display length to there is at most (goal + 1).  If there is
  * no such blank, then we find the first blank.  We then take the last
  * blank in that group of blanks.  The terminating '\0' counts as a
  * blank, as does a '\n' if newline is TRUE. */
-ssize_t break_line(const char *line, ssize_t goal
-#ifndef DISABLE_HELP
-                   , bool newln
-#endif
-                  )
+ssize_t break_line(const char *line, ssize_t goal, bool newln)
 {
 	ssize_t blank_loc = -1;
 	/* Current tentative return value.  Index of the last blank we
@@ -1459,38 +1409,29 @@ ssize_t break_line(const char *line, ssize_t goal
 	while (*line != '\0' && goal >= cur_pos) {
 		line_len = parse_mbchar(line, NULL, &cur_pos);
 
-		if (is_blank_mbchar(line)
-#ifndef DISABLE_HELP
-		        || (newln && *line == '\n')
-#endif
-		   ) {
+		if (is_blank_mbchar(line) || (newln && *line == '\n')) {
 			blank_loc = cur_loc;
 
-#ifndef DISABLE_HELP
 			if (newln && *line == '\n') {
 				break;
 			}
-#endif
 		}
 
 		line += line_len;
 		cur_loc += line_len;
 	}
 
-	if (goal >= cur_pos)
+	if (goal >= cur_pos) {
 		/* In fact, the whole line displays shorter than goal. */
-	{
 		return cur_loc;
 	}
 
-#ifndef DISABLE_HELP
 	if (newln && blank_loc <= 0) {
 		/* If blank was not found or was found only first character,
 		 * force line break. */
 		cur_loc -= line_len;
 		return cur_loc;
 	}
-#endif
 
 	if (blank_loc == -1) {
 		/* No blank was found that was short enough. */
@@ -1500,11 +1441,7 @@ ssize_t break_line(const char *line, ssize_t goal
 		while (*line != '\0') {
 			line_len = parse_mbchar(line, NULL, NULL);
 
-			if (is_blank_mbchar(line)
-#ifndef DISABLE_HELP
-			        || (newln && *line == '\n')
-#endif
-			   ) {
+			if (is_blank_mbchar(line) || (newln && *line == '\n')) {
 				if (!found_blank) {
 					found_blank = TRUE;
 				}
@@ -1526,16 +1463,10 @@ ssize_t break_line(const char *line, ssize_t goal
 	line_len = parse_mbchar(line, NULL, NULL);
 	line += line_len;
 
-	while (*line != '\0' && (is_blank_mbchar(line)
-#ifndef DISABLE_HELP
-	                         || (newln && *line == '\n')
-#endif
-	                        )) {
-#ifndef DISABLE_HELP
+	while (*line != '\0' && (is_blank_mbchar(line) || (newln && *line == '\n'))) {
 		if (newln && *line == '\n') {
 			break;
 		}
-#endif
 
 		line_len = parse_mbchar(line, NULL, NULL);
 
@@ -1545,7 +1476,7 @@ ssize_t break_line(const char *line, ssize_t goal
 
 	return blank_loc;
 }
-#endif /* !DISABLE_HELP || !DISABLE_WRAPJUSTIFY */
+#endif /* !DISABLE_WRAPJUSTIFY */
 
 /* The "indentation" of a line is the whitespace between the quote part
  * and the non-whitespace of the line. */
@@ -1622,9 +1553,7 @@ void justify_format(filestruct *paragraph, size_t skip)
 				shift += end_len;
 
 				/* Keep track of the change in the current line. */
-				if (openfile->mark_set && openfile->mark_begin ==
-				        paragraph && openfile->mark_begin_x >= end -
-				        paragraph->data) {
+				if (openfile->mark_set && openfile->mark_begin == paragraph && openfile->mark_begin_x >= end - paragraph->data) {
 					mark_shift += end_len;
 				}
 			}
@@ -1676,14 +1605,11 @@ void justify_format(filestruct *paragraph, size_t skip)
 				shift += end_len;
 
 				/* Keep track of the change in the current line. */
-				if (openfile->mark_set && openfile->mark_begin ==
-				        paragraph && openfile->mark_begin_x >= end -
-				        paragraph->data) {
+				if (openfile->mark_set && openfile->mark_begin == paragraph && openfile->mark_begin_x >= end - paragraph->data) {
 					mark_shift += end_len;
 				}
 			}
-			/* If this character is neither blank nor punctuation, leave it
-			 * unchanged. */
+			/* If this character is neither blank nor punctuation, leave it unchanged. */
 		} else {
 			end_len = parse_mbchar(end, NULL, NULL);
 
@@ -1701,8 +1627,7 @@ void justify_format(filestruct *paragraph, size_t skip)
 	*new_end = *end;
 
 	/* If there are spaces at the end of the line, remove them. */
-	while (new_end > new_paragraph_data + skip &&
-	        *(new_end - 1) == ' ') {
+	while (new_end > new_paragraph_data + skip && *(new_end - 1) == ' ') {
 		new_end--;
 		shift++;
 	}
@@ -1746,26 +1671,22 @@ size_t quote_length(const char *line)
 /* a_line and b_line are lines of text.  The quotation part of a_line is
  * the first a_quote characters.  Check that the quotation part of
  * b_line is the same. */
-bool quotes_match(const char *a_line, size_t a_quote, const char
-                  *b_line)
+bool quotes_match(const char *a_line, size_t a_quote, const char *b_line)
 {
 	/* Here is the assumption about a_quote. */
 	assert(a_quote == quote_length(a_line));
 
-	return (a_quote == quote_length(b_line) &&
-	        strncmp(a_line, b_line, a_quote) == 0);
+	return (a_quote == quote_length(b_line) && strncmp(a_line, b_line, a_quote) == 0);
 }
 
 /* We assume a_line and b_line have no quote part.  Then, we return
  * whether b_line could follow a_line in a paragraph. */
-bool indents_match(const char *a_line, size_t a_indent, const char
-                   *b_line, size_t b_indent)
+bool indents_match(const char *a_line, size_t a_indent, const char *b_line, size_t b_indent)
 {
 	assert(a_indent == indent_length(a_line));
 	assert(b_indent == indent_length(b_line));
 
-	return (b_indent <= a_indent &&
-	        strncmp(a_line, b_line, b_indent) == 0);
+	return (b_indent <= a_indent && strncmp(a_line, b_line, b_indent) == 0);
 }
 
 /* Is foo the beginning of a paragraph?
@@ -1840,8 +1761,7 @@ bool inpar(const filestruct *const foo)
 
 	quote_len = quote_length(foo->data);
 
-	return (foo->data[quote_len + indent_length(foo->data +
-	                  quote_len)] != '\0');
+	return (foo->data[quote_len + indent_length(foo->data + quote_len)] != '\0');
 }
 
 /* Move the next par_len lines, starting with first_line, into the
@@ -1872,8 +1792,7 @@ void backup_lines(filestruct *first_line, size_t par_len)
 	/* par_len will be one greater than the number of lines between
 	 * current and filebot if filebot is the last line in the
 	 * paragraph. */
-	assert(par_len > 0 && openfile->current->lineno + par_len <=
-	       openfile->filebot->lineno + 1);
+	assert(par_len > 0 && openfile->current->lineno + par_len <= openfile->filebot->lineno + 1);
 
 	/* Move bot down par_len lines to the line after the last line of
 	 * the paragraph, if there is one. */
@@ -1883,8 +1802,7 @@ void backup_lines(filestruct *first_line, size_t par_len)
 
 	/* Move the paragraph from the current buffer's filestruct to the
 	 * justify buffer. */
-	move_to_filestruct(&jusbuffer, &jusbottom, top, 0, bot,
-	                   (i == 1 && bot == openfile->filebot) ? strlen(bot->data) : 0);
+	move_to_filestruct(&jusbuffer, &jusbottom, top, 0, bot, (i == 1 && bot == openfile->filebot) ? strlen(bot->data) : 0);
 
 	/* Copy the paragraph back to the current buffer's filestruct from
 	 * the justify buffer. */
@@ -1896,8 +1814,7 @@ void backup_lines(filestruct *first_line, size_t par_len)
 	 * paragraph. */
 	if (openfile->current != openfile->fileage) {
 		top = openfile->current->prev;
-		if (old_mark_set &&
-		        openfile->current->lineno == mb_lineno_save) {
+		if (old_mark_set && openfile->current->lineno == mb_lineno_save) {
 			openfile->mark_begin = openfile->current;
 			openfile->mark_begin_x = mark_begin_x_save;
 		}
@@ -1946,8 +1863,7 @@ bool find_paragraph(size_t *const quote, size_t *const par)
 	filestruct *current_save;
 	/* The line at the beginning of the paragraph we search for. */
 	ssize_t current_y_save;
-	/* The y-coordinate at the beginning of the paragraph we search
-	 * for. */
+	/* The y-coordinate at the beginning of the paragraph we search for. */
 
 	if (quoterc != 0) {
 		statusbar(_("Bad quote string %s: %s"), quotestr, quoteerr);
@@ -1958,8 +1874,7 @@ bool find_paragraph(size_t *const quote, size_t *const par)
 
 	/* If we're at the end of the last line of the file, it means that
 	 * there aren't any paragraphs left, so get out. */
-	if (openfile->current == openfile->filebot && openfile->current_x ==
-	        strlen(openfile->filebot->data)) {
+	if (openfile->current == openfile->filebot && openfile->current_x == strlen(openfile->filebot->data)) {
 		return FALSE;
 	}
 
@@ -2032,11 +1947,9 @@ void do_justify(bool full_justify)
 	/* Will be the line after the last line of the justified
 	 * paragraph(s), if any.  Also for restoring after unjustify. */
 	bool filebot_inpar = FALSE;
-	/* Whether the text at filebot is part of the current
-	 * paragraph. */
+	/* Whether the text at filebot is part of the current paragraph. */
 
-	/* We save these variables to be restored if the user
-	 * unjustifies. */
+	/* We save these variables to be restored if the user unjustifies. */
 	filestruct *edittop_save = openfile->edittop;
 	filestruct *current_save = openfile->current;
 	size_t current_x_save = openfile->current_x;
@@ -2068,11 +1981,9 @@ void do_justify(bool full_justify)
 		filestruct *curr_first_par_line;
 		/* The first line of the current paragraph. */
 		size_t quote_len;
-		/* Length of the initial quotation of the current
-		 * paragraph. */
+		/* Length of the initial quotation of the current paragraph. */
 		size_t indent_len;
-		/* Length of the initial indentation of the current
-		 * paragraph. */
+		/* Length of the initial indentation of the current paragraph. */
 		size_t par_len;
 		/* Number of lines in the current paragraph. */
 		ssize_t break_pos;
@@ -2113,8 +2024,7 @@ void do_justify(bool full_justify)
 		/* par_len will be one greater than the number of lines between
 		 * current and filebot if filebot is the last line in the
 		 * paragraph.  Set filebot_inpar to TRUE if this is the case. */
-		filebot_inpar = (openfile->current->lineno + par_len ==
-		                 openfile->filebot->lineno + 1);
+		filebot_inpar = (openfile->current->lineno + par_len == openfile->filebot->lineno + 1);
 
 		/* If we haven't already done it, move the original paragraph(s)
 		 * to the justify buffer, splice a copy of the original
@@ -2128,8 +2038,7 @@ void do_justify(bool full_justify)
 			first_par_line = openfile->current;
 		}
 
-		/* Set curr_first_par_line to the first line of the current
-		 * paragraph. */
+		/* Set curr_first_par_line to the first line of the current paragraph. */
 		curr_first_par_line = openfile->current;
 
 		/* Initialize indent_string to a blank string. */
@@ -2144,12 +2053,10 @@ void do_justify(bool full_justify)
 			bool past_first_line = FALSE;
 
 			for (i = 0; i < par_len; i++) {
-				indent_len = quote_len +
-				             indent_length(indent_line->data + quote_len);
+				indent_len = quote_len + indent_length(indent_line->data + quote_len);
 
 				if (indent_len != strlen(indent_string)) {
-					indent_string = mallocstrncpy(indent_string,
-					                              indent_line->data, indent_len + 1);
+					indent_string = mallocstrncpy(indent_string, indent_line->data, indent_len + 1);
 					indent_string[indent_len] = '\0';
 
 					if (past_first_line) {
@@ -2170,34 +2077,25 @@ void do_justify(bool full_justify)
 		for (i = 0; i < par_len - 1; i++) {
 			filestruct *next_line = openfile->current->next;
 			size_t line_len = strlen(openfile->current->data);
-			size_t next_line_len =
-			    strlen(openfile->current->next->data);
+			size_t next_line_len = strlen(openfile->current->next->data);
 
-			indent_len = quote_len +
-			             indent_length(openfile->current->next->data +
-			                           quote_len);
+			indent_len = quote_len + indent_length(openfile->current->next->data + quote_len);
 
 			next_line_len -= indent_len;
 			openfile->totsize -= indent_len;
 
 			/* We're just about to tack the next line onto this one.  If
 			 * this line isn't empty, make sure it ends in a space. */
-			if (line_len > 0 &&
-			        openfile->current->data[line_len - 1] != ' ') {
+			if (line_len > 0 && openfile->current->data[line_len - 1] != ' ') {
 				line_len++;
-				openfile->current->data =
-				    charealloc(openfile->current->data,
-				               line_len + 1);
+				openfile->current->data = charealloc(openfile->current->data, line_len + 1);
 				openfile->current->data[line_len - 1] = ' ';
 				openfile->current->data[line_len] = '\0';
 				openfile->totsize++;
 			}
 
-			openfile->current->data =
-			    charealloc(openfile->current->data, line_len +
-			               next_line_len + 1);
-			strcat(openfile->current->data, next_line->data +
-			       indent_len);
+			openfile->current->data = charealloc(openfile->current->data, line_len + next_line_len + 1);
+			strcat(openfile->current->data, next_line->data + indent_len);
 
 			/* Don't destroy edittop or filebot! */
 			if (next_line == openfile->edittop) {
@@ -2209,8 +2107,7 @@ void do_justify(bool full_justify)
 
 			/* Adjust the mark coordinates to compensate for the change
 			 * in the next line. */
-			if (openfile->mark_set && openfile->mark_begin ==
-			        next_line) {
+			if (openfile->mark_set && openfile->mark_begin == next_line) {
 				openfile->mark_begin = openfile->current;
 				openfile->mark_begin_x += line_len - indent_len;
 			}
@@ -2226,26 +2123,18 @@ void do_justify(bool full_justify)
 			openfile->totsize--;
 		}
 
-		/* Call justify_format() on the paragraph, which will remove
-		 * excess spaces from it and change all blank characters to
-		 * spaces. */
-		justify_format(openfile->current, quote_len +
-		               indent_length(openfile->current->data + quote_len));
+		/* Call justify_format() on the paragraph, which will remove excess
+		 * spaces from it and change all blank characters to spaces. */
+		justify_format(openfile->current, quote_len + indent_length(openfile->current->data + quote_len));
 
-		while (par_len > 0 && strlenpt(openfile->current->data) >
-		        fill) {
+		while (par_len > 0 && strlenpt(openfile->current->data) > fill) {
 			size_t line_len = strlen(openfile->current->data);
 
 			indent_len = strlen(indent_string);
 
 			/* If this line is too long, try to wrap it to the next line
 			 * to make it short enough. */
-			break_pos = break_line(openfile->current->data + indent_len,
-			                       fill - strnlenpt(openfile->current->data, indent_len)
-#ifndef DISABLE_HELP
-			                       , FALSE
-#endif
-			                      );
+			break_pos = break_line(openfile->current->data + indent_len, fill - strnlenpt(openfile->current->data, indent_len), FALSE);
 
 			/* We can't break the line, or don't need to, so get out. */
 			if (break_pos == -1 || break_pos + indent_len == line_len) {
@@ -2261,9 +2150,7 @@ void do_justify(bool full_justify)
 			/* Make a new line, and copy the text after where we're
 			 * going to break this line to the beginning of the new
 			 * line. */
-			splice_node(openfile->current,
-			            make_new_node(openfile->current),
-			            openfile->current->next);
+			splice_node(openfile->current, make_new_node(openfile->current), openfile->current->next);
 
 			/* If this paragraph is non-quoted, and autoindent isn't
 			 * turned on, set the indentation length to zero so that the
@@ -2274,21 +2161,16 @@ void do_justify(bool full_justify)
 
 			/* Copy the text after where we're going to break the
 			 * current line to the next line. */
-			openfile->current->next->data = charalloc(indent_len + 1 +
-			                                line_len - break_pos);
-			strncpy(openfile->current->next->data, indent_string,
-			        indent_len);
-			strcpy(openfile->current->next->data + indent_len,
-			       openfile->current->data + break_pos);
+			openfile->current->next->data = charalloc(indent_len + 1 + line_len - break_pos);
+			strncpy(openfile->current->next->data, indent_string, indent_len);
+			strcpy(openfile->current->next->data + indent_len, openfile->current->data + break_pos);
 
 			par_len++;
 			openfile->totsize += indent_len + 1;
 
 			/* Adjust the mark coordinates to compensate for the change
 			 * in the current line. */
-			if (openfile->mark_set && openfile->mark_begin ==
-			        openfile->current && openfile->mark_begin_x >
-			        break_pos) {
+			if (openfile->mark_set && openfile->mark_begin == openfile->current && openfile->mark_begin_x > break_pos) {
 				openfile->mark_begin = openfile->current->next;
 				openfile->mark_begin_x -= break_pos - indent_len;
 			}
@@ -2308,8 +2190,7 @@ void do_justify(bool full_justify)
 			openfile->current = openfile->current->next;
 		}
 
-		/* We're done breaking lines, so we don't need indent_string
-		 * anymore. */
+		/* We're done breaking lines, so we don't need indent_string anymore. */
 		free(indent_string);
 
 		/* Go to the next line, if possible.  If there is no next line,
@@ -2366,8 +2247,7 @@ void do_justify(bool full_justify)
 
 	/* Now get a keystroke and see if it's unjustify.  If not, put back
 	 * the keystroke and return. */
-	kbinput = do_input(&meta_key, &func_key, &s_or_t, &ran_func,
-	                   &finished, FALSE);
+	kbinput = do_input(&meta_key, &func_key, &s_or_t, &ran_func, &finished, FALSE);
 	s = get_shortcut(currmenu, &kbinput, &meta_key, &func_key);
 
 	if (s && s->scfunc == do_uncut_text) {
@@ -2378,9 +2258,7 @@ void do_justify(bool full_justify)
 
 			/* Partition the filestruct so that it contains only the
 			 * text of the justified paragraph. */
-			filepart = partition_filestruct(first_par_line, 0,
-			                                last_par_line, filebot_inpar ?
-			                                strlen(last_par_line->data) : 0);
+			filepart = partition_filestruct(first_par_line, 0, last_par_line, filebot_inpar ? strlen(last_par_line->data) : 0);
 
 			/* Remove the text of the justified paragraph, and
 			 * replace it with the text in the justify buffer. */
@@ -2395,8 +2273,7 @@ void do_justify(bool full_justify)
 			 * replaced with the unjustified paragraph. */
 			unpartition_filestruct(&filepart);
 
-			/* Renumber starting with the beginning line of the old
-			 * partition. */
+			/* Renumber starting with the beginning line of the old partition. */
 			renumber(top_save);
 
 			/* Restore the justify we just did (ungrateful user!). */
@@ -2497,8 +2374,7 @@ bool do_int_spell_fix(const char *word)
 		 * set, keep track of whether the text will have a magicline
 		 * added when we're done correcting misspelled words; and
 		 * turn the mark off. */
-		mark_order((const filestruct **)&top, &top_x,
-		           (const filestruct **)&bot, &bot_x, &right_side_up);
+		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
 		filepart = partition_filestruct(top, top_x, bot, bot_x);
 		if (!ISSET(NO_NEWLINES)) {
 			added_magicline = (openfile->filebot->data[0] != '\0');
@@ -2514,14 +2390,10 @@ bool do_int_spell_fix(const char *word)
 
 	/* Find the first whole occurrence of word. */
 	findnextstr_wrap_reset();
-	while (findnextstr(TRUE, FALSE, openfile->fileage, 0, word,
-	                   &match_len)) {
-		if (is_whole_word(openfile->current_x, openfile->current->data,
-		                  word)) {
+	while (findnextstr(TRUE, FALSE, openfile->fileage, 0, word, &match_len)) {
+		if (is_whole_word(openfile->current_x, openfile->current->data, word)) {
 			size_t xpt = xplustabs();
-			char *exp_word = display_string(openfile->current->data,
-			                                xpt, strnlenpt(openfile->current->data,
-			                                        openfile->current_x + match_len) - xpt, FALSE);
+			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, FALSE);
 
 			edit_refresh();
 
@@ -2543,8 +2415,7 @@ bool do_int_spell_fix(const char *word)
 
 			if (!canceled && strcmp(word, answer) != 0) {
 				openfile->current_x--;
-				do_replace_loop(TRUE, &canceled, openfile->current,
-				                &openfile->current_x, word);
+				do_replace_loop(TRUE, &canceled, openfile->current, &openfile->current_x, word);
 			}
 
 			break;
@@ -2618,8 +2489,7 @@ const char *do_int_speller(const char *tempfile_name)
 	int spell_status, sort_status, uniq_status;
 
 	/* Create all three pipes up front. */
-	if (pipe(spell_fd) == -1 || pipe(sort_fd) == -1 ||
-	        pipe(uniq_fd) == -1) {
+	if (pipe(spell_fd) == -1 || pipe(sort_fd) == -1 || pipe(uniq_fd) == -1) {
 		return _("Could not create pipe");
 	}
 
@@ -2730,12 +2600,10 @@ const char *do_int_speller(const char *tempfile_name)
 	read_buff_size = pipe_buff_size + 1;
 	read_buff = read_buff_ptr = charalloc(read_buff_size);
 
-	while ((bytesread = read(uniq_fd[0], read_buff_ptr,
-	                         pipe_buff_size)) > 0) {
+	while ((bytesread = read(uniq_fd[0], read_buff_ptr, pipe_buff_size)) > 0) {
 		read_buff_read += bytesread;
 		read_buff_size += pipe_buff_size;
-		read_buff = read_buff_ptr = charealloc(read_buff,
-		                                       read_buff_size);
+		read_buff = read_buff_ptr = charealloc(read_buff, read_buff_size);
 		read_buff_ptr += read_buff_read;
 	}
 
@@ -2827,8 +2695,7 @@ const char *do_alt_speller(char *tempfile_name)
 	 * to will be freed, so we save the line number and restore it
 	 * afterwards. */
 	size_t totsize_save = openfile->totsize;
-	/* Our saved value of totsize, used when we spell-check a marked
-	 * selection. */
+	/* Our saved value of totsize, used when we spell-check a marked selection. */
 
 	if (old_mark_set) {
 		/* If the mark is on, save the number of the line it starts on,
@@ -2851,8 +2718,7 @@ const char *do_alt_speller(char *tempfile_name)
 		spellargs[0] = strtok(alt_speller, " ");
 		while ((ptr = strtok(NULL, " ")) != NULL) {
 			arglen++;
-			spellargs = (char **)nrealloc(spellargs, arglen *
-			                              sizeof(char *));
+			spellargs = (char **)nrealloc(spellargs, arglen * sizeof(char *));
 			spellargs[arglen - 3] = ptr;
 		}
 		spellargs[arglen - 1] = NULL;
@@ -2893,8 +2759,7 @@ const char *do_alt_speller(char *tempfile_name)
 	 * the windows based on the new screen dimensions. */
 	window_init();
 
-	if (!WIFEXITED(alt_spell_status) ||
-	        WEXITSTATUS(alt_spell_status) != 0) {
+	if (!WIFEXITED(alt_spell_status) || WEXITSTATUS(alt_spell_status) != 0) {
 		char *alt_spell_error;
 		char *invoke_error = _("Error invoking \"%s\"");
 
@@ -2903,9 +2768,7 @@ const char *do_alt_speller(char *tempfile_name)
 		openfile->mark_set = old_mark_set;
 #endif
 
-		alt_spell_error =
-		    charalloc(strlen(invoke_error) +
-		              strlen(alt_speller) + 1);
+		alt_spell_error = charalloc(strlen(invoke_error) + strlen(alt_speller) + 1);
 		sprintf(alt_spell_error, invoke_error, alt_speller);
 		return alt_spell_error;
 	}
@@ -2916,8 +2779,7 @@ const char *do_alt_speller(char *tempfile_name)
 		 * set, keep track of whether the text will have a magicline
 		 * added when we're done correcting misspelled words; and
 		 * turn the mark off. */
-		mark_order((const filestruct **)&top, &top_x,
-		           (const filestruct **)&bot, &bot_x, &right_side_up);
+		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
 		filepart = partition_filestruct(top, top_x, bot, bot_x);
 		if (!ISSET(NO_NEWLINES)) {
 			added_magicline = (openfile->filebot->data[0] != '\0');
@@ -2928,8 +2790,7 @@ const char *do_alt_speller(char *tempfile_name)
 		totsize_save -= get_totsize(top, bot);
 	}
 
-	/* Replace the text of the current buffer with the spell-checked
-	 * text. */
+	/* Replace the text of the current buffer with the spell-checked text. */
 	replace_buffer(tempfile_name);
 
 	if (old_mark_set) {
@@ -2969,13 +2830,11 @@ const char *do_alt_speller(char *tempfile_name)
 		openfile->totsize = totsize_save;
 
 		/* Assign mark_begin to the line where the mark began before. */
-		do_gotopos(mb_lineno_save, openfile->mark_begin_x,
-		           current_y_save, 0);
+		do_gotopos(mb_lineno_save, openfile->mark_begin_x, current_y_save, 0);
 		openfile->mark_begin = openfile->current;
 
 		/* Assign mark_begin_x to the location in mark_begin where the
-		 * mark began before, adjusted for any shortening of the
-		 * line. */
+		 * mark began before, adjusted for any shortening of the line. */
 		openfile->mark_begin_x = openfile->current_x;
 
 		/* Turn the mark back on. */
@@ -3011,9 +2870,7 @@ void do_spell(void)
 		return;
 	}
 
-	status = openfile->mark_set
-	         ? write_marked_file(temp, temp_file, TRUE, OVERWRITE)
-	         : write_file(temp, temp_file, TRUE, OVERWRITE, FALSE);
+	status = openfile->mark_set ? write_marked_file(temp, temp_file, TRUE, OVERWRITE) : write_file(temp, temp_file, TRUE, OVERWRITE, FALSE);
 
 	if (!status) {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
@@ -3021,8 +2878,7 @@ void do_spell(void)
 		return;
 	}
 
-	spell_msg = (alt_speller != NULL) ? do_alt_speller(temp) :
-	            do_int_speller(temp);
+	spell_msg = (alt_speller != NULL) ? do_alt_speller(temp) : do_int_speller(temp);
 	unlink(temp);
 	free(temp);
 
@@ -3033,13 +2889,12 @@ void do_spell(void)
 	total_refresh();
 
 	if (spell_msg != NULL) {
-		if (errno == 0)
+		if (errno == 0) {
 			/* Don't display an error message of "Success". */
-		{
 			statusbar(_("Spell checking failed: %s"), spell_msg);
-		} else
-			statusbar(_("Spell checking failed: %s: %s"), spell_msg,
-			          strerror(errno));
+		} else {
+			statusbar(_("Spell checking failed: %s: %s"), spell_msg, strerror(errno));
+		}
 	} else {
 		statusbar(_("Finished checking spelling"));
 	}
@@ -3062,8 +2917,7 @@ void do_wordlinechar_count(void)
 	if (old_mark_set) {
 		/* If the mark is on, partition the filestruct so that it
 		 * contains only the marked text, and turn the mark off. */
-		mark_order((const filestruct **)&top, &top_x,
-		           (const filestruct **)&bot, &bot_x, NULL);
+		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, NULL);
 		filepart = partition_filestruct(top, top_x, bot, bot_x);
 		openfile->mark_set = FALSE;
 	}
@@ -3077,8 +2931,7 @@ void do_wordlinechar_count(void)
 	 * part of a word, as "wc -w" does), without updating the screen,
 	 * until we reach the end of the file, incrementing the total word
 	 * count whenever we're on a word just before moving. */
-	while (openfile->current != openfile->filebot ||
-	        openfile->current->data[openfile->current_x] != '\0') {
+	while (openfile->current != openfile->filebot || openfile->current->data[openfile->current_x] != '\0') {
 		if (do_next_word(TRUE, FALSE)) {
 			words++;
 		}
@@ -3087,8 +2940,7 @@ void do_wordlinechar_count(void)
 	/* Get the total line and character counts, as "wc -l"  and "wc -c"
 	 * do, but get the latter in multibyte characters. */
 	if (old_mark_set) {
-		nlines = openfile->filebot->lineno -
-		         openfile->fileage->lineno + 1;
+		nlines = openfile->filebot->lineno - openfile->fileage->lineno + 1;
 		chars = get_totsize(openfile->fileage, openfile->filebot);
 
 		/* Unpartition the filestruct so that it contains all the text
@@ -3105,11 +2957,8 @@ void do_wordlinechar_count(void)
 	openfile->current_x = current_x_save;
 	openfile->placewewant = pww_save;
 
-	/* Display the total word, line, and character counts on the
-	 * statusbar. */
-	statusbar(_("%sWords: %lu  Lines: %ld  Chars: %lu"), old_mark_set ?
-	          _("In Selection:  ") : "", (unsigned long)words, (long)nlines,
-	          (unsigned long)chars);
+	/* Display the total word, line, and character counts on the statusbar. */
+	statusbar(_("%sWords: %lu  Lines: %ld  Chars: %lu"), old_mark_set ? _("In Selection:  ") : "", (unsigned long)words, (long)nlines, (unsigned long)chars);
 }
 
 /* Get verbatim input. */

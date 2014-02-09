@@ -33,8 +33,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#ifdef ENABLE_PINOTRC
-
 std::vector<rcoption> rcopts = {
 	{"boldtext", BOLD_TEXT, false},
 #ifdef ENABLE_JUSTIFY
@@ -48,13 +46,11 @@ std::vector<rcoption> rcopts = {
 #ifndef DISABLE_MOUSE
 	{"mouse", USE_MOUSE, false},
 #endif
-#ifdef ENABLE_MULTIBUFFER
-	{"multibuffer", MULTIBUFFER, false},
-#endif
-	{"morespace", MORE_SPACE, false},
-	{"nofollow", NOFOLLOW_SYMLINKS, false},
-	{"nohelp", NO_HELP, false},
-	{"nonewlines", NO_NEWLINES, false},
+	{"multibuffer", MULTIBUFFER},
+	{"morespace", MORE_SPACE},
+	{"nofollow", NOFOLLOW_SYMLINKS},
+	{"nohelp", NO_HELP},
+	{"nonewlines", NO_NEWLINES},
 #ifndef DISABLE_WRAPPING
 	{"nowrap", NO_WRAP, false},
 #endif
@@ -108,8 +104,7 @@ static Syntax *new_syntax = NULL;
 /* current syntax being processed */
 
 /* We have an error in some part of the rcfile.  Print the error message
- * on stderr, and then make the user hit Enter to continue starting
- * pinot. */
+ * on stderr, and then make the user hit Enter to continue starting pinot. */
 void rcfile_error(const char *msg, ...)
 {
 	va_list ap;
@@ -201,16 +196,14 @@ char *parse_next_regex(char *ptr)
 
 	/* Continue until the end of the line, or a " followed by a space, a
 	 * blank character, or \0. */
-	while ((*ptr != '"' || (!isblank(*(ptr + 1)) &&
-	                        *(ptr + 1) != '\0')) && *ptr != '\0') {
+	while ((*ptr != '"' || (!isblank(*(ptr + 1)) && *(ptr + 1) != '\0')) && *ptr != '\0') {
 		ptr++;
 	}
 
 	assert(*ptr == '"' || *ptr == '\0');
 
 	if (*ptr == '\0') {
-		rcfile_error(
-		    N_("Regex strings must begin and end with a \" character"));
+		rcfile_error(N_("Regex strings must begin and end with a \" character"));
 		return NULL;
 	}
 
@@ -529,7 +522,7 @@ void parse_unbinding(char *ptr)
 		keycopy[i] = toupper(keycopy[i]);
 	}
 
-	DEBUG_LOG("Starting unbinding code");
+	DEBUG_LOG("Starting unbinding code\n");
 
 	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
 		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
@@ -551,7 +544,6 @@ void parse_unbinding(char *ptr)
 		rcfile_error(N_("Could not map name \"%s\" to a menu"), menuptr);
 		return;
 	}
-
 
 	DEBUG_LOG("unbinding \"%s\" from menu = %d\n", keycopy, menu);
 
@@ -584,9 +576,7 @@ void parse_include(char *ptr)
 	/* Don't open directories, character files, or block files. */
 	if (stat(option, &rcinfo) != -1) {
 		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
-			rcfile_error(S_ISDIR(rcinfo.st_mode) ?
-			             _("\"%s\" is a directory") :
-			             _("\"%s\" is a device file"), option);
+			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), option);
 		}
 	}
 
@@ -763,8 +753,7 @@ void parse_colors(char *ptr, bool icase)
 
 		auto newcolor = ColorPtr(new colortype);
 
-		/* Save the starting regex string if it's valid, and set up the
-		 * color information. */
+		/* Save the starting regex string if it's valid, and set up the color information. */
 		if (nregcomp(fgstr, icase ? REG_ICASE : 0)) {
 			newcolor->fg = fg;
 			newcolor->bg = bg;
@@ -809,8 +798,7 @@ void parse_colors(char *ptr, bool icase)
 				break;
 			}
 
-			/* If the start regex was invalid, skip past the end regex to
-			 * stay in sync. */
+			/* If the start regex was invalid, skip past the end regex to stay in sync. */
 			if (cancelled) {
 				continue;
 			}
@@ -921,8 +909,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			ptr++;
 		}
 
-		/* If we have a blank line or a comment, skip to the next
-		 * line. */
+		/* If we have a blank line or a comment, skip to the next line. */
 		if (*ptr == '\0' || *ptr == '#') {
 			continue;
 		}
@@ -935,14 +922,16 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		if (strcasecmp(keyword, "set") == 0) {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
-			} else
+			} else {
 				set = 1;
+			}
 		} else if (strcasecmp(keyword, "unset") == 0) {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
-			} else
+			} else {
 				set = -1;
-		} else if (strcasecmp(keyword, "include") == 0) {
+			}
+		}	else if (strcasecmp(keyword, "include") == 0) {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
 			} else {
@@ -1125,9 +1114,7 @@ void do_rcfile(void)
 	/* Don't open directories, character files, or block files. */
 	if (stat(pinotrc, &rcinfo) != -1) {
 		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode))
-			rcfile_error(S_ISDIR(rcinfo.st_mode) ?
-			             _("\"%s\" is a directory") :
-			             _("\"%s\" is a device file"), pinotrc);
+			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc);
 	}
 
 	DEBUG_LOG("Parsing file \"%s\"\n", pinotrc);
@@ -1160,10 +1147,9 @@ void do_rcfile(void)
 
 		/* Don't open directories, character files, or block files. */
 		if (stat(pinotrc, &rcinfo) != -1) {
-			if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode))
-				rcfile_error(S_ISDIR(rcinfo.st_mode) ?
-				             _("\"%s\" is a directory") :
-				             _("\"%s\" is a device file"), pinotrc);
+			if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
+				rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc);
+			}
 		}
 
 		/* Try to open the current user's pinotrc. */
@@ -1191,5 +1177,3 @@ void do_rcfile(void)
 
 	set_colorpairs();
 }
-
-#endif /* ENABLE_PINOTRC */

@@ -140,8 +140,7 @@ bool is_ascii_cntrl_char(int c)
  * handles high-bit control characters. */
 bool is_cntrl_char(int c)
 {
-	return (-128 <= c && c < -96) || (0 <= c && c < 32) ||
-	       (127 <= c && c < 160);
+	return (-128 <= c && c < -96) || (0 <= c && c < 32) || (127 <= c && c < 160);
 }
 
 #ifdef ENABLE_UTF8
@@ -204,8 +203,7 @@ bool is_word_mbchar(const char *c, bool allow_punct)
 {
 	assert(c != NULL);
 
-	return is_alnum_mbchar(c) || (allow_punct ? is_punct_mbchar(c) :
-	                              FALSE);
+	return is_alnum_mbchar(c) || (allow_punct ? is_punct_mbchar(c) : FALSE);
 }
 
 /* c is a control character.  It displays as ^@, ^?, or ^[ch], where ch
@@ -432,8 +430,7 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
 
 				(*col)++;
 
-				ctrl_buf_mb = control_mbrep(buf, ctrl_buf_mb,
-				                            &ctrl_buf_mb_len);
+				ctrl_buf_mb = control_mbrep(buf, ctrl_buf_mb, &ctrl_buf_mb_len);
 
 				*col += mbwidth(ctrl_buf_mb);
 
@@ -561,8 +558,7 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 		s1_mb = charalloc(MB_CUR_MAX);
 		s2_mb = charalloc(MB_CUR_MAX);
 
-		for (; *s1 != '\0' && *s2 != '\0' && n > 0; s1 +=
-		            move_mbright(s1, 0), s2 += move_mbright(s2, 0), n--) {
+		for (; *s1 != '\0' && *s2 != '\0' && n > 0; s1 += move_mbright(s1, 0), s2 += move_mbright(s2, 0), n--) {
 			bool bad_s1_mb = FALSE, bad_s2_mb = FALSE;
 			int s1_mb_len, s2_mb_len;
 
@@ -582,8 +578,7 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 				bad_s2_mb = TRUE;
 			}
 
-			if (bad_s1_mb != bad_s2_mb || towlower(ws1) !=
-			        towlower(ws2)) {
+			if (bad_s1_mb != bad_s2_mb || towlower(ws1) != towlower(ws2)) {
 				break;
 			}
 		}
@@ -612,8 +607,7 @@ char *nstrcasestr(const char *haystack, const char *needle)
 	haystack_len = strlen(haystack);
 	needle_len = strlen(needle);
 
-	for (; *haystack != '\0' && haystack_len >= needle_len; haystack++,
-	        haystack_len--) {
+	for (; *haystack != '\0' && haystack_len >= needle_len; haystack++, haystack_len--) {
 		if (strncasecmp(haystack, needle, needle_len) == 0) {
 			return (char *)haystack;
 		}
@@ -639,8 +633,7 @@ char *mbstrcasestr(const char *haystack, const char *needle)
 		haystack_len = mbstrlen(haystack);
 		needle_len = mbstrlen(needle);
 
-		for (; *haystack != '\0' && haystack_len >= needle_len;
-		        haystack += move_mbright(haystack, 0), haystack_len--) {
+		for (; *haystack != '\0' && haystack_len >= needle_len; haystack += move_mbright(haystack, 0), haystack_len--) {
 			if (mbstrncasecmp(haystack, needle, needle_len) == 0) {
 				return (char *)haystack;
 			}
@@ -654,8 +647,7 @@ char *mbstrcasestr(const char *haystack, const char *needle)
 
 /* This function is equivalent to strstr(), except in that it scans the
  * string in reverse, starting at rev_start. */
-char *revstrstr(const char *haystack, const char *needle, const char
-                *rev_start)
+char *revstrstr(const char *haystack, const char *needle, const char *rev_start)
 {
 	size_t rev_start_len, needle_len;
 
@@ -674,8 +666,7 @@ char *revstrstr(const char *haystack, const char *needle, const char
 	rev_start_len = strlen(rev_start);
 
 	for (; rev_start >= haystack; rev_start--, rev_start_len++) {
-		if (rev_start_len >= needle_len && strncmp(rev_start, needle,
-		        needle_len) == 0) {
+		if (rev_start_len >= needle_len && strncmp(rev_start, needle, needle_len) == 0) {
 			return (char *)rev_start;
 		}
 	}
@@ -685,8 +676,7 @@ char *revstrstr(const char *haystack, const char *needle, const char
 
 /* This function is equivalent to strcasestr(), except in that it scans
  * the string in reverse, starting at rev_start. */
-char *revstrcasestr(const char *haystack, const char *needle, const char
-                    *rev_start)
+char *revstrcasestr(const char *haystack, const char *needle, const char *rev_start)
 {
 	size_t rev_start_len, needle_len;
 
@@ -705,8 +695,7 @@ char *revstrcasestr(const char *haystack, const char *needle, const char
 	rev_start_len = strlen(rev_start);
 
 	for (; rev_start >= haystack; rev_start--, rev_start_len++) {
-		if (rev_start_len >= needle_len && strncasecmp(rev_start,
-		        needle, needle_len) == 0) {
+		if (rev_start_len >= needle_len && strncasecmp(rev_start, needle, needle_len) == 0) {
 			return (char *)rev_start;
 		}
 	}
@@ -715,10 +704,8 @@ char *revstrcasestr(const char *haystack, const char *needle, const char
 }
 
 /* This function is equivalent to strcasestr() for multibyte strings,
- * except in that it scans the string in reverse, starting at
- * rev_start. */
-char *mbrevstrcasestr(const char *haystack, const char *needle, const
-                      char *rev_start)
+ * except in that it scans the string in reverse, starting at rev_start. */
+char *mbrevstrcasestr(const char *haystack, const char *needle, const char *rev_start)
 {
 #ifdef ENABLE_UTF8
 	if (use_utf8) {
@@ -740,16 +727,14 @@ char *mbrevstrcasestr(const char *haystack, const char *needle, const
 		rev_start_len = mbstrlen(rev_start);
 
 		while (!begin_line) {
-			if (rev_start_len >= needle_len && mbstrncasecmp(rev_start,
-			        needle, needle_len) == 0) {
+			if (rev_start_len >= needle_len && mbstrncasecmp(rev_start, needle, needle_len) == 0) {
 				return (char *)rev_start;
 			}
 
 			if (rev_start == haystack) {
 				begin_line = TRUE;
 			} else {
-				rev_start = haystack + move_mbleft(haystack, rev_start -
-				                                   haystack);
+				rev_start = haystack + move_mbleft(haystack, rev_start - haystack);
 				rev_start_len++;
 			}
 		}
@@ -791,8 +776,7 @@ size_t mbstrnlen(const char *s, size_t maxlen)
 	if (use_utf8) {
 		size_t n = 0;
 
-		for (; *s != '\0' && maxlen > 0; s += move_mbright(s, 0),
-		        maxlen--, n++) {
+		for (; *s != '\0' && maxlen > 0; s += move_mbright(s, 0), maxlen--, n++) {
 			;
 		}
 
@@ -871,14 +855,12 @@ char *mbstrpbrk(const char *s, const char *accept)
 
 /* This function is equivalent to strpbrk(), except in that it scans the
  * string in reverse, starting at rev_start. */
-char *revstrpbrk(const char *s, const char *accept, const char
-                 *rev_start)
+char *revstrpbrk(const char *s, const char *accept, const char *rev_start)
 {
 	assert(s != NULL && accept != NULL && rev_start != NULL);
 
 	for (; rev_start >= s; rev_start--) {
-		const char *q = (*rev_start == '\0') ? NULL : strchr(accept,
-		                *rev_start);
+		const char *q = (*rev_start == '\0') ? NULL : strchr(accept, *rev_start);
 
 		if (q != NULL) {
 			return (char *)rev_start;
@@ -891,8 +873,7 @@ char *revstrpbrk(const char *s, const char *accept, const char
 /* This function is equivalent to strpbrk() for multibyte strings,
  * except in that it scans the string in reverse, starting at
  * rev_start. */
-char *mbrevstrpbrk(const char *s, const char *accept, const char
-                   *rev_start)
+char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 {
 	assert(s != NULL && accept != NULL && rev_start != NULL);
 
@@ -901,8 +882,7 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char
 		bool begin_line = FALSE;
 
 		while (!begin_line) {
-			const char *q = (*rev_start == '\0') ? NULL :
-			                mbstrchr(accept, rev_start);
+			const char *q = (*rev_start == '\0') ? NULL : mbstrchr(accept, rev_start);
 
 			if (q != NULL) {
 				return (char *)rev_start;
@@ -968,13 +948,14 @@ bool has_blank_mbchars(const char *s)
 /* Return TRUE if wc is valid Unicode, and FALSE otherwise. */
 bool is_valid_unicode(wchar_t wc)
 {
-	return ((0 <= wc && wc <= 0x10FFFF) && (wc <= 0xD7FF || 0xE000 <=
-	                                        wc) && (wc <= 0xFDCF || 0xFDF0 <= wc) && ((wc & 0xFFFF) <=
-	                                                0xFFFD));
+	return (
+		(0 <= wc && wc <= 0x10FFFF)
+		&& (wc <= 0xD7FF || 0xE000 <= wc)
+		&& (wc <= 0xFDCF || 0xFDF0 <= wc)
+		&& ((wc & 0xFFFF) <= 0xFFFD));
 }
 #endif
 
-#ifdef ENABLE_PINOTRC
 /* Check if the string s is a valid multibyte string.  Return TRUE if it
  * is, and FALSE otherwise. */
 bool is_valid_mbstring(const char *s)
@@ -987,4 +968,3 @@ bool is_valid_mbstring(const char *s)
 #endif
 	    TRUE;
 }
-#endif /* ENABLE_PINOTRC */

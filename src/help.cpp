@@ -27,8 +27,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifndef DISABLE_HELP
-
 static char *help_text = NULL;
 /* The text displayed in the help window. */
 
@@ -236,11 +234,8 @@ void help_init(void)
 	const sc *s;
 	int scsfound = 0;
 
-#ifdef ENABLE_PINOTRC
 	bool old_whitespace = ISSET(WHITESPACE_DISPLAY);
-
 	UNSET(WHITESPACE_DISPLAY);
-#endif
 
 	/* First, set up the initial help text for the current function. */
 	if (currmenu == MWHEREIS || currmenu == MREPLACE || currmenu == MREPLACE2) {
@@ -497,18 +492,18 @@ void help_init(void)
 	}
 
 	/* And the toggles... */
-	if (currmenu == MMAIN)
-		for (s = sclist; s != NULL; s = s->next)
-			if (s->scfunc == do_toggle_void)
-				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n",
-				               s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
+	if (currmenu == MMAIN) {
+		for (s = sclist; s != NULL; s = s->next) {
+			if (s->scfunc == do_toggle_void) {
+				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n", s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
+			}
+		}
+	}
 
 
-#ifdef ENABLE_PINOTRC
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
-#endif
 
 	/* If all went well, we didn't overwrite the allocated space for
 	 * help_text. */
@@ -531,12 +526,12 @@ void parse_help_input(int *kbinput, bool *meta_key, bool *func_key)
 			*kbinput = sc_seq_or(do_page_up, 0);
 			break;
 		case '-':
-			*kbinput = sc_seq_or(do_page_down, 0);;
+			*kbinput = sc_seq_or(do_page_down, 0);
 			break;
 			/* Cancel is equivalent to Exit here. */
 		case 'E':
 		case 'e':
-			*kbinput = sc_seq_or(do_exit, 0);;
+			*kbinput = sc_seq_or(do_exit, 0);
 			break;
 		}
 	}
@@ -568,20 +563,9 @@ size_t help_line_len(const char *ptr)
 	return retval;
 }
 
-#endif /* !DISABLE_HELP */
-
 /* Start the help browser for the edit window. */
 void do_help_void(void)
 {
-
-#ifndef DISABLE_HELP
 	/* Start the help browser for the edit window. */
 	do_help(&edit_refresh);
-#else
-	if (currmenu == MMAIN) {
-		pinot_disabled_msg();
-	} else {
-		beep();
-	}
-#endif
 }

@@ -44,12 +44,11 @@ void cutbuffer_reset(void)
  * current line. */
 void cut_line(void)
 {
-	if (openfile->current != openfile->filebot)
-		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0,
-		                   openfile->current->next, 0);
-	else
-		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0,
-		                   openfile->current, strlen(openfile->current->data));
+	if (openfile->current != openfile->filebot) {
+		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0, openfile->current->next, 0);
+	} else {
+		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0, openfile->current, strlen(openfile->current->data));
+	}
 	openfile->placewewant = 0;
 }
 
@@ -60,8 +59,7 @@ void cut_marked(void)
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
 
-	mark_order((const filestruct **)&top, &top_x,
-	           (const filestruct **)&bot, &bot_x, NULL);
+	mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, NULL);
 
 	move_to_filestruct(&cutbuffer, &cutbottom, top, top_x, bot, bot_x);
 	openfile->placewewant = xplustabs();
@@ -79,19 +77,17 @@ void cut_to_eol(void)
 
 	assert(openfile->current_x <= data_len);
 
-	if (openfile->current_x < data_len)
+	if (openfile->current_x < data_len) {
 		/* If we're not at the end of the line, move all the text from
 		 * the current position up to it, not counting the newline at
 		 * the end, into the cutbuffer. */
-		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current,
-		                   openfile->current_x, openfile->current, data_len);
-	else if (openfile->current != openfile->filebot) {
+		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, openfile->current_x, openfile->current, data_len);
+	} else if (openfile->current != openfile->filebot) {
 		/* If we're at the end of the line, and it isn't the last line
 		 * of the file, move all the text from the current position up
 		 * to the beginning of the next line, i.e. the newline at the
 		 * end, into the cutbuffer. */
-		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current,
-		                   openfile->current_x, openfile->current->next, 0);
+		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, openfile->current_x, openfile->current->next, 0);
 		openfile->placewewant = xplustabs();
 	}
 }
@@ -100,9 +96,7 @@ void cut_to_eol(void)
  * file into the cutbuffer. */
 void cut_to_eof(void)
 {
-	move_to_filestruct(&cutbuffer, &cutbottom, openfile->current,
-	                   openfile->current_x, openfile->filebot,
-	                   strlen(openfile->filebot->data));
+	move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, openfile->current_x, openfile->filebot, strlen(openfile->filebot->data));
 }
 
 /* Move text from the current filestruct into the cutbuffer.  If
@@ -112,8 +106,7 @@ void cut_to_eof(void)
 void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 {
 	filestruct *cb_save = NULL;
-	/* The current end of the cutbuffer, before we add text to
-	 * it. */
+	/* The current end of the cutbuffer, before we add text to it. */
 	size_t cb_save_len = 0;
 	/* The length of the string at the current end of the cutbuffer,
 	 * before we add text to it.  */
