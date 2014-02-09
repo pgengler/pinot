@@ -284,11 +284,7 @@ int do_lockfile(const char *filename)
  * necessary, and then open and read the file, if applicable. */
 void open_buffer(const char *filename, bool undoable)
 {
-	bool new_buffer = (openfile == NULL
-#ifdef ENABLE_MULTIBUFFER
-	                   || ISSET(MULTIBUFFER)
-#endif
-	                  );
+	bool new_buffer = (openfile == NULL || ISSET(MULTIBUFFER));
 	/* Whether we load into this buffer or a new one. */
 	FILE *f;
 	int rc;
@@ -392,7 +388,6 @@ void display_buffer(void)
 	edit_refresh();
 }
 
-#ifdef ENABLE_MULTIBUFFER
 /* Switch to the next file buffer if next_buf is TRUE.  Otherwise,
  * switch to the previous file buffer. */
 void switch_to_prevnext_buffer(bool next_buf)
@@ -459,7 +454,6 @@ bool close_buffer(void)
 
 	return TRUE;
 }
-#endif /* ENABLE_MULTIBUFFER */
 
 /* A bit of a copy and paste from open_file(), is_file_writable()
  * just checks whether the file is appendable as a quick
@@ -1046,19 +1040,9 @@ void do_insertfile(bool execute)
 
 	while (TRUE) {
 		if (execute) {
-			msg =
-#ifdef ENABLE_MULTIBUFFER
-			    ISSET(MULTIBUFFER) ?
-			    _("Command to execute in new buffer [from %s] ") :
-#endif
-			    _("Command to execute [from %s] ");
+			msg = ISSET(MULTIBUFFER) ? _("Command to execute in new buffer [from %s] ") : _("Command to execute [from %s] ");
 		} else {
-			msg =
-#ifdef ENABLE_MULTIBUFFER
-			    ISSET(MULTIBUFFER) ?
-			    _("File to insert into new buffer [from %s] ") :
-#endif
-			    _("File to insert [from %s] ");
+			msg = ISSET(MULTIBUFFER) ? _("File to insert into new buffer [from %s] ") : _("File to insert [from %s] ");
 		}
 
 		i = do_prompt(TRUE,
@@ -1079,11 +1063,7 @@ void do_insertfile(bool execute)
 		 * blank, open a new buffer instead of canceling.  If the
 		 * filename or command begins with a newline (i.e. an encoded
 		 * null), treat it as though it's blank. */
-		if (i == -1 || ((i == -2 || *answer == '\n')
-#ifdef ENABLE_MULTIBUFFER
-		                && !ISSET(MULTIBUFFER)
-#endif
-		               )) {
+		if (i == -1 || ((i == -2 || *answer == '\n') && !ISSET(MULTIBUFFER))) {
 			statusbar(_("Cancelled"));
 			break;
 		} else {
@@ -1093,8 +1073,6 @@ void do_insertfile(bool execute)
 
 			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
 
-#ifdef ENABLE_MULTIBUFFER
-
 			if (s && s->scfunc == new_buffer_void) {
 				/* Don't allow toggling if we're in view mode. */
 				if (!ISSET(VIEW_MODE)) {
@@ -1102,17 +1080,12 @@ void do_insertfile(bool execute)
 				}
 				continue;
 			} else
-#endif
 				if (s && s->scfunc == ext_cmd_void) {
 					execute = !execute;
 					continue;
 				}
 #ifndef DISABLE_BROWSER
-				else
-#endif
-
-#ifndef DISABLE_BROWSER
-					if (s && s->scfunc == to_files_void) {
+				else if (s && s->scfunc == to_files_void) {
 						char *tmp = do_browse_from(answer);
 
 						if (tmp == NULL) {
@@ -1128,11 +1101,7 @@ void do_insertfile(bool execute)
 #endif
 
 			/* If we don't have a file yet, go back to the statusbar prompt. */
-			if (i != 0
-#ifdef ENABLE_MULTIBUFFER
-			        && (i != -2 || !ISSET(MULTIBUFFER))
-#endif
-			   ) {
+			if (i != 0 && (i != -2 || !ISSET(MULTIBUFFER))) {
 				continue;
 			}
 
@@ -1147,9 +1116,7 @@ void do_insertfile(bool execute)
 				single_line = (top == bot);
 			}
 
-#ifdef ENABLE_MULTIBUFFER
 			if (!ISSET(MULTIBUFFER)) {
-#endif
 				/* If we're not inserting into a new buffer, partition
 				 * the filestruct so that it contains no text and hence
 				 * looks like a new buffer, and keep track of whether
@@ -1157,9 +1124,7 @@ void do_insertfile(bool execute)
 				 * partition. */
 				filepart = partition_filestruct(openfile->current, openfile->current_x, openfile->current, openfile->current_x);
 				edittop_inside = (openfile->edittop == openfile->fileage);
-#ifdef ENABLE_MULTIBUFFER
 			}
-#endif
 
 			/* Convert newlines to nulls, just before we insert the file
 			 * or execute the command. */
@@ -1167,18 +1132,14 @@ void do_insertfile(bool execute)
 			align(&answer);
 
 			if (execute) {
-#ifdef ENABLE_MULTIBUFFER
-				if (ISSET(MULTIBUFFER))
+				if (ISSET(MULTIBUFFER)) {
 					/* Open a blank buffer. */
-				{
 					open_buffer("", FALSE);
 				}
-#endif
 
 				/* Save the command's output in the current buffer. */
 				execute_command(answer);
 
-#ifdef ENABLE_MULTIBUFFER
 				if (ISSET(MULTIBUFFER)) {
 					/* Move back to the beginning of the first line of
 					 * the buffer. */
@@ -1186,7 +1147,6 @@ void do_insertfile(bool execute)
 					openfile->current_x = 0;
 					openfile->placewewant = 0;
 				}
-#endif
 			} else {
 				/* Make sure the path to the file specified in answer is
 				 * tilde-expanded. */
@@ -1196,7 +1156,6 @@ void do_insertfile(bool execute)
 				open_buffer(answer, TRUE);
 			}
 
-#ifdef ENABLE_MULTIBUFFER
 			if (ISSET(MULTIBUFFER)) {
 				/* Update the screen to account for the current buffer. */
 
@@ -1207,9 +1166,7 @@ void do_insertfile(bool execute)
 				if (!execute && ISSET(POS_HISTORY) && check_poshistory(answer, &savedposline, &savedposcol)) {
 					do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
 				}
-			} else
-#endif
-			{
+			} else {
 				filestruct *top_save = openfile->fileage;
 
 				/* If we were at the top of the edit window before, set
@@ -1287,12 +1244,11 @@ void do_insertfile_void(void)
 		return;
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	if (ISSET(VIEW_MODE) && !ISSET(MULTIBUFFER)) {
 		statusbar(_("Key invalid in non-multibuffer mode"));
-	} else
-#endif
+	} else {
 		do_insertfile(FALSE);
+	}
 
 	display_main_list();
 }

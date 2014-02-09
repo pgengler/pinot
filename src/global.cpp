@@ -487,9 +487,7 @@ const char *append_msg = N_("Append");
 const char *prepend_msg = N_("Prepend");
 const char *backup_file_msg = N_("Backup File");
 const char *ext_cmd_msg = N_("Execute Command");
-#ifdef ENABLE_MULTIBUFFER
 const char *new_buffer_msg = N_("New Buffer");
-#endif
 const char *goto_dir_msg = N_("Go To Dir");
 
 /* Initialize all shortcut lists.  If unjustify is TRUE, replace the
@@ -521,13 +519,7 @@ void shortcut_init(bool unjustify)
 	 * they are best kept shorter than 56 characters, but may be longer. */
 	const char *pinot_cancel_msg = N_("Cancel the current function");
 	const char *pinot_help_msg = N_("Display this help text");
-	const char *pinot_exit_msg =
-#ifdef ENABLE_MULTIBUFFER
-	    N_("Close the current file buffer / Exit from pinot")
-#else
-	    N_("Exit from pinot")
-#endif
-	    ;
+	const char *pinot_exit_msg = N_("Close the current file buffer / Exit from pinot");
 	const char *pinot_writeout_msg = N_("Write the current file to disk");
 	const char *pinot_insert_msg = N_("Insert another file into the current one");
 	const char *pinot_whereis_msg = N_("Search for a string or a regular expression");
@@ -563,10 +555,8 @@ void shortcut_init(bool unjustify)
 	const char *pinot_bracket_msg = N_("Go to the matching bracket");
 	const char *pinot_scrollup_msg = N_("Scroll up one line without scrolling the cursor");
 	const char *pinot_scrolldown_msg = N_("Scroll down one line without scrolling the cursor");
-#ifdef ENABLE_MULTIBUFFER
 	const char *pinot_prevfile_msg = N_("Switch to the previous file buffer");
 	const char *pinot_nextfile_msg = N_("Switch to the next file buffer");
-#endif
 	const char *pinot_verbatim_msg = N_("Insert the next keystroke verbatim");
 	const char *pinot_tab_msg = N_("Insert a tab at the cursor position");
 	const char *pinot_enter_msg = N_("Insert a newline at the cursor position");
@@ -595,9 +585,7 @@ void shortcut_init(bool unjustify)
 	const char *pinot_prepend_msg = N_("Toggle prepending");
 	const char *pinot_backup_msg = N_("Toggle backing up of the original file");
 	const char *pinot_execute_msg = N_("Execute external command");
-#ifdef ENABLE_MULTIBUFFER
 	const char *pinot_multibuffer_msg = N_("Toggle the use of a new buffer");
-#endif
 #ifndef DISABLE_BROWSER
 	const char *pinot_exitbrowser_msg = N_("Exit from the file browser");
 	const char *pinot_firstfile_msg = N_("Go to the first file in the list");
@@ -624,12 +612,8 @@ void shortcut_init(bool unjustify)
 	              (MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO),
 	              cancel_msg, IFSCHELP(pinot_cancel_msg), FALSE, VIEW);
 
-	add_to_funcs(do_exit, MMAIN,
-#ifdef ENABLE_MULTIBUFFER
-	             /* TRANSLATORS: Try to keep this at most 10 characters. */
-	             openfile != NULL && openfile != openfile->next ? N_("Close") :
-#endif
-	             exit_msg, IFSCHELP(pinot_exit_msg), FALSE, VIEW);
+	/* TRANSLATORS: Try to keep this at most 10 characters. */
+	add_to_funcs(do_exit, MMAIN, openfile != NULL && openfile != openfile->next ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), FALSE, VIEW);
 
 #ifndef DISABLE_BROWSER
 	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), FALSE, VIEW);
@@ -650,12 +634,7 @@ void shortcut_init(bool unjustify)
 	 * line. */
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), FALSE,
-#ifdef ENABLE_MULTIBUFFER
-	             VIEW);
-#else
-	             NOVIEW);
-#endif
+	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), FALSE, VIEW);
 
 	add_to_funcs(do_search, MMAIN|MBROWSER, whereis_msg, IFSCHELP(pinot_whereis_msg), FALSE, VIEW);
 
@@ -752,10 +731,8 @@ void shortcut_init(bool unjustify)
 
 	add_to_funcs(do_scroll_down, MMAIN, N_("Scroll Down"), IFSCHELP(pinot_scrolldown_msg), FALSE, VIEW);
 
-#ifdef ENABLE_MULTIBUFFER
 	add_to_funcs(switch_to_prev_buffer_void, MMAIN, _("Previous File"), IFSCHELP(pinot_prevfile_msg), FALSE, VIEW);
 	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), IFSCHELP(pinot_nextfile_msg), TRUE, VIEW);
-#endif
 
 	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim Input"), IFSCHELP(pinot_verbatim_msg), FALSE, NOVIEW);
 	add_to_funcs(do_verbatim_input, MWHEREIS|MREPLACE|MREPLACE2|MEXTCMD|MSPELL, "", "", FALSE, NOVIEW);
@@ -823,18 +800,14 @@ void shortcut_init(bool unjustify)
 		 * It's useless since inserting files is disabled. */
 		add_to_funcs(ext_cmd_void, MINSERTFILE, ext_cmd_msg, IFSCHELP(pinot_execute_msg), FALSE, NOVIEW);
 
-#ifdef ENABLE_MULTIBUFFER
 		/* If we're using restricted mode, the multibuffer toggle is
 		 * disabled.  It's useless since inserting files is disabled. */
 		add_to_funcs(new_buffer_void, MINSERTFILE, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), FALSE, NOVIEW);
-#endif
 	}
 
 	add_to_funcs(do_insertfile_void, MEXTCMD, insert_file_msg, IFSCHELP(pinot_insert_msg), FALSE, VIEW);
 
-#ifdef ENABLE_MULTIBUFFER
 	add_to_funcs(new_buffer_void, MEXTCMD, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), FALSE, NOVIEW);
-#endif
 
 	add_to_funcs(edit_refresh, MHELP, refresh_msg, pinot_refresh_msg, FALSE, VIEW);
 
@@ -962,12 +935,10 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MMAIN, "M-+", do_scroll_down, 0, TRUE);
 	add_to_sclist(MMAIN, "M-=", do_scroll_down, 0, TRUE);
 
-#ifdef ENABLE_MULTIBUFFER
 	add_to_sclist(MMAIN, "M-<", switch_to_prev_buffer_void, 0, TRUE);
 	add_to_sclist(MMAIN, "M-,", switch_to_prev_buffer_void, 0, TRUE);
 	add_to_sclist(MMAIN, "M->", switch_to_next_buffer_void, 0, TRUE);
 	add_to_sclist(MMAIN, "M-.", switch_to_next_buffer_void, 0, TRUE);
-#endif
 	add_to_sclist(MALL, "M-V", do_verbatim_input, 0, TRUE);
 	add_to_sclist(MALL, "M-T", do_cut_till_end, 0, TRUE);
 #ifdef ENABLE_JUSTIFY
@@ -1257,15 +1228,11 @@ sc *strtosc(int menu, char *input)
 			s->scfunc = do_home;
 		} else if (!strcasecmp(input, "end")) {
 			s->scfunc = do_end;
-		}
-#ifdef ENABLE_MULTIBUFFER
-		else if (!strcasecmp(input, "prevbuf")) {
+		} else if (!strcasecmp(input, "prevbuf")) {
 			s->scfunc = switch_to_prev_buffer_void;
 		} else if (!strcasecmp(input, "nextbuf")) {
 			s->scfunc = switch_to_next_buffer_void;
-		}
-#endif
-		else if (!strcasecmp(input, "verbatim")) {
+		} else if (!strcasecmp(input, "verbatim")) {
 			s->scfunc = do_verbatim_input;
 		} else if (!strcasecmp(input, "tab")) {
 			s->scfunc = do_tab;
@@ -1307,11 +1274,9 @@ sc *strtosc(int menu, char *input)
 		} else if (!strcasecmp(input, "backup")) {
 			s->scfunc =  backup_file_void;
 			s->execute = FALSE;
-#ifdef ENABLE_MULTIBUFFER
 		} else if (!strcasecmp(input, "newbuffer")) {
 			s->scfunc =  new_buffer_void;
 			s->execute = FALSE;
-#endif
 #ifndef DISABLE_BROWSER
 		} else if (!strcasecmp(input, "firstfile")) {
 			s->scfunc =  do_first_file;

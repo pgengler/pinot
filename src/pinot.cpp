@@ -617,7 +617,6 @@ void die(const char *msg, ...)
 		die_save_file(openfile->filename, openfile->current_stat);
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	/* Save all of the other modified file buffers, if any. */
 	if (openfile != NULL) {
 		openfilestruct *tmp = openfile;
@@ -631,7 +630,6 @@ void die(const char *msg, ...)
 			}
 		}
 	}
-#endif
 
 	/* Get out. */
 	exit(1);
@@ -804,9 +802,7 @@ void usage(void)
 	print_opt(_("-C <dir>"), _("--backupdir=<dir>"), N_("Directory for saving unique backup files"));
 	print_opt("-D", "--boldtext", N_("Use bold instead of reverse video text"));
 	print_opt("-E", "--tabstospaces", N_("Convert typed tabs to spaces"));
-#ifdef ENABLE_MULTIBUFFER
 	print_opt("-F", "--multibuffer", N_("Enable multiple file buffers"));
-#endif
 	print_opt("-G", "--locking", N_("Use (vim-style) lock files"));
 	print_opt("-H", "--historylog", N_("Log & read search/replace string history"));
 	print_opt("-I", "--ignorercfiles", N_("Don't look at pinotorc files"));
@@ -900,9 +896,6 @@ void version(void)
 #ifdef ENABLE_JUSTIFY
 	printf(" --enable-justify");
 #endif
-#ifdef ENABLE_MULTIBUFFER
-	printf(" --enable-multibuffer");
-#endif
 #ifdef ENABLE_SPELLER
 	printf(" --enable-speller");
 #endif
@@ -967,11 +960,10 @@ void do_exit(void)
 		if (ISSET(LOCKING) && openfile->lock_filename) {
 			delete_lockfile(openfile->lock_filename);
 		}
-#ifdef ENABLE_MULTIBUFFER
 		/* Exit only if there are no more open file buffers. */
-		if (!close_buffer())
-#endif
+		if (!close_buffer()) {
 			finish();
+		}
 		/* If the user canceled, we go on. */
 	} else if (i != 1) {
 		statusbar(_("Cancelled"));
@@ -1888,18 +1880,14 @@ int main(int argc, char **argv)
 	bool fill_used = FALSE;
 	/* Was the fill option used? */
 #endif
-#ifdef ENABLE_MULTIBUFFER
 	bool old_multibuffer;
 	/* The old value of the multibuffer option, restored after we
 	 * load all files on the command line. */
-#endif
 #ifdef HAVE_GETOPT_LONG
 	const struct option long_options[] = {
 		{"help", 0, NULL, 'h'},
 		{"boldtext", 0, NULL, 'D'},
-#ifdef ENABLE_MULTIBUFFER
 		{"multibuffer", 0, NULL, 'F'},
-#endif
 		{"ignorercfiles", 0, NULL, 'I'},
 		{"rebindkeypad", 0, NULL, 'K'},
 		{"nonewlines", 0, NULL, 'L'},
@@ -2008,11 +1996,9 @@ int main(int argc, char **argv)
 		case 'E':
 			SET(TABS_TO_SPACES);
 			break;
-#ifdef ENABLE_MULTIBUFFER
 		case 'F':
 			SET(MULTIBUFFER);
 			break;
-#endif
 		case 'G':
 			SET(LOCKING);
 			break;
@@ -2409,7 +2395,6 @@ int main(int argc, char **argv)
 		optind++;
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	old_multibuffer = ISSET(MULTIBUFFER);
 	SET(MULTIBUFFER);
 
@@ -2442,7 +2427,6 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-#endif
 
 	/* Read the first file on the command line into either the current
 	 * buffer or a new buffer, depending on whether multibuffer mode is
@@ -2460,11 +2444,9 @@ int main(int argc, char **argv)
 		UNSET(VIEW_MODE);
 	}
 
-#ifdef ENABLE_MULTIBUFFER
 	if (!old_multibuffer) {
 		UNSET(MULTIBUFFER);
 	}
-#endif
 
 	DEBUG_LOG("Main: top and bottom win\n");
 
