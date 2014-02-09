@@ -92,10 +92,8 @@ extern char *alt_speller;
 
 extern sc *sclist;
 extern subnfunc *allfuncs;
-#ifdef ENABLE_COLOR
 extern SyntaxMap syntaxes;
 extern char *syntaxstr;
-#endif
 
 extern bool edit_refresh_needed;
 extern const shortcut *currshortcut;
@@ -213,11 +211,9 @@ bool is_valid_mbstring(const char *s);
 #endif
 
 /* All functions in color.c. */
-#ifdef ENABLE_COLOR
 void set_colorpairs(void);
 void color_init(void);
 void color_update(void);
-#endif
 
 /* All functions in cut.c. */
 void cutbuffer_reset(void);
@@ -479,7 +475,6 @@ int do_yesno_prompt(bool all, const char *msg);
 void rcfile_error(const char *msg, ...);
 char *parse_next_word(char *ptr);
 char *parse_argument(char *ptr);
-#ifdef ENABLE_COLOR
 char *parse_next_regex(char *ptr);
 bool nregcomp(const char *regex, int cflags);
 void parse_syntax(char *ptr);
@@ -491,13 +486,8 @@ void parse_colors(char *ptr, bool icase);
 void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
 #endif
-void parse_rcfile(FILE *rcstream
-#ifdef ENABLE_COLOR
-                  , bool syntax_only
-#endif
-                 );
+void parse_rcfile(FILE *rcstream, bool syntax_only);
 void do_rcfile(void);
-#endif
 
 /* All functions in search.c. */
 #ifdef HAVE_PCREPOSIX_H

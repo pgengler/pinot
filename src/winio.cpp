@@ -2378,7 +2378,6 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 	 * just the text that needs it). */
 	mvwaddstr(edit, line, 0, converted);
 
-#ifdef ENABLE_COLOR
 	/* If color syntaxes are available and turned on, we need to display
 	 * them. */
 	if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
@@ -2625,7 +2624,6 @@ step_two:
 			wattroff(edit, COLOR_PAIR(tmpcolor->pairnum));
 		}
 	}
-#endif /* ENABLE_COLOR */
 
 	/* If the mark is on, we need to display it. */
 	if (openfile->mark_set && (fileptr->lineno <=

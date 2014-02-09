@@ -93,9 +93,7 @@ void initialize_buffer_text(void)
 	openfile->edittop = openfile->fileage;
 	openfile->current = openfile->fileage;
 
-#ifdef ENABLE_COLOR
 	openfile->fileage->multidata = NULL;
-#endif
 
 	openfile->totsize = 0;
 }
@@ -339,13 +337,11 @@ void open_buffer(const char *filename, bool undoable)
 		openfile->placewewant = 0;
 	}
 
-#ifdef ENABLE_COLOR
 	/* If we're loading into a new buffer, update the colors to account
 	 * for it, if applicable. */
 	if (new_buffer) {
 		color_update();
 	}
-#endif
 }
 
 #ifdef ENABLE_SPELLER
@@ -388,11 +384,9 @@ void display_buffer(void)
 	/* Update the titlebar, since the filename may have changed. */
 	titlebar(NULL);
 
-#ifdef ENABLE_COLOR
 	/* Make sure we're using the buffer's associated colors, if
 	 * applicable. */
 	color_init();
-#endif
 
 	/* Update the edit window. */
 	edit_refresh();
@@ -529,9 +523,7 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, siz
 		fileptr->data[buf_len - 1] = '\0';
 	}
 
-#ifdef ENABLE_COLOR
 	fileptr->multidata = NULL;
-#endif
 
 	if (*first_line_ins) {
 		/* Special case: We're inserting with the cursor on the first line. */
@@ -2101,10 +2093,8 @@ skip_backup:
 	if (!tmp && append == OVERWRITE) {
 		if (!nonamechange) {
 			openfile->filename = mallocstrcpy(openfile->filename, realname);
-#ifdef ENABLE_COLOR
 			/* We might have changed the filename, so update the colors
-			 * to account for it, and then make sure we're using
-			 * them. */
+			 * to account for it, and then make sure we're using them. */
 			color_update();
 			color_init();
 
@@ -2113,7 +2103,6 @@ skip_backup:
 			if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 				edit_refresh();
 			}
-#endif
 		}
 
 		/* Update current_stat to reference the file as it is now. */

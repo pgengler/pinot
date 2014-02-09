@@ -65,9 +65,7 @@ filestruct *make_new_node(filestruct *prevnode)
 	newnode->next = NULL;
 	newnode->lineno = (prevnode != NULL) ? prevnode->lineno + 1 : 1;
 
-#ifdef ENABLE_COLOR
 	newnode->multidata = NULL;
-#endif
 
 	return newnode;
 }
@@ -85,9 +83,7 @@ filestruct *copy_node(const filestruct *src)
 	dst->next = src->next;
 	dst->prev = src->prev;
 	dst->lineno = src->lineno;
-#ifdef ENABLE_COLOR
 	dst->multidata = NULL;
-#endif
 
 	return dst;
 }
@@ -127,11 +123,9 @@ void delete_node(filestruct *fileptr)
 		free(fileptr->data);
 	}
 
-#ifdef ENABLE_COLOR
 	if (fileptr->multidata) {
 		free(fileptr->multidata);
 	}
-#endif
 
 	free(fileptr);
 }
@@ -364,9 +358,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 	openfile->fileage->data = mallocstrcpy(NULL, "");
 	openfile->filebot = openfile->fileage;
 
-#ifdef ENABLE_COLOR
 	openfile->fileage->multidata = NULL;
-#endif
 
 	/* Restore the current line and cursor position.  If the mark begins
 	 * inside the partition, set the beginning of the mark to where the
@@ -838,9 +830,7 @@ void usage(void)
 	print_opt("-U", "--quickblank", N_("Do quick statusbar blanking"));
 	print_opt("-V", "--version", N_("Print version information and exit"));
 	print_opt("-W", "--wordbounds", N_("Detect word boundaries more accurately"));
-#ifdef ENABLE_COLOR
 	print_opt(_("-Y <str>"), _("--syntax=<str>"), N_("Syntax definition to use for coloring"));
-#endif
 	print_opt("-c", "--const", N_("Constantly show cursor position"));
 	print_opt("-d", "--rebinddelete", N_("Fix Backspace/Delete confusion problem"));
 	print_opt("-i", "--autoindent", N_("Automatically indent new lines"));
@@ -912,9 +902,6 @@ void version(void)
 #endif
 #ifdef DISABLE_ROOTWRAPPING
 	printf(" --disable-wrapping-as-root");
-#endif
-#ifdef ENABLE_COLOR
-	printf(" --enable-color");
 #endif
 #ifdef DEBUG
 	printf(" --enable-debug");
@@ -1298,11 +1285,9 @@ void do_toggle(int flag)
 		edit_refresh();
 		break;
 #endif
-#ifdef ENABLE_COLOR
 	case NO_COLOR_SYNTAX:
 		edit_refresh();
 		break;
-#endif
 	case SOFTWRAP:
 		total_refresh();
 		break;
@@ -1310,12 +1295,9 @@ void do_toggle(int flag)
 
 	enabled = ISSET(flag);
 
-	if (flag ==  NO_HELP
+	if (flag ==  NO_HELP || flag == NO_COLOR_SYNTAX
 #ifndef DISABLE_WRAPPING
 	        || flag == NO_WRAP
-#endif
-#ifdef ENABLE_COLOR
-	        || flag == NO_COLOR_SYNTAX
 #endif
 	   ) {
 		enabled = !enabled;
@@ -1577,11 +1559,9 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 							do_toggle(s->toggle);
 						} else {
 							s->scfunc();
-#ifdef ENABLE_COLOR
 							if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
 								reset_multis(openfile->current, FALSE);
 							}
-#endif
 							if (edit_refresh_needed) {
 								DEBUG_LOG("running edit_refresh() as edit_refresh_needed is true\n");
 								edit_refresh();
@@ -1685,7 +1665,6 @@ int do_mouse(void)
 }
 #endif /* !DISABLE_MOUSE */
 
-#ifdef ENABLE_COLOR
 void alloc_multidata_if_needed(filestruct *fileptr)
 {
 	if (!fileptr->multidata) {
@@ -1802,7 +1781,6 @@ void precalc_multicolorinfo(void)
 precalc_cleanup:
 	nodelay(edit, FALSE);
 }
-#endif /* ENABLE_COLOR */
 
 /* The user typed output_len multibyte characters.  Add them to the edit
  * buffer, filtering out all ASCII control characters if allow_cntrls is
@@ -1884,13 +1862,11 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 			}
 #endif
 
-#ifdef ENABLE_COLOR
 		/* If color syntaxes are available and turned on, we need to
 		 * call edit_refresh(). */
 		if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 			edit_refresh_needed = TRUE;
 		}
-#endif
 	}
 
 	/* Well we might also need a full refresh if we've changed the
@@ -1906,9 +1882,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	openfile->placewewant = xplustabs();
 
 
-#ifdef ENABLE_COLOR
 	reset_multis(openfile->current, FALSE);
-#endif
 	if (edit_refresh_needed == TRUE) {
 		edit_refresh();
 		edit_refresh_needed = FALSE;
@@ -1952,9 +1926,7 @@ int main(int argc, char **argv)
 		{"restricted", 0, NULL, 'R'},
 		{"tabsize", 1, NULL, 'T'},
 		{"version", 0, NULL, 'V'},
-#ifdef ENABLE_COLOR
 		{"syntax", 1, NULL, 'Y'},
-#endif
 		{"const", 0, NULL, 'c'},
 		{"rebinddelete", 0, NULL, 'd'},
 		{"nofollow", 0, NULL, 'l'},
@@ -2118,11 +2090,9 @@ int main(int argc, char **argv)
 		case 'W':
 			SET(WORD_BOUNDS);
 			break;
-#ifdef ENABLE_COLOR
 		case 'Y':
 			syntaxstr = mallocstrcpy(syntaxstr, optarg);
 			break;
-#endif
 		case 'c':
 			SET(CONST_UPDATE);
 			break;
@@ -2532,11 +2502,9 @@ int main(int argc, char **argv)
 
 	DEBUG_LOG("Main: top and bottom win\n");
 
-#ifdef ENABLE_COLOR
 	if (openfile->syntax && openfile->syntax->nmultis > 0) {
 		precalc_multicolorinfo();
 	}
-#endif
 
 	if (startline > 1 || startcol > 1)
 		do_gotolinecolumn(startline, startcol, FALSE, FALSE, FALSE, FALSE);
