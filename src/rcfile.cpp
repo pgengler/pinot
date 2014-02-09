@@ -1009,70 +1009,70 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						} else
 #endif
 #ifndef DISABLE_WRAPJUSTIFY
-							if (rcopt.name == "fill") {
-								if (!parse_num(option, &wrap_at)) {
-									rcfile_error(N_("Requested fill size \"%s\" is invalid"), option);
-									wrap_at = -CHARS_FROM_EOL;
-								} else {
-									free(option);
-								}
-							} else
+						if (rcopt.name == "fill") {
+							if (!parse_num(option, &wrap_at)) {
+								rcfile_error(N_("Requested fill size \"%s\" is invalid"), option);
+								wrap_at = -CHARS_FROM_EOL;
+							} else {
+								free(option);
+							}
+						} else
 #endif
-								if (rcopt.name == "matchbrackets") {
-									matchbrackets = option;
-									if (has_blank_mbchars(matchbrackets)) {
-										rcfile_error(N_("Non-blank characters required"));
-										free(matchbrackets);
-										matchbrackets = NULL;
-									}
-								} else if (rcopt.name == "whitespace") {
-									whitespace = option;
-									if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
-										rcfile_error(N_("Two single-column characters required"));
-										free(whitespace);
-										whitespace = NULL;
-									} else {
-										whitespace_len[0] = parse_mbchar(whitespace, NULL, NULL);
-										whitespace_len[1] = parse_mbchar(whitespace + whitespace_len[0], NULL, NULL);
-									}
-								} else
+						if (rcopt.name == "matchbrackets") {
+							matchbrackets = option;
+							if (has_blank_mbchars(matchbrackets)) {
+								rcfile_error(N_("Non-blank characters required"));
+								free(matchbrackets);
+								matchbrackets = NULL;
+							}
+						} else if (rcopt.name == "whitespace") {
+							whitespace = option;
+							if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
+								rcfile_error(N_("Two single-column characters required"));
+								free(whitespace);
+								whitespace = NULL;
+							} else {
+								whitespace_len[0] = parse_mbchar(whitespace, NULL, NULL);
+								whitespace_len[1] = parse_mbchar(whitespace + whitespace_len[0], NULL, NULL);
+							}
+						} else
 #ifdef ENABLE_JUSTIFY
-									if (rcopt.name == "punct") {
-										punct = option;
-										if (has_blank_mbchars(punct)) {
-											rcfile_error(N_("Non-blank characters required"));
-											free(punct);
-											punct = NULL;
-										}
-									} else if (rcopt.name == "brackets") {
-										brackets = option;
-										if (has_blank_mbchars(brackets)) {
-											rcfile_error(N_("Non-blank characters required"));
-											free(brackets);
-											brackets = NULL;
-										}
-									} else if (rcopt.name == "quotestr") {
-										quotestr = option;
-									} else
+						if (rcopt.name == "punct") {
+							punct = option;
+							if (has_blank_mbchars(punct)) {
+								rcfile_error(N_("Non-blank characters required"));
+								free(punct);
+								punct = NULL;
+							}
+						} else if (rcopt.name == "brackets") {
+							brackets = option;
+							if (has_blank_mbchars(brackets)) {
+								rcfile_error(N_("Non-blank characters required"));
+								free(brackets);
+								brackets = NULL;
+							}
+						} else if (rcopt.name == "quotestr") {
+							quotestr = option;
+						} else
 #endif
-										if (rcopt.name == "backupdir") {
-											backup_dir = option;
-										} else
+						if (rcopt.name == "backupdir") {
+							backup_dir = option;
+						} else
 #ifdef ENABLE_SPELLER
-											if (rcopt.name == "speller") {
-												alt_speller = option;
-											} else
+						if (rcopt.name == "speller") {
+							alt_speller = option;
+						} else
 #endif
-												if (rcopt.name == "tabsize") {
-													if (!parse_num(option, &tabsize) || tabsize <= 0) {
-														rcfile_error(N_("Requested tab size \"%s\" is invalid"), option);
-														tabsize = -1;
-													} else {
-														free(option);
-													}
-												} else {
-													assert(false);
-												}
+						if (rcopt.name == "tabsize") {
+							if (!parse_num(option, &tabsize) || tabsize <= 0) {
+								rcfile_error(N_("Requested tab size \"%s\" is invalid"), option);
+								tabsize = -1;
+							} else {
+								free(option);
+							}
+						} else {
+							assert(false);
+						}
 					}
 					DEBUG_LOG("flag = %ld\n", rcopt.flag);
 				} else if (rcopt.flag != 0) {
