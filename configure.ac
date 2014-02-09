@@ -69,12 +69,6 @@ AC_ARG_ENABLE(browser,
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
 fi])
 
-AC_ARG_ENABLE(help,
-[  --disable-help          Disable help functions],
-[if test x$enableval != xyes; then
-    AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
-fi])
-
 AC_ARG_ENABLE(justify,
 [  --enable-justify       Enable justify/unjustify functions],
 [if test x$enableval != xyes; then
@@ -325,7 +319,6 @@ int main(void)
 
 if test x$CURSES_LIB_NAME = xslang; then
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
-    AC_DEFINE(DISABLE_HELP, 1, [Define this to disable the help text display.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
     AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
