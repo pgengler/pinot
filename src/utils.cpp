@@ -544,7 +544,7 @@ size_t strlenpt(const char *s)
 /* Append a new magicline to filebot. */
 void new_magicline(void)
 {
-	openfile->filebot->next = (filestruct *)nmalloc(sizeof(filestruct));
+	openfile->filebot->next = new filestruct;
 	openfile->filebot->next->data = mallocstrcpy(NULL, "");
 	openfile->filebot->next->prev = openfile->filebot;
 	openfile->filebot->next->next = NULL;

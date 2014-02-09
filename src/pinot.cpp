@@ -56,7 +56,7 @@ static struct sigaction act;
  * to the new line. */
 filestruct *make_new_node(filestruct *prevnode)
 {
-	filestruct *newnode = (filestruct *)nmalloc(sizeof(filestruct));
+	filestruct *newnode = new filestruct;
 
 	newnode->data = NULL;
 	newnode->prev = prevnode;
@@ -75,7 +75,7 @@ filestruct *copy_node(const filestruct *src)
 
 	assert(src != NULL);
 
-	dst = (filestruct *)nmalloc(sizeof(filestruct));
+	dst = new filestruct;
 
 	dst->data = mallocstrcpy(NULL, src->data);
 	dst->next = src->next;
@@ -125,7 +125,7 @@ void delete_node(filestruct *fileptr)
 		free(fileptr->multidata);
 	}
 
-	free(fileptr);
+	delete fileptr;
 }
 
 /* Duplicate a whole filestruct. */
@@ -352,7 +352,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 	}
 
 	/* Since the text has now been saved, remove it from the filestruct. */
-	openfile->fileage = (filestruct *)nmalloc(sizeof(filestruct));
+	openfile->fileage = new filestruct;
 	openfile->fileage->data = mallocstrcpy(NULL, "");
 	openfile->filebot = openfile->fileage;
 
