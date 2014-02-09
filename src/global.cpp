@@ -268,13 +268,13 @@ void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *h
 	subnfunc *f;
 
 	if (allfuncs == NULL) {
-		allfuncs = (subnfunc *) nmalloc(sizeof(subnfunc));
+		allfuncs = new subnfunc;
 		f = allfuncs;
 	} else {
 		for (f = allfuncs; f->next != NULL; f = f->next) {
 			;
 		}
-		f->next = (subnfunc *)nmalloc(sizeof(subnfunc));
+		f->next = new subnfunc;
 		f = f->next;
 	}
 	f->next = NULL;
@@ -613,7 +613,7 @@ void shortcut_init(bool unjustify)
 	while (allfuncs != NULL) {
 		subnfunc *f = allfuncs;
 		allfuncs = (allfuncs)->next;
-		free(f);
+		delete f;
 	}
 
 	add_to_funcs(do_help_void,
