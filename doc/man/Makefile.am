@@ -4,16 +4,9 @@ else
 SUBDIRS =
 endif
 
-if USE_PINOTRC
 man_MANS = pinot.1 pinotrc.5 rpinot.1
 if GROFF_HTML
 BUILT_SOURCES = pinot.1.html pinotrc.5.html rpinot.1.html
-endif
-else
-man_MANS = pinot.1 rpinot.1
-if GROFF_HTML
-BUILT_SOURCES = pinot.1.html rpinot.1.html
-endif
 endif
 
 pinot_man_mans = pinot.1 pinotrc.5 rpinot.1
