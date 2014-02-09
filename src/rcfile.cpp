@@ -889,22 +889,19 @@ static void check_vitals_mapped(void)
  * to contain color syntax commands: syntax, color, and icolor. */
 void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 {
-	char *buf = NULL;
 	ssize_t len;
 	size_t n = 0;
 
-	while ((len = getline(&buf, &n, rcstream)) > 0) {
+	std::string line;
+
+	while (!std::getline(rcstream, line).eof()) {
+		lineno++;
+
 		char *ptr, *keyword, *option;
 		int set = 0;
 		size_t i;
 
-		/* Ignore the newline. */
-		if (buf[len - 1] == '\n') {
-			buf[len - 1] = '\0';
-		}
-
-		lineno++;
-		ptr = buf;
+		char *ptr = line.c_str();
 		while (isblank(*ptr)) {
 			ptr++;
 		}
@@ -1096,7 +1093,6 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 	}
 
-	free(buf);
 	lineno = 0;
 
 	check_vitals_mapped();
@@ -1113,8 +1109,9 @@ void do_rcfile(void)
 
 	/* Don't open directories, character files, or block files. */
 	if (stat(pinotrc, &rcinfo) != -1) {
-		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode))
+		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
 			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc);
+		}
 	}
 
 	DEBUG_LOG("Parsing file \"%s\"\n", pinotrc);
