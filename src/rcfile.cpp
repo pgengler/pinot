@@ -1085,7 +1085,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			}
 		}
 		if (!found) {
-			rcfile_error(N_("Unknown flag \"%s\""), option);
+			rcfile_error(N_("Unknown flag \"%s\""), option.c_str());
 		}
 	}
 
