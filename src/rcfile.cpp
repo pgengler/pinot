@@ -1000,7 +1000,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						SET(rcopt.flag);
 					} else {
 						/* This option doesn't have a flag, so it takes an argument. */
-						std::string argument = linestream.str();
+						std::string argument = rest(linestream);
 
 						if (argument.empty()) {
 							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
