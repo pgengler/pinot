@@ -962,11 +962,6 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			continue;
 		}
 
-		if (*ptr == '\0') {
-			rcfile_error(N_("Missing flag"));
-			continue;
-		}
-
 		linestream >> option;
 
 		bool found = false;
