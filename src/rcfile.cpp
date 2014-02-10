@@ -996,7 +996,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 
 #ifndef DISABLE_OPERATINGDIR
 						if (rcopt.name == "operatingdir") {
-							operating_dir = argument.c_str();
+							operating_dir = mallocstrcpy(operating_dir, argument.c_str());
 						} else
 #endif
 #ifndef DISABLE_WRAPJUSTIFY
@@ -1008,13 +1008,13 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						} else
 #endif
 						if (rcopt.name == "matchbrackets") {
-							matchbrackets = argument.c_str();
+							matchbrackets = mallocstrcpy(matchbrackets, argument.c_str());
 							if (has_blank_mbchars(matchbrackets)) {
 								rcfile_error(N_("Non-blank characters required"));
 								matchbrackets = NULL;
 							}
 						} else if (rcopt.name == "whitespace") {
-							whitespace = argument.c_str();
+							whitespace = mallocstrcpy(whitespace, argument.c_str());
 							if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
 								rcfile_error(N_("Two single-column characters required"));
 								whitespace = NULL;
@@ -1041,15 +1041,15 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						} else
 #endif
 						if (rcopt.name == "backupdir") {
-							backup_dir = argument.c_str();
+							backup_dir = mallocstrcpy(backup_dir, argument.c_str());
 						} else
 #ifdef ENABLE_SPELLER
 						if (rcopt.name == "speller") {
-							alt_speller = argument.c_str();
+							alt_speller = mallocstrcpy(alt_speller, argument.c_str());
 						} else
 #endif
 						if (rcopt.name == "tabsize") {
-							if (!parse_num(arguent.c_str(), &tabsize) || tabsize <= 0) {
+							if (!parse_num(argument.c_str(), &tabsize) || tabsize <= 0) {
 								rcfile_error(N_("Requested tab size \"%s\" is invalid"), argument.c_str());
 								tabsize = -1;
 							}
