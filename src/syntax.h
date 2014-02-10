@@ -15,25 +15,34 @@ typedef struct colortype {
 
 	COLORWIDTH fg;
 	/* This syntax's foreground color. */
+
 	COLORWIDTH bg;
 	/* This syntax's background color. */
+
 	bool bright;
 	/* Is this color A_BOLD? */
+
 	bool underline;
 	/* Is this color A_UNDERLINE? */
+
 	bool icase;
 	/* Is this regex string case insensitive? */
+
 	int pairnum;
-	/* The color pair number used for this foreground color and
-	 * background color. */
+	/* The color pair number used for this foreground color and  background color. */
+
 	char *start_regex;
 	/* The start (or all) of the regex string. */
+
 	regex_t *start;
 	/* The compiled start (or all) of the regex string. */
+
 	char *end_regex;
 	/* The end (if any) of the regex string. */
+
 	regex_t *end;
 	/* The compiled end (if any) of the regex string. */
+
 	int id;
 	/* basic id for assigning to lines later */
 } colortype;
