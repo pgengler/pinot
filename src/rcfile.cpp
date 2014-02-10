@@ -904,7 +904,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		}
 
 		std::stringstream linestream;
-		linestream << linestream;
+		linestream << line;
 
 		// Read keyword
 		std::string keyword;
