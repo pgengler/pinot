@@ -888,6 +888,9 @@ static void check_vitals_mapped(void)
 
 std::string rest(std::stringstream& stream)
 {
+	// Eliminate leading whitespace
+	while (!stream.eof() && isspace(stream.peek())) stream.get();
+
 	std::string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
 	return remaining;
 }
