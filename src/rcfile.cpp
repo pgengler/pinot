@@ -912,6 +912,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 
 		// --------
 
+		char *ptr = NULL;
 		int set = 0;
 		size_t i;
 
@@ -932,27 +933,45 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				parse_include(linestream.str());
+				ptr = mallocstrcpy(ptr, linestream.str().c_str());
+				parse_include(ptr);
+				free(ptr);
 			}
 		} else if (keyword == "syntax") {
 			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
 				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 			}
-			parse_syntax(linestream.str());
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_syntax(ptr);
+			free(ptr);
 		} else if (keyword == "extends") {
-			parse_extends(linestream.str());
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_extends(ptr);
+			free(ptr);
 		} else if (keyword == "magic") {
-			parse_magictype(linestream.str());
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_magictype(ptr);
+			free(ptr);
 		} else if (keyword == "header") {
-			parse_headers(linestream.str());
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_headers(ptr);
+			free(ptr);
 		} else if (keyword == "color") {
-			parse_colors(linestream.str(), false);
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_colors(ptr, false);
+			free(ptr);
 		} else if (keyword == "icolor") {
-			parse_colors(linestream.str(), true);
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_colors(ptr, true);
+			free(ptr);
 		} else if (keyword == "bind") {
-			parse_keybinding(linestream.str());
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_keybinding(ptr);
+			free(ptr);
 		} else if (keyword == "unbind") {
-			parse_unbinding(linestream.str());
+			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			parse_unbinding(ptr);
+			free(ptr);
 		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword.c_str());
 		}
