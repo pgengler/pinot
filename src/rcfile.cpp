@@ -919,19 +919,19 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		/* Try to parse the keyword. */
 		if (keyword == "set") {
 			if (syntax_only) {
-				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
+				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
 				set = 1;
 			}
 		} else if (keyword == "unset") {
 			if (syntax_only) {
-				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
+				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
 				set = -1;
 			}
 		}	else if (keyword == "include") {
 			if (syntax_only) {
-				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword);
+				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
 				parse_include(ptr);
 			}
@@ -955,7 +955,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		} else if (keyword == "unbind") {
 			parse_unbinding(ptr);
 		} else {
-			rcfile_error(N_("Command \"%s\" not understood"), keyword);
+			rcfile_error(N_("Command \"%s\" not understood"), keyword.c_str());
 		}
 
 		if (set == 0) {
