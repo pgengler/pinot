@@ -1004,9 +1004,12 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 					} else {
 						/* This option doesn't have a flag, so it takes an argument. */
 						ptr = mallocstrcpy(ptr, rest(linestream).c_str());
+						char *value = ptr;
+						// Skip leading '"' character at front of string
+						if (*value == '"') value++;
 						ptr = parse_argument(ptr);
 
-						std::string argument = std::string(ptr);
+						std::string argument = std::string(value);
 						if (argument.empty()) {
 							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
 							break;
