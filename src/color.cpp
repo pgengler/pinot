@@ -226,12 +226,12 @@ void color_update(void)
 		 * regexes if we haven't already. */
 		if (tmpcolor->start == NULL) {
 			tmpcolor->start = new regex_t;
-			regcomp(tmpcolor->start, fixbounds(tmpcolor->start_regex), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
+			regcomp(tmpcolor->start, tmpcolor->start_regex, REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 
 		if (tmpcolor->end_regex != NULL && tmpcolor->end == NULL) {
 			tmpcolor->end = new regex_t;
-			regcomp(tmpcolor->end, fixbounds(tmpcolor->end_regex), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
+			regcomp(tmpcolor->end, tmpcolor->end_regex, REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 	}
 }

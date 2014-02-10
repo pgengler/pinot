@@ -17,7 +17,7 @@ SyntaxMatch::~SyntaxMatch()
 void SyntaxMatch::compile()
 {
 	ext = new regex_t;
-	regcomp(ext, fixbounds(ext_regex), REG_EXTENDED);
+	regcomp(ext, ext_regex.c_str(), REG_EXTENDED);
 }
 
 bool SyntaxMatch::matches(const char *str) const

@@ -320,44 +320,6 @@ bool regexp_bol_or_eol(const regex_t *preg, const char *string)
 	        regexec(preg, string, 0, NULL, REG_NOTBOL | REG_NOTEOL) == REG_NOMATCH);
 }
 
-const char *fixbounds(const std::string& r)
-{
-	return fixbounds(r.c_str());
-}
-
-/* Fix the regex if we're on platforms which requires an adjustment
- * from GNU-style to BSD-style word boundaries.  */
-const char *fixbounds(const char *r)
-{
-#ifndef GNU_WORDBOUNDS
-	int i, j = 0;
-	char *r2 = charalloc(strlen(r) * 5);
-	char *r3;
-
-	DEBUG_LOG("fixbounds(): Start string = \"%s\"\n", r);
-
-	for (i = 0; i < strlen(r); i++) {
-		if (r[i] != '\0' && r[i] == '\\' && (r[i+1] == '>' || r[i+1] == '<')) {
-			strcpy(&r2[j], "[[:");
-			r2[j+3] = r[i+1];
-			strcpy(&r2[j+4], ":]]");
-			i++;
-			j += 6;
-		} else {
-			r2[j] = r[i];
-		}
-		j++;
-	}
-	r2[j] = '\0';
-	r3 = mallocstrcpy(NULL, r2);
-	free(r2);
-	DEBUG_LOG("fixbounds(): Ending string = \"%s\"\n", r3);
-	return (const char *) r3;
-#endif
-
-	return r;
-}
-
 #ifdef ENABLE_SPELLER
 /* Is the word starting at position pos in buf a whole word? */
 bool is_whole_word(size_t pos, const char *buf, const char *word)

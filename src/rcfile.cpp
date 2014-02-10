@@ -224,15 +224,14 @@ char *parse_next_regex(char *ptr)
 bool nregcomp(const char *regex, int cflags)
 {
 	regex_t preg;
-	const char *r = fixbounds(regex);
-	int rc = regcomp(&preg, r, REG_EXTENDED | cflags);
+	int rc = regcomp(&preg, regex, REG_EXTENDED | cflags);
 
 	if (rc != 0) {
 		size_t len = regerror(rc, &preg, NULL, 0);
 		char *str = charalloc(len);
 
 		regerror(rc, &preg, str, len);
-		rcfile_error(N_("Bad regex \"%s\": %s"), r, str);
+		rcfile_error(N_("Bad regex \"%s\": %s"), regex, str);
 		free(str);
 	}
 

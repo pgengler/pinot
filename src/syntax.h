@@ -112,4 +112,3 @@ typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
 /* Something else */
 
 extern SyntaxMap syntaxes;
-extern const char *fixbounds(const std::string& r);
