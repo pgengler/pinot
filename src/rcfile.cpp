@@ -1003,8 +1003,10 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						SET(rcopt.flag);
 					} else {
 						/* This option doesn't have a flag, so it takes an argument. */
-						std::string argument = rest(linestream);
+						ptr = mallocstrcpy(ptr, rest(linestream).c_str());
+						ptr = parse_argument(ptr);
 
+						std::string argument = std::string(ptr);
 						if (argument.empty()) {
 							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
 							break;
