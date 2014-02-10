@@ -886,6 +886,12 @@ static void check_vitals_mapped(void)
 	}
 }
 
+std::string rest(std::stringstream& stream)
+{
+	std::string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
+	return remaining;
+}
+
 /* Parse the rcfile, once it has been opened successfully at rcstream,
  * and close it afterwards.  If syntax_only is true, only allow the file
  * to contain color syntax commands: syntax, color, and icolor. */
@@ -933,9 +939,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				std::string rest;
-				std::getline(linestream, rest, 0);
-				ptr = mallocstrcpy(ptr, rest.c_str());
+				ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 				parse_include(ptr);
 				free(ptr);
 			}
@@ -943,51 +947,35 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
 				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 			}
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_syntax(ptr);
 			free(ptr);
 		} else if (keyword == "extends") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_extends(ptr);
 			free(ptr);
 		} else if (keyword == "magic") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_magictype(ptr);
 			free(ptr);
 		} else if (keyword == "header") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_headers(ptr);
 			free(ptr);
 		} else if (keyword == "color") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_colors(ptr, false);
 			free(ptr);
 		} else if (keyword == "icolor") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_colors(ptr, true);
 			free(ptr);
 		} else if (keyword == "bind") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_keybinding(ptr);
 			free(ptr);
 		} else if (keyword == "unbind") {
-			std::string rest;
-			std::getline(linestream, rest, 0);
-			ptr = mallocstrcpy(ptr, rest.c_str());
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_unbinding(ptr);
 			free(ptr);
 		} else {
