@@ -933,7 +933,9 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				ptr = mallocstrcpy(ptr, linestream.str().c_str());
+				std::string rest;
+				std::getline(linestream, rest, 0);
+				ptr = mallocstrcpy(ptr, rest.c_str());
 				parse_include(ptr);
 				free(ptr);
 			}
@@ -941,35 +943,51 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
 				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 			}
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_syntax(ptr);
 			free(ptr);
 		} else if (keyword == "extends") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_extends(ptr);
 			free(ptr);
 		} else if (keyword == "magic") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_magictype(ptr);
 			free(ptr);
 		} else if (keyword == "header") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_headers(ptr);
 			free(ptr);
 		} else if (keyword == "color") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_colors(ptr, false);
 			free(ptr);
 		} else if (keyword == "icolor") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_colors(ptr, true);
 			free(ptr);
 		} else if (keyword == "bind") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_keybinding(ptr);
 			free(ptr);
 		} else if (keyword == "unbind") {
-			ptr = mallocstrcpy(ptr, linestream.str().c_str());
+			std::string rest;
+			std::getline(linestream, rest, 0);
+			ptr = mallocstrcpy(ptr, rest.c_str());
 			parse_unbinding(ptr);
 			free(ptr);
 		} else {
