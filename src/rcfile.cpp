@@ -912,7 +912,6 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 
 		// --------
 
-		char *ptr, *option;
 		int set = 0;
 		size_t i;
 
@@ -933,27 +932,27 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				parse_include(ptr);
+				parse_include(linestream.str());
 			}
 		} else if (keyword == "syntax") {
 			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
 				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
 			}
-			parse_syntax(ptr);
+			parse_syntax(linestream.str());
 		} else if (keyword == "extends") {
-			parse_extends(ptr);
+			parse_extends(linestream.str());
 		} else if (keyword == "magic") {
-			parse_magictype(ptr);
+			parse_magictype(linestream.str());
 		} else if (keyword == "header") {
-			parse_headers(ptr);
+			parse_headers(linestream.str());
 		} else if (keyword == "color") {
-			parse_colors(ptr, false);
+			parse_colors(linestream.str(), false);
 		} else if (keyword == "icolor") {
-			parse_colors(ptr, true);
+			parse_colors(linestream.str(), true);
 		} else if (keyword == "bind") {
-			parse_keybinding(ptr);
+			parse_keybinding(linestream.str());
 		} else if (keyword == "unbind") {
-			parse_unbinding(ptr);
+			parse_unbinding(linestream.str());
 		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword.c_str());
 		}
@@ -962,6 +961,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			continue;
 		}
 
+		std::string option;
 		linestream >> option;
 
 		bool found = false;
