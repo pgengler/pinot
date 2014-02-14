@@ -29,6 +29,7 @@ AC_PREREQ(2.54)
 dnl Checks for programs.
 
 AC_GNU_SOURCE
+AC_PROG_CC_C99
 AC_PROG_CXX
 AC_PROG_LN_S
 AC_ISC_POSIX
@@ -480,10 +481,12 @@ doc/pinotrc.sample
 doc/man/Makefile
 doc/syntax/Makefile
 doc/texinfo/Makefile
+libtermkey-0.17/Makefile
 m4/Makefile
 po/Makefile.in
 src/Makefile
 pinot.spec
 ])
 
+LT_INIT
 AC_OUTPUT
