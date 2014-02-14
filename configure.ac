@@ -17,22 +17,22 @@
 # along with pinot; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
-AC_INIT([pinot], [0.0.4], [phil@pgengler.net], [pinot])
+AC_INIT([pinot],[0.0.4],[phil@pgengler.net],[pinot])
 AC_CONFIG_SRCDIR([src/pinot.cpp])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 AM_SILENT_RULES([yes])
 AC_CONFIG_HEADERS([config.h])
 
-AC_PREREQ(2.54)
+AC_PREREQ([2.69])
 
 dnl Checks for programs.
 
-AC_GNU_SOURCE
+AC_USE_SYSTEM_EXTENSIONS
 AC_PROG_CC_C99
 AC_PROG_CXX
 AC_PROG_LN_S
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 AC_SYS_LARGEFILE
 
 AX_CXX_COMPILE_STDCXX_11
@@ -145,14 +145,13 @@ AC_ARG_WITH(slang,
 		AC_MSG_CHECKING([for SLutf8_enable in -lslang])
 		_libs=$LIBS
 		LIBS="$LIBS -lslang"
-		AC_TRY_RUN([
+		AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <slcurses.h>
 int main(void)
 {
     SLutf8_enable(1);
     return 0;
-}],
-		    [AC_MSG_RESULT(yes)
+}]])],[AC_MSG_RESULT(yes)
 		    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
 		    CURSES_LIB_WIDE=yes
 		    if test x$with_slang != xyes; then
@@ -160,8 +159,7 @@ int main(void)
 		    else
 			CURSES_LIB="-lslang"
 		    fi
-		    CURSES_LIB_NAME=slang],
-		    [AC_MSG_RESULT(no)
+		    CURSES_LIB_NAME=slang],[AC_MSG_RESULT(no)
 
 		    # We might need the term library
 		    for termlib in ncurses curses termcap terminfo termlib; do
@@ -171,7 +169,7 @@ int main(void)
 
 		    AC_MSG_CHECKING([for SLutf8_enable in -lslang $tcap])
 		    LIBS="$LIBS $tcap"
-		    AC_TRY_RUN([
+		    _au_m4_changequote([,])AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -192,7 +190,7 @@ int main(void)
 			# We might need the math library
 			AC_MSG_CHECKING([for SLutf8_enable in -lslang $tcap -lm])
 			LIBS="$LIBS -lm"
-			AC_TRY_RUN([
+			_au_m4_changequote([,])AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -210,8 +208,7 @@ int main(void)
 			    CURSES_LIB_NAME=slang],
 			    [AC_MSG_RESULT(no)],
     AC_MSG_WARN([*** Can not use slang when cross-compiling]))],
-    AC_MSG_WARN([*** Can not use slang when cross-compiling]))],
-    AC_MSG_WARN([*** Can not use slang when cross-compiling])),
+    AC_MSG_WARN([*** Can not use slang when cross-compiling]))],[AC_MSG_WARN(*** Can not use slang when cross-compiling)]),
 	    AC_MSG_ERROR([
 *** The header file slcurses.h was not found.  If you wish to use
 *** slang support this header file is required.  Please either
@@ -229,22 +226,20 @@ int main(void)
 		AC_MSG_CHECKING([for SLtt_initialize in -lslang])
 		_libs=$LIBS
 		LIBS="$LIBS -lslang"
-		AC_TRY_RUN([
+		AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <slcurses.h>
 int main(void)
 {
     SLtt_initialize(NULL);
     return 0;
-}],
-		    [AC_MSG_RESULT(yes)
+}]])],[AC_MSG_RESULT(yes)
 		    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
 		    if test x$with_slang != xyes; then
 			CURSES_LIB="-L${with_slang}/lib -lslang"
 		    else
 			CURSES_LIB="-lslang"
 		    fi
-		    CURSES_LIB_NAME=slang],
-		    [AC_MSG_RESULT(no)
+		    CURSES_LIB_NAME=slang],[AC_MSG_RESULT(no)
 
 		    # We might need the term library
 		    for termlib in ncurses curses termcap terminfo termlib; do
@@ -254,7 +249,7 @@ int main(void)
 
 		    AC_MSG_CHECKING([for SLtt_initialize in -lslang $tcap])
 		    LIBS="$LIBS $tcap"
-		    AC_TRY_RUN([
+		    _au_m4_changequote([,])AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -274,7 +269,7 @@ int main(void)
 			# We might need the math library
 			AC_MSG_CHECKING([for SLtt_initialize in -lslang $tcap -lm])
 			LIBS="$LIBS -lm"
-			AC_TRY_RUN([
+			_au_m4_changequote([,])AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -291,8 +286,7 @@ int main(void)
 			    CURSES_LIB_NAME=slang],
 			    [AC_MSG_RESULT(no)],
     AC_MSG_WARN([*** Can not use slang when cross-compiling]))],
-    AC_MSG_WARN([*** Can not use slang when cross-compiling]))],
-    AC_MSG_WARN([*** Can not use slang when cross-compiling])),
+    AC_MSG_WARN([*** Can not use slang when cross-compiling]))],[AC_MSG_WARN(*** Can not use slang when cross-compiling)]),
 	    AC_MSG_ERROR([
 *** The header file slcurses.h was not found.  If you wish to use
 *** slang support this header file is required.  Please either
@@ -344,7 +338,6 @@ fi
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
-AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(getopt_long)
 dnl Checks for libraries.
@@ -438,18 +431,15 @@ else
 fi
 
 AC_MSG_CHECKING([whether LINES and COLS can be redefined])
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <curses.h>
 int main(void)
 {
     LINES = 80;
     COLS = 25;
     return 0;
-}], 
-AC_DEFINE(REDEFINIG_MACROS_OK, 1, [Define this if you know your curses library allows LINES and COLS to be redefined to deal with a resizing bug])
-AC_MSG_RESULT(yes),
-AC_MSG_RESULT(no),
-AC_MSG_WARN([*** Can't check for macro redefinability when cross-compiling]))
+}]])],[AC_DEFINE(REDEFINIG_MACROS_OK, 1, Define this if you know your curses library allows LINES and COLS to be redefined to deal with a resizing bug)
+AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)],[AC_MSG_WARN(*** Can't check for macro redefinability when cross-compiling)])
 
 AC_CHECK_HEADERS(pcreposix.h)
 AC_CHECK_LIB(pcreposix, regcomp)
