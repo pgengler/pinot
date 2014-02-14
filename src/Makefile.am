@@ -1,5 +1,5 @@
 localedir = $(datadir)/locale
-INCLUDES = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
+INCLUDES = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(top_builddir)/libtermkey-0.17
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -24,7 +24,7 @@ pinot_SOURCES =	browser.cpp \
 		utils.cpp \
 		winio.cpp
 
-pinot_LDADD = @GLIB_LIBS@ @LIBINTL@
+pinot_LDADD = @GLIB_LIBS@ @LIBINTL@ $(top_builddir)/libtermkey-0.17/libtermkey.la
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && rm -f rpinot && $(LN_S) pinot rpinot
