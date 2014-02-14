@@ -169,7 +169,7 @@ int main(void)
 
 		    AC_MSG_CHECKING([for SLutf8_enable in -lslang $tcap])
 		    LIBS="$LIBS $tcap"
-		    _au_m4_changequote([,])AC_TRY_RUN([
+		    AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -190,7 +190,7 @@ int main(void)
 			# We might need the math library
 			AC_MSG_CHECKING([for SLutf8_enable in -lslang $tcap -lm])
 			LIBS="$LIBS -lm"
-			_au_m4_changequote([,])AC_TRY_RUN([
+			AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -249,7 +249,7 @@ int main(void)
 
 		    AC_MSG_CHECKING([for SLtt_initialize in -lslang $tcap])
 		    LIBS="$LIBS $tcap"
-		    _au_m4_changequote([,])AC_TRY_RUN([
+		    AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
@@ -269,7 +269,7 @@ int main(void)
 			# We might need the math library
 			AC_MSG_CHECKING([for SLtt_initialize in -lslang $tcap -lm])
 			LIBS="$LIBS -lm"
-			_au_m4_changequote([,])AC_TRY_RUN([
+			AC_TRY_RUN([
 #include <slcurses.h>
 int main(void)
 {
