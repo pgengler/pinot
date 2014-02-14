@@ -732,7 +732,7 @@ void do_enter_void(void)
 
 /* Send a SIGKILL (unconditional kill) to the forked process in
  * execute_command(). */
-RETSIGTYPE cancel_command(int signal)
+void cancel_command(int signal)
 {
 	if (kill(pid, SIGKILL) == -1) {
 		nperror("kill");

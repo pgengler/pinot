@@ -1023,7 +1023,7 @@ void finish_stdin_pager(void)
 
 
 /* Cancel reading from stdin like a pager */
-RETSIGTYPE cancel_stdin_pager(int signal)
+void cancel_stdin_pager(int signal)
 {
 	/* Currently do nothing, just handle the intr silently */
 	pager_input_aborted = TRUE;
@@ -1098,13 +1098,13 @@ void signal_init(void)
 }
 
 /* Handler for SIGHUP (hangup) and SIGTERM (terminate). */
-RETSIGTYPE handle_hupterm(int signal)
+void handle_hupterm(int signal)
 {
 	die(_("Received SIGHUP or SIGTERM\n"));
 }
 
 /* Handler for SIGTSTP (suspend). */
-RETSIGTYPE do_suspend(int signal)
+void do_suspend(int signal)
 {
 
 	if (ISSET(RESTRICTED)) {
@@ -1147,7 +1147,7 @@ void do_suspend_void(void)
 }
 
 /* Handler for SIGCONT (continue after suspend). */
-RETSIGTYPE do_continue(int signal)
+void do_continue(int signal)
 {
 #ifndef DISABLE_MOUSE
 	/* Turn mouse support back on if it was on before. */
@@ -1163,7 +1163,7 @@ RETSIGTYPE do_continue(int signal)
 }
 
 /* Handler for SIGWINCH (window size change). */
-RETSIGTYPE handle_sigwinch(int signal)
+void handle_sigwinch(int signal)
 {
 	const char *tty = ttyname(0);
 	int fd, result = 0;
