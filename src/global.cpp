@@ -30,11 +30,7 @@
 
 /* Global variables. */
 sigjmp_buf jump_buf;
-/* Used to return to either main() or the unjustify routine in
- * do_justify() after a SIGWINCH. */
-bool jump_buf_main = FALSE;
-/* Have we set jump_buf so that we return to main() after a
- * SIGWINCH? */
+/* Used to return to main() after a SIGWINCH. */
 
 #ifndef DISABLE_WRAPPING
 ssize_t fill = 0;
@@ -460,9 +456,8 @@ const char *ext_cmd_msg = N_("Execute Command");
 const char *new_buffer_msg = N_("New Buffer");
 const char *goto_dir_msg = N_("Go To Dir");
 
-/* Initialize all shortcut lists.  If unjustify is TRUE, replace the
- * Uncut shortcut in the main shortcut list with UnJustify. */
-void shortcut_init(bool unjustify)
+/* Initialize all shortcut lists. */
+void shortcut_init(void)
 {
 	/* TRANSLATORS: Try to keep the following strings at most 10 characters. */
 	const char *get_help_msg = N_("Get Help");
@@ -593,13 +588,8 @@ void shortcut_init(bool unjustify)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), FALSE, NOVIEW);
 
-	if (unjustify) {
-		/* TRANSLATORS: Try to keep this at most 10 characters. */
-		add_to_funcs(do_uncut_text, MMAIN, N_("UnJustify"), "", FALSE, NOVIEW);
-	} else {
-		/* TRANSLATORS: Try to keep this at most 10 characters. */
-		add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), FALSE, NOVIEW);
-	}
+	/* TRANSLATORS: Try to keep this at most 10 characters. */
+	add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), FALSE, NOVIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), FALSE, VIEW);
