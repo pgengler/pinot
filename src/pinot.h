@@ -131,10 +131,6 @@
 #define DISABLE_MOUSE 1
 #endif
 
-#if defined(DISABLE_WRAPPING) && !defined(ENABLE_JUSTIFY)
-#define DISABLE_WRAPJUSTIFY 1
-#endif
-
 /* Enumeration types. */
 typedef enum {
 	NIX_FILE, DOS_FILE, MAC_FILE
