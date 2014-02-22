@@ -1400,7 +1400,7 @@ void terminal_init(void)
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys. */
-int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool *finished, bool allow_funcs)
+int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool *finished)
 {
 	int input;
 	/* The character we read in. */
@@ -1421,17 +1421,15 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 	input = get_kbinput(edit, meta_key, func_key);
 
 #ifndef DISABLE_MOUSE
-	if (allow_funcs) {
-		/* If we got a mouse click and it was on a shortcut, read in the
-		 * shortcut character. */
-		if (*func_key && input == KEY_MOUSE) {
-			if (do_mouse() == 1) {
-				input = get_kbinput(edit, meta_key, func_key);
-			} else {
-				*meta_key = FALSE;
-				*func_key = FALSE;
-				input = ERR;
-			}
+	/* If we got a mouse click and it was on a shortcut, read in the
+	* shortcut character. */
+	if (*func_key && input == KEY_MOUSE) {
+		if (do_mouse() == 1) {
+			input = get_kbinput(edit, meta_key, func_key);
+		} else {
+			*meta_key = FALSE;
+			*func_key = FALSE;
+			input = ERR;
 		}
 	}
 #endif
@@ -1455,106 +1453,102 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 		}
 	}
 
-	if (allow_funcs) {
-		/* If we got a character, and it isn't a shortcut or toggle,
-		 * it's a normal text character.  Display the warning if we're
-		 * in view mode, or add the character to the input buffer if
-		 * we're not. */
-		if (input != ERR && !have_shortcut) {
-			if (ISSET(VIEW_MODE)) {
-				print_view_warning();
-			} else {
-				kbinput_len++;
-				kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
-				kbinput[kbinput_len - 1] = input;
+	/* If we got a character, and it isn't a shortcut or toggle,
+	 * it's a normal text character.  Display the warning if we're
+	 * in view mode, or add the character to the input buffer if
+	 * we're not. */
+	if (input != ERR && !have_shortcut) {
+		if (ISSET(VIEW_MODE)) {
+			print_view_warning();
+		} else {
+			kbinput_len++;
+			kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
+			kbinput[kbinput_len - 1] = input;
 
-			}
-		}
-
-		/* If we got a shortcut or toggle, or if there aren't any other
-		 * characters waiting after the one we read in, we need to
-		 * output all the characters in the input buffer if it isn't
-		 * empty.  Note that it should be empty if we're in view
-		 * mode. */
-		if (have_shortcut || get_key_buffer_len() == 0) {
-#ifndef DISABLE_WRAPPING
-			/* If we got a shortcut or toggle, and it's not the shortcut
-			 * for verbatim input, turn off prepending of wrapped
-			 * text. */
-			if (have_shortcut && (!have_shortcut || s == NULL || s->scfunc != do_verbatim_input)) {
-				wrap_reset();
-			}
-#endif
-
-			if (kbinput != NULL) {
-				/* Display all the characters in the input buffer at
-				 * once, filtering out control characters. */
-				char *output = charalloc(kbinput_len + 1);
-				size_t i;
-
-				for (i = 0; i < kbinput_len; i++) {
-					output[i] = (char)kbinput[i];
-				}
-				output[i] = '\0';
-
-				do_output(output, kbinput_len, FALSE);
-
-				free(output);
-
-				/* Empty the input buffer. */
-				kbinput_len = 0;
-				free(kbinput);
-				kbinput = NULL;
-			}
-		}
-
-		if (have_shortcut) {
-			switch (input) {
-				/* Handle the normal edit window shortcuts, setting
-				 * ran_func to TRUE if we try to run their associated
-				 * functions and setting finished to TRUE to indicate
-				 * that we're done after running or trying to run their
-				 * associated functions. */
-			default:
-				/* If the function associated with this shortcut is
-				 * cutting or copying text, indicate this. */
-				if (s->scfunc == do_cut_text_void
-				        || s->scfunc == do_copy_text || s->scfunc ==
-				        do_cut_till_end
-				   ) {
-					cut_copy = TRUE;
-				}
-
-				if (s->scfunc != 0) {
-					const subnfunc *f = sctofunc((sc *) s);
-					*ran_func = TRUE;
-					if (ISSET(VIEW_MODE) && f && !f->viewok) {
-						print_view_warning();
-					} else {
-						if (s->scfunc == do_toggle_void) {
-							do_toggle(s->toggle);
-						} else {
-							s->scfunc();
-							if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
-								reset_multis(openfile->current, FALSE);
-							}
-							if (edit_refresh_needed) {
-								DEBUG_LOG("running edit_refresh() as edit_refresh_needed is true\n");
-								edit_refresh();
-								edit_refresh_needed = FALSE;
-							}
-
-						}
-					}
-				}
-				*finished = TRUE;
-				break;
-			}
 		}
 	}
 
-	/* If we aren't cutting or copying text, blow away the text in the
-	 * cutbuffer. */
+	/* If we got a shortcut or toggle, or if there aren't any other
+	 * characters waiting after the one we read in, we need to
+	 * output all the characters in the input buffer if it isn't
+	 * empty.  Note that it should be empty if we're in view
+	 * mode. */
+	if (have_shortcut || get_key_buffer_len() == 0) {
+#ifndef DISABLE_WRAPPING
+		/* If we got a shortcut or toggle, and it's not the shortcut
+		 * for verbatim input, turn off prepending of wrapped text. */
+		if (have_shortcut && (!have_shortcut || s == NULL || s->scfunc != do_verbatim_input)) {
+			wrap_reset();
+		}
+#endif
+
+		if (kbinput != NULL) {
+			/* Display all the characters in the input buffer at
+			 * once, filtering out control characters. */
+			char *output = charalloc(kbinput_len + 1);
+			size_t i;
+
+			for (i = 0; i < kbinput_len; i++) {
+				output[i] = (char)kbinput[i];
+			}
+			output[i] = '\0';
+
+			do_output(output, kbinput_len, FALSE);
+
+			free(output);
+
+			/* Empty the input buffer. */
+			kbinput_len = 0;
+			free(kbinput);
+			kbinput = NULL;
+		}
+	}
+
+	if (have_shortcut) {
+		switch (input) {
+			/* Handle the normal edit window shortcuts, setting
+			* ran_func to TRUE if we try to run their associated
+			* functions and setting finished to TRUE to indicate
+			* that we're done after running or trying to run their
+			* associated functions. */
+		default:
+			/* If the function associated with this shortcut is
+			* cutting or copying text, indicate this. */
+			if (s->scfunc == do_cut_text_void
+				      || s->scfunc == do_copy_text || s->scfunc ==
+				      do_cut_till_end
+				 ) {
+				cut_copy = TRUE;
+			}
+
+			if (s->scfunc != 0) {
+				const subnfunc *f = sctofunc((sc *) s);
+				*ran_func = TRUE;
+				if (ISSET(VIEW_MODE) && f && !f->viewok) {
+					print_view_warning();
+				} else {
+					if (s->scfunc == do_toggle_void) {
+						do_toggle(s->toggle);
+					} else {
+						s->scfunc();
+						if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
+							reset_multis(openfile->current, FALSE);
+						}
+						if (edit_refresh_needed) {
+							DEBUG_LOG("running edit_refresh() as edit_refresh_needed is true\n");
+							edit_refresh();
+							edit_refresh_needed = FALSE;
+						}
+
+					}
+				}
+			}
+			*finished = TRUE;
+			break;
+		}
+	}
+
+	/* If we aren't cutting or copying text, blow away the text in the cutbuffer. */
 	if (!cut_copy) {
 		cutbuffer_reset();
 	}
@@ -2438,7 +2432,7 @@ int main(int argc, char **argv)
 		currmenu = MMAIN;
 
 		/* Read in and interpret characters. */
-		do_input(&meta_key, &func_key, &s_or_t, &ran_func, &finished, TRUE);
+		do_input(&meta_key, &func_key, &s_or_t, &ran_func, &finished);
 	}
 
 	/* We should never get here. */
