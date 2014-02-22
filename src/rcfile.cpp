@@ -36,11 +36,8 @@
 
 std::vector<rcoption> rcopts = {
 	{"boldtext", BOLD_TEXT, false},
-#ifdef ENABLE_JUSTIFY
-	{"brackets", 0, false},
-#endif
 	{"const", CONST_UPDATE, false},
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 	{"fill", 0, true},
 #endif
 	{"locking", LOCKING, false},
@@ -59,10 +56,6 @@ std::vector<rcoption> rcopts = {
 	{"operatingdir", 0, false},
 #endif
 	{"preserve", PRESERVE, false},
-#ifdef ENABLE_JUSTIFY
-	{"punct", 0, false},
-	{"quotestr", 0, false},
-#endif
 	{"rebinddelete", REBIND_DELETE, false},
 	{"rebindkeypad", REBIND_KEYPAD, false},
 	{"regexp", USE_REGEXP, false},
@@ -1025,7 +1018,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							operating_dir = mallocstrcpy(operating_dir, argument.c_str());
 						} else
 #endif
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 						if (rcopt.name == "fill") {
 							if (!parse_num(argument.c_str(), &wrap_at)) {
 								rcfile_error(N_("Requested fill size \"%s\" is invalid"), argument.c_str());
@@ -1048,25 +1041,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 								whitespace_len[0] = parse_mbchar(whitespace, NULL, NULL);
 								whitespace_len[1] = parse_mbchar(whitespace + whitespace_len[0], NULL, NULL);
 							}
-						} else
-#ifdef ENABLE_JUSTIFY
-						if (rcopt.name == "punct") {
-							punct = argument.c_str();
-							if (has_blank_mbchars(punct)) {
-								rcfile_error(N_("Non-blank characters required"));
-								punct = NULL;
-							}
-						} else if (rcopt.name == "brackets") {
-							brackets = argument.c_str();
-							if (has_blank_mbchars(brackets)) {
-								rcfile_error(N_("Non-blank characters required"));
-								brackets = NULL;
-							}
-						} else if (rcopt.name == "quotestr") {
-							quotestr = argument.c_str();
-						} else
-#endif
-						if (rcopt.name == "backupdir") {
+						} else if (rcopt.name == "backupdir") {
 							backup_dir = mallocstrcpy(backup_dir, argument.c_str());
 						} else
 #ifdef ENABLE_SPELLER
