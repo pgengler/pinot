@@ -1012,7 +1012,7 @@ void do_execute_command()
 			break;
 		}
 	}
-	shortcut_init(FALSE);
+	shortcut_init();
 
 	free(ans);
 
@@ -1227,7 +1227,7 @@ void do_insertfile(bool execute)
 			break;
 		}
 	}
-	shortcut_init(FALSE);
+	shortcut_init();
 
 	free(ans);
 }

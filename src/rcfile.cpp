@@ -1066,7 +1066,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 				}
 				/* Looks like we still need this specific hack for undo */
 				if (rcopt.name == "undo") {
-					shortcut_init(0);
+					shortcut_init();
 				}
 				break;
 			}
