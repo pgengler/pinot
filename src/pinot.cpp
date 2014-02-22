@@ -2500,4 +2500,3 @@ int main(int argc, char **argv)
 	/* We should never get here. */
 	assert(FALSE);
 }
-

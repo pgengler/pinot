@@ -1394,4 +1394,3 @@ void thanks_for_all_the_fish(void)
 }
 
 #endif /* DEBUG */
-
