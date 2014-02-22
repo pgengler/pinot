@@ -30,6 +30,7 @@ bool SyntaxMatch::matches(const char *str) const
 /***********************************/
 
 Syntax::Syntax(const char *desc)
+: nmultis(0)
 {
 	this->desc = std::string(desc);
 }
