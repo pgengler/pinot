@@ -2999,4 +2999,3 @@ void do_verbatim_input(void)
 
 	free(output);
 }
-
