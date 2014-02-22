@@ -24,7 +24,7 @@ AM_INIT_AUTOMAKE
 AM_SILENT_RULES([yes])
 AC_CONFIG_HEADERS([config.h])
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 
 dnl Checks for programs.
 
