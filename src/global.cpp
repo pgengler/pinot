@@ -29,6 +29,7 @@
 #include "assert.h"
 
 /* Global variables. */
+bool jump_buf_set = false;
 sigjmp_buf jump_buf;
 /* Used to return to main() after a SIGWINCH. */
 
