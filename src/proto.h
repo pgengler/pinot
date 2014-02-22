@@ -269,7 +269,7 @@ size_t length_of_list(int menu);
 void toggle_init_one(int val, const char *desc, bool blank_after, long flag);
 void toggle_init(void);
 void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc, const char *help, bool blank_after, int metaval, int funcval, int miscval, bool view, void (*func)(void));
-void shortcut_init(bool unjustify);
+void shortcut_init(void);
 void free_shortcutage(shortcut **shortcutage);
 #ifdef DEBUG
 void thanks_for_all_the_fish(void);

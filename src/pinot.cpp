@@ -1215,8 +1215,7 @@ void handle_sigwinch(int signal)
 	currmenu = MMAIN;
 	total_refresh();
 
-	/* Jump back to either main() or the unjustify routine in
-	 * do_justify(). */
+	/* Jump back to main() */
 	siglongjmp(jump_buf, 1);
 }
 
