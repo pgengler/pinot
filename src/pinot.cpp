@@ -1395,7 +1395,7 @@ void terminal_init(void)
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys. */
-int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool *finished)
+int do_input(void)
 {
 	int input;
 	/* The character we read in. */
@@ -1407,30 +1407,27 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 	/* Are we cutting or copying text? */
 	const sc *s;
 	bool have_shortcut;
-
-	*s_or_t = FALSE;
-	*ran_func = FALSE;
-	*finished = FALSE;
+	bool meta_key, func_key;
 
 	/* Read in a character. */
-	input = get_kbinput(edit, meta_key, func_key);
+	input = get_kbinput(edit, &meta_key, &func_key);
 
 #ifndef DISABLE_MOUSE
 	/* If we got a mouse click and it was on a shortcut, read in the
 	* shortcut character. */
-	if (*func_key && input == KEY_MOUSE) {
+	if (func_key && input == KEY_MOUSE) {
 		if (do_mouse() == 1) {
-			input = get_kbinput(edit, meta_key, func_key);
+			input = get_kbinput(edit, &meta_key, &func_key);
 		} else {
-			*meta_key = FALSE;
-			*func_key = FALSE;
+			meta_key = FALSE;
+			func_key = FALSE;
 			input = ERR;
 		}
 	}
 #endif
 
 	/* Check for a shortcut in the main list. */
-	s = get_shortcut(MMAIN, &input, meta_key, func_key);
+	s = get_shortcut(MMAIN, &input, &meta_key, &func_key);
 
 	/* If we got a shortcut from the main list, or a "universal"
 	 * edit window shortcut, set have_shortcut to TRUE. */
@@ -1439,11 +1436,9 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
 	if (!have_shortcut) {
-		if (is_ascii_cntrl_char(input) || *meta_key || *func_key) {
+		if (is_ascii_cntrl_char(input) || meta_key || func_key) {
 			statusbar(_("Unknown Command"));
 			beep();
-			*meta_key = FALSE;
-			*func_key = FALSE;
 			input = ERR;
 		}
 	}
@@ -1459,7 +1454,6 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 			kbinput_len++;
 			kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
 			kbinput[kbinput_len - 1] = input;
-
 		}
 	}
 
@@ -1501,24 +1495,16 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 
 	if (have_shortcut) {
 		switch (input) {
-			/* Handle the normal edit window shortcuts, setting
-			* ran_func to TRUE if we try to run their associated
-			* functions and setting finished to TRUE to indicate
-			* that we're done after running or trying to run their
-			* associated functions. */
+			/* Handle the normal edit window shortcuts */
 		default:
 			/* If the function associated with this shortcut is
 			* cutting or copying text, indicate this. */
-			if (s->scfunc == do_cut_text_void
-				      || s->scfunc == do_copy_text || s->scfunc ==
-				      do_cut_till_end
-				 ) {
+			if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_end) {
 				cut_copy = TRUE;
 			}
 
 			if (s->scfunc != 0) {
 				const subnfunc *f = sctofunc((sc *) s);
-				*ran_func = TRUE;
 				if (ISSET(VIEW_MODE) && f && !f->viewok) {
 					print_view_warning();
 				} else {
@@ -1538,7 +1524,6 @@ int do_input(bool *meta_key, bool *func_key, bool *s_or_t, bool *ran_func, bool 
 					}
 				}
 			}
-			*finished = TRUE;
 			break;
 		}
 	}
@@ -2398,8 +2383,6 @@ int main(int argc, char **argv)
 	display_buffer();
 
 	while (TRUE) {
-		bool meta_key, func_key, s_or_t, ran_func, finished;
-
 		/* Make sure the cursor is in the edit window. */
 		reset_cursor();
 		wnoutrefresh(edit);
@@ -2427,7 +2410,7 @@ int main(int argc, char **argv)
 		currmenu = MMAIN;
 
 		/* Read in and interpret characters. */
-		do_input(&meta_key, &func_key, &s_or_t, &ran_func, &finished);
+		do_input();
 	}
 
 	/* We should never get here. */
