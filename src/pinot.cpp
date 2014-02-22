@@ -969,7 +969,7 @@ void do_exit(void)
 		statusbar(_("Cancelled"));
 	}
 
-	shortcut_init(FALSE);
+	shortcut_init();
 	display_main_list();
 }
 
@@ -2119,7 +2119,7 @@ int main(int argc, char **argv)
 
 	/* Set up the shortcut lists.
 	   Need to do this before the rcfile */
-	shortcut_init(FALSE);
+	shortcut_init();
 
 	/* We've read through the command line options.  Now back up the flags
 	 * and values that are set, and read the rcfile(s).  If the values
