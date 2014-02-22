@@ -2387,10 +2387,10 @@ int main(int argc, char **argv)
 		reset_cursor();
 		wnoutrefresh(edit);
 
-		if (!jump_buf_main) {
+		if (!jump_buf_set) {
 			/* If we haven't already, we're going to set jump_buf so
 			 * that we return here after a SIGWINCH.  Indicate this. */
-			jump_buf_main = TRUE;
+			jump_buf_set = true;
 
 			/* Return here after a SIGWINCH. */
 			sigsetjmp(jump_buf, 1);

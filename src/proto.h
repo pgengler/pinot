@@ -26,7 +26,7 @@
 
 /* All external variables.  See global.c for their descriptions. */
 extern sigjmp_buf jump_buf;
-extern bool jump_buf_main;
+extern bool jump_buf_set;
 extern bool use_undo;
 
 #ifndef DISABLE_WRAPPING
