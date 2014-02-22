@@ -30,13 +30,9 @@
 
 /* Global variables. */
 sigjmp_buf jump_buf;
-/* Used to return to either main() or the unjustify routine in
- * do_justify() after a SIGWINCH. */
-bool jump_buf_main = FALSE;
-/* Have we set jump_buf so that we return to main() after a
- * SIGWINCH? */
+/* Used to return to main() after a SIGWINCH. */
 
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 ssize_t fill = 0;
 /* The column where we will wrap lines. */
 ssize_t wrap_at = -CHARS_FROM_EOL;
@@ -70,10 +66,6 @@ int maxrows = 0;
 filestruct *cutbuffer = NULL;
 /* The buffer where we store cut text. */
 filestruct *cutbottom = NULL;
-#ifdef ENABLE_JUSTIFY
-filestruct *jusbuffer = NULL;
-/* The buffer where we store unjustified text. */
-#endif
 partition *filepart = NULL;
 /* The partition where we store a portion of the current
  * file. */
@@ -89,22 +81,6 @@ char *whitespace = NULL;
  * tabs and spaces. */
 int whitespace_len[2];
 /* The length of these characters. */
-
-#ifdef ENABLE_JUSTIFY
-char *punct = NULL;
-/* The closing punctuation that can end sentences. */
-char *brackets = NULL;
-/* The closing brackets that can follow closing punctuation and
- * can end sentences. */
-char *quotestr = NULL;
-/* The quoting string.  The default value is set in main(). */
-regex_t quotereg;
-/* The compiled regular expression from the quoting string. */
-int quoterc;
-/* Whether it was compiled successfully. */
-char *quoteerr = NULL;
-/* The error message, if it didn't. */
-#endif
 
 bool nodelay_mode = FALSE;
 /* Are we in nodelay mode (checking for a cancel wile doing something */
@@ -480,9 +456,8 @@ const char *ext_cmd_msg = N_("Execute Command");
 const char *new_buffer_msg = N_("New Buffer");
 const char *goto_dir_msg = N_("Go To Dir");
 
-/* Initialize all shortcut lists.  If unjustify is TRUE, replace the
- * Uncut shortcut in the main shortcut list with UnJustify. */
-void shortcut_init(bool unjustify)
+/* Initialize all shortcut lists. */
+void shortcut_init(void)
 {
 	/* TRANSLATORS: Try to keep the following strings at most 10 characters. */
 	const char *get_help_msg = N_("Get Help");
@@ -493,18 +468,10 @@ void shortcut_init(bool unjustify)
 	const char *first_line_msg = N_("First Line");
 	const char *last_line_msg = N_("Last Line");
 	const char *suspend_msg = N_("Suspend");
-#ifdef ENABLE_JUSTIFY
-	const char *beg_of_par_msg = N_("Beg of Par");
-	const char *end_of_par_msg = N_("End of Par");
-	const char *fulljstify_msg = N_("FullJstify");
-#endif
 	const char *refresh_msg = N_("Refresh");
 	const char *insert_file_msg =  N_("Insert File");
 	const char *go_to_line_msg = N_("Go To Line");
 
-#ifdef ENABLE_JUSTIFY
-	const char *pinot_justify_msg = N_("Justify the current paragraph");
-#endif
 	/* TRANSLATORS: The next long series of strings are shortcut descriptions;
 	 * they are best kept shorter than 56 characters, but may be longer. */
 	const char *pinot_cancel_msg = N_("Cancel the current function");
@@ -536,10 +503,6 @@ void shortcut_init(bool unjustify)
 	const char *pinot_nextline_msg = N_("Go to next line");
 	const char *pinot_home_msg = N_("Go to beginning of current line");
 	const char *pinot_end_msg = N_("Go to end of current line");
-#ifdef ENABLE_JUSTIFY
-	const char *pinot_parabegin_msg = N_("Go to beginning of paragraph; then of previous paragraph");
-	const char *pinot_paraend_msg = N_("Go just beyond end of paragraph; then of next paragraph");
-#endif
 	const char *pinot_firstline_msg = N_("Go to the first line of the file");
 	const char *pinot_lastline_msg = N_("Go to the last line of the file");
 	const char *pinot_bracket_msg = N_("Go to the matching bracket");
@@ -553,9 +516,6 @@ void shortcut_init(bool unjustify)
 	const char *pinot_delete_msg = N_("Delete the character under the cursor");
 	const char *pinot_backspace_msg = N_("Delete the character to the left of the cursor");
 	const char *pinot_cut_till_end_msg = N_("Cut from the cursor position to the end of the file");
-#ifdef ENABLE_JUSTIFY
-	const char *pinot_fulljustify_msg = N_("Justify the entire file");
-#endif
 	const char *pinot_wordcount_msg = N_("Count the number of words, lines, and characters");
 	const char *pinot_refresh_msg = N_("Refresh (redraw) the current screen");
 	const char *pinot_suspend_msg = N_("Suspend the editor (if suspend is enabled)");
@@ -610,11 +570,6 @@ void shortcut_init(bool unjustify)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), FALSE, NOVIEW);
 
-#ifdef ENABLE_JUSTIFY
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_justify_void, MMAIN, N_("Justify"), pinot_justify_msg, TRUE, NOVIEW);
-#endif
-
 	/* We allow inserting files in view mode if multibuffers are
 	 * available, so that we can view multiple files.  If we're using
 	 * restricted mode, inserting files is disabled, since it allows
@@ -633,13 +588,8 @@ void shortcut_init(bool unjustify)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), FALSE, NOVIEW);
 
-	if (unjustify) {
-		/* TRANSLATORS: Try to keep this at most 10 characters. */
-		add_to_funcs(do_uncut_text, MMAIN, N_("UnJustify"), "", FALSE, NOVIEW);
-	} else {
-		/* TRANSLATORS: Try to keep this at most 10 characters. */
-		add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), FALSE, NOVIEW);
-	}
+	/* TRANSLATORS: Try to keep this at most 10 characters. */
+	add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), FALSE, NOVIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), FALSE, VIEW);
@@ -707,12 +657,6 @@ void shortcut_init(bool unjustify)
 
 	add_to_funcs(do_end, MMAIN, N_("End"), IFSCHELP(pinot_end_msg), FALSE, VIEW);
 
-#ifdef ENABLE_JUSTIFY
-	add_to_funcs(do_para_begin_void, (MMAIN|MWHEREIS), beg_of_par_msg, IFSCHELP(pinot_parabegin_msg), FALSE, VIEW);
-
-	add_to_funcs(do_para_end_void, (MMAIN|MWHEREIS), end_of_par_msg, IFSCHELP(pinot_paraend_msg), FALSE, VIEW);
-#endif
-
 	add_to_funcs(do_find_bracket, MMAIN, _("Find Other Bracket"), IFSCHELP(pinot_bracket_msg), FALSE, VIEW);
 
 	add_to_funcs(do_scroll_up, MMAIN, N_("Scroll Up"), IFSCHELP(pinot_scrollup_msg), FALSE, VIEW);
@@ -739,10 +683,6 @@ void shortcut_init(bool unjustify)
 
 	add_to_funcs(xon_complaint, MMAIN, "", "", FALSE, VIEW);
 	add_to_funcs(xoff_complaint, MMAIN, "", "", FALSE, VIEW);
-
-#ifdef ENABLE_JUSTIFY
-	add_to_funcs(do_full_justify, (MMAIN|MWHEREIS), fulljstify_msg, IFSCHELP(pinot_fulljustify_msg), FALSE, NOVIEW);
-#endif
 
 	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), FALSE, VIEW);
 
@@ -819,10 +759,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MMAIN, "M-G", do_gotolinecolumn_void, 0, TRUE);
 	add_to_sclist(MMAIN, "^O", do_writeout_void, 0, TRUE);
 	add_to_sclist(MMAIN, "F3", do_writeout_void, 0, TRUE);
-#ifdef ENABLE_JUSTIFY
-	add_to_sclist(MMAIN, "^J", do_justify_void, 0, TRUE);
-	add_to_sclist(MMAIN, "F4", do_justify_void, 0, TRUE);
-#endif
 	add_to_sclist(MMAIN, "^R", do_insertfile_void, 0, TRUE);
 	add_to_sclist(MMAIN, "F5", do_insertfile_void, 0, TRUE);
 	add_to_sclist(MMAIN, "kinsert", do_insertfile_void, 0, TRUE);
@@ -885,14 +821,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "kup", get_history_older_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^N", get_history_newer_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "kdown", get_history_newer_void, 0, FALSE);
-#ifdef ENABLE_JUSTIFY
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "^W", do_para_begin_void, 0, TRUE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "^O", do_para_end_void, 0, TRUE);
-	add_to_sclist(MALL, "M-(", do_para_begin_void, 0, TRUE);
-	add_to_sclist(MALL, "M-9", do_para_begin_void, 0, TRUE);
-	add_to_sclist(MALL, "M-)", do_para_end_void, 0, TRUE);
-	add_to_sclist(MALL, "M-0", do_para_end_void, 0, TRUE);
-#endif
 	add_to_sclist(MWHEREIS, "M-C", case_sens_void, 0, FALSE);
 	add_to_sclist(MREPLACE, "M-C", case_sens_void, 0, FALSE);
 	add_to_sclist(MREPLACE2, "M-C", case_sens_void, 0, FALSE);
@@ -927,9 +855,6 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MMAIN, "M-.", switch_to_next_buffer_void, 0, TRUE);
 	add_to_sclist(MALL, "M-V", do_verbatim_input, 0, TRUE);
 	add_to_sclist(MALL, "M-T", do_cut_till_end, 0, TRUE);
-#ifdef ENABLE_JUSTIFY
-	add_to_sclist(MALL, "M-J", do_full_justify, 0, TRUE);
-#endif
 	add_to_sclist(MMAIN, "M-D", do_wordlinechar_count, 0, TRUE);
 	add_to_sclist(MMAIN, "M-X", do_toggle_void, NO_HELP, TRUE);
 	add_to_sclist(MMAIN, "M-C", do_toggle_void, CONST_UPDATE, TRUE);
@@ -1092,19 +1017,7 @@ sc *strtosc(int menu, char *input)
 			s->scfunc = do_gotolinecolumn_void;
 		} else if (!strcasecmp(input, "replace")) {
 			s->scfunc = do_replace;
-		}
-#ifdef ENABLE_JUSTIFY
-		else if (!strcasecmp(input, "justify")) {
-			s->scfunc = do_justify_void;
-		} else if (!strcasecmp(input, "beginpara")) {
-			s->scfunc = do_para_begin_void;
-		} else if (!strcasecmp(input, "endpara")) {
-			s->scfunc = do_para_end_void;
-		} else if (!strcasecmp(input, "fulljustify")) {
-			s->scfunc = do_full_justify;
-		}
-#endif
-		else if (!strcasecmp(input, "mark")) {
+		} else if (!strcasecmp(input, "mark")) {
 			s->scfunc = do_mark;
 		} else if (!strcasecmp(input, "searchagain") || !strcasecmp(input, "research")) {
 			s->scfunc = do_research;
@@ -1330,15 +1243,6 @@ void thanks_for_all_the_fish(void)
 	delwin(edit);
 	delwin(bottomwin);
 
-#ifdef ENABLE_JUSTIFY
-	if (quotestr != NULL) {
-		free(quotestr);
-	}
-	regfree(&quotereg);
-	if (quoteerr != NULL) {
-		free(quoteerr);
-	}
-#endif
 	if (backup_dir != NULL) {
 		free(backup_dir);
 	}
@@ -1367,11 +1271,6 @@ void thanks_for_all_the_fish(void)
 	if (cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
 	}
-#ifdef ENABLE_JUSTIFY
-	if (jusbuffer != NULL) {
-		free_filestruct(jusbuffer);
-	}
-#endif
 #ifdef DEBUG
 	/* Free the memory associated with each open file buffer. */
 	if (openfile != NULL) {

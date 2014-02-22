@@ -688,7 +688,7 @@ void window_init(void)
 		die(_("Window size is too small for pinot...\n"));
 	}
 
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 	/* Set up fill, based on the screen width. */
 	fill = wrap_at;
 	if (fill <= 0) {
@@ -811,9 +811,6 @@ void usage(void)
 	print_opt("-N", "--noconvert", N_("Don't convert files from DOS/Mac format"));
 	print_opt("-O", "--morespace", N_("Use one more line for editing"));
 	print_opt("-P", "--poslog", N_("Log & read location of cursor position"));
-#ifdef ENABLE_JUSTIFY
-	print_opt(_("-Q <str>"), _("--quotestr=<str>"), N_("Quoting string"));
-#endif
 	print_opt("-R", "--restricted", N_("Restricted mode"));
 	print_opt("-S", "--smooth", N_("Scroll by line instead of half-screen"));
 	print_opt(_("-T <#cols>"), _("--tabsize=<#cols>"), N_("Set width of a tab to #cols columns"));
@@ -834,7 +831,7 @@ void usage(void)
 #endif
 	print_opt("-p", "--preserve", N_("Preserve XON (^Q) and XOFF (^S) keys"));
 	print_opt("-q", "--quiet", N_("Silently ignore startup issues like rc file errors"));
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 	print_opt(_("-r <#cols>"), _("--fill=<#cols>"), N_("Set wrapping point at column #cols"));
 #endif
 #ifdef ENABLE_SPELLER
@@ -892,9 +889,6 @@ void version(void)
 #endif
 #ifdef DEBUG
 	printf(" --enable-debug");
-#endif
-#ifdef ENABLE_JUSTIFY
-	printf(" --enable-justify");
 #endif
 #ifdef ENABLE_SPELLER
 	printf(" --enable-speller");
@@ -1221,8 +1215,7 @@ void handle_sigwinch(int signal)
 	currmenu = MMAIN;
 	total_refresh();
 
-	/* Jump back to either main() or the unjustify routine in
-	 * do_justify(). */
+	/* Jump back to main() */
 	siglongjmp(jump_buf, 1);
 }
 
@@ -1876,7 +1869,7 @@ int main(int argc, char **argv)
 	/* Line to try and start at. */
 	ssize_t startcol = 1;
 	/* Column to try and start at. */
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 	bool fill_used = FALSE;
 	/* Was the fill option used? */
 #endif
@@ -1892,9 +1885,6 @@ int main(int argc, char **argv)
 		{"rebindkeypad", 0, NULL, 'K'},
 		{"nonewlines", 0, NULL, 'L'},
 		{"morespace", 0, NULL, 'O'},
-#ifdef ENABLE_JUSTIFY
-		{"quotestr", 1, NULL, 'Q'},
-#endif
 		{"restricted", 0, NULL, 'R'},
 		{"tabsize", 1, NULL, 'T'},
 		{"version", 0, NULL, 'V'},
@@ -1910,7 +1900,7 @@ int main(int argc, char **argv)
 #endif
 		{"preserve", 0, NULL, 'p'},
 		{"quiet", 0, NULL, 'q'},
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 		{"fill", 1, NULL, 'r'},
 #endif
 #ifdef ENABLE_SPELLER
@@ -2023,11 +2013,6 @@ int main(int argc, char **argv)
 		case 'P':
 			SET(POS_HISTORY);
 			break;
-#ifdef ENABLE_JUSTIFY
-		case 'Q':
-			quotestr = mallocstrcpy(quotestr, optarg);
-			break;
-#endif
 		case 'R':
 			SET(RESTRICTED);
 			break;
@@ -2084,7 +2069,7 @@ int main(int argc, char **argv)
 		case 'q':
 			SET(QUIET);
 			break;
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 		case 'r':
 			if (!parse_num(optarg, &wrap_at)) {
 				fprintf(stderr, _("Requested fill size \"%s\" is invalid"), optarg);
@@ -2159,13 +2144,10 @@ int main(int argc, char **argv)
 #ifndef DISABLE_OPERATINGDIR
 		char *operating_dir_cpy = operating_dir;
 #endif
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 		ssize_t wrap_at_cpy = wrap_at;
 #endif
 		char *backup_dir_cpy = backup_dir;
-#ifdef ENABLE_JUSTIFY
-		char *quotestr_cpy = quotestr;
-#endif
 #ifdef ENABLE_SPELLER
 		char *alt_speller_cpy = alt_speller;
 #endif
@@ -2179,9 +2161,6 @@ int main(int argc, char **argv)
 		operating_dir = NULL;
 #endif
 		backup_dir = NULL;
-#ifdef ENABLE_JUSTIFY
-		quotestr = NULL;
-#endif
 #ifdef ENABLE_SPELLER
 		alt_speller = NULL;
 #endif
@@ -2199,7 +2178,7 @@ int main(int argc, char **argv)
 			operating_dir = operating_dir_cpy;
 		}
 #endif
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 		if (fill_used) {
 			wrap_at = wrap_at_cpy;
 		}
@@ -2208,12 +2187,6 @@ int main(int argc, char **argv)
 			free(backup_dir);
 			backup_dir = backup_dir_cpy;
 		}
-#ifdef ENABLE_JUSTIFY
-		if (quotestr_cpy != NULL) {
-			free(quotestr);
-			quotestr = quotestr_cpy;
-		}
-#endif
 #ifdef ENABLE_SPELLER
 		if (alt_speller_cpy != NULL) {
 			free(alt_speller);
@@ -2281,35 +2254,6 @@ int main(int argc, char **argv)
 	 * so that file reads and writes will be based there. */
 	init_operating_dir();
 #endif
-
-#ifdef ENABLE_JUSTIFY
-	/* If punct wasn't specified, set its default value. */
-	if (punct == NULL) {
-		punct = mallocstrcpy(NULL, "!.?");
-	}
-
-	/* If brackets wasn't specified, set its default value. */
-	if (brackets == NULL) {
-		brackets = mallocstrcpy(NULL, "\"')>]}");
-	}
-
-	/* If quotestr wasn't specified, set its default value. */
-	if (quotestr == NULL)
-		quotestr = mallocstrcpy(NULL, "^([ \t]*[#:>|}])+");
-
-	quoterc = regcomp(&quotereg, quotestr, REG_EXTENDED);
-
-	if (quoterc == 0) {
-		/* We no longer need quotestr, just quotereg. */
-		free(quotestr);
-		quotestr = NULL;
-	} else {
-		size_t size = regerror(quoterc, &quotereg, NULL, 0);
-
-		quoteerr = charalloc(size);
-		regerror(quoterc, &quotereg, quoteerr, size);
-	}
-#endif /* ENABLE_JUSTIFY */
 
 #ifdef ENABLE_SPELLER
 	/* If we don't have an alternative spell checker after reading the

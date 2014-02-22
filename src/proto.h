@@ -29,7 +29,7 @@ extern sigjmp_buf jump_buf;
 extern bool jump_buf_main;
 extern bool use_undo;
 
-#ifndef DISABLE_WRAPJUSTIFY
+#ifndef DISABLE_WRAPPING
 extern ssize_t fill;
 extern ssize_t wrap_at;
 #endif
@@ -46,9 +46,6 @@ extern int maxrows;
 
 extern filestruct *cutbuffer;
 extern filestruct *cutbottom;
-#ifdef ENABLE_JUSTIFY
-extern filestruct *jusbuffer;
-#endif
 extern partition *filepart;
 extern openfilestruct *openfile;
 
@@ -58,14 +55,6 @@ extern char *whitespace;
 extern int whitespace_len[2];
 extern undo_type last_action;
 
-#ifdef ENABLE_JUSTIFY
-extern char *punct;
-extern char *brackets;
-extern char *quotestr;
-extern regex_t quotereg;
-extern int quoterc;
-extern char *quoteerr;
-#endif
 extern bool nodelay_mode;
 extern char *answer;
 
@@ -280,7 +269,7 @@ size_t length_of_list(int menu);
 void toggle_init_one(int val, const char *desc, bool blank_after, long flag);
 void toggle_init(void);
 void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc, const char *help, bool blank_after, int metaval, int funcval, int miscval, bool view, void (*func)(void));
-void shortcut_init(bool unjustify);
+void shortcut_init(void);
 void free_shortcutage(shortcut **shortcutage);
 #ifdef DEBUG
 void thanks_for_all_the_fish(void);
@@ -301,12 +290,6 @@ void do_first_line(void);
 void do_last_line(void);
 void do_page_up(void);
 void do_page_down(void);
-#ifdef ENABLE_JUSTIFY
-void do_para_begin(bool allow_update);
-void do_para_begin_void(void);
-void do_para_end(bool allow_update);
-void do_para_end_void(void);
-#endif
 bool do_next_word(bool allow_punct, bool allow_update);
 void do_next_word_void(void);
 bool do_prev_word(bool allow_punct, bool allow_update);
@@ -524,26 +507,9 @@ int execute_command_silently(const char *command);
 #ifndef DISABLE_WRAPPING
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
-#endif
-#ifndef DISABLE_WRAPJUSTIFY
 ssize_t break_line(const char *line, ssize_t goal, bool newln);
 #endif
 size_t indent_length(const char *line);
-#ifdef ENABLE_JUSTIFY
-void justify_format(filestruct *paragraph, size_t skip);
-size_t quote_length(const char *line);
-bool quotes_match(const char *a_line, size_t a_quote, const char
-                  *b_line);
-bool indents_match(const char *a_line, size_t a_indent, const char
-                   *b_line, size_t b_indent);
-bool begpar(const filestruct *const foo);
-bool inpar(const filestruct *const foo);
-void backup_lines(filestruct *first_line, size_t par_len);
-bool find_paragraph(size_t *const quote, size_t *const par);
-void do_justify(bool full_justify);
-void do_justify_void(void);
-void do_full_justify(void);
-#endif
 #ifdef ENABLE_SPELLER
 bool do_int_spell_fix(const char *word);
 const char *do_int_speller(const char *tempfile_name);

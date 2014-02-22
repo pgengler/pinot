@@ -70,12 +70,6 @@ AC_ARG_ENABLE(browser,
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
 fi])
 
-AC_ARG_ENABLE(justify,
-[  --enable-justify       Enable justify/unjustify functions],
-[if test x$enableval != xyes; then
-    AC_DEFINE(ENABLE_JUSTIFY, 1, [Define this to enable the justify routines.])
-fi])
-
 AC_ARG_ENABLE(mouse,
 [  --disable-mouse         Disable mouse support (and -m flag)],
 [if test x$enableval != xyes; then
