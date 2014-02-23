@@ -1,6 +1,6 @@
 ## Here is an example for C/C++.
 ##
-syntax "c" "\.(c(c|pp|xx)?|C)$" "\.(h(h|pp|xx)?|H)$" "\.ii?$"
+syntax "c" "\.(c(c|pp|xx|\+\+)?|C)$" "\.(h(h|pp|xx)?|H)$" "\.ii?$"
 magic "ASCII C(\+\+)? program text"
 color brightred "\b[A-Z_][0-9A-Z_]+\b" 
 color green "\b(auto|bool|char|double|float|int|long|short)\b"
