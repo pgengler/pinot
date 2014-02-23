@@ -2790,14 +2790,6 @@ char *histfilename(void)
 	return construct_filename("/.pinot/search_history");
 }
 
-/* Construct the legacy history filename
- * (Deprecate in 2.5, delete later
- */
-char *legacyhistfilename(void)
-{
-	return construct_filename("/.pinot_history");
-}
-
 char *poshistfilename(void)
 {
 	return construct_filename("/.pinot/filepos_history");
@@ -2845,20 +2837,6 @@ int check_dotpinot(void)
 void load_history(void)
 {
 	char *pinothist = histfilename();
-	char *legacyhist = legacyhistfilename();
-	struct stat hstat;
-
-
-	if (stat(legacyhist, &hstat) != -1 && stat(pinothist, &hstat) == -1) {
-		if (rename(legacyhist, pinothist)  == -1)
-			history_error(N_("Detected a legacy pinot history file (%s) which I tried to move\nto the preferred location (%s) but encountered an error: %s"),
-			              legacyhist, pinothist, strerror(errno));
-		else
-			history_error(N_("Detected a legacy pinot history file (%s) which I moved\nto the preferred location (%s)\n(see the pinot FAQ about this change)"),
-			              legacyhist, pinothist);
-	}
-
-
 
 	/* Assume do_rcfile() has reported a missing home directory. */
 	if (pinothist != NULL) {
@@ -2899,7 +2877,6 @@ void load_history(void)
 			}
 		}
 		free(pinothist);
-		free(legacyhist);
 	}
 }
 
