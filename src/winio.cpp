@@ -1604,10 +1604,9 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
 					unget_kbinput(s->seq, s->type == META, FALSE);
 				}
 			}
-		} else
+		} else {
 			/* Handle releases/clicks of the first mouse button that
 			 * aren't on the current shortcut list elsewhere. */
-		{
 			return 0;
 		}
 	}
@@ -1618,10 +1617,9 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
 	else if (mevent.bstate & (BUTTON4_PRESSED | BUTTON5_PRESSED)) {
 		bool in_edit = wenclose(edit, *mouse_y, *mouse_x);
 
-		if (in_bottomwin)
+		if (in_bottomwin) {
 			/* Translate the mouse event coordinates so that they're
 			 * relative to bottomwin. */
-		{
 			wmouse_trafo(bottomwin, mouse_y, mouse_x, FALSE);
 		}
 
@@ -1631,15 +1629,15 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
 			/* One upward roll of the mouse wheel is equivalent to
 			 * moving up three lines, and one downward roll of the mouse
 			 * wheel is equivalent to moving down three lines. */
-			for (i = 0; i < 3; i++)
-				unget_kbinput((mevent.bstate & BUTTON4_PRESSED) ? sc_seq_or(up_void, 0) : sc_seq_or(DO_DOWN_VOID, 0), FALSE, FALSE);
+			for (i = 0; i < 3; i++) {
+				unget_kbinput((mevent.bstate & BUTTON4_PRESSED) ? sc_seq_or(do_up_void, 0) : sc_seq_or(do_down_void, 0), FALSE, FALSE);
+			}
 
 			return 1;
-		} else
+		} else {
 			/* Ignore presses of the fourth mouse button and presses of
 			 * the fifth mouse buttons that aren't on the edit window or
 			 * the statusbar. */
-		{
 			return 2;
 		}
 	}
@@ -1701,8 +1699,6 @@ const subnfunc *getfuncfromkey(WINDOW *win)
 	return f;
 
 }
-
-
 
 /* Move to (x, y) in win, and display a line of n spaces with the
  * current attributes. */
