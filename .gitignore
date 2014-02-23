@@ -17,9 +17,13 @@ Makefile.in
 /configure
 /depcomp
 /install-sh
+/ltmain.sh
 /missing
 /mkinstalldirs
 /stamp-h1
+
+/mt/libtool.m4
+/m4/lt*
 
 /pinot.spec
 /src/pinot
