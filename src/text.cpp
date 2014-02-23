@@ -439,7 +439,7 @@ void do_undo(void)
 		}
 	}
 	if (f->lineno != u->lineno) {
-		statusbar(_("Internal error: can't match line %d.  Please save your work"), u->lineno);
+		statusbar(_("Internal error: can't match line %d.  Please save your work."), u->lineno);
 		return;
 	}
 	DEBUG_LOG("data we're about to undo = \"%s\"\n", f->data);
@@ -540,7 +540,7 @@ void do_undo(void)
 		break;
 
 	default:
-		undidmsg = _("Internal error: unknown type.  Please save your work");
+		undidmsg = _("Internal error: unknown type.  Please save your work.");
 		break;
 
 	}
@@ -566,7 +566,7 @@ void do_redo(void)
 		return;
 	}
 	if (u->next != openfile->current_undo) {
-		statusbar(_("Internal error: Redo setup failed.  Please save your work"));
+		statusbar(_("Internal error: Redo setup failed.  Please save your work."));
 		return;
 	}
 
@@ -579,7 +579,7 @@ void do_redo(void)
 			;
 		}
 	if (f->lineno != u->lineno) {
-		statusbar(_("Internal error: can't match line %d.  Please save your work"), u->lineno);
+		statusbar(_("Internal error: can't match line %d.  Please save your work."), u->lineno);
 		return;
 	}
 	DEBUG_LOG("data we're about to redo = \"%s\"\n", f->data);
@@ -656,7 +656,7 @@ void do_redo(void)
 		openfile->placewewant = xplustabs();
 		break;
 	default:
-		undidmsg = _("Internal error: unknown type.  Please save your work");
+		undidmsg = _("Internal error: unknown type.  Please save your work.");
 		break;
 
 	}
