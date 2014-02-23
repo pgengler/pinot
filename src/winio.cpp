@@ -2334,6 +2334,13 @@ void reset_cursor(void)
 	}
 }
 
+void unset_formatting(ColorPtr color)
+{
+	wattroff(edit, A_BOLD);
+	wattroff(edit, A_UNDERLINE);
+	wattroff(edit, COLOR_PAIR(color->pairnum));
+}
+
 /* edit_draw() takes care of the job of actually painting a line into
  * the edit window.  fileptr is the line to be painted, at row line of
  * the window.  converted is the actual string to be written to the
@@ -2459,14 +2466,17 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 				if (md == -1) {
 					fileptr->multidata[tmpcolor->id] = CNONE;    /* until we find out otherwise */
 				} else if (md == CNONE) {
+					unset_formatting(tmpcolor);
 					continue;
 				} else if (md == CWHOLELINE) {
 					mvwaddnstr(edit, line, 0, converted, -1);
+					unset_formatting(tmpcolor);
 					continue;
 				} else if (md == CBEGINBEFORE) {
 					regexec(tmpcolor->end, fileptr->data, 1, &endmatch, 0);
 					paintlen = actual_x(converted, strnlenpt(fileptr->data, endmatch.rm_eo) - start);
 					mvwaddnstr(edit, line, 0, converted, paintlen);
+					unset_formatting(tmpcolor);
 					continue;
 				}
 
@@ -2494,15 +2504,13 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					while (TRUE) {
 						start_col += startmatch.rm_so;
 						startmatch.rm_eo -= startmatch.rm_so;
-						if (regexec(tmpcolor->end, start_line->data + start_col + startmatch.rm_eo, 0, NULL, (start_col + startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH)
+						if (regexec(tmpcolor->end, start_line->data + start_col + startmatch.rm_eo, 0, NULL, (start_col + startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
 							/* No end found after this start. */
-						{
 							break;
 						}
 						start_col++;
-						if (regexec(tmpcolor->start, start_line->data + start_col, 1, &startmatch, REG_NOTBOL) == REG_NOMATCH)
+						if (regexec(tmpcolor->start, start_line->data + start_col, 1, &startmatch, REG_NOTBOL) == REG_NOMATCH) {
 							/* No later start on this line. */
-						{
 							goto step_two;
 						}
 					}
@@ -2543,9 +2551,8 @@ step_two:
 					start_col = 0;
 
 					while (start_col < endpos) {
-						if (regexec(tmpcolor->start, fileptr->data + start_col, 1, &startmatch, (start_col == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH || start_col + startmatch.rm_so >= endpos)
+						if (regexec(tmpcolor->start, fileptr->data + start_col, 1, &startmatch, (start_col == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH || start_col + startmatch.rm_so >= endpos) {
 							/* No more starts on this line. */
-						{
 							break;
 						}
 						/* Translate the match to be relative to the
@@ -2558,8 +2565,7 @@ step_two:
 						index = actual_x(converted, x_start);
 
 						if (regexec(tmpcolor->end, fileptr->data + startmatch.rm_eo, 1, &endmatch, (startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == 0) {
-							/* Translate the end match to be relative to
-							 * the beginning of the line. */
+							/* Translate the end match to be relative to the beginning of the line. */
 							endmatch.rm_so += startmatch.rm_eo;
 							endmatch.rm_eo += startmatch.rm_eo;
 							/* There is an end on this line.  But does
@@ -2601,10 +2607,7 @@ step_two:
 					}
 				}
 			}
-
-			wattroff(edit, A_BOLD);
-			wattroff(edit, A_UNDERLINE);
-			wattroff(edit, COLOR_PAIR(tmpcolor->pairnum));
+			unset_formatting(tmpcolor);
 		}
 	}
 
