@@ -265,6 +265,9 @@
 ## Cascading Style Sheets
 # include "@PKGDATADIR@/css.pinotrc"
 
+## CMake files
+# include "@PKGDATADIR@/cmake.pinotrc"
+
 ## Debian files
 # include "@PKGDATADIR@/debian.pinotrc"
 
