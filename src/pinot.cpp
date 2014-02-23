@@ -290,7 +290,8 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 {
 	filestruct *top_save;
 	bool edittop_inside;
-	bool mark_inside = FALSE;
+	bool mark_inside = false;
+	bool same_line = false;
 
 	assert(file_top != NULL && file_bot != NULL && top != NULL && bot != NULL);
 
@@ -305,7 +306,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 	 * whether the mark begins inside the partition. */
 	filepart = partition_filestruct(top, top_x, bot, bot_x);
 	edittop_inside = (openfile->edittop->lineno >= openfile->fileage->lineno && openfile->edittop->lineno <= openfile->filebot->lineno);
-	if (openfile->mark_set)
+	if (openfile->mark_set) {
 		mark_inside = (openfile->mark_begin->lineno >=
 		               openfile->fileage->lineno &&
 		               openfile->mark_begin->lineno <=
@@ -314,6 +315,8 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 		                openfile->mark_begin_x >= top_x) &&
 		               (openfile->mark_begin != openfile->filebot ||
 		                openfile->mark_begin_x <= bot_x));
+		same_line = (openfile->mark_begin == openfile->fileage);
+	}
 
 	/* Get the number of characters in the text, and subtract it from
 	 * totsize. */
@@ -366,6 +369,9 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 	if (mark_inside) {
 		openfile->mark_begin = openfile->current;
 		openfile->mark_begin_x = openfile->current_x;
+	} else if (same_line) {
+		/* update the content of this partially cut line */
+		openfile->mark_begin = openfile->current;
 	}
 
 	top_save = openfile->fileage;
