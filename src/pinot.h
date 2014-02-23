@@ -694,3 +694,5 @@ enum {
 /* Some exit codes that we might want to check for. */
 #define COMMAND_FAILED_PERMISSION_DENIED 126
 #define COMMAND_FAILED_NOT_FOUND 127
+
+#include "EventQueue.h"
