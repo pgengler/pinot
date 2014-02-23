@@ -1706,6 +1706,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bo
 	 * or else we will chase null pointers when we do
 	 * modtime checks, preserve file times, etc. during backup */
 	if (openfile->current_stat == NULL && !tmp && realexists) {
+		openfile->current_stat = (struct stat *)nmalloc(sizeof(struct stat));
 		stat(realname, openfile->current_stat);
 	}
 
