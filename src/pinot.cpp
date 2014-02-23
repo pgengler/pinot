@@ -1282,8 +1282,7 @@ void do_toggle(int flag)
 	}
 
 	desc = _(flagtostr(flag));
-	statusbar("%s %s", desc, enabled ? _("enabled") :
-	          _("disabled"));
+	statusbar("%s %s", desc, enabled ? _("enabled") : _("disabled"));
 }
 
 /* Bleh */
