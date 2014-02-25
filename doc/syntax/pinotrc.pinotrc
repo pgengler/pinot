@@ -5,7 +5,7 @@ syntax "pinotrc" "\.?pinotrc$"
 icolor brightwhite "^\s*((un)?set|include|syntax|i?color).*$"
 ## Keywords
 icolor brightgreen "^\s*(set|unset)\s+(allow_insecure_backup|autoindent|backup|backupdir|backwards|boldtext|brackets|casesensitive|const|cut|fill|historylog|locking|matchbrackets|morespace|mouse|multibuffer|noconvert|nofollow|nohelp|nonewlines|nowrap|operatingdir|poslog|preserve|punct)\b" "^\s*(set|unset)\s+(quickblank|quotestr|rebinddelete|rebindkeypad|regexp|smarthome|smooth|softwrap|speller|suspend|suspendenable|tabsize|tabstospaces|tempfile|undo|view|whitespace|wordbounds)\b"
-icolor green "^\s*(set|unset|include|syntax|header|magic|extends)\b"
+icolor green "^\s*(set|unset|include|syntax|header|magic|extends|linter)\b"
 ## Colors
 icolor yellow "^\s*i?color\s*(bright)?(white|black|red|blue|green|yellow|magenta|cyan)?(,(white|black|red|blue|green|yellow|magenta|cyan))?\b"
 icolor magenta "^\s*i?color\b" "\b(start|end)="

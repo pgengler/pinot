@@ -860,6 +860,24 @@ void parse_headers(char *ptr)
 	}
 }
 
+/* Parse the linter requested for this syntax.  Simple? */
+void parse_linter(char *ptr)
+{
+	assert(ptr != NULL);
+
+	if (syntaxes.empty()) {
+		rcfile_error(N_("Cannot add a linter without a syntax command"));
+		return;
+	}
+
+	if (*ptr == '\0') {
+		rcfile_error(N_("Missing linter command"));
+		return;
+	}
+
+	new_syntax->linter = std::string(ptr);
+}
+
 /* Check whether the user has unmapped every shortcut for a
 sequence we consider 'vital', like the exit function */
 static void check_vitals_mapped(void)
@@ -979,6 +997,10 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		} else if (keyword == "unbind") {
 			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_unbinding(ptr);
+			free(ptr);
+		} else if (keyword == "linter") {
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
+			parse_linter(ptr);
 			free(ptr);
 		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword.c_str());

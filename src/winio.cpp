@@ -3143,6 +3143,11 @@ void total_refresh(void)
  * portion of the window. */
 void display_main_list(void)
 {
+	if (openfile->syntax && openfile->syntax->linter != "") {
+		set_lint_shortcuts();
+	} else {
+		set_spell_shortcuts();
+	}
 	bottombars(MMAIN);
 }
 
