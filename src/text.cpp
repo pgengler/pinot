@@ -3164,14 +3164,18 @@ void do_linter(void)
 		} else if (s->scfunc == do_help_void) {
 			do_help_void();
 		} else if (s->scfunc == do_page_down) {
-			if (++curr_lint != lints.end()) {
+			if (curr_lint == lints.end()) {
 				statusbar(_("At last message"));
 				continue;
+			} else {
+				++curr_lint;
 			}
 		} else if (s->scfunc == do_page_up) {
-			if (--curr_lint == lints.begin()) {
+			if (curr_lint == lints.begin()) {
 				statusbar(_("At first message"));
 				continue;
+			} else {
+				--curr_lint;
 			}
 		}
 	}
