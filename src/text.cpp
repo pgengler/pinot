@@ -2266,8 +2266,8 @@ void do_linter(void)
 	currmenu = MLINTER;
 	bottombars(MLINTER);
 
-	auto lint_iterator = lints.begin();
-	LintMessage tmplint;
+	auto curr_lint = lints.begin();
+	LintMessages::iterator last_lint;
 
 	while (1) {
 		ssize_t tmpcol = 1;
@@ -2275,17 +2275,15 @@ void do_linter(void)
 		bool meta_key, func_key;
 		struct stat lintfileinfo;
 
-		auto curlint = *lint_iterator;
-
-		if (curlint.colno > 0) {
-			tmpcol = curlint.colno;
+		if (curr_lint->colno > 0) {
+			tmpcol = curr_lint->colno;
 		}
 
-		if (&tmplint != &curlint) {
+		if (last_lint != curr_lint) {
 			struct stat lintfileinfo;
 
 			new_lint_loop:
-			if (stat(curlint.filename.c_str(), &lintfileinfo) != -1) {
+			if (stat(curr_lint->filename.c_str(), &lintfileinfo) != -1) {
 				if (openfile->current_stat->st_ino != lintfileinfo.st_ino) {
 					openfilestruct *tmpof = openfile;
 					while (tmpof != openfile->next) {
@@ -2295,22 +2293,22 @@ void do_linter(void)
 						tmpof = tmpof->next;
 					}
 					if (tmpof->current_stat->st_ino != lintfileinfo.st_ino) {
-						char *msg = charalloc(1024 + curlint.filename.length());
+						char *msg = charalloc(1024 + curr_lint->filename.length());
 						int i;
 
-						sprintf(msg, _("This message is for unopened file %s, open it in a new buffer?"), curlint.filename.c_str());
+						sprintf(msg, _("This message is for unopened file %s, open it in a new buffer?"), curr_lint->filename.c_str());
 						i = do_yesno_prompt(FALSE, msg);
 						free(msg);
 						if (i == 1) {
 							SET(MULTIBUFFER);
-							open_buffer(curlint.filename.c_str(), FALSE);
+							open_buffer(curr_lint->filename.c_str(), FALSE);
 						} else {
-							auto dontwantfile = curlint.filename;
+							auto dontwantfile = curr_lint->filename;
 
-							while (lint_iterator != lints.end() && (*lint_iterator).filename == dontwantfile) {
-								++lint_iterator;
+							while (++curr_lint != lints.end() && curr_lint->filename == dontwantfile) {
+								// nothing
 							}
-							if (lint_iterator == lints.end()) {
+							if (curr_lint == lints.end()) {
 								statusbar("No more errors in un-opened filed, cancelling");
 								break;
 							} else {
@@ -2322,16 +2320,16 @@ void do_linter(void)
 					}
 				}
 			}
-			do_gotolinecolumn(curlint.lineno, tmpcol, FALSE, FALSE, FALSE, FALSE);
+			do_gotolinecolumn(curr_lint->lineno, tmpcol, FALSE, FALSE, FALSE, FALSE);
 			titlebar(NULL);
 			edit_refresh();
-			statusbar(curlint.text.c_str());
+			statusbar(curr_lint->text.c_str());
 			bottombars(MLINTER);
 		}
 
 		kbinput = get_kbinput(bottomwin, &meta_key, &func_key);
 		s = get_shortcut(currmenu, &kbinput, &meta_key, &func_key);
-		tmplint = curlint;
+		last_lint = curr_lint;
 
 		if (!s) {
 			continue;
@@ -2340,23 +2338,24 @@ void do_linter(void)
 		} else if (s->scfunc == do_help_void) {
 			do_help_void();
 		} else if (s->scfunc == do_page_down) {
-			if (lint_iterator != lints.end()) {
-				++lint_iterator;
-			} else {
+			if (curr_lint == lints.end()) {
 				statusbar(_("At last message"));
 				continue;
+			} else {
+				++curr_lint;
 			}
 		} else if (s->scfunc == do_page_up) {
-			if (lint_iterator != lints.begin()) {
-				--lint_iterator;
-			} else {
+			if (curr_lint == lints.begin()) {
 				statusbar(_("At first message"));
 				continue;
+			} else {
+				--curr_lint;
 			}
 		}
 	}
 
 	blank_statusbar();
+	wnoutrefresh(bottomwin);
 	currmenu = MMAIN;
 	display_main_list();
 }
