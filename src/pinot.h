@@ -422,22 +422,23 @@ enum {
 };
 
 /* Flags for which menus in which a given function should be present */
-#define MMAIN				(1<<0)
-#define	MWHEREIS			(1<<1)
-#define	MREPLACE			(1<<2)
-#define	MREPLACE2			(1<<3)
-#define	MGOTOLINE			(1<<4)
-#define	MWRITEFILE			(1<<5)
-#define	MINSERTFILE			(1<<6)
-#define	MEXTCMD				(1<<7)
-#define	MHELP				(1<<8)
-#define	MSPELL				(1<<9)
-#define	MBROWSER			(1<<10)
-#define	MWHEREISFILE			(1<<11)
-#define MGOTODIR			(1<<12)
-#define MYESNO				(1<<13)
+#define MMAIN         (1<<0)
+#define MWHEREIS      (1<<1)
+#define MREPLACE      (1<<2)
+#define MREPLACE2     (1<<3)
+#define MGOTOLINE     (1<<4)
+#define MWRITEFILE    (1<<5)
+#define MINSERTFILE   (1<<6)
+#define MEXTCMD       (1<<7)
+#define MHELP         (1<<8)
+#define MSPELL        (1<<9)
+#define MBROWSER			(1<<10)
+#define MWHEREISFILE  (1<<11)
+#define MGOTODIR      (1<<12)
+#define MYESNO        (1<<13)
+#define MLINTER       (1<<14)
 /* This really isnt all but close enough */
-#define	MALL				(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MHELP)
+#define MALL          (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MHELP|MLINTER)
 
 /* Control key sequences.  Changing these would be very, very bad. */
 #define PINOT_CONTROL_SPACE 0

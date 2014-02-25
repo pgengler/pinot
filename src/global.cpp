@@ -337,6 +337,22 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 	DEBUG_LOG("Hey, set sequence to %d for shortcut \"%s\"\n", s->seq, scstring);
 }
 
+/* Assign one menu's shortcuts to another function */
+void replace_scs_for(void (*oldfunc)(void), void (*newfunc)(void))
+{
+	sc *s;
+
+	if (sclist == NULL) {
+		return;
+	}
+
+	for (s = sclist; s->next != NULL; s = s->next) {
+		if (s->scfunc == oldfunc) {
+			s->scfunc = newfunc;
+		}
+	}
+}
+
 /* Return the given menu's first shortcut sequence, or the default value
   (2nd arg).  Assumes currmenu for the menu to check */
 int sc_seq_or(void (*func)(void), int defaultval)
@@ -474,6 +490,11 @@ void shortcut_init(void)
 	const char *refresh_msg = N_("Refresh");
 	const char *insert_file_msg =  N_("Insert File");
 	const char *go_to_line_msg = N_("Go To Line");
+	const char *spell_msg = N_("To Spell");
+	const char *lint_msg = N_("To Linter");
+	const char *pinot_lint_msg = N_("Invoke the linter, if available");
+	const char *prev_lint_msg = N_("Prev Lint Msg");
+	const char *next_lint_msg = N_("Next Lint Msg");
 
 	/* TRANSLATORS: The next long series of strings are shortcut descriptions;
 	 * they are best kept shorter than 56 characters, but may be longer. */
@@ -545,6 +566,8 @@ void shortcut_init(void)
 	const char *pinot_backfile_msg = N_("Go to the previous file in the list");
 	const char *pinot_gotodir_msg = N_("Go to directory");
 #endif
+	const char *pinot_prevlint_msg = N_("Go to previous linter msg");
+	const char *pinot_nextlint_msg = N_("Go to next linter msg");
 
 // FIXME
 #define IFSCHELP(help) help
@@ -556,11 +579,11 @@ void shortcut_init(void)
 	}
 
 	add_to_funcs(do_help_void,
-	             (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR),
+	             (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER),
 	             get_help_msg, IFSCHELP(pinot_help_msg), FALSE, VIEW);
 
-	add_to_funcs( do_cancel,
-	              (MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO),
+	add_to_funcs(do_cancel,
+	              (MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
 	              cancel_msg, IFSCHELP(pinot_cancel_msg), FALSE, VIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
@@ -587,6 +610,8 @@ void shortcut_init(void)
 	add_to_funcs(do_page_up, MMAIN|MHELP|MBROWSER, prev_page_msg, IFSCHELP(pinot_prevpage_msg), FALSE, VIEW);
 	add_to_funcs(do_page_down, MMAIN|MHELP|MBROWSER, next_page_msg, IFSCHELP(pinot_nextpage_msg), TRUE, VIEW);
 
+	add_to_funcs(do_page_up, MLINTER, prev_lint_msg, IFSCHELP(pinot_prevlint_msg), FALSE, VIEW);
+	add_to_funcs(do_page_down, MLINTER, next_lint_msg, IFSCHELP(pinot_nextlint_msg), FALSE, VIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), FALSE, NOVIEW);
@@ -602,8 +627,9 @@ void shortcut_init(void)
 	 * on the command line. */
 #ifdef ENABLE_SPELLER
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_spell, MMAIN, N_("To Spell"), IFSCHELP(pinot_spell_msg), TRUE, NOVIEW);
+	add_to_funcs(do_spell, MMAIN, spell_msg, IFSCHELP(pinot_spell_msg), TRUE, NOVIEW);
 #endif
+	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), TRUE, NOVIEW);
 
 	add_to_funcs(do_first_line, (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), first_line_msg, IFSCHELP(pinot_firstline_msg), FALSE, VIEW);
 	add_to_funcs(do_last_line, (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), last_line_msg, IFSCHELP(pinot_lastline_msg), TRUE, VIEW);
@@ -753,8 +779,14 @@ void shortcut_init(void)
 
 	currmenu = MMAIN;
 
-	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR, "^G", do_help_void, 0, TRUE);
-	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR, "F1", do_help_void, 0, TRUE);
+	while (sclist != NULL) {
+		sc *s = sclist;
+		sclist = s->next;
+		free(s);
+	}
+
+	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "^G", do_help_void, 0, TRUE);
+	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "F1", do_help_void, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "^X", do_exit, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "F2", do_exit, 0, TRUE);
 	add_to_sclist(MMAIN, "^_", do_gotolinecolumn_void, 0, TRUE);
@@ -767,12 +799,12 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "kinsert", do_insertfile_void, 0, TRUE);
 	add_to_sclist(MMAIN|MBROWSER, "^W", do_search, 0, TRUE);
 	add_to_sclist(MMAIN|MBROWSER, "F6", do_search, 0, TRUE);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE, "^Y", do_page_up, 0, TRUE);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE, "F7", do_page_up, 0, TRUE);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE, "kpup", do_page_up, 0, TRUE);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE, "^V", do_page_down, 0, TRUE);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE, "F8", do_page_down, 0, TRUE);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE, "kpdown", do_page_down, 0, TRUE);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "^Y", do_page_up, 0, TRUE);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "F7", do_page_up, 0, TRUE);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "kpup", do_page_up, 0, TRUE);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "^V", do_page_down, 0, TRUE);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "F8", do_page_down, 0, TRUE);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "kpdown", do_page_down, 0, TRUE);
 	add_to_sclist(MMAIN, "^K", do_cut_text_void, 0, TRUE);
 	add_to_sclist(MMAIN, "F9", do_cut_text_void, 0, TRUE);
 	add_to_sclist(MMAIN, "^U", do_uncut_text, 0, TRUE);
@@ -878,7 +910,7 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP, TRUE);
 	add_to_sclist(MGOTOLINE, "^T",  gototext_void, 0, FALSE);
 	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F",  new_buffer_void, 0, FALSE);
-	add_to_sclist((MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO), "^C", do_cancel, 0, FALSE);
+	add_to_sclist((MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER), "^C", do_cancel, 0, FALSE);
 	add_to_sclist(MHELP, "^X", do_exit, 0, TRUE);
 	add_to_sclist(MHELP, "F2", do_exit, 0, TRUE);
 	add_to_sclist(MWRITEFILE, "M-D",  dos_format_void, 0, FALSE);
@@ -903,6 +935,20 @@ void shortcut_init(void)
 	print_sclist();
 #endif
 
+}
+
+void set_lint_shortcuts(void)
+{
+#ifdef ENABLE_SPELLER
+	replace_scs_for(do_spell, do_linter);
+#endif
+}
+
+void set_spell_shortcuts(void)
+{
+#ifdef ENABLE_SPELLER
+	replace_scs_for(do_linter, do_spell);
+#endif
 }
 
 /* Free the given shortcut. */

@@ -49,6 +49,14 @@ typedef struct colortype {
 typedef std::shared_ptr<colortype> ColorPtr;
 typedef std::list<ColorPtr> ColorList;
 
+struct LintMessage {
+	ssize_t lineno;       // line number of the message
+	ssize_t colno;        // column number of the message
+	std::string text;     // message text
+	std::string filename; // filename
+};
+typedef std::list<LintMessage> LintMessages;
+
 class SyntaxMatch {
 	public:
 		SyntaxMatch(const char*);
@@ -81,6 +89,9 @@ class Syntax {
 
 		SyntaxMatchList magics;
 		/* Regexes to match libmagic results */
+
+		std::string linter;
+		/* Command to 'lint' this type of file */
 
 		int nmultis;
 		/* How many multi line strings this syntax has */

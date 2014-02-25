@@ -565,6 +565,10 @@ size_t help_line_len(const char *ptr)
 /* Start the help browser for the edit window. */
 void do_help_void(void)
 {
-	/* Start the help browser for the edit window. */
-	do_help(&edit_refresh);
+	/* Start the help browser, with the correct refresher for afterwards. */
+	if (currmenu == MBROWSER || currmenu == MWHEREISFILE || currmenu == MGOTODIR) {
+		do_help(&browser_refresh);
+	} else {
+		do_help(&edit_refresh);
+	}
 }

@@ -415,6 +415,8 @@ void switch_to_prevnext_buffer(bool next_buf)
 #ifdef DEBUG
 	dump_filestruct(openfile->current);
 #endif
+
+	display_main_list();
 }
 
 /* Switch to the previous entry in the openfile filebuffer. */
