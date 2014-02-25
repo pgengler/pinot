@@ -3115,7 +3115,7 @@ void do_linter(void)
 				if (openfile->current_stat->st_ino != lintfileinfo.st_ino) {
 					openfilestruct *tmpof = openfile;
 					while (tmpof != openfile->next) {
-			 	  	if (tmpof->current_stat->st_ino == lintfileinfo.st_ino) {
+						if (tmpof->current_stat->st_ino == lintfileinfo.st_ino) {
 							break;
 						}
 						tmpof = tmpof->next;

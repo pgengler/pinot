@@ -1015,7 +1015,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 
 		bool found = false;
 		for (auto rcopt : rcopts) {
- 			if (rcopt.name == option) {
+			if (rcopt.name == option) {
 				found = true;
 				DEBUG_LOG("parse_rcfile(): name = \"%s\"\n", rcopt.name.c_str());
 				if (set == 1) {
