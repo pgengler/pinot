@@ -333,3 +333,6 @@
 
 ## XML-type files
 # include "@PKGDATADIR@/xml.pinotrc"
+
+## JSON files
+# include "@PKGDATADIR@/json.pinotrc"

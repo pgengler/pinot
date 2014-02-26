@@ -1,0 +1,19 @@
+syntax "json" "\.json$"
+
+# numbers
+color blue "\b[-]?[1-9][0-9]*([Ee][+-]?[0-9]+)?\b" "\b[-]?[0](\.[0-9]+)?\b"
+
+# 'null', 'true', 'false'
+color bold136 "\b(null|true|false)\b"
+
+# quoted values
+color red ""(\\.|[^"])*"|'(\\.|[^'])*'"
+
+# quoted keys
+color magenta "\"(\\"|[^"])*\"\s*:" "'(\'|[^'])*'\s*:"
+
+# escape sequences
+color boldmagenta "\\u[0-9a-fA-F]{4}|\\[bfnrt'"/\\]"
+
+# trailing whitespace
+# color ,green "\s+$"
