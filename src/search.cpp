@@ -942,16 +942,29 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 			return;
 		}
 
+		bool relative_move = false;
+		if (answer[0] == '+' || answer[0] == '-') {
+			relative_move = true;
+		}
+
 		/* Do a bounds check.  Display a warning on an out-of-bounds
 		 * line or column number only if we hit Enter at the statusbar
 		 * prompt. */
-		if (!parse_line_column(answer, &line, &column) || line < 1 || column < 1) {
+		if (!parse_line_column(answer, &line, &column) || column < 1) {
 			if (i == 0) {
 				statusbar(_("Invalid line or column number"));
 			}
 			display_main_list();
 			return;
 		}
+
+		if (relative_move) {
+			line = openfile->current->lineno + line;
+			if (line < 1) {
+				line = 1;
+			}
+		}
+
 	} else {
 		if (line < 1) {
 			line = openfile->current->lineno;
