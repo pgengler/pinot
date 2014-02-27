@@ -201,7 +201,7 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 		return -1;
 	}
 
-	DEBUG_LOG("In write_lockfile(), write successful (wrote %d bytes)\n", wroteamt);
+	DEBUG_LOG << "In write_lockfile(), write successful (wrote " << wroteamt << " bytes)" << std::endl;
 
 	if (fclose(filestream) == EOF) {
 		statusbar(_("Error writing lock file %s: %s"), lockfilename, strerror(errno));
@@ -243,7 +243,7 @@ int do_lockfile(const char *filename)
 	int lockfd, lockpid;
 
 	snprintf(lockfilename, lockfilesize, "%s/%s%s%s", lockdir, locking_prefix, lockbase, locking_suffix);
-	DEBUG_LOG("lock file name is %s\n", lockfilename);
+	DEBUG_LOG << "lock file name is " << lockfilename << std::endl;
 	if (stat(lockfilename, &fileinfo) != -1) {
 		ssize_t readtot = 0;
 		ssize_t readamt = 0;
@@ -266,9 +266,9 @@ int do_lockfile(const char *filename)
 		strncpy(lockprog, &lockbuf[2], 10);
 		lockpid = lockbuf[25] * 256 + lockbuf[24];
 		strncpy(lockuser, &lockbuf[28], 16);
-		DEBUG_LOG("lockpid = %d\n", lockpid);
-		DEBUG_LOG("program name which created this lock file should be %s\n", lockprog);
-		DEBUG_LOG("user which created this lock file should be %s\n", lockuser);
+		DEBUG_LOG << "lockpid = " << lockpid << std::endl;
+		DEBUG_LOG << "program name which created this lock file should be " << lockprog << std::endl;
+		DEBUG_LOG << "user which created this lock file should be " << lockuser << std::endl;
 		sprintf(promptstr, "File being edited (by %s, PID %d, user %s), continue?", lockprog, lockpid, lockuser);
 		ans = do_yesno_prompt(FALSE, promptstr);
 		if (ans < 1) {
@@ -405,7 +405,7 @@ void switch_to_prevnext_buffer(bool next_buf)
 	 * value of next_buf. */
 	openfile = next_buf ? openfile->next : openfile->prev;
 
-	DEBUG_LOG("filename is %s\n", openfile->filename);
+	DEBUG_LOG << "filename is " << openfile->filename << std::endl;
 
 	/* Update the screen to account for the current buffer. */
 	display_buffer();
@@ -1847,7 +1847,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bo
 			goto cleanup_and_exit;
 		}
 
-		DEBUG_LOG("Backing up %s to %s\n", realname, backupname);
+		DEBUG_LOG << "Backing up " << realname << " to " << backupname << std::endl;
 
 		/* Copy the file. */
 		copy_status = copy_file(f, backup_file);
@@ -2237,7 +2237,7 @@ bool do_writeout(bool exiting)
 					continue;
 				}
 
-			DEBUG_LOG("filename is %s\n", answer);
+			DEBUG_LOG << "filename is " << answer << std::endl;
 
 			if (append == OVERWRITE) {
 				size_t answer_len = strlen(answer);
@@ -2540,7 +2540,7 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches
 	while ((nextdir = readdir(dir)) != NULL) {
 		bool skip_match = FALSE;
 
-		DEBUG_LOG("Comparing \'%s\'\n", nextdir->d_name);
+		DEBUG_LOG << "Comparing \'" << nextdir->d_name << "\'" << std::endl;
 		/* See if this matches. */
 		if (strncmp(nextdir->d_name, filename, filenamelen) == 0 &&
 		        (*filename == '.' || (strcmp(nextdir->d_name, ".") !=

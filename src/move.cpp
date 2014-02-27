@@ -72,13 +72,13 @@ void do_page_up(void)
 		openfile->current = openfile->current->prev;
 		if (ISSET(SOFTWRAP) && openfile->current) {
 			skipped += strlenpt(openfile->current->data) / COLS;
-			DEBUG_LOG("do_page_up: i = %d, skipped = %d based on line %ld len %d\n", i, (unsigned long) skipped, openfile->current->lineno, strlenpt(openfile->current->data));
+			DEBUG_LOG << "do_page_up: i = " << i << ", skipped = " << skipped << " based on line " << openfile->current->lineno << "  len " << strlenpt(openfile->current->data) << std::endl;
 		}
 	}
 
 	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
-	DEBUG_LOG("do_page_up: openfile->current->lineno = %lu, skipped = %d\n", (unsigned long) openfile->current->lineno, skipped);
+	DEBUG_LOG << "do_page_up: openfile->current->lineno = " << openfile->current->lineno << ", skipped = " << skipped << std::endl;
 
 	/* Scroll the edit window up a page. */
 	edit_update(NONE);
@@ -106,7 +106,7 @@ void do_page_down(void)
 
 	for (i = maxrows - 2; i > 0 && openfile->current != openfile->filebot; i--) {
 		openfile->current = openfile->current->next;
-		DEBUG_LOG("do_page_down: moving to line %lu\n", (unsigned long) openfile->current->lineno);
+		DEBUG_LOG << "do_page_down: moving to line " << openfile->current->lineno << std::endl;
 	}
 
 	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);

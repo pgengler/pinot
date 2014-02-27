@@ -932,7 +932,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 
 	currmenu = menu;
 
-	DEBUG_LOG("get_prompt_string: answer = \"%s\", statusbar_x = %lu\n", answer, (unsigned long) statusbar_x);
+	DEBUG_LOG << "get_prompt_string: answer = \"" << answer << "\", statusbar_x = " << statusbar_x << std::endl;
 
 	update_statusbar_line(answer, statusbar_x);
 
@@ -1173,7 +1173,7 @@ int do_prompt(bool allow_tabs,
 	blank_statusbar();
 	wnoutrefresh(bottomwin);
 
-	DEBUG_LOG("answer = \"%s\"\n", answer);
+	DEBUG_LOG << "answer = \"" << answer << '"' << std::endl;
 
 #ifndef DISABLE_TABCOMP
 	/* If we've done tab completion, there might be a list of filename

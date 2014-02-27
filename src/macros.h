@@ -4,6 +4,8 @@
 #include <config.h>
 #endif
 
+#include <iostream>
+
 /* Suppress warnings for __attribute__((warn_unused_result)) */
 #define IGNORE_CALL_RESULT(call) do { if (call) {} } while(0)
 
@@ -35,7 +37,7 @@
 /* Mark a string that will be sent to gettext() later. */
 
 #ifdef DEBUG
-#define DEBUG_LOG(...) { fprintf(stderr, "%s:%d: ", __FILE__, __LINE__); fprintf(stderr, __VA_ARGS__); }
+#define DEBUG_LOG std::cerr << __FILE__ << ':' << __LINE__ << ": "
 #else
-#define DEBUG_LOG(...)
+#define DEBUG_LOG false && std::cerr
 #endif
