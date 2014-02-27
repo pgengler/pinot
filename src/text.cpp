@@ -1046,12 +1046,11 @@ void update_undo(undo_type action)
 	}
 
 #ifdef DEBUG
-	fprintf(stderr, "action = %d, fs->last_action = %d,  openfile->current->lineno = %lu", action, fs->last_action, (unsigned long) openfile->current->lineno);
+	DEBUG_LOG << "action = " << action << ", fs->last_action = " << fs->last_action << ",  openfile->current->lineno = " << openfile->current->lineno;
 	if (fs->current_undo) {
-		fprintf(stderr, "fs->current_undo->lineno = %lu\n",  (unsigned long) fs->current_undo->lineno);
-	} else {
-		fprintf(stderr, "\n");
+		DEBUG_LOG << ", fs->current_undo->lineno = " << fs->current_undo->lineno;
 	}
+	DEBUG_LOG << std::endl;
 #endif
 
 	/* Change to an add if we're not using the same undo struct

@@ -2198,8 +2198,8 @@ int main(int argc, char **argv)
 
 		do_rcfile();
 
+		DEBUG_LOG << "After rebinding keys..." << std::endl;
 #ifdef DEBUG
-		fprintf(stderr, "After rebinding keys...\n");
 		print_sclist();
 #endif
 

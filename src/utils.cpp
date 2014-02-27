@@ -666,15 +666,15 @@ filestruct *fsfromline(ssize_t lineno)
 void dump_filestruct(const filestruct *inptr)
 {
 	if (inptr == openfile->fileage) {
-		fprintf(stderr, "Dumping file buffer to stderr...\n");
+		DEBUG_LOG << "Dumping file buffer to stderr..." << std::endl;
 	} else if (inptr == cutbuffer) {
-		fprintf(stderr, "Dumping cutbuffer to stderr...\n");
+		DEBUG_LOG << "Dumping cutbuffer to stderr..." << std::endl;
 	} else {
-		fprintf(stderr, "Dumping a buffer to stderr...\n");
+		DEBUG_LOG << "Dumping a buffer to stderr..." << std::endl;
 	}
 
 	while (inptr != NULL) {
-		fprintf(stderr, "(%ld) %s\n", (long)inptr->lineno, inptr->data);
+		DEBUG_LOG << '(' << inptr->lineno << ") " << inptr->data << std::endl;
 		inptr = inptr->next;
 	}
 }
@@ -685,7 +685,7 @@ void dump_filestruct_reverse(void)
 	const filestruct *fileptr = openfile->filebot;
 
 	while (fileptr != NULL) {
-		fprintf(stderr, "(%ld) %s\n", (long)fileptr->lineno, fileptr->data);
+		DEBUG_LOG << '(' << fileptr->lineno << ") " << fileptr->data << std::endl;
 		fileptr = fileptr->prev;
 	}
 }

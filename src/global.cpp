@@ -455,9 +455,9 @@ void print_sclist(void)
 	for (s = sclist; s->next != NULL; s = s->next) {
 		f = sctofunc(s);
 		if (f) {
-			fprintf(stderr, "Shortcut \"%s\", function: %s, menus %d\n",  s->keystr, f->desc, f->menus);
+			DEBUG_LOG << "Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus << std::endl;
 		} else {
-			fprintf(stderr, "Hmm, didnt find a func for \"%s\"\n", s->keystr);
+			DEBUG_LOG << "Hmm, didnt find a func for \"" << s->keystr << '"' << std::endl;
 		}
 	}
 

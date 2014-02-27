@@ -771,9 +771,9 @@ void parse_colors(char *ptr, bool icase)
 			new_syntax->add_color(newcolor);
 #ifdef DEBUG
 			if (new_syntax->own_colors().empty()) {
-				fprintf(stderr, "Starting a new colorstring for fg %hd, bg %hd\n", fg, bg);
+				DEBUG_LOG << "Starting a new colorstring for fg " << fg << ", bg " << bg << std::endl;
 			} else {
-				fprintf(stderr, "Adding new entry for fg %hd, bg %hd\n", fg, bg);
+				DEBUG_LOG << "Adding new entry for fg " << fg << ", bg " << bg << std::endl;
 			}
 #endif
 		} else {
