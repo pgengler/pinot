@@ -33,8 +33,6 @@ bool jump_buf_set = false;
 sigjmp_buf jump_buf;
 /* Used to return to main() after a SIGWINCH. */
 
-EventQueue event_queue;
-
 #ifndef DISABLE_WRAPPING
 ssize_t fill = 0;
 /* The column where we will wrap lines. */

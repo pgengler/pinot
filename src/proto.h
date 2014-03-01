@@ -28,7 +28,6 @@
 extern sigjmp_buf jump_buf;
 extern bool jump_buf_set;
 extern bool use_undo;
-extern EventQueue event_queue;
 
 #ifndef DISABLE_WRAPPING
 extern ssize_t fill;

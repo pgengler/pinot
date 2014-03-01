@@ -2421,8 +2421,6 @@ int main(int argc, char **argv)
 
 		/* Read in and interpret characters. */
 		do_input();
-
-		event_queue.process_next_event();
 	}
 
 	/* We should never get here. */
