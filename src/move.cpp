@@ -71,13 +71,13 @@ void do_page_up(void)
 		openfile->current = openfile->current->prev;
 		if (ISSET(SOFTWRAP) && openfile->current) {
 			skipped += strlenpt(openfile->current->data) / COLS;
-			DEBUG_LOG("do_page_up: i = %d, skipped = %d based on line %ld len %d\n", i, (unsigned long) skipped, openfile->current->lineno, strlenpt(openfile->current->data));
+			DEBUG_LOG << "do_page_up: i = " << i << ", skipped = " << skipped << " based on line " << openfile->current->lineno << "  len " << strlenpt(openfile->current->data) << std::endl;
 		}
 	}
 
 	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
-	DEBUG_LOG("do_page_up: openfile->current->lineno = %lu, skipped = %d\n", (unsigned long) openfile->current->lineno, skipped);
+	DEBUG_LOG << "do_page_up: openfile->current->lineno = " << openfile->current->lineno << ", skipped = " << skipped << std::endl;
 
 	/* Scroll the edit window up a page. */
 	edit_update(NONE);
@@ -105,7 +105,7 @@ void do_page_down(void)
 
 	for (i = maxrows - 2; i > 0 && openfile->current != openfile->filebot; i--) {
 		openfile->current = openfile->current->next;
-		DEBUG_LOG("do_page_down: moving to line %lu\n", (unsigned long) openfile->current->lineno);
+		DEBUG_LOG << "do_page_down: moving to line " << openfile->current->lineno << std::endl;
 	}
 
 	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
@@ -435,6 +435,7 @@ void do_scroll_up(void)
 void do_down(bool scroll_only)
 {
 	bool onlastline = FALSE;
+	int extra = 0;
 
 	/* If we're at the bottom of the file, get out. */
 	if (openfile->current == openfile->filebot) {
@@ -451,6 +452,9 @@ void do_down(bool scroll_only)
 	if (ISSET(SOFTWRAP)) {
 		if (openfile->current->lineno - openfile->edittop->lineno >= maxrows) {
 			onlastline = TRUE;
+
+			 /* Compute the extra amount to scroll when the current line is overlong. */
+			extra = (strlenpt(openfile->current->data) / COLS + openfile->current_y + 2 - editwinrows);
 		}
 	}
 
@@ -462,6 +466,9 @@ void do_down(bool scroll_only)
 	if (onlastline || openfile->current_y == editwinrows - 1 || scroll_only) {
 		edit_scroll(DOWN_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? 1 : editwinrows / 2 + 1);
 
+		edit_refresh_needed = TRUE;
+	} else if (extra > 0) {
+		edit_scroll(DOWN_DIR, extra);
 		edit_refresh_needed = TRUE;
 	}
 	/* If we're above the last line of the edit window, update the line

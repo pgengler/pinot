@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <istream>
+#include <iostream>
 #include <string>
 #include "macros.h"
 

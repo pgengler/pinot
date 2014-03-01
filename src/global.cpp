@@ -256,7 +256,7 @@ void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *h
 	f->help = help;
 	f->blank_after = blank_after;
 
-	DEBUG_LOG("Added func \"%s\"\n", f->desc);
+	DEBUG_LOG << "Added func \"" << f->desc << '"' << std::endl;
 }
 
 const sc *first_sc_for(int menu, void (*func)(void))
@@ -295,7 +295,7 @@ const sc *first_sc_for(int menu, void (*func)(void))
 		return metasc;
 	}
 
-	DEBUG_LOG("Whoops, returning null given func %ld in menu %d\n", (long) func, menu);
+	DEBUG_LOG << "Whoops, returning null given func " << func << " in menu " << menu << std::endl;
 	/* Otherwise... */
 	return NULL;
 }
@@ -318,7 +318,7 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 			}
 
 		if (s->menu != menu || s->keystr != scstring) { /* i.e. this is not a replace... */
-			DEBUG_LOG("No match found...\n");
+			DEBUG_LOG << "No match found..." << std::endl;
 			s->next = new sc;
 			s = s->next;
 			s->next = NULL;
@@ -333,8 +333,8 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 	s->execute = execute;
 	assign_keyinfo(s);
 
-	DEBUG_LOG("list val = %d\n", (int) s->menu);
-	DEBUG_LOG("Hey, set sequence to %d for shortcut \"%s\"\n", s->seq, scstring);
+	DEBUG_LOG << "list val = " << s->menu << std::endl;
+	DEBUG_LOG << "Hey, set sequence to " << s->seq << " for shortcut \"" << scstring << '"' << std::endl;
 }
 
 /* Assign one menu's shortcuts to another function */
@@ -433,9 +433,9 @@ void print_sclist(void)
 	for (s = sclist; s->next != NULL; s = s->next) {
 		f = sctofunc(s);
 		if (f) {
-			fprintf(stderr, "Shortcut \"%s\", function: %s, menus %d\n",  s->keystr, f->desc, f->menus);
+			DEBUG_LOG << "Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus << std::endl;
 		} else {
-			fprintf(stderr, "Hmm, didnt find a func for \"%s\"\n", s->keystr);
+			DEBUG_LOG << "Hmm, didnt find a func for \"" << s->keystr << '"' << std::endl;
 		}
 	}
 
@@ -674,9 +674,9 @@ void shortcut_init(void)
 
 	add_to_funcs(do_left, MALL, "", "", FALSE, VIEW);
 
-	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), FALSE, VIEW);
-
 	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), IFSCHELP(pinot_prevword_msg), FALSE, VIEW);
+
+	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), FALSE, VIEW);
 
 	add_to_funcs(do_up_void, (MMAIN|MHELP|MBROWSER), N_("Prev Line"), IFSCHELP(pinot_prevline_msg), FALSE, VIEW);
 
@@ -908,11 +908,11 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-N", do_toggle_void, NO_CONVERT, TRUE);
 	add_to_sclist(MMAIN, "M-Z", do_toggle_void, SUSPEND, TRUE);
 	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP, TRUE);
+	add_to_sclist(MHELP|MBROWSER, "^C", do_exit, 0, TRUE);
+	add_to_sclist(MHELP, "^G", do_exit, 0, TRUE);
 	add_to_sclist(MGOTOLINE, "^T",  gototext_void, 0, FALSE);
 	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F",  new_buffer_void, 0, FALSE);
 	add_to_sclist((MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER), "^C", do_cancel, 0, FALSE);
-	add_to_sclist(MHELP, "^X", do_exit, 0, TRUE);
-	add_to_sclist(MHELP, "F2", do_exit, 0, TRUE);
 	add_to_sclist(MWRITEFILE, "M-D",  dos_format_void, 0, FALSE);
 	add_to_sclist(MWRITEFILE, "M-M",  mac_format_void, 0, FALSE);
 	add_to_sclist(MWRITEFILE, "M-A",  append_void, 0, FALSE);
@@ -949,18 +949,6 @@ void set_spell_shortcuts(void)
 #ifdef ENABLE_SPELLER
 	replace_scs_for(do_linter, do_spell);
 #endif
-}
-
-/* Free the given shortcut. */
-void free_shortcutage(shortcut **shortcutage)
-{
-	assert(shortcutage != NULL);
-
-	while (*shortcutage != NULL) {
-		shortcut *ps = *shortcutage;
-		*shortcutage = (*shortcutage)->next;
-		free(ps);
-	}
 }
 
 const subnfunc *sctofunc(sc *s)
@@ -1148,7 +1136,7 @@ sc *strtosc(int menu, char *input)
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
 			s->toggle = BACKUP_FILE;
-		} else if (!strcasecmp(input, "mutlibuffer")) {
+		} else if (!strcasecmp(input, "multibuffer")) {
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
 			s->toggle = MULTIBUFFER;
