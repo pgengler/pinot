@@ -752,7 +752,7 @@ bool execute_command(const char *command)
 
 	/* Make our pipes. */
 	if (pipe(fd) == -1) {
-		statusbar(_("Could not pipe"));
+		statusbar(_("Could not create pipe"));
 		return FALSE;
 	}
 
