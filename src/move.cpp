@@ -510,6 +510,7 @@ void do_scroll_up(void)
 void do_down(bool scroll_only)
 {
 	bool onlastline = FALSE;
+	int extra = 0;
 
 	/* If we're at the bottom of the file, get out. */
 	if (openfile->current == openfile->filebot) {
@@ -526,6 +527,9 @@ void do_down(bool scroll_only)
 	if (ISSET(SOFTWRAP)) {
 		if (openfile->current->lineno - openfile->edittop->lineno >= maxrows) {
 			onlastline = TRUE;
+
+			 /* Compute the extra amount to scroll when the current line is overlong. */
+			extra = (strlenpt(openfile->current->data) / COLS + openfile->current_y + 2 - editwinrows);
 		}
 	}
 
@@ -537,6 +541,9 @@ void do_down(bool scroll_only)
 	if (onlastline || openfile->current_y == editwinrows - 1 || scroll_only) {
 		edit_scroll(DOWN_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? 1 : editwinrows / 2 + 1);
 
+		edit_refresh_needed = TRUE;
+	} else if (extra > 0) {
+		edit_scroll(DOWN_DIR, extra);
 		edit_refresh_needed = TRUE;
 	}
 	/* If we're above the last line of the edit window, update the line

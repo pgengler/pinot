@@ -2963,6 +2963,8 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 		}
 		foo = foo->next;
 	}
+
+	compute_maxrows();
 }
 
 /* Update any lines between old_current and current that need to be
