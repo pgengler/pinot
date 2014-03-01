@@ -1024,18 +1024,6 @@ void set_spell_shortcuts(void)
 #endif
 }
 
-/* Free the given shortcut. */
-void free_shortcutage(shortcut **shortcutage)
-{
-	assert(shortcutage != NULL);
-
-	while (*shortcutage != NULL) {
-		shortcut *ps = *shortcutage;
-		*shortcutage = (*shortcutage)->next;
-		free(ps);
-	}
-}
-
 const subnfunc *sctofunc(sc *s)
 {
 	subnfunc *f;

@@ -284,7 +284,6 @@ void sc_init_one(shortcut **shortcutage, int ctrlval, const char *desc, const ch
 void shortcut_init(bool unjustify);
 void set_lint_shortcuts(void);
 void set_spell_shortcuts(void);
-void free_shortcutage(shortcut **shortcutage);
 #ifdef DEBUG
 void thanks_for_all_the_fish(void);
 #endif
