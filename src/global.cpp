@@ -722,9 +722,9 @@ void shortcut_init(bool unjustify)
 
 	add_to_funcs(do_left, MALL, "", "", FALSE, VIEW);
 
-	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), FALSE, VIEW);
-
 	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), IFSCHELP(pinot_prevword_msg), FALSE, VIEW);
+
+	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), FALSE, VIEW);
 
 	add_to_funcs(do_up_void, (MMAIN|MHELP|MBROWSER), N_("Prev Line"), IFSCHELP(pinot_prevline_msg), FALSE, VIEW);
 
