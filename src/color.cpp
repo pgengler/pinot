@@ -129,19 +129,19 @@ void color_update(void)
 
 #ifdef HAVE_LIBMAGIC
 
-	if (strcmp(openfile->filename,"") && stat(openfile->filename, &fileinfo) == 0) {
+	if (stat(openfile->filename, &fileinfo) == 0) {
 		m = magic_open(MAGIC_SYMLINK |
 #ifdef DEBUG
 		               MAGIC_DEBUG | MAGIC_CHECK |
 #endif /* DEBUG */
 		               MAGIC_ERROR);
 		if (m == NULL || magic_load(m, NULL) < 0) {
-			fprintf(stderr, "something went wrong: %s [%s]\n", strerror(errno), openfile->filename);
+			fprintf(stderr, "magic_load() failed: %s\n", strerror(errno));
 		} else {
-			magicstring = magic_file(m,openfile->filename);
+			magicstring = magic_file(m, openfile->filename);
 			if (magicstring == NULL) {
 				magicerr = magic_error(m);
-				fprintf(stderr, "something went wrong: %s [%s]\n", magicerr, openfile->filename);
+				fprintf(stderr, "magic_file(%s) failed: %s\n", openfile->filename, magicerr);
 			}
 			DEBUG_LOG << "magic string returned: " << magicstring << std::endl;
 		}
