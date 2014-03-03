@@ -2833,7 +2833,7 @@ void compute_maxrows(void)
 void edit_scroll(scroll_dir direction, ssize_t nlines)
 {
 	filestruct *foo;
-	ssize_t i, extracuzsoft = 0;
+	ssize_t i;
 	bool do_redraw = FALSE;
 
 	/* Don't bother scrolling less than one line. */
@@ -2843,31 +2843,6 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 
 	if (need_vertical_update(0)) {
 		do_redraw = TRUE;
-	}
-
-
-	/* If using soft wrapping, we want to scroll down enough to display the entire next
-	    line, if possible... */
-	if (ISSET(SOFTWRAP) && direction == DOWN_DIR) {
-		DEBUG_LOG << "Softwrap: Entering check for extracuzsoft" << std::endl;
-		for (i = maxrows, foo = openfile->edittop; foo && i > 0; i--, foo = foo->next) {
-			;
-		}
-
-		if (foo) {
-			extracuzsoft += strlenpt(foo->data) / COLS;
-			DEBUG_LOG << "Setting extracuzsoft to " << extracuzsoft << " due to strlen " << strlenpt(foo->data) << " of line " << foo->lineno << std::endl;
-
-			/* Now account for whether the edittop line itself is >COLS, if scrolling down */
-			for (foo = openfile->edittop; foo && extracuzsoft > 0; nlines++) {
-				extracuzsoft -= 1 + strlenpt(foo->data) / COLS;
-				DEBUG_LOG << "Edittop adjustment, setting nlines to " << nlines << std::endl;
-				if (foo == openfile->filebot) {
-					break;
-				}
-				foo = foo->next;
-			}
-		}
 	}
 
 	/* Part 1: nlines is the number of lines we're going to scroll the
@@ -2889,7 +2864,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 			openfile->edittop = openfile->edittop->next;
 		}
 		/* Don't over-scroll on long lines */
-		if (ISSET(SOFTWRAP)) {
+		if (ISSET(SOFTWRAP) && (direction == UP_DIR)) {
 			ssize_t len = strlenpt(openfile->edittop->data) / COLS;
 			i -= len;
 			if (len > 0) {
@@ -2938,8 +2913,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 		nlines = editwinrows;
 	}
 
-	/* If we scrolled up, we're on the line before the scrolled
-	 * region. */
+	/* If we scrolled up, we're on the line before the scrolled region. */
 	foo = openfile->edittop;
 
 	/* If we scrolled down, move down to the line before the scrolled region. */
