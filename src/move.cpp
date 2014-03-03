@@ -509,7 +509,6 @@ void do_scroll_up(void)
  * scroll down one line without scrolling the cursor. */
 void do_down(bool scroll_only)
 {
-	bool onlastline = FALSE;
 	int amount;
 	filestruct *topline;
 
@@ -526,21 +525,17 @@ void do_down(bool scroll_only)
 	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
 	if (ISSET(SOFTWRAP)) {
-		if (openfile->current->lineno - openfile->edittop->lineno >= maxrows) {
-			onlastline = TRUE;
-
-			/* Compute the amount to scroll. */
-			amount = (strlenpt(openfile->current->data) / COLS + openfile->current_y + 2 + strlenpt(openfile->current->prev->data) / COLS - editwinrows);
-			topline = openfile->edittop;
-			/* Reduce the amount when there are overlong lines at the top. */
-			for (int enough = 1; enough < amount; enough++) {
-				if (amount <= strlenpt(topline->data) / COLS) {
-					amount = enough;
-					break;
-				}
-				amount -= strlenpt(topline->data) / COLS;
-				topline = topline->next;
+		/* Compute the amount to scroll. */
+		amount = (strlenpt(openfile->current->data) / COLS + openfile->current_y + 2 + strlenpt(openfile->current->prev->data) / COLS - editwinrows);
+		topline = openfile->edittop;
+		/* Reduce the amount when there are overlong lines at the top. */
+		for (int enough = 1; enough < amount; enough++) {
+			if (amount <= strlenpt(topline->data) / COLS) {
+				amount = enough;
+				break;
 			}
+			amount -= strlenpt(topline->data) / COLS;
+			topline = topline->next;
 		}
 	}
 
@@ -549,12 +544,12 @@ void do_down(bool scroll_only)
 	 * smooth scrolling mode, or down half a page if we're not.  If
 	 * scroll_only is TRUE, scroll the edit window down one line
 	 * unconditionally. */
-	if (onlastline || openfile->current_y == editwinrows - 1 || scroll_only) {
-		edit_scroll(DOWN_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? (amount ? amount : 1) : editwinrows / 2 + 1);
+	if (openfile->current_y == editwinrows - 1 || amount > 0 || scroll_only) {
+ 		if (amount < 1 || scroll_only) {
+			amount = 1;
+		}
+		edit_scroll(DOWN_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? amount : editwinrows / 2 + 1);
 
-		edit_refresh_needed = TRUE;
-	} else if (amount > 0) {
-		edit_scroll(DOWN_DIR, amount);
 		edit_refresh_needed = TRUE;
 	}
 	/* If we're above the last line of the edit window, update the line
