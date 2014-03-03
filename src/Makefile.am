@@ -5,7 +5,6 @@ ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = 	pinot
 pinot_SOURCES =	\
-	EventQueue.cpp \
 	browser.cpp \
 	chars.cpp \
 	color.cpp \
