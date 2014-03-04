@@ -29,6 +29,8 @@ extern sigjmp_buf jump_buf;
 extern bool jump_buf_set;
 extern bool use_undo;
 
+extern TermKey *termkey;
+
 #ifndef DISABLE_WRAPPING
 extern ssize_t fill;
 extern ssize_t wrap_at;
@@ -367,7 +369,7 @@ void enable_signals(void);
 void disable_flow_control(void);
 void enable_flow_control(void);
 void terminal_init(void);
-int do_input(void);
+void do_input(void);
 #ifndef DISABLE_MOUSE
 int do_mouse(void);
 #endif
@@ -573,6 +575,7 @@ size_t get_key_buffer_len(void);
 void unget_input(int *input, size_t input_len);
 void unget_kbinput(int kbinput, bool meta_key, bool func_key);
 int *get_input(WINDOW *win, size_t input_len);
+TermKeyKey get_kbinput(WINDOW *win);
 int get_kbinput(WINDOW *win, bool *meta_key, bool *func_key);
 int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key);
 int get_escape_seq_kbinput(const int *seq, size_t seq_len);
@@ -590,8 +593,8 @@ int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 #ifndef DISABLE_MOUSE
 int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts);
 #endif
-const sc *get_shortcut(int menu, int *kbinput, bool
-                       *meta_key, bool *func_key);
+const sc *get_shortcut(int menu, TermKeyKey kbinput);
+const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key);
 const sc *first_sc_for(int menu, void (*func)(void));
 void blank_line(WINDOW *win, int y, int x, int n);
 void blank_titlebar(void);

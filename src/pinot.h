@@ -30,6 +30,8 @@
 #include <config.h>
 #endif
 
+#include "termkey.h"
+
 #ifdef NEED_XOPEN_SOURCE_EXTENDED
 #ifndef _XOPEN_SOURCE_EXTENDED
 #define _XOPEN_SOURCE_EXTENDED 1

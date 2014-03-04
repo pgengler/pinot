@@ -691,6 +691,11 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 	free(retval);
 }
 
+void termkey_init(void)
+{
+	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS);
+}
+
 /* Initialize the three window portions pinot uses. */
 void window_init(void)
 {
@@ -1406,46 +1411,23 @@ void terminal_init(void)
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys. */
-int do_input(void)
+void do_input(void)
 {
-	int input;
-	/* The character we read in. */
-	static int *kbinput = NULL;
-	/* The input buffer. */
-	static size_t kbinput_len = 0;
-	/* The length of the input buffer. */
-	bool cut_copy = FALSE;
-	/* Are we cutting or copying text? */
-	const sc *s;
-	bool have_shortcut;
-	bool meta_key, func_key;
+	TermKeyKey input = get_kbinput(edit);
+	bool cut_copy = false;
 
-	/* Read in a character. */
-	input = get_kbinput(edit, &meta_key, &func_key);
-
-#ifndef DISABLE_MOUSE
-	/* If we got a mouse click and it was on a shortcut, read in the
-	* shortcut character. */
-	if (func_key && input == KEY_MOUSE) {
-		if (do_mouse() == 1) {
-			input = get_kbinput(edit, &meta_key, &func_key);
-		} else {
-			meta_key = FALSE;
-			func_key = FALSE;
-			input = ERR;
-		}
-	}
-#endif
+	// TODO: handle mouse input
 
 	/* Check for a shortcut in the main list. */
-	s = get_shortcut(MMAIN, &input, &meta_key, &func_key);
+	const sc *s = get_shortcut(MMAIN, input);
 
 	/* If we got a shortcut from the main list, or a "universal"
 	 * edit window shortcut, set have_shortcut to TRUE. */
-	have_shortcut = (s != NULL);
+	bool have_shortcut = (s != NULL);
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
+/*
 	if (!have_shortcut) {
 		if (is_ascii_cntrl_char(input) || meta_key || func_key) {
 			statusbar(_("Unknown Command"));
@@ -1453,89 +1435,53 @@ int do_input(void)
 			input = ERR;
 		}
 	}
+*/
 
-	/* If we got a character, and it isn't a shortcut or toggle,
-	 * it's a normal text character.  Display the warning if we're
-	 * in view mode, or add the character to the input buffer if
-	 * we're not. */
-	if (input != ERR && !have_shortcut) {
-		if (ISSET(VIEW_MODE)) {
-			print_view_warning();
-		} else {
-			kbinput_len++;
-			kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
-			kbinput[kbinput_len - 1] = input;
-		}
+	/* If we got a character, and it isn't a shortcut or toggle, it's a
+	 * normal text character.  Display a warning if we're in view mode */
+	if (!have_shortcut && ISSET(VIEW_MODE)) {
+		print_view_warning();
+		return;
 	}
 
-	/* If we got a shortcut or toggle, or if there aren't any other
-	 * characters waiting after the one we read in, we need to
-	 * output all the characters in the input buffer if it isn't
-	 * empty.  Note that it should be empty if we're in view
-	 * mode. */
-	if (have_shortcut || get_key_buffer_len() == 0) {
 #ifndef DISABLE_WRAPPING
-		/* If we got a shortcut or toggle, and it's not the shortcut
-		 * for verbatim input, turn off prepending of wrapped text. */
-		if (have_shortcut && (!have_shortcut || s == NULL || s->scfunc != do_verbatim_input)) {
-			wrap_reset();
-		}
+	/* If we got a shortcut or toggle, and it's not the shortcut
+	 * for verbatim input, turn off prepending of wrapped text. */
+	if (have_shortcut && s->scfunc != do_verbatim_input) {
+		wrap_reset();
+	}
 #endif
 
-		if (kbinput != NULL) {
-			/* Display all the characters in the input buffer at
-			 * once, filtering out control characters. */
-			char *output = charalloc(kbinput_len + 1);
-			size_t i;
 
-			for (i = 0; i < kbinput_len; i++) {
-				output[i] = (char)kbinput[i];
-			}
-			output[i] = '\0';
-
-			do_output(output, kbinput_len, FALSE);
-
-			free(output);
-
-			/* Empty the input buffer. */
-			kbinput_len = 0;
-			free(kbinput);
-			kbinput = NULL;
+	if (!have_shortcut) {
+		do_output(input.utf8, strlen(input.utf8), FALSE);
+	} else {
+		/* If the function associated with this shortcut is
+		* cutting or copying text, indicate this. */
+		if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_end) {
+			cut_copy = TRUE;
 		}
-	}
 
-	if (have_shortcut) {
-		switch (input) {
-			/* Handle the normal edit window shortcuts */
-		default:
-			/* If the function associated with this shortcut is
-			* cutting or copying text, indicate this. */
-			if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_end) {
-				cut_copy = TRUE;
-			}
-
-			if (s->scfunc != 0) {
-				const subnfunc *f = sctofunc((sc *) s);
-				if (ISSET(VIEW_MODE) && f && !f->viewok) {
-					print_view_warning();
+		if (s->scfunc != 0) {
+			const subnfunc *f = sctofunc((sc *) s);
+			if (ISSET(VIEW_MODE) && f && !f->viewok) {
+				print_view_warning();
+			} else {
+				if (s->scfunc == do_toggle_void) {
+					do_toggle(s->toggle);
 				} else {
-					if (s->scfunc == do_toggle_void) {
-						do_toggle(s->toggle);
-					} else {
-						s->scfunc();
-						if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
-							reset_multis(openfile->current, FALSE);
-						}
-						if (edit_refresh_needed) {
-							DEBUG_LOG << "running edit_refresh() as edit_refresh_needed is true" << std::endl;
-							edit_refresh();
-							edit_refresh_needed = FALSE;
-						}
-
+					s->scfunc();
+					if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
+						reset_multis(openfile->current, FALSE);
 					}
+					if (edit_refresh_needed) {
+						DEBUG_LOG << "running edit_refresh() as edit_refresh_needed is true" << std::endl;
+						edit_refresh();
+						edit_refresh_needed = FALSE;
+					}
+
 				}
 			}
-			break;
 		}
 	}
 
@@ -1543,8 +1489,6 @@ int do_input(void)
 	if (!cut_copy) {
 		cutbuffer_reset();
 	}
-
-	return input;
 }
 
 void xon_complaint(void)
@@ -2291,9 +2235,11 @@ int main(int argc, char **argv)
 
 	DEBUG_LOG << "Main: set up windows" << std::endl;
 
-	/* Initialize all the windows based on the current screen
-	 * dimensions. */
+	/* Initialize all the windows based on the current screen dimensions. */
 	window_init();
+
+	/* Initialize termkey library */
+	termkey_init();
 
 	/* Set up the signal handlers. */
 	signal_init();

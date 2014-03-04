@@ -20,6 +20,8 @@
  *                                                                        *
  **************************************************************************/
 
+#include <algorithm>
+
 #include "proto.h"
 
 #include <stdio.h>
@@ -284,6 +286,19 @@ int *get_input(WINDOW *win, size_t input_len)
 	}
 
 	return input;
+}
+
+TermKeyKey get_kbinput(WINDOW *win)
+{
+	TermKeyKey key;
+
+	termkey_waitkey(termkey, &key);
+
+	if (win == edit) {
+		check_statusblank();
+	}
+
+	return key;
 }
 
 /* Read in a single character.  If it's ignored, swallow it and go on.
@@ -1662,6 +1677,40 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
  * example, passing in a meta key sequence that corresponds to a
  * function with a control key, a function key, and a meta key sequence
  * will return the control key corresponding to that function. */
+const sc *get_shortcut(int menu, TermKeyKey kbinput)
+{
+	std::string key = kbinput.utf8;
+	if (kbinput.modifiers & TERMKEY_KEYMOD_CTRL) {
+		std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+		key = "^" + key;
+	}
+	if (kbinput.modifiers & TERMKEY_KEYMOD_ALT) {
+		std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+		key = "M-" + key;
+	}
+
+#ifdef DEBUG
+	char keybuffer[50];
+	termkey_strfkey(termkey, keybuffer, sizeof(keybuffer), &kbinput, TERMKEY_FORMAT_LONGMOD);
+	DEBUG_LOG << "get_shortcut(): key is " << key << "(" << keybuffer << ")" << std::endl;
+#endif
+
+	for (sc *s = sclist; s != NULL; s = s->next) {
+		// If this shortcut doesn't apply to the current menu, skip it
+		if (!(menu & s->menu)) {
+			continue;
+		}
+		if (key == s->keystr) {
+			DEBUG_LOG << "matched seq \"" << s->keystr << "\" (menus " << menu << " = " << s->menu << ")" << std::endl;
+			return s;
+		}
+	}
+
+	DEBUG_LOG << "get_shortcut(): matched nothing" << std::endl;
+
+	return NULL;
+}
+
 const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key)
 {
 	sc *s;
