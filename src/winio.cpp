@@ -292,6 +292,9 @@ TermKeyKey get_kbinput(WINDOW *win)
 {
 	TermKeyKey key;
 
+	// This is a hack but so far is the only way I've found to get
+	// things to display correctly.
+	total_refresh();
 	termkey_waitkey(termkey, &key);
 
 	if (win == edit) {
