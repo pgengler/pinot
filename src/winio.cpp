@@ -1679,21 +1679,12 @@ int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts)
  * will return the control key corresponding to that function. */
 const sc *get_shortcut(int menu, TermKeyKey kbinput)
 {
-	std::string key = kbinput.utf8;
-	if (kbinput.modifiers & TERMKEY_KEYMOD_CTRL) {
-		std::transform(key.begin(), key.end(), key.begin(), ::toupper);
-		key = "^" + key;
-	}
-	if (kbinput.modifiers & TERMKEY_KEYMOD_ALT) {
-		std::transform(key.begin(), key.end(), key.begin(), ::toupper);
-		key = "M-" + key;
-	}
-
-#ifdef DEBUG
 	char keybuffer[50];
-	termkey_strfkey(termkey, keybuffer, sizeof(keybuffer), &kbinput, TERMKEY_FORMAT_LONGMOD);
-	DEBUG_LOG << "get_shortcut(): key is " << key << "(" << keybuffer << ")" << std::endl;
-#endif
+	TermKeyFormat format = static_cast<TermKeyFormat>(TERMKEY_FORMAT_ALTISMETA | TERMKEY_FORMAT_CARETCTRL);
+	termkey_strfkey(termkey, keybuffer, sizeof(keybuffer), &kbinput, format);
+	std::string key(keybuffer);
+
+	DEBUG_LOG << "get_shortcut(): key is " << key << std::endl;
 
 	for (sc *s = sclist; s != NULL; s = s->next) {
 		// If this shortcut doesn't apply to the current menu, skip it
