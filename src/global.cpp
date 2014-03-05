@@ -385,9 +385,9 @@ void assign_keyinfo(sc *s)
 	}
 
 	/* Override some keys which don't bind as nicely as we'd like */
-	if (s->type == CONTROL && (!strcasecmp(&s->keystr[1], "space"))) {
+	if (s->type == CONTROL && (!strcasecmp(&s->keystr[1], "Space"))) {
 		s->seq = 0;
-	} else if (s->type == META && (!strcasecmp(&s->keystr[2], "space"))) {
+	} else if (s->type == META && (!strcasecmp(&s->keystr[2], "Space"))) {
 		s->seq = (int) ' ';
 	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Up"))) {
 		s->seq = KEY_UP;
