@@ -836,7 +836,7 @@ void shortcut_init(void)
 	}
 	add_to_sclist(MALL, "^F", do_right, 0, TRUE);
 	add_to_sclist(MALL, "^B", do_left, 0, TRUE);
-	add_to_sclist(MMAIN, "^Space", do_next_word_void, 0, TRUE);
+	add_to_sclist(MMAIN, "^@", do_next_word_void, 0, TRUE);
 	add_to_sclist(MMAIN, "M-Space", do_prev_word_void, 0, TRUE);
 
 	add_to_sclist(MMAIN, "M-`", do_execute_command, 0, TRUE);
@@ -923,12 +923,10 @@ void shortcut_init(void)
 	add_to_sclist(MINSERTFILE, "^X",  ext_cmd_void, 0, FALSE);
 	add_to_sclist(MMAIN, "^Z", do_suspend_void, 0, FALSE);
 	add_to_sclist(MMAIN, "^L", total_refresh, 0, TRUE);
-	add_to_sclist(MALL, "^I", do_tab, 0, TRUE);
-	add_to_sclist(MALL, "^M", do_enter_void, 0, TRUE);
+	add_to_sclist(MALL, "Tab", do_tab, 0, TRUE);
 	add_to_sclist(MALL, "Enter", do_enter_void, 0, TRUE);
 	add_to_sclist(MALL, "^D", do_delete, 0, TRUE);
 	add_to_sclist(MALL, "Delete", do_delete, 0, TRUE);
-	add_to_sclist(MALL, "^H", do_backspace, 0, TRUE);
 	add_to_sclist(MALL, "Backspace", do_backspace, 0, TRUE);
 
 #ifdef DEBUG
