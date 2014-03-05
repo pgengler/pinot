@@ -837,7 +837,7 @@ void shortcut_init(void)
 	add_to_sclist(MALL, "^F", do_right, 0, TRUE);
 	add_to_sclist(MALL, "^B", do_left, 0, TRUE);
 	add_to_sclist(MMAIN, "^@", do_next_word_void, 0, TRUE);
-	add_to_sclist(MMAIN, "M-Space", do_prev_word_void, 0, TRUE);
+	add_to_sclist(MMAIN, "M- ", do_prev_word_void, 0, TRUE);
 
 	add_to_sclist(MMAIN, "M-`", do_execute_command, 0, TRUE);
 	add_to_sclist(MALL, "Right", do_right, 0, TRUE);
