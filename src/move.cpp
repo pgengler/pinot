@@ -434,7 +434,7 @@ void do_scroll_up(void)
  * scroll down one line without scrolling the cursor. */
 void do_down(bool scroll_only)
 {
-	int amount;
+	int amount = 0;
 	filestruct *topline;
 
 	/* If we're at the bottom of the file, get out. */
