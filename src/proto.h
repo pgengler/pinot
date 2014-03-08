@@ -174,12 +174,9 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n);
 char *nstrcasestr(const char *haystack, const char *needle);
 #endif
 char *mbstrcasestr(const char *haystack, const char *needle);
-char *revstrstr(const char *haystack, const char *needle, const char
-                *rev_start);
-char *revstrcasestr(const char *haystack, const char *needle, const char
-                    *rev_start);
-char *mbrevstrcasestr(const char *haystack, const char *needle, const
-                      char *rev_start);
+char *revstrstr(const char *haystack, const char *needle, const char *rev_start);
+char *revstrcasestr(const char *haystack, const char *needle, const char *rev_start);
+char *mbrevstrcasestr(const char *haystack, const char *needle, const char *rev_start);
 size_t mbstrlen(const char *s);
 #ifndef HAVE_STRNLEN
 size_t nstrnlen(const char *s, size_t maxlen);
@@ -187,10 +184,8 @@ size_t nstrnlen(const char *s, size_t maxlen);
 size_t mbstrnlen(const char *s, size_t maxlen);
 char *mbstrchr(const char *s, const char *c);
 char *mbstrpbrk(const char *s, const char *accept);
-char *revstrpbrk(const char *s, const char *accept, const char
-                 *rev_start);
-char *mbrevstrpbrk(const char *s, const char *accept, const char
-                   *rev_start);
+char *revstrpbrk(const char *s, const char *accept, const char *rev_start);
+char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start);
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
 #ifdef ENABLE_UTF8
@@ -246,10 +241,8 @@ void init_backup_dir(void);
 int delete_lockfile(const char *lockfilename);
 int write_lockfile(const char *lockfilename, const char *origfilename, bool modified);
 int copy_file(FILE *inn, FILE *out);
-bool write_file(const char *name, FILE *f_open, bool tmp, append_type
-                append, bool nonamechange);
-bool write_marked_file(const char *name, FILE *f_open, bool tmp,
-                       append_type append);
+bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bool nonamechange);
+bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type append);
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 char *real_dir_from_tilde(const char *buf);
@@ -259,12 +252,9 @@ void free_chararray(char **array, size_t len);
 #endif
 #ifndef DISABLE_TABCOMP
 bool is_dir(const char *buf);
-char **username_tab_completion(const char *buf, size_t *num_matches,
-                               size_t buf_len);
-char **cwd_tab_completion(const char *buf, bool allow_files, size_t
-                          *num_matches, size_t buf_len);
-char *input_tab(char *buf, bool allow_files, size_t *place, bool
-                *lastwastab, void (*refresh_func)(void), bool *list);
+char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_len);
+char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches, size_t buf_len);
+char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 #endif
 const char *tail(const char *foo);
 char *histfilename(void);
@@ -327,22 +317,18 @@ void do_right(void);
 /* All functions in pinot.c. */
 filestruct *make_new_node(filestruct *prevnode);
 filestruct *copy_node(const filestruct *src);
-void splice_node(filestruct *begin, filestruct *newnode, filestruct
-                 *end);
+void splice_node(filestruct *begin, filestruct *newnode, filestruct *end);
 void unlink_node(const filestruct *fileptr);
 void delete_node(filestruct *fileptr);
 filestruct *copy_filestruct(const filestruct *src);
 void free_filestruct(filestruct *src);
 void renumber(filestruct *fileptr);
-partition *partition_filestruct(filestruct *top, size_t top_x,
-                                filestruct *bot, size_t bot_x);
+partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, size_t bot_x);
 void unpartition_filestruct(partition **p);
-void move_to_filestruct(filestruct **file_top, filestruct **file_bot,
-                        filestruct *top, size_t top_x, filestruct *bot, size_t bot_x);
+void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct *top, size_t top_x, filestruct *bot, size_t bot_x);
 void copy_from_filestruct(filestruct *file_top, filestruct *file_bot);
 openfilestruct *make_new_opennode(void);
-void splice_opennode(openfilestruct *begin, openfilestruct *newnode,
-                     openfilestruct *end);
+void splice_opennode(openfilestruct *begin, openfilestruct *newnode, openfilestruct *end);
 void unlink_opennode(openfilestruct *fileptr);
 void delete_opennode(openfilestruct *fileptr);
 #ifdef DEBUG
@@ -385,22 +371,18 @@ void enable_signals(void);
 void disable_flow_control(void);
 void enable_flow_control(void);
 void terminal_init(void);
-int do_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
-             *ran_func, bool *finished, bool allow_funcs);
+int do_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs);
 #ifndef DISABLE_MOUSE
 int do_mouse(void);
 #endif
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
-int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut,
-                       bool *ran_func, bool *finished, bool allow_funcs, void
-                       (*refresh_func)(void));
+int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
 #ifndef DISABLE_MOUSE
 int do_statusbar_mouse(void);
 #endif
-void do_statusbar_output(char *output, size_t output_len, bool
-                         *got_enter, bool allow_cntrls);
+void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls);
 void do_statusbar_home(void);
 void do_statusbar_end(void);
 void do_statusbar_left(void);
@@ -411,8 +393,7 @@ void do_statusbar_cut_text(void);
 bool do_statusbar_next_word(bool allow_punct);
 bool do_statusbar_prev_word(bool allow_punct);
 void do_statusbar_verbatim_input(bool *got_enter);
-bool find_statusbar_bracket_match(bool reverse, const char
-                                  *bracket_set);
+bool find_statusbar_bracket_match(bool reverse, const char *bracket_set);
 void do_statusbar_find_bracket(void);
 size_t statusbar_xplustabs(void);
 size_t get_statusbar_page_start(size_t start_col, size_t column);
@@ -485,20 +466,17 @@ ssize_t do_replace_loop(
     bool *canceled, const filestruct *real_current, size_t
     *real_current_x, const char *needle);
 void do_replace(void);
-void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer,
-                       bool interactive, bool save_pos, bool allow_update);
+void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool interactive, bool save_pos, bool allow_update);
 void do_gotolinecolumn_void(void);
 #ifdef ENABLE_SPELLER
-void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t
-                pos_pww);
+void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t pos_pww);
 #endif
 bool find_bracket_match(bool reverse, const char *bracket_set);
 void do_find_bracket(void);
 bool history_has_changed(void);
 void history_init(void);
 void history_reset(const filestruct *h);
-filestruct *find_history(const filestruct *h_start, const filestruct
-                         *h_end, const char *s, size_t len);
+filestruct *find_history(const filestruct *h_start, const filestruct *h_end, const char *s, size_t len);
 void update_history(filestruct **h, const char *s);
 char *get_history_older(filestruct **h);
 char *get_history_newer(filestruct **h);
@@ -534,10 +512,8 @@ size_t indent_length(const char *line);
 #ifdef ENABLE_JUSTIFY
 void justify_format(filestruct *paragraph, size_t skip);
 size_t quote_length(const char *line);
-bool quotes_match(const char *a_line, size_t a_quote, const char
-                  *b_line);
-bool indents_match(const char *a_line, size_t a_indent, const char
-                   *b_line, size_t b_indent);
+bool quotes_match(const char *a_line, size_t a_quote, const char *b_line);
+bool indents_match(const char *a_line, size_t a_indent, const char *b_line, size_t b_indent);
 bool begpar(const filestruct *const foo);
 bool inpar(const filestruct *const foo);
 void backup_lines(filestruct *first_line, size_t par_len);
@@ -577,8 +553,7 @@ bool regexp_bol_or_eol(const regex_t *preg, const char *string);
 #ifdef ENABLE_SPELLER
 bool is_whole_word(size_t pos, const char *buf, const char *word);
 #endif
-const char *strstrwrapper(const char *haystack, const char *needle,
-                          const char *start);
+const char *strstrwrapper(const char *haystack, const char *needle, const char *start);
 void nperror(const char *s);
 void *nmalloc(size_t howmuch);
 void *nrealloc(void *ptr, size_t howmuch);
@@ -592,8 +567,7 @@ size_t strnlenpt(const char *s, size_t maxlen);
 size_t strlenpt(const char *s);
 void new_magicline(void);
 void remove_magicline(void);
-void mark_order(const filestruct **top, size_t *top_x, const filestruct
-                **bot, size_t *bot_x, bool *right_side_up);
+void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, size_t *bot_x, bool *right_side_up);
 void add_undo(undo_type current_action);
 void update_undo(undo_type action);
 size_t get_totsize(const filestruct *begin, const filestruct *end);
@@ -626,8 +600,7 @@ int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 #ifndef DISABLE_MOUSE
 int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts);
 #endif
-const sc *get_shortcut(int menu, int *kbinput, bool
-                       *meta_key, bool *func_key);
+const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key);
 const sc *first_sc_for(int menu, void (*func)(void));
 void blank_line(WINDOW *win, int y, int x, int n);
 void blank_titlebar(void);
@@ -636,16 +609,14 @@ void blank_edit(void);
 void blank_statusbar(void);
 void blank_bottombars(void);
 void check_statusblank(void);
-char *display_string(const char *buf, size_t start_col, size_t len, bool
-                     dollars);
+char *display_string(const char *buf, size_t start_col, size_t len, bool dollars);
 void titlebar(const char *path);
 void set_modified(void);
 void statusbar(const char *msg, ...);
 void bottombars(int menu);
 void onekey(const char *keystroke, const char *desc, size_t len);
 void reset_cursor(void);
-void edit_draw(filestruct *fileptr, const char *converted, int
-               line, size_t start);
+void edit_draw(filestruct *fileptr, const char *converted, int line, size_t start);
 int update_line(filestruct *fileptr, size_t index);
 bool need_horizontal_update(size_t pww_save);
 bool need_vertical_update(size_t pww_save);
