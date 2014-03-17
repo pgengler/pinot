@@ -286,6 +286,7 @@ const sc *first_sc_for(int menu, void (*func)(void))
 	const sc *s;
 	const sc *fkeysc = NULL;
 	const sc *metasc = NULL;
+	const sc *rawsc  = NULL;
 
 	for (s = sclist; s != NULL; s = s->next) {
 		if ((s->menu & menu) && s->scfunc == func) {
@@ -299,7 +300,14 @@ const sc *first_sc_for(int menu, void (*func)(void))
 				}
 				continue;
 			} else if (s->type == META) {
-				metasc = s;
+				if (!metasc) {
+					metasc = s;
+				}
+				continue;
+			} else if (s->type == RAWINPUT) {
+				if (!rawsc) {
+					rawsc = s;
+				}
 				continue;
 			}
 			/* Otherwise it was something else, so use it. */
@@ -310,11 +318,13 @@ const sc *first_sc_for(int menu, void (*func)(void))
 	/* If we're here we may have found only function keys or meta sequences.
 	   If so, use one, with the same priority as in the help browser: function
 	   keys come first, unless meta sequences are available, in which case meta
-	   sequences come first. */
+	   sequences come first. Last choice is the raw key. */
 	if (fkeysc && !metasc) {
 		return fkeysc;
 	} else if (metasc) {
 		return metasc;
+	} else if (rawsc) {
+		return rawsc;
 	}
 
 	DEBUG_LOG << "Whoops, returning null given func " << func << " in menu " << menu << std::endl;
