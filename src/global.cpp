@@ -264,6 +264,7 @@ const sc *first_sc_for(int menu, void (*func)(void))
 	const sc *s;
 	const sc *fkeysc = NULL;
 	const sc *metasc = NULL;
+	const sc *rawsc  = NULL;
 
 	for (s = sclist; s != NULL; s = s->next) {
 		if ((s->menu & menu) && s->scfunc == func) {
@@ -277,7 +278,14 @@ const sc *first_sc_for(int menu, void (*func)(void))
 				}
 				continue;
 			} else if (s->type == META) {
-				metasc = s;
+				if (!metasc) {
+					metasc = s;
+				}
+				continue;
+			} else if (s->type == RAWINPUT) {
+				if (!rawsc) {
+					rawsc = s;
+				}
 				continue;
 			}
 			/* Otherwise it was something else, so use it. */
@@ -288,11 +296,13 @@ const sc *first_sc_for(int menu, void (*func)(void))
 	/* If we're here we may have found only function keys or meta sequences.
 	   If so, use one, with the same priority as in the help browser: function
 	   keys come first, unless meta sequences are available, in which case meta
-	   sequences come first. */
+	   sequences come first. Last choice is the raw key. */
 	if (fkeysc && !metasc) {
 		return fkeysc;
 	} else if (metasc) {
 		return metasc;
+	} else if (rawsc) {
+		return rawsc;
 	}
 
 	DEBUG_LOG << "Whoops, returning null given func " << func << " in menu " << menu << std::endl;
@@ -835,13 +845,13 @@ void shortcut_init(void)
 		add_to_sclist(MMAIN, "M-E", do_redo, 0, TRUE);
 	}
 	add_to_sclist(MALL, "^F", do_right, 0, TRUE);
+	add_to_sclist(MALL, "Right", do_right, 0, TRUE);
 	add_to_sclist(MALL, "^B", do_left, 0, TRUE);
+	add_to_sclist(MALL, "Left", do_left, 0, TRUE);
+
 	add_to_sclist(MMAIN, "^@", do_next_word_void, 0, TRUE);
 	add_to_sclist(MMAIN, "M- ", do_prev_word_void, 0, TRUE);
 
-	add_to_sclist(MMAIN, "M-`", do_execute_command, 0, TRUE);
-	add_to_sclist(MALL, "Right", do_right, 0, TRUE);
-	add_to_sclist(MALL, "Left", do_left, 0, TRUE);
 	add_to_sclist(MMAIN, "^Q", xon_complaint, 0, TRUE);
 	add_to_sclist(MMAIN, "^S", xoff_complaint, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "^P", do_up_void, 0, TRUE);
@@ -856,9 +866,7 @@ void shortcut_init(void)
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "Up", get_history_older_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^N", get_history_newer_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "Down", get_history_newer_void, 0, FALSE);
-	add_to_sclist(MWHEREIS, "M-C", case_sens_void, 0, FALSE);
-	add_to_sclist(MREPLACE, "M-C", case_sens_void, 0, FALSE);
-	add_to_sclist(MREPLACE2, "M-C", case_sens_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-C", case_sens_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-B", backwards_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-R", regexp_void, 0, FALSE);
 

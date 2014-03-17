@@ -2209,9 +2209,15 @@ int main(int argc, char **argv)
 
 	/* If whitespace wasn't specified, set its default value. */
 	if (whitespace == NULL) {
-		whitespace = mallocstrcpy(NULL, "  ");
-		whitespace_len[0] = 1;
-		whitespace_len[1] = 1;
+		if (using_utf8()) {
+			whitespace = mallocstrcpy(NULL, "»·");
+			whitespace_len[0] = 2;
+			whitespace_len[1] = 2;
+		} else {
+			whitespace = mallocstrcpy(NULL, ">.");
+			whitespace_len[0] = 1;
+			whitespace_len[1] = 1;
+		}
 	}
 
 	/* If tabsize wasn't specified, set its default value. */
