@@ -937,9 +937,7 @@ void shortcut_init(bool unjustify)
 	add_to_sclist(MALL, "M-)", do_para_end_void, 0, TRUE);
 	add_to_sclist(MALL, "M-0", do_para_end_void, 0, TRUE);
 #endif
-	add_to_sclist(MWHEREIS, "M-C", case_sens_void, 0, FALSE);
-	add_to_sclist(MREPLACE, "M-C", case_sens_void, 0, FALSE);
-	add_to_sclist(MREPLACE2, "M-C", case_sens_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-C", case_sens_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-B", backwards_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-R", regexp_void, 0, FALSE);
 
