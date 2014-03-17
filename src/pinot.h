@@ -681,10 +681,9 @@ enum {
 #define NOVIEW FALSE
 
 /* The maximum number of entries displayed in the main shortcut list. */
-#define MAIN_VISIBLE 12
+#define MAIN_VISIBLE (((COLS + 40) / 20) * 2)
 
-/* The minimum editor window columns and rows required for pinot to work
- * correctly. */
+/* The minimum editor window columns and rows required for pinot to work correctly. */
 #define MIN_EDITOR_COLS 4
 #define MIN_EDITOR_ROWS 1
 
