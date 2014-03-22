@@ -693,7 +693,7 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 
 void termkey_init(void)
 {
-	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS);
+	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS|TERMKEY_FLAG_CONVERTKP);
 }
 
 /* Initialize the three window portions pinot uses. */

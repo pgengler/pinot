@@ -933,6 +933,7 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "^L", total_refresh, 0, TRUE);
 	add_to_sclist(MALL, "Tab", do_tab, 0, TRUE);
 	add_to_sclist(MALL, "Enter", do_enter_void, 0, TRUE);
+	add_to_sclist(MALL, "KPEnter", do_enter_void, 0, TRUE);
 	add_to_sclist(MALL, "^D", do_delete, 0, TRUE);
 	add_to_sclist(MALL, "Delete", do_delete, 0, TRUE);
 	add_to_sclist(MALL, "Backspace", do_backspace, 0, TRUE);
