@@ -290,14 +290,23 @@
 ## Java
 # include "@PKGDATADIR@/java.pinotrc"
 
+## Javascript
+# include "@PKGDATADIR@/javascript.pinotrc"
+
 ## JSON files
 # include "@PKGDATADIR@/json.pinotrc"
+
+## Lua
+# include "@PKGDATADIR@/lua.pinotrc"
 
 ## Makefiles
 # include "@PKGDATADIR@/makefile.pinotrc"
 
 ## Manpages
 # include "@PKGDATADIR@/man.pinotrc"
+
+## Magicpoint presentations
+# include "@PKGDATADIR@/mgp.pinotrc"
 
 ## Quoted emails (under e.g. mutt)
 # include "@PKGDATADIR@/mutt.pinotrc"
@@ -328,6 +337,9 @@
 
 ## Bourne shell scripts
 # include "@PKGDATADIR@/sh.pinotrc"
+
+## RPM spec files
+# include "@PKGDATADIR@/spec.pinotrc"
 
 ## TCL
 # include "@PKGDATADIR@/tcl.pinotrc"
