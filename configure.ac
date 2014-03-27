@@ -20,7 +20,7 @@
 AC_INIT([pinot], [0.0.5], [phil@pgengler.net], [pinot])
 AC_CONFIG_SRCDIR([src/pinot.cpp])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall])
 AM_SILENT_RULES([yes])
 AC_CONFIG_HEADERS([config.h])
 
