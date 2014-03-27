@@ -111,6 +111,9 @@ AC_ARG_ENABLE(wrapping-as-root,
     AC_DEFINE(DISABLE_ROOTWRAPPING, 1, [Define this to disable text wrapping as root by default.])
 fi])
 
+AC_ARG_ENABLE(libmagic,
+AS_HELP_STRING([--disable-libmagic], [Disable detection of file types via libmagic]))
+
 AC_MSG_CHECKING([whether to enable UTF-8 support])
 AC_ARG_ENABLE(utf8,
 [  --enable-utf8           Enable UTF-8 support],
@@ -456,7 +459,10 @@ if test x$ac_cv_header_pcreposix_h = xno; then
     AC_MSG_ERROR([*** The header file pcreposix.h was not found.])
 fi
 
-AC_CHECK_LIB(magic, magic_open)
+AS_IF([test "x$enable_libmagic" != "xno"], [
+	AC_CHECK_HEADERS_ONCE([magic.h])
+	AC_CHECK_LIB(magic, magic_open)
+])
 
 # Check for groff html support
 AC_MSG_CHECKING([for HTML support in groff])
