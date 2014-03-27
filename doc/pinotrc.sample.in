@@ -105,6 +105,9 @@
 ##
 # set operatingdir ""
 
+## Remember the cursor position in each file for the next editing session.
+# set poslog
+
 ## Preserve the XON and XOFF keys (^Q and ^S).
 # set preserve
 
