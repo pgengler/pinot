@@ -1222,6 +1222,10 @@ sc *strtosc(int menu, char *input)
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
 			s->toggle = NO_WRAP;
+		} else if (!strcasecmp(input, "softwrap")) {
+			s->scfunc =  do_toggle_void;
+			s->execute = FALSE;
+			s->toggle = SOFTWRAP;
 		} else if (!strcasecmp(input, "tabstospaces")) {
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
