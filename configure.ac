@@ -442,7 +442,7 @@ int main(void)
     COLS = 25;
     return 0;
 }], 
-AC_DEFINE(REDEFINIG_MACROS_OK, 1, [Define this if you know your curses library allows LINES and COLS to be redefined to deal with a resizing bug])
+AC_DEFINE(REDEFINING_MACROS_OK, 1, [Define this if you know your curses library allows LINES and COLS to be redefined to deal with a resizing bug])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_WARN([*** Can't check for macro redefinability when cross-compiling]))
