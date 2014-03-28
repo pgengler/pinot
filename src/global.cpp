@@ -462,7 +462,7 @@ void print_sclist(void)
 	sc *s;
 	const subnfunc *f;
 
-	for (s = sclist; s->next != NULL; s = s->next) {
+	for (s = sclist; s != NULL; s = s->next) {
 		f = sctofunc(s);
 		if (f) {
 			DEBUG_LOG << "Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus << std::endl;
