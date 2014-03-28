@@ -115,9 +115,8 @@ AC_ARG_ENABLE(wrapping-as-root, AS_HELP_STRING([--disable-wrapping-as-root], [Di
 AC_ARG_ENABLE(libmagic, AS_HELP_STRING([--disable-libmagic], [Disable detection of file types via libmagic]))
 
 AC_MSG_CHECKING([whether to enable UTF-8 support])
-enable_utf8=auto
 AC_ARG_ENABLE(utf8, AS_HELP_STRING([--enable-utf8], [Enable UTF-8 support]))
-AC_MSG_RESULT($enable_utf8)
+AC_MSG_RESULT(${enable_utf8:-auto})
 
 AC_MSG_CHECKING([whether to use slang])
 CURSES_LIB_NAME=""
