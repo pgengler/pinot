@@ -53,88 +53,81 @@ AC_CHECK_HEADERS(getopt.h libintl.h limits.h pcreposix.h sys/param.h wchar.h wct
 
 dnl Checks for options.
 
-AC_ARG_ENABLE(debug,
-[  --enable-debug          Enable debugging (disabled by default)],
-[if test x$enableval = xyes; then
-    AC_DEFINE(DEBUG, 1, [Define this to enable debug messages and assert warnings.]) debug_support=yes
-fi])
+AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debugging (disabled by default)]), [
+  if test "x$enableval" = xyes; then
+    AC_DEFINE(DEBUG, 1, [Define this to enable debug messages and assert warnings.])
+    debug_support=yes
+  fi
 
-if test x$debug_support != xyes; then
+  if test x$debug_support != xyes; then
     AC_DEFINE(NDEBUG, 1, [Shut up assert warnings :-)])
-fi
+  fi
+])
 
-AC_ARG_ENABLE(browser,
-[  --disable-browser       Disable built-in file browser],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(browser, AS_HELP_STRING([--disable-browser], [Disable built-in file browser]), [
+  if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(justify,
-[  --enable-justify       Enable justify/unjustify functions],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(justify, AS_HELP_STRING([--enable-justify], [Enable justify/unjustify functions]), [
+  if test "x$enableval" = xyes; then
     AC_DEFINE(ENABLE_JUSTIFY, 1, [Define this to enable the justify routines.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(mouse,
-[  --disable-mouse         Disable mouse support (and -m flag)],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(mouse, AS_HELP_STRING([--disable-mouse], [Disable mouse support (and -m flag)]), [
+  if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(operatingdir,
-[  --disable-operatingdir  Disable setting of operating directory (chroot of sorts)],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(operatingdir, AS_HELP_STRING([--disable-operatingdir], [Disable setting of operating directory (chroot of sorts)]), [
+  if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(speller,
-[  --enable-speller       Enable spell checker functions],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(speller, AS_HELP_STRING([--enable-speller], [Enable spell checker functions]), [
+  if test "x$enableval" = xyes; then
     AC_DEFINE(ENABLE_SPELLER, 1, [Define this to enable the spell checker functions.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(tabcomp,
-[  --disable-tabcomp       Disable tab completion functions],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(tabcomp, AS_HELP_STRING([--disable-tabcomp], [Disable tab completion functions]), [
+  if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(wrapping,
-[  --disable-wrapping      Disable all wrapping of text (and -w flag)],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(wrapping, AS_HELP_STRING([--disable-wrapping], [Disable all wrapping of text (and -w flag)]), [
+  if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(wrapping-as-root,
-[  --disable-wrapping-as-root  Disable wrapping of text as root by default],
-[if test x$enableval != xyes; then
+AC_ARG_ENABLE(wrapping-as-root, AS_HELP_STRING([--disable-wrapping-as-root], [Disable wrapping of text as root by default]), [
+  if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_ROOTWRAPPING, 1, [Define this to disable text wrapping as root by default.])
-fi])
+  fi
+])
 
-AC_ARG_ENABLE(libmagic,
-AS_HELP_STRING([--disable-libmagic], [Disable detection of file types via libmagic]))
+AC_ARG_ENABLE(libmagic, AS_HELP_STRING([--disable-libmagic], [Disable detection of file types via libmagic]))
 
 AC_MSG_CHECKING([whether to enable UTF-8 support])
-AC_ARG_ENABLE(utf8,
-[  --enable-utf8           Enable UTF-8 support],
-[if test x$enableval = xyes; then
-    enable_utf8=yes
-else
-    enable_utf8=no
-fi],
-[enable_utf8=auto])
+enable_utf8=auto
+AC_ARG_ENABLE(utf8, AS_HELP_STRING([--enable-utf8], [Enable UTF-8 support]))
 AC_MSG_RESULT($enable_utf8)
 
 AC_MSG_CHECKING([whether to use slang])
 CURSES_LIB_NAME=""
-AC_ARG_WITH(slang,
-[  --with-slang[=DIR]      Use the slang library instead of curses],
-[    case "$with_slang" in
+AC_ARG_WITH(slang, AS_HELP_STRING([--with-slang[=DIR]], [Use the slang library instead of curses]), [
+  case "$with_slang" in
     no)
-	AC_MSG_RESULT(no)
-	;;
+      AC_MSG_RESULT(no)
+      ;;
     *)
-	AC_MSG_RESULT(yes)
+      AC_MSG_RESULT(yes)
 
 	if test x$with_slang != xyes; then
 	    # Add additional search path
@@ -142,7 +135,7 @@ AC_ARG_WITH(slang,
 	    CPPFLAGS="-I$with_slang/include $CPPFLAGS"
 	fi
 
-	if test x$enable_utf8 != xno; then
+	if test "x$enable_utf8" != xno; then
 	    AC_CHECK_HEADER(slcurses.h,
 		AC_MSG_CHECKING([for SLutf8_enable in -lslang])
 		_libs=$LIBS
@@ -223,7 +216,7 @@ int main(void)
 
 	if eval "test x$CURSES_LIB_NAME = x"; then
 	    # Reset libs if the above slang tests failed
-	    if test x$enable_utf8 != xno; then
+	    if test "x$enable_utf8" != xno; then
 		LIBS=$_libs
 	    fi
 
@@ -284,8 +277,9 @@ int main(void)
     return 0;
 }],
 			    [AC_MSG_RESULT(yes)
-			    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
-			    if test x$with_slang != xyes; then
+			    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
+          slang_support=yes
+			    if test "x$with_slang" != xyes; then
 				CURSES_LIB="-L${with_slang}/lib -lslang $tcap -lm"
 			    else
 				CURSES_LIB="-lslang $tcap -lm"
@@ -321,16 +315,16 @@ if test x$CURSES_LIB_NAME = xslang; then
 fi
 
 AC_ARG_ENABLE(altrcname,
-[  --enable-altrcname          Specify alternate rcfile name (default: .pinotrc)],
-[if test x$enableval != no; then
+AS_HELP_STRING([--enable-altrcname], [Specify alternate rcfile name (default: .pinotrc)]))
+if test "x$enableval" != no; then
     AC_DEFINE_UNQUOTED(RCFILE_NAME, "$enableval", [Specify alternate rcfile name (default: .pinotrc)]) rcfilename=$enableval
-fi])
+fi
 
 dnl Checks for functions.
 
 AC_CHECK_FUNCS(getdelim getline isblank strcasecmp strcasestr strncasecmp strnlen vsnprintf)
 
-if test x$enable_utf8 != xno; then
+if test "x$enable_utf8" != xno; then
     AC_CHECK_FUNCS(iswalnum iswblank iswpunct iswspace nl_langinfo mblen mbstowcs mbtowc wctomb wcwidth)
 fi
 
@@ -354,7 +348,7 @@ dnl Checks for libraries.
 if eval "test x$CURSES_LIB_NAME = x"; then
     AC_CHECK_HEADERS(ncurses.h)
 
-    if test x$enable_utf8 != xno; then
+    if test "x$enable_utf8" != xno; then
 	OLDLIBS="$LIBS"
 	AC_CHECK_TOOL(NCURSESW_CONFIG, ncursesw5-config, no)
 	if test "x$NCURSESW_CONFIG" != xno; then
@@ -376,7 +370,7 @@ fi
 if eval "test x$CURSES_LIB_NAME = x"; then
     AC_CHECK_HEADERS(curses.h)
 
-    if test x$enable_utf8 != xno; then
+    if test "x$enable_utf8" != xno; then
 	AC_CHECK_LIB(curses, get_wch, [CURSES_LIB="-lcurses" CURSES_LIB_NAME=curses CURSES_LIB_WIDE=yes])
     fi
 
@@ -409,7 +403,7 @@ if test "x$GLIB_LIBS" != "x"; then
     LDFLAGS="$LDFLAGS $GLIB_LIBS"
 fi
 
-if test x$enable_utf8 != xno && \
+if test "x$enable_utf8" != xno && \
     test x$CURSES_LIB_WIDE = xyes && \
     test x$ac_cv_func_iswalnum = xyes && \
     test x$ac_cv_func_iswpunct = xyes && \
@@ -422,14 +416,14 @@ if test x$enable_utf8 != xno && \
     test x$ac_cv_func_wcwidth = xyes; then
 	AC_DEFINE(ENABLE_UTF8, 1, [Define this if your system has sufficient UTF-8 support (a wide curses library, iswalnum(), iswpunct(), iswblank() or iswspace(), nl_langinfo, mblen(), mbstowcs(), mbtowc(), wctomb(), and wcwidth()).])
 else
-    if test x$enable_utf8 = xyes; then
+    if test "x$enable_utf8" = xyes; then
 	AC_MSG_ERROR([
 *** UTF-8 support was requested, but insufficient UTF-8 support was
 *** detected in your curses and/or C libraries.  Please verify that your
 *** slang was built with UTF-8 support or your curses was built with
 *** wide character support, and that your C library was built with wide
 *** character support.])
-    elif test x$enable_utf8 != xno; then
+    elif test "x$enable_utf8" != xno; then
 	AC_MSG_WARN([
 *** Insufficient UTF-8 support was detected in your curses and/or C
 *** libraries.  If you want UTF-8 support, please verify that your slang
@@ -467,13 +461,13 @@ AS_IF([test "x$enable_libmagic" != "xno"], [
 # Check for groff html support
 AC_MSG_CHECKING([for HTML support in groff])
 groff -t -mandoc -Thtml </dev/null >/dev/null
-if test $? -ne 0 ; then 
-    echo "no"
-    echo "*** Will not generate HTML version of man pages  ***"
-    echo "*** Consider installing a newer version of groff with HTML support ***"
+if test $? -ne 0 ; then
+    AC_MSG_RESULT([no])
+    AC_MSG_WARN([*** Will not generate HTML version of man pages  ***
+*** Consider installing a newer version of groff with HTML support ***])
     groff_html_support=no
 else
-    echo "yes"
+    AC_MSG_RESULT([yes])
     groff_html_support=yes
 fi
 AM_CONDITIONAL(GROFF_HTML, test x$groff_html_support = xyes)
