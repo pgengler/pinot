@@ -567,9 +567,13 @@ size_t help_line_len(const char *ptr)
 void do_help_void(void)
 {
 	/* Start the help browser, with the correct refresher for afterwards. */
+#ifndef DISABLE_BROWSER
 	if (currmenu == MBROWSER || currmenu == MWHEREISFILE || currmenu == MGOTODIR) {
 		do_help(&browser_refresh);
 	} else {
+#endif
 		do_help(&edit_refresh);
+#ifndef DISABLE_BROWSER
 	}
+#endif
 }
