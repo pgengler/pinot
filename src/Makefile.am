@@ -1,5 +1,5 @@
 localedir = $(datadir)/locale
-AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(top_builddir)/libtermkey-0.17
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(top_builddir)/libtermkey-0.17 -Wall -Wextra
 
 ACLOCAL_AMFLAGS = -I m4
 

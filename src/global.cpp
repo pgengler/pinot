@@ -440,7 +440,7 @@ void print_sclist(void)
 	sc *s;
 	const subnfunc *f;
 
-	for (s = sclist; s->next != NULL; s = s->next) {
+	for (s = sclist; s != NULL; s = s->next) {
 		f = sctofunc(s);
 		if (f) {
 			DEBUG_LOG << "Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus << std::endl;
@@ -1135,6 +1135,10 @@ sc *strtosc(int menu, char *input)
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
 			s->toggle = NO_WRAP;
+		} else if (!strcasecmp(input, "softwrap")) {
+			s->scfunc =  do_toggle_void;
+			s->execute = FALSE;
+			s->toggle = SOFTWRAP;
 		} else if (!strcasecmp(input, "tabstospaces")) {
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;

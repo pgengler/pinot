@@ -1191,7 +1191,7 @@ void handle_sigwinch(int signal)
 	 * otherwise.  However, COLS and LINES are curses global variables,
 	 * and in some cases curses has already updated them.  But not in
 	 * all cases.  Argh. */
-#ifdef REDEFINIG_MACROS_OK
+#ifdef REDEFINING_MACROS_OK
 	COLS = win.ws_col;
 	LINES = win.ws_row;
 #endif
@@ -2209,11 +2209,14 @@ int main(int argc, char **argv)
 
 	/* If whitespace wasn't specified, set its default value. */
 	if (whitespace == NULL) {
+#ifdef ENABLE_UTF8
 		if (using_utf8()) {
 			whitespace = mallocstrcpy(NULL, "»·");
 			whitespace_len[0] = 2;
 			whitespace_len[1] = 2;
-		} else {
+		} else
+#endif
+		{
 			whitespace = mallocstrcpy(NULL, ">.");
 			whitespace_len[0] = 1;
 			whitespace_len[1] = 1;

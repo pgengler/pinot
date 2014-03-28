@@ -105,6 +105,9 @@
 ##
 # set operatingdir ""
 
+## Remember the cursor position in each file for the next editing session.
+# set poslog
+
 ## Preserve the XON and XOFF keys (^Q and ^S).
 # set preserve
 
@@ -173,10 +176,11 @@
 ## Disallow file modification.  Why would you want this in an rcfile? ;)
 # set view
 
-## The two single-column characters used to display the first characters
-## of tabs and spaces.  187 in ISO 8859-1 (0000BB in Unicode) and 183 in
-## ISO-8859-1 (0000B7 in Unicode) seem to be good values for these.
-# set whitespace "  "
+## The two single-column characters used to display the first characters of tabs and spaces.
+## The default when in a UTF-8 locale:
+# set whitespace "»·"
+## The default otherwise:
+# set whitespace ">."
 
 ## Detect word boundaries more accurately by treating punctuation
 ## characters as parts of words.
@@ -256,62 +260,59 @@
 ## pinotrc files
 # include "@PKGDATADIR@/pinotrc.pinotrc"
 
+## Assembler
+# include "@PKGDATADIR@/asm.pinotrc"
+
+## AWK
+# include "@PKGDATADIR@/awk.pinotrc"
+
 ## C/C++
 # include "@PKGDATADIR@/c.pinotrc"
-
-## Makefiles
-# include "@PKGDATADIR@/makefile.pinotrc"
-
-## Cascading Style Sheets
-# include "@PKGDATADIR@/css.pinotrc"
 
 ## CMake files
 # include "@PKGDATADIR@/cmake.pinotrc"
 
+## Cascading Style Sheets
+# include "@PKGDATADIR@/css.pinotrc"
+
 ## Debian files
 # include "@PKGDATADIR@/debian.pinotrc"
+
+## Fortran
+# include "@PKGDATADIR@/fortran.pinotrc"
 
 ## Gentoo files
 # include "@PKGDATADIR@/gentoo.pinotrc"
 
-## HTML
-# include "@PKGDATADIR@/html.pinotrc"
-
-## PHP
-# include "@PKGDATADIR@/php.pinotrc"
-
-## TCL
-# include "@PKGDATADIR@/tcl.pinotrc"
-
-## TeX
-# include "@PKGDATADIR@/tex.pinotrc"
-
-## Quoted emails (under e.g. mutt)
-# include "@PKGDATADIR@/mutt.pinotrc"
-
-## Patch files
-# include "@PKGDATADIR@/patch.pinotrc"
-
-## Manpages
-# include "@PKGDATADIR@/man.pinotrc"
-
 ## Groff
 # include "@PKGDATADIR@/groff.pinotrc"
 
-## Perl
-# include "@PKGDATADIR@/perl.pinotrc"
-
-## Python
-# include "@PKGDATADIR@/python.pinotrc"
-
-## Ruby
-# include "@PKGDATADIR@/ruby.pinotrc"
+## HTML
+# include "@PKGDATADIR@/html.pinotrc"
 
 ## Java
 # include "@PKGDATADIR@/java.pinotrc"
 
-## Fortran
-# include "@PKGDATADIR@/fortran.pinotrc"
+## Javascript
+# include "@PKGDATADIR@/javascript.pinotrc"
+
+## JSON files
+# include "@PKGDATADIR@/json.pinotrc"
+
+## Lua
+# include "@PKGDATADIR@/lua.pinotrc"
+
+## Makefiles
+# include "@PKGDATADIR@/makefile.pinotrc"
+
+## Manpages
+# include "@PKGDATADIR@/man.pinotrc"
+
+## Magicpoint presentations
+# include "@PKGDATADIR@/mgp.pinotrc"
+
+## Quoted emails (under e.g. mutt)
+# include "@PKGDATADIR@/mutt.pinotrc"
 
 ## Objective-C
 # include "@PKGDATADIR@/objc.pinotrc"
@@ -319,20 +320,35 @@
 ## OCaml
 # include "@PKGDATADIR@/ocaml.pinotrc"
 
-## AWK
-# include "@PKGDATADIR@/awk.pinotrc"
+## Patch files
+# include "@PKGDATADIR@/patch.pinotrc"
 
-## Assembler
-# include "@PKGDATADIR@/asm.pinotrc"
+## Perl
+# include "@PKGDATADIR@/perl.pinotrc"
 
-## Bourne shell scripts
-# include "@PKGDATADIR@/sh.pinotrc"
+## PHP
+# include "@PKGDATADIR@/php.pinotrc"
 
 ## POV-Ray
 # include "@PKGDATADIR@/pov.pinotrc"
 
+## Python
+# include "@PKGDATADIR@/python.pinotrc"
+
+## Ruby
+# include "@PKGDATADIR@/ruby.pinotrc"
+
+## Bourne shell scripts
+# include "@PKGDATADIR@/sh.pinotrc"
+
+## RPM spec files
+# include "@PKGDATADIR@/spec.pinotrc"
+
+## TCL
+# include "@PKGDATADIR@/tcl.pinotrc"
+
+## TeX
+# include "@PKGDATADIR@/tex.pinotrc"
+
 ## XML-type files
 # include "@PKGDATADIR@/xml.pinotrc"
-
-## JSON files
-# include "@PKGDATADIR@/json.pinotrc"

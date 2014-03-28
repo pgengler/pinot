@@ -269,9 +269,6 @@ void thanks_for_all_the_fish(void);
 #endif
 
 /* All functions in help.c. */
-#ifndef DISABLE_BROWSER
-void do_browser_help(void);
-#endif
 void do_help_void(void);
 void do_help(void (*refresh_func)(void));
 void help_init(void);
