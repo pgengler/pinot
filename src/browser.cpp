@@ -176,7 +176,7 @@ change_browser_directory:
 		if (f->scfunc == total_refresh) {
 			total_redraw();
 		} else if (f->scfunc == do_help_void) {
-			do_browser_help();
+			do_help_void();
 			curs_set(0);
 			/* Search for a filename. */
 		} else if (f->scfunc == do_search) {
