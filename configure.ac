@@ -277,7 +277,8 @@ int main(void)
 			    CURSES_LIB_NAME=slang],
 			    [AC_MSG_RESULT(no)],
     AC_MSG_WARN([*** Can not use slang when cross-compiling]))],
-    AC_MSG_WARN([*** Can not use slang when cross-compiling]))],[AC_MSG_WARN(*** Can not use slang when cross-compiling)]),
+    AC_MSG_WARN([*** Can not use slang when cross-compiling]))],
+    AC_MSG_WARN([*** Can not use slang when cross-compiling])),
 	    AC_MSG_ERROR([
 *** The header file slcurses.h was not found.  If you wish to use
 *** slang support this header file is required.  Please either
@@ -422,7 +423,7 @@ else
 fi
 
 AC_MSG_CHECKING([whether LINES and COLS can be redefined])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
+AC_TRY_RUN([
 #include <curses.h>
 int main(void)
 {
