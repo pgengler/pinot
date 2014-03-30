@@ -29,7 +29,7 @@ extern sigjmp_buf jump_buf;
 extern bool jump_buf_set;
 extern bool use_undo;
 
-extern TermKey *termkey;
+extern Keyboard *keyboard;
 
 #ifndef DISABLE_WRAPPING
 extern ssize_t fill;

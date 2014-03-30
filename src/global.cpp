@@ -33,7 +33,7 @@ bool jump_buf_set = false;
 sigjmp_buf jump_buf;
 /* Used to return to main() after a SIGWINCH. */
 
-TermKey *termkey = nullptr;
+Keyboard *keyboard = nullptr;
 
 #ifndef DISABLE_WRAPPING
 ssize_t fill = 0;

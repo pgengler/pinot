@@ -687,9 +687,9 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 	free(retval);
 }
 
-void termkey_init(void)
+void keyboard_init(void)
 {
-	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS|TERMKEY_FLAG_CONVERTKP);
+	keyboard = new Keyboard();
 }
 
 /* Initialize the three window portions pinot uses. */
@@ -2114,8 +2114,8 @@ int main(int argc, char **argv)
 	/* Initialize all the windows based on the current screen dimensions. */
 	window_init();
 
-	/* Initialize termkey library */
-	termkey_init();
+	/* Initialize keyboard input */
+	keyboard_init();
 
 	/* Set up the signal handlers. */
 	signal_init();

@@ -30,7 +30,7 @@
 #include <config.h>
 #endif
 
-#include "termkey.h"
+#include "Keyboard.h"
 
 #ifdef NEED_XOPEN_SOURCE_EXTENDED
 #ifndef _XOPEN_SOURCE_EXTENDED

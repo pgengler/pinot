@@ -290,13 +290,11 @@ int *get_input(WINDOW *win, size_t input_len)
 
 TermKeyKey get_kbinput(WINDOW *win)
 {
-	TermKeyKey key;
-
 	// This is a hack but so far is the only way I've found to get
 	// things to display correctly.
 	wnoutrefresh(edit);
 	doupdate();
-	termkey_waitkey(termkey, &key);
+	TermKeyKey key = keyboard->get_key();
 
 	if (win == edit) {
 		check_statusblank();
@@ -1507,10 +1505,7 @@ int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len)
  * will return the control key corresponding to that function. */
 const sc *get_shortcut(int menu, TermKeyKey kbinput)
 {
-	char keybuffer[50];
-	TermKeyFormat format = static_cast<TermKeyFormat>(TERMKEY_FORMAT_ALTISMETA | TERMKEY_FORMAT_CARETCTRL);
-	termkey_strfkey(termkey, keybuffer, sizeof(keybuffer), &kbinput, format);
-	std::string key(keybuffer);
+	std::string key = keyboard->format_key(kbinput);
 
 	DEBUG_LOG << "get_shortcut(): key is " << key << std::endl;
 
