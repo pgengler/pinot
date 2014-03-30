@@ -43,10 +43,6 @@ void do_help(void (*refresh_func)(void))
 	size_t last_line = 0;
 	/* The line number in help_text of the last help line.  This
 	 * variable is zero-based. */
-#ifndef DISABLE_MOUSE
-	/* The current shortcut list. */
-	int oldmenu = currmenu;
-#endif
 	const char *ptr;
 	/* The current line of the help text. */
 	size_t old_line = (size_t)-1;
@@ -63,12 +59,6 @@ void do_help(void (*refresh_func)(void))
 	help_init();
 
 	assert(help_text != NULL);
-
-#ifndef DISABLE_MOUSE
-	/* Set currmenu to allow clicking on the help screen's shortcut
-	 * list, after help_init() is called. */
-	currmenu = MHELP;
-#endif
 
 	if (ISSET(NO_HELP)) {
 		/* Make sure that the help screen's shortcut list will actually
@@ -129,15 +119,6 @@ void do_help(void (*refresh_func)(void))
 
 		kbinput = get_kbinput(edit, &meta_key, &func_key);
 
-#ifndef DISABLE_MOUSE
-		if (kbinput == KEY_MOUSE) {
-			int mouse_x, mouse_y;
-			get_mouseinput(&mouse_x, &mouse_y, TRUE);
-			continue;
-			/* Redraw the screen. */
-		}
-#endif
-
 		parse_help_input(&kbinput, &meta_key, &func_key);
 		s = get_shortcut(MHELP, &kbinput, &meta_key, &func_key);
 		if (!s) {
@@ -187,10 +168,6 @@ void do_help(void (*refresh_func)(void))
 			break;
 		}
 	}
-
-#ifndef DISABLE_MOUSE
-	currmenu = oldmenu;
-#endif
 
 	if (old_no_help) {
 		blank_bottombars();

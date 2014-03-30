@@ -67,22 +67,6 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 	/* Read in a character. */
 	input = get_kbinput(bottomwin, meta_key, func_key);
 
-#ifndef DISABLE_MOUSE
-	if (allow_funcs) {
-		/* If we got a mouse click and it was on a shortcut, read in the
-		 * shortcut character. */
-		if (*func_key && input == KEY_MOUSE) {
-			if (do_statusbar_mouse() == 1) {
-				input = get_kbinput(bottomwin, meta_key, func_key);
-			} else {
-				*meta_key = FALSE;
-				*func_key = FALSE;
-				input = ERR;
-			}
-		}
-	}
-#endif
-
 	/* Check for a shortcut in the current list. */
 	s = get_shortcut(currmenu, &input, meta_key, func_key);
 
@@ -226,38 +210,6 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 
 	return input;
 }
-
-#ifndef DISABLE_MOUSE
-/* Handle a mouse click on the statusbar prompt or the shortcut list. */
-int do_statusbar_mouse(void)
-{
-	int mouse_x, mouse_y;
-	int retval = get_mouseinput(&mouse_x, &mouse_y, TRUE);
-
-	/* We can click on the statusbar window text to move the cursor. */
-	if (retval == 0 && wmouse_trafo(bottomwin, &mouse_y, &mouse_x, FALSE)) {
-		size_t start_col;
-
-		assert(prompt != NULL);
-
-		start_col = strlenpt(prompt) + 2;
-
-		/* Move to where the click occurred. */
-		if (mouse_x >= start_col && mouse_y == 0) {
-			size_t pww_save = statusbar_pww;
-
-			statusbar_x = actual_x(answer, get_statusbar_page_start(start_col, start_col + statusbar_xplustabs()) + mouse_x - start_col);
-			statusbar_pww = statusbar_xplustabs();
-
-			if (need_statusbar_horizontal_update(pww_save)) {
-				update_statusbar_line(answer, statusbar_x);
-			}
-		}
-	}
-
-	return retval;
-}
-#endif
 
 /* The user typed output_len multibyte characters.  Add them to the
  * statusbar prompt, setting got_enter to TRUE if we get a newline, and
@@ -1265,9 +1217,6 @@ int do_yesno_prompt(bool all, const char *msg)
 	do {
 		int kbinput;
 		bool meta_key, func_key;
-#ifndef DISABLE_MOUSE
-		int mouse_x, mouse_y;
-#endif
 
 		currmenu = MYESNO;
 		kbinput = get_kbinput(bottomwin, &meta_key, &func_key);
@@ -1275,36 +1224,7 @@ int do_yesno_prompt(bool all, const char *msg)
 
 		if (s && s->scfunc ==  do_cancel) {
 			ok = -1;
-		}
-#ifndef DISABLE_MOUSE
-		else if (kbinput == KEY_MOUSE) {
-			/* We can click on the Yes/No/All shortcut list to
-			 * select an answer. */
-			if (get_mouseinput(&mouse_x, &mouse_y, FALSE) == 0 && wmouse_trafo(bottomwin, &mouse_y, &mouse_x, FALSE) && mouse_x < (width * 2) && mouse_y > 0) {
-				int x = mouse_x / width;
-				/* Calculate the x-coordinate relative to the
-				 * two columns of the Yes/No/All shortcuts in
-				 * bottomwin. */
-				int y = mouse_y - 1;
-				/* Calculate the y-coordinate relative to the
-				 * beginning of the Yes/No/All shortcuts in
-				 * bottomwin, i.e. with the sizes of topwin,
-				 * edit, and the first line of bottomwin
-				 * subtracted out. */
-
-				assert(0 <= x && x <= 1 && 0 <= y && y <= 1);
-
-				/* x == 0 means they clicked Yes or No.  y == 0
-				 * means Yes or All. */
-				ok = -2 * x * y + x - y + 1;
-
-				if (ok == 2 && !all) {
-					ok = -2;
-				}
-			}
-		}
-#endif /* !DISABLE_MOUSE */
-		else if  (s && s->scfunc == total_refresh) {
+		} else if  (s && s->scfunc == total_refresh) {
 			total_redraw();
 			continue;
 		} else {

@@ -127,12 +127,6 @@
 #define getline ngetline
 #endif
 
-/* If we aren't using ncurses with mouse support, turn the mouse support
- * off, as it's useless then. */
-#ifndef NCURSES_MOUSE_VERSION
-#define DISABLE_MOUSE 1
-#endif
-
 /* Enumeration types. */
 typedef enum {
 	NIX_FILE, DOS_FILE, MAC_FILE
@@ -392,7 +386,6 @@ enum {
 	NO_WRAP,
 	AUTOINDENT,
 	VIEW_MODE,
-	USE_MOUSE,
 	USE_REGEXP,
 	TEMP_FILE,
 	CUT_TO_END,
@@ -651,7 +644,6 @@ enum {
 #define TOGGLE_TABSTOSPACES_KEY		PINOT_META_Q
 #define TOGGLE_BACKUP_KEY		PINOT_META_B
 #define TOGGLE_MULTIBUFFER_KEY		PINOT_META_F
-#define TOGGLE_MOUSE_KEY		PINOT_META_M
 #define TOGGLE_NOCONVERT_KEY		PINOT_META_N
 #define TOGGLE_SUSPEND_KEY		PINOT_META_Z
 #define TOGGLE_CASE_KEY			PINOT_META_C

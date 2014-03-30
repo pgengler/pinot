@@ -64,9 +64,6 @@ char *do_browser(char *path, DIR *dir)
 
 	curs_set(0);
 	blank_statusbar();
-#ifndef DISABLE_MOUSE
-	currmenu = MBROWSER;
-#endif
 	bottombars(MBROWSER);
 	wnoutrefresh(bottomwin);
 
@@ -127,41 +124,6 @@ change_browser_directory:
 
 		kbinput = get_kbinput(edit, &meta_key, &func_key);
 
-#ifndef DISABLE_MOUSE
-		if (kbinput == KEY_MOUSE) {
-
-			int mouse_x, mouse_y;
-
-			/* We can click on the edit window to select a
-			 * filename. */
-			if (get_mouseinput(&mouse_x, &mouse_y, TRUE) == 0 && wmouse_trafo(edit, &mouse_y, &mouse_x, FALSE)) {
-				/* longest is the width of each column.  There
-				 * are two spaces between each column. */
-				selected = (fileline / editwinrows) * (editwinrows * width) + (mouse_y * width) + (mouse_x / (longest + 2));
-
-				/* If they clicked beyond the end of a row,
-				 * select the filename at the end of that
-				 * row. */
-				if (mouse_x > width * (longest + 2)) {
-					selected--;
-				}
-
-				/* If we're off the screen, select the last
-				 * filename. */
-				if (selected > filelist_len - 1) {
-					selected = filelist_len - 1;
-				}
-
-				/* If we selected the same filename as last
-				 * time, put back the Enter key so that it's
-				 * read in. */
-				if (old_selected == selected) {
-					unget_kbinput(sc_seq_or(do_enter_void, 0), FALSE, FALSE);
-				}
-			}
-		}
-#endif /* !DISABLE_MOUSE */
-
 		parse_browser_input(&kbinput, &meta_key, &func_key);
 		s = get_shortcut(MBROWSER, &kbinput, &meta_key, &func_key);
 		if (!s) {
@@ -218,9 +180,6 @@ change_browser_directory:
 			              browser_refresh, N_("Go To Directory"));
 
 			curs_set(0);
-#ifndef DISABLE_MOUSE
-			currmenu = MBROWSER;
-#endif
 			bottombars(MBROWSER);
 
 			/* If the directory begins with a newline (i.e. an

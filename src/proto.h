@@ -320,11 +320,6 @@ void finish(void);
 void die(const char *msg, ...);
 void die_save_file(const char *die_filename, struct stat *die_stat);
 void window_init(void);
-#ifndef DISABLE_MOUSE
-void disable_mouse_support(void);
-void enable_mouse_support(void);
-void mouse_init(void);
-#endif
 void print_opt_full(const char *shortflag
 #ifdef HAVE_GETOPT_LONG
                     , const char *longflag
@@ -353,16 +348,10 @@ void disable_flow_control(void);
 void enable_flow_control(void);
 void terminal_init(void);
 void do_input(void);
-#ifndef DISABLE_MOUSE
-int do_mouse(void);
-#endif
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
 int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
-#ifndef DISABLE_MOUSE
-int do_statusbar_mouse(void);
-#endif
 void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls);
 void do_statusbar_home(void);
 void do_statusbar_end(void);
@@ -564,9 +553,6 @@ int get_control_kbinput(int kbinput);
 void unparse_kbinput(char *output, size_t output_len);
 int *get_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
-#ifndef DISABLE_MOUSE
-int get_mouseinput(int *mouse_x, int *mouse_y, bool allow_shortcuts);
-#endif
 const sc *get_shortcut(int menu, TermKeyKey kbinput);
 const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key);
 const sc *first_sc_for(int menu, void (*func)(void));

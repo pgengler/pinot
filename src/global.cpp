@@ -912,7 +912,6 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-Q", do_toggle_void, TABS_TO_SPACES, TRUE);
 	add_to_sclist(MMAIN, "M-B", do_toggle_void, BACKUP_FILE, TRUE);
 	add_to_sclist(MMAIN, "M-F", do_toggle_void, MULTIBUFFER, TRUE);
-	add_to_sclist(MMAIN, "M-M", do_toggle_void, USE_MOUSE, TRUE);
 	add_to_sclist(MMAIN, "M-N", do_toggle_void, NO_CONVERT, TRUE);
 	add_to_sclist(MMAIN, "M-Z", do_toggle_void, SUSPEND, TRUE);
 	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP, TRUE);
@@ -1000,8 +999,6 @@ const char *flagtostr(int flag)
 		return N_("Backup files");
 	case MULTIBUFFER:
 		return N_("Multiple file buffers");
-	case USE_MOUSE:
-		return N_("Mouse support");
 	case NO_CONVERT:
 		return N_("No conversion from DOS/Mac format");
 	case SUSPEND:
@@ -1151,10 +1148,6 @@ sc *strtosc(int menu, char *input)
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;
 			s->toggle = MULTIBUFFER;
-		} else if (!strcasecmp(input, "mouse")) {
-			s->scfunc =  do_toggle_void;
-			s->execute = FALSE;
-			s->toggle = USE_MOUSE;
 		} else if (!strcasecmp(input, "noconvert")) {
 			s->scfunc =  do_toggle_void;
 			s->execute = FALSE;

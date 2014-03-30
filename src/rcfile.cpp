@@ -41,9 +41,6 @@ std::vector<rcoption> rcopts = {
 	{"fill", 0, true},
 #endif
 	{"locking", LOCKING, false},
-#ifndef DISABLE_MOUSE
-	{"mouse", USE_MOUSE, false},
-#endif
 	{"multibuffer", MULTIBUFFER},
 	{"morespace", MORE_SPACE},
 	{"nofollow", NOFOLLOW_SYMLINKS},

@@ -41,10 +41,6 @@
 #endif
 #include <sys/ioctl.h>
 
-#ifndef DISABLE_MOUSE
-static int oldinterval = -1;
-/* Used to store the user's original mouse click interval. */
-#endif
 static bool no_rcfiles = FALSE;
 /* Should we ignore all rcfiles? */
 static struct termios oldterm;
@@ -739,33 +735,6 @@ void window_init(void)
 	}
 }
 
-#ifndef DISABLE_MOUSE
-/* Disable mouse support. */
-void disable_mouse_support(void)
-{
-	mousemask(0, NULL);
-	mouseinterval(oldinterval);
-}
-
-/* Enable mouse support. */
-void enable_mouse_support(void)
-{
-	mousemask(ALL_MOUSE_EVENTS, NULL);
-	oldinterval = mouseinterval(50);
-}
-
-/* Initialize mouse support.  Enable it if the USE_MOUSE flag is set,
- * and disable it otherwise. */
-void mouse_init(void)
-{
-	if (ISSET(USE_MOUSE)) {
-		enable_mouse_support();
-	} else {
-		disable_mouse_support();
-	}
-}
-#endif /* !DISABLE_MOUSE */
-
 #ifdef HAVE_GETOPT_LONG
 #define print_opt(shortflag, longflag, desc) print_opt_full(shortflag, longflag, desc)
 #else
@@ -840,9 +809,6 @@ void usage(void)
 	print_opt("-i", "--autoindent", N_("Automatically indent new lines"));
 	print_opt("-k", "--cut", N_("Cut from cursor to end of line"));
 	print_opt("-l", "--nofollow", N_("Don't follow symbolic links, overwrite"));
-#ifndef DISABLE_MOUSE
-	print_opt("-m", "--mouse", N_("Enable the use of the mouse"));
-#endif
 #ifndef DISABLE_OPERATINGDIR
 	print_opt(_("-o <dir>"), _("--operatingdir=<dir>"), N_("Set operating directory"));
 #endif
@@ -885,9 +851,6 @@ void version(void)
 
 #ifdef DISABLE_BROWSER
 	printf(" --disable-browser");
-#endif
-#ifdef DISABLE_MOUSE
-	printf(" --disable-mouse");
 #endif
 #ifndef ENABLE_NLS
 	printf(" --disable-nls");
@@ -1117,11 +1080,6 @@ void do_suspend(int signal)
 		return;
 	}
 
-#ifndef DISABLE_MOUSE
-	/* Turn mouse support off. */
-	disable_mouse_support();
-#endif
-
 	/* Move the cursor to the last line of the screen. */
 	move(LINES - 1, 0);
 	endwin();
@@ -1154,13 +1112,6 @@ void do_suspend_void(void)
 /* Handler for SIGCONT (continue after suspend). */
 void do_continue(int signal)
 {
-#ifndef DISABLE_MOUSE
-	/* Turn mouse support back on if it was on before. */
-	if (ISSET(USE_MOUSE)) {
-		enable_mouse_support();
-	}
-#endif
-
 	/* Perhaps the user resized the window while we slept.  Handle it,
 	 * and restore the terminal to its previous state and update the
 	 * screen in the process. */
@@ -1256,11 +1207,6 @@ void do_toggle(int flag)
 	TOGGLE(flag);
 
 	switch (flag) {
-#ifndef DISABLE_MOUSE
-	case USE_MOUSE:
-		mouse_init();
-		break;
-#endif
 	case MORE_SPACE:
 	case NO_HELP:
 		window_init();
@@ -1416,8 +1362,6 @@ void do_input(void)
 	TermKeyKey input = get_kbinput(edit);
 	bool cut_copy = false;
 
-	// TODO: handle mouse input
-
 	/* Check for a shortcut in the main list. */
 	const sc *s = get_shortcut(MMAIN, input);
 
@@ -1500,75 +1444,6 @@ void xoff_complaint(void)
 {
 	statusbar(_("XOFF ignored, mumble mumble"));
 }
-
-
-#ifndef DISABLE_MOUSE
-/* Handle a mouse click on the edit window or the shortcut list. */
-int do_mouse(void)
-{
-	int mouse_x, mouse_y;
-	int retval = get_mouseinput(&mouse_x, &mouse_y, TRUE);
-
-	/* We can click on the edit window to move the cursor. */
-	if (retval == 0 && wmouse_trafo(edit, &mouse_y, &mouse_x, FALSE)) {
-		bool sameline;
-		/* Did they click on the line with the cursor?  If they
-		 * clicked on the cursor, we set the mark. */
-		filestruct *current_save = openfile->current;
-		size_t current_x_save = openfile->current_x;
-		size_t pww_save = openfile->placewewant;
-
-		sameline = (mouse_y == openfile->current_y);
-
-		DEBUG_LOG << "mouse_y = " << mouse_y << ", current_y = " << openfile->current_y << std::endl;
-
-		if (ISSET(SOFTWRAP)) {
-			int i = 0;
-			for (openfile->current = openfile->edittop; openfile->current->next && i < mouse_y; openfile->current = openfile->current->next, i++) {
-				openfile->current_y = i;
-				i += strlenpt(openfile->current->data) / COLS;
-			}
-
-			DEBUG_LOG << "do_mouse(): moving to current_y = " << openfile->current_y << ", i = " << i << std::endl;
-			DEBUG_LOG << "            openfile->current->data = '" << openfile->current->data << "'" << std::endl;
-
-			if (i > mouse_y) {
-				openfile->current = openfile->current->prev;
-				openfile->current_x = actual_x(openfile->current->data, mouse_x + (mouse_y - openfile->current_y) * COLS);
-				DEBUG_LOG << "do_mouse(): i > mouse_y, mouse_x = " << mouse_x << ", current_x to = " << openfile->current_x << std::endl;
-			} else {
-				openfile->current_x = actual_x(openfile->current->data, mouse_x);
-				DEBUG_LOG << "do_mouse(): i <= mouse_y, mouse_x = " << mouse_x << ", setting current_x to = " << openfile->current_x << std::endl;
-			}
-
-			openfile->placewewant = xplustabs();
-
-		} else {
-			/* Move to where the click occurred. */
-			for (; openfile->current_y < mouse_y && openfile->current != openfile->filebot; openfile->current_y++) {
-				openfile->current = openfile->current->next;
-			}
-			for (; openfile->current_y > mouse_y && openfile->current != openfile->fileage; openfile->current_y--) {
-				openfile->current = openfile->current->prev;
-			}
-
-			openfile->current_x = actual_x(openfile->current->data, get_page_start(xplustabs()) + mouse_x);
-
-			openfile->placewewant = xplustabs();
-		}
-
-		/* Clicking where the cursor is toggles the mark, as does clicking
-		 * beyond the line length with the cursor at the end of the line. */
-		if (sameline && openfile->current_x == current_x_save) {
-			do_mark();
-		}
-
-		edit_redraw(current_save, pww_save);
-	}
-
-	return retval;
-}
-#endif /* !DISABLE_MOUSE */
 
 void alloc_multidata_if_needed(filestruct *fileptr)
 {
@@ -1825,9 +1700,6 @@ int main(int argc, char **argv)
 		{"const", 0, NULL, 'c'},
 		{"rebinddelete", 0, NULL, 'd'},
 		{"nofollow", 0, NULL, 'l'},
-#ifndef DISABLE_MOUSE
-		{"mouse", 0, NULL, 'm'},
-#endif
 #ifndef DISABLE_OPERATINGDIR
 		{"operatingdir", 1, NULL, 'o'},
 #endif
@@ -1986,11 +1858,6 @@ int main(int argc, char **argv)
 		case 'l':
 			SET(NOFOLLOW_SYMLINKS);
 			break;
-#ifndef DISABLE_MOUSE
-		case 'm':
-			SET(USE_MOUSE);
-			break;
-#endif
 #ifndef DISABLE_OPERATINGDIR
 		case 'o':
 			operating_dir = mallocstrcpy(operating_dir, optarg);
@@ -2252,11 +2119,6 @@ int main(int argc, char **argv)
 
 	/* Set up the signal handlers. */
 	signal_init();
-
-#ifndef DISABLE_MOUSE
-	/* Initialize mouse support. */
-	mouse_init();
-#endif
 
 	DEBUG_LOG << "Main: open file" << std::endl;
 
