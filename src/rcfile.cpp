@@ -27,12 +27,13 @@
 #include <sstream>
 #include <vector>
 
+#include <ctype.h>
+#include <errno.h>
+#include <glob.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
-#include <errno.h>
 #include <unistd.h>
-#include <ctype.h>
 
 std::vector<rcoption> rcopts = {
 	{"boldtext", BOLD_TEXT, false},
@@ -548,11 +549,42 @@ void parse_unbinding(char *ptr)
 
 
 /* Read and parse additional syntax files. */
-void parse_include(char *ptr)
+void parse_include_file(char *filename)
 {
 	struct stat rcinfo;
+
+	/* Can't get the specified file's full path cause it may screw up
+	our cwd depending on the parent dirs' permissions, (see Savannah bug 25297) */
+
+	/* Don't open directories, character files, or block files. */
+	if (stat(filename, &rcinfo) != -1) {
+		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
+			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), filename);
+		}
+	}
+
+	/* Open the new syntax file. */
+	std::ifstream rcstream(filename);
+	if (!rcstream.is_open()) {
+		rcfile_error(_("Error reading %s: %s"), filename, strerror(errno));
+		return;
+	}
+
+	/* Use the name and line number position of the new syntax file
+	 * while parsing it, so we can know where any errors in it are. */
+	pinotrc = filename;
+	lineno = 0;
+
+	DEBUG_LOG << "Parsing file \"" << filename << "\"" << std::endl;
+
+	parse_rcfile(rcstream, true);
+}
+
+void parse_include(char *ptr)
+{
 	char *option, *pinotrc_save = pinotrc, *expanded;
 	size_t lineno_save = lineno;
+	glob_t files;
 
 	option = ptr;
 	if (*option == '"') {
@@ -560,39 +592,21 @@ void parse_include(char *ptr)
 	}
 	ptr = parse_argument(ptr);
 
-	/* Can't get the specified file's full path cause it may screw up
-	our cwd depending on the parent dirs' permissions, (see Savannah bug 25297) */
-
-	/* Don't open directories, character files, or block files. */
-	if (stat(option, &rcinfo) != -1) {
-		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
-			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), option);
-		}
-	}
-
+	/* Expand tildes first, then the globs. */
 	expanded = real_dir_from_tilde(option);
 
-	/* Open the new syntax file. */
-	std::ifstream rcstream(expanded);
-	if (!rcstream.is_open()) {
-		rcfile_error(_("Error reading %s: %s"), expanded, strerror(errno));
-		return;
+	if (glob(expanded, GLOB_ERR|GLOB_NOSORT, NULL, &files) == 0) {
+		for (int i = 0; i < files.gl_pathc; ++i) {
+			parse_include_file(files.gl_pathv[i]);
+		}
+	} else {
+		rcfile_error(_("Error expanding %s: %s"), option, strerror(errno));
 	}
-
-	/* Use the name and line number position of the new syntax file
-	 * while parsing it, so we can know where any errors in it are. */
-	pinotrc = expanded;
-	lineno = 0;
-
-	DEBUG_LOG << "Parsing file \"" << expanded << "\" (expanded from \"" << option << "\")" << std::endl;
-
-	parse_rcfile(rcstream, true);
 
 	/* We're done with the new syntax file.  Restore the original
 	 * filename and line number position. */
 	pinotrc = pinotrc_save;
 	lineno = lineno_save;
-
 }
 
 /* Return the numeric value corresponding to the color named in colorname,

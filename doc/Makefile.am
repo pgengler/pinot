@@ -1,3 +1,3 @@
 SUBDIRS = man syntax texinfo
 
-EXTRA_DIST = faq.html
+dist_html_DATA = faq.html
