@@ -11,8 +11,7 @@ endif
 
 pinot_man_mans = pinot.1 pinotrc.5 rpinot.1
 if GROFF_HTML
-htmlman_DATA = pinot.1.html pinotrc.5.html rpinot.1.html
-htmlmandir = $(datadir)/pinot/man-html
+dist_html_DATA = pinot.1.html pinotrc.5.html rpinot.1.html
 pinot_built_sources = pinot.1.html pinotrc.5.html rpinot.1.html
 
 pinot.1.html: pinot.1
