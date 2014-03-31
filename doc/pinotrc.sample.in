@@ -244,6 +244,8 @@
 ##
 ## All regexes should be extended regular expressions.
 
+# include "@PKGDATADIR@/*.pinotrc"
+
 ## Key bindings
 ## Please see pinotrc(5) for more details on this
 ##
@@ -255,100 +257,3 @@
 
 ## Set this if your backspace key sends delete most of the time (2.1.3+)
 # bind kdel backspace all
-
-
-## pinotrc files
-# include "@PKGDATADIR@/pinotrc.pinotrc"
-
-## Assembler
-# include "@PKGDATADIR@/asm.pinotrc"
-
-## AWK
-# include "@PKGDATADIR@/awk.pinotrc"
-
-## C/C++
-# include "@PKGDATADIR@/c.pinotrc"
-
-## CMake files
-# include "@PKGDATADIR@/cmake.pinotrc"
-
-## Cascading Style Sheets
-# include "@PKGDATADIR@/css.pinotrc"
-
-## Debian files
-# include "@PKGDATADIR@/debian.pinotrc"
-
-## Fortran
-# include "@PKGDATADIR@/fortran.pinotrc"
-
-## Gentoo files
-# include "@PKGDATADIR@/gentoo.pinotrc"
-
-## Groff
-# include "@PKGDATADIR@/groff.pinotrc"
-
-## HTML
-# include "@PKGDATADIR@/html.pinotrc"
-
-## Java
-# include "@PKGDATADIR@/java.pinotrc"
-
-## Javascript
-# include "@PKGDATADIR@/javascript.pinotrc"
-
-## JSON files
-# include "@PKGDATADIR@/json.pinotrc"
-
-## Lua
-# include "@PKGDATADIR@/lua.pinotrc"
-
-## Makefiles
-# include "@PKGDATADIR@/makefile.pinotrc"
-
-## Manpages
-# include "@PKGDATADIR@/man.pinotrc"
-
-## Magicpoint presentations
-# include "@PKGDATADIR@/mgp.pinotrc"
-
-## Quoted emails (under e.g. mutt)
-# include "@PKGDATADIR@/mutt.pinotrc"
-
-## Objective-C
-# include "@PKGDATADIR@/objc.pinotrc"
-
-## OCaml
-# include "@PKGDATADIR@/ocaml.pinotrc"
-
-## Patch files
-# include "@PKGDATADIR@/patch.pinotrc"
-
-## Perl
-# include "@PKGDATADIR@/perl.pinotrc"
-
-## PHP
-# include "@PKGDATADIR@/php.pinotrc"
-
-## POV-Ray
-# include "@PKGDATADIR@/pov.pinotrc"
-
-## Python
-# include "@PKGDATADIR@/python.pinotrc"
-
-## Ruby
-# include "@PKGDATADIR@/ruby.pinotrc"
-
-## Bourne shell scripts
-# include "@PKGDATADIR@/sh.pinotrc"
-
-## RPM spec files
-# include "@PKGDATADIR@/spec.pinotrc"
-
-## TCL
-# include "@PKGDATADIR@/tcl.pinotrc"
-
-## TeX
-# include "@PKGDATADIR@/tex.pinotrc"
-
-## XML-type files
-# include "@PKGDATADIR@/xml.pinotrc"
