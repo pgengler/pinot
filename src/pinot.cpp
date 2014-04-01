@@ -1557,7 +1557,7 @@ precalc_cleanup:
  * TRUE. */
 void do_output(char *output, size_t output_len, bool allow_cntrls)
 {
-	size_t current_len, orig_lenpt, i = 0;
+	size_t current_len, orig_lenpt = 0, i = 0;
 	char *char_buf = charalloc(mb_cur_max());
 	int char_buf_len;
 
@@ -1642,7 +1642,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	/* Well we might also need a full refresh if we've changed the
 	   line length to be a new multiple of COLS */
 	if (ISSET(SOFTWRAP) && edit_refresh_needed == FALSE) {
-		if (strlenpt(openfile->current->data) / COLS  != orig_lenpt / COLS) {
+		if (strlenpt(openfile->current->data) / COLS != orig_lenpt / COLS) {
 			edit_refresh_needed = TRUE;
 		}
 	}
