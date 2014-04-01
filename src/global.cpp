@@ -500,7 +500,9 @@ void shortcut_init(void)
 	const char *refresh_msg = N_("Refresh");
 	const char *insert_file_msg =  N_("Insert File");
 	const char *go_to_line_msg = N_("Go To Line");
+#ifdef ENABLE_SPELLER
 	const char *spell_msg = N_("To Spell");
+#endif
 	const char *lint_msg = N_("To Linter");
 	const char *pinot_lint_msg = N_("Invoke the linter, if available");
 	const char *prev_lint_msg = N_("Prev Lint Msg");
@@ -519,7 +521,9 @@ void shortcut_init(void)
 	const char *pinot_cut_msg = N_("Cut the current line and store it in the cutbuffer");
 	const char *pinot_uncut_msg = N_("Uncut from the cutbuffer into the current line");
 	const char *pinot_cursorpos_msg = N_("Display the position of the cursor");
+#ifdef ENABLE_SPELLER
 	const char *pinot_spell_msg = N_("Invoke the spell checker, if available");
+#endif
 	const char *pinot_replace_msg = N_("Replace a string or a regular expression");
 	const char *pinot_gotoline_msg = N_("Go to line and column number");
 	const char *pinot_mark_msg = N_("Mark text at the cursor position");
