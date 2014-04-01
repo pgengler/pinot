@@ -919,9 +919,6 @@ std::string rest(std::stringstream& stream)
  * to contain color syntax commands: syntax, color, and icolor. */
 void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 {
-	ssize_t len;
-	size_t n = 0;
-
 	std::string line;
 
 	while (!std::getline(rcstream, line).eof()) {
@@ -942,7 +939,6 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 
 		char *ptr = NULL;
 		int set = 0;
-		size_t i;
 
 		/* Try to parse the keyword. */
 		if (keyword == "set") {
