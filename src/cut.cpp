@@ -118,7 +118,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 	if (!keep_cutbuffer && cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
 		cutbuffer = NULL;
-		DEBUG_LOG << "Blew away cutbuffer =)" << std::endl;
+		DEBUG_LOG("Blew away cutbuffer =)");
 	}
 
 	if (copy_text) {

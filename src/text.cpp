@@ -393,7 +393,7 @@ void redo_cut(undo *u)
 		   than one line again */
 		for (c = u->cutbuffer, t = openfile->current; c->next != NULL && t->next != NULL; ) {
 
-			DEBUG_LOG << "Advancing, lineno  = " << t->lineno << ", data = \"" << t->data << '"' << std::endl;
+			DEBUG_LOG("Advancing, lineno  = " << t->lineno << ", data = \"" << t->data << '"');
 			c = c->next;
 			t = t->next;
 		}
@@ -437,8 +437,8 @@ void do_undo(void)
 		statusbar(_("Internal error: can't match line %d.  Please save your work."), u->lineno);
 		return;
 	}
-	DEBUG_LOG << "data we're about to undo = \"" << f->data << '"' << std::endl;
-	DEBUG_LOG << "Undo running for type " << u->type << std::endl;
+	DEBUG_LOG("data we're about to undo = \"" << f->data << '"');
+	DEBUG_LOG("Undo running for type " << u->type);
 
 	openfile->current_x = u->begin;
 	switch(u->type) {
@@ -577,8 +577,8 @@ void do_redo(void)
 		statusbar(_("Internal error: can't match line %d.  Please save your work."), u->lineno);
 		return;
 	}
-	DEBUG_LOG << "data we're about to redo = \"" << f->data << '"' << std::endl;
-	DEBUG_LOG << "Redo running for type " << u->type << std::endl;
+	DEBUG_LOG("data we're about to redo = \"" << f->data << '"');
+	DEBUG_LOG("Redo running for type " << u->type);
 
 	switch(u->type) {
 	case ADD:
@@ -1019,8 +1019,8 @@ void add_undo(undo_type current_action)
 		break;
 	}
 
-	DEBUG_LOG << "fs->current->data = \"" << fs->current->data << "\", current_x = " << fs->current_x << ", u->begin = " << u->begin << ", type = " << current_action << std::endl;
-	DEBUG_LOG << "left add_undo..." << std::endl;
+	DEBUG_LOG("fs->current->data = \"" << fs->current->data << "\", current_x = " << fs->current_x << ", u->begin = " << u->begin << ", type = " << current_action);
+	DEBUG_LOG("left add_undo...");
 	fs->last_action = current_action;
 }
 
@@ -1040,13 +1040,10 @@ void update_undo(undo_type action)
 		return;
 	}
 
-#ifdef DEBUG
-	DEBUG_LOG << "action = " << action << ", fs->last_action = " << fs->last_action << ",  openfile->current->lineno = " << openfile->current->lineno;
+	DEBUG_LOG("action = " << action << ", fs->last_action = " << fs->last_action << ",  openfile->current->lineno = " << openfile->current->lineno);
 	if (fs->current_undo) {
-		DEBUG_LOG << ", fs->current_undo->lineno = " << fs->current_undo->lineno;
+		DEBUG_LOG("fs->current_undo->lineno = " << fs->current_undo->lineno);
 	}
-	DEBUG_LOG << std::endl;
-#endif
 
 	/* Change to an add if we're not using the same undo struct
 	   that we should be using */
@@ -1060,13 +1057,13 @@ void update_undo(undo_type action)
 
 	switch (u->type) {
 	case ADD:
-		DEBUG_LOG << "fs->current->data = \"" << fs->current->data << "\", current_x = " << fs->current_x << ", u->begin = " << u->begin << std::endl;
+		DEBUG_LOG("fs->current->data = \"" << fs->current->data << "\", current_x = " << fs->current_x << ", u->begin = " << u->begin);
 		len = strlen(u->strdata) + 2;
 		data = (char *) nrealloc((void *) u->strdata, len * sizeof(char *));
 		data[len-2] = fs->current->data[fs->current_x];
 		data[len-1] = '\0';
 		u->strdata = (char *) data;
-		DEBUG_LOG << "current undo data now \"" << u->strdata << '"' << std::endl;
+		DEBUG_LOG("current undo data now \"" << u->strdata << '"');
 		break;
 	case DEL:
 		len = strlen(u->strdata) + 2;
@@ -1104,7 +1101,7 @@ void update_undo(undo_type action)
 			add_undo(DEL);
 			return;
 		}
-		DEBUG_LOG << "current undo data now \"" << u->strdata << '"' << std::endl << "u->begin = " << u->begin << std::endl;
+		DEBUG_LOG("current undo data now \"" << u->strdata << '"' << std::endl << "u->begin = " << u->begin);
 		break;
 	case CUT:
 		if (!cutbuffer) {
@@ -1140,9 +1137,9 @@ void update_undo(undo_type action)
 		break;
 	}
 
-	DEBUG_LOG << "Done in udpate_undo (type was " << action << ')' << std::endl;
+	DEBUG_LOG("Done in udpate_undo (type was " << action << ')');
 	if (fs->last_action != action) {
-		DEBUG_LOG << "Starting add_undo for new action as it does not match last_action" << std::endl;
+		DEBUG_LOG("Starting add_undo for new action as it does not match last_action");
 		add_undo(action);
 	}
 	fs->last_action = action;
@@ -2171,7 +2168,7 @@ void do_linter(void)
 	read_buff = read_buff_ptr = charalloc(read_buff_size);
 
 	while ((bytesread = read(lint_fd[0], read_buff_ptr, pipe_buff_size)) > 0) {
-		DEBUG_LOG << "do_linter(): read " << bytesread << '(' << read_buff_ptr << ')' << std::endl;
+		DEBUG_LOG("do_linter(): read " << bytesread << '(' << read_buff_ptr << ')');
 		read_buff_read += bytesread;
 		read_buff_size += pipe_buff_size;
 		read_buff = read_buff_ptr = charealloc(read_buff, read_buff_size);
@@ -2181,7 +2178,7 @@ void do_linter(void)
 	*read_buff_ptr = '\0';
 	close(lint_fd[0]);
 
-	DEBUG_LOG << "do_lint(): Raw output: " << read_buff << std::endl;
+	DEBUG_LOG("do_lint(): Raw output: " << read_buff);
 
 	/* Process output. */
 	read_buff_word = read_buff_ptr = read_buff;
@@ -2221,7 +2218,7 @@ void do_linter(void)
 								}
 							}
 
-							DEBUG_LOG << "do_lint(): Successful parse! " << tmplineno << ':' << tmpcolno << ':' << message << std::endl;
+							DEBUG_LOG("do_lint(): Successful parse! " << tmplineno << ':' << tmpcolno << ':' << message);
 
 							/* Nice we have a lint message we can use */
 							parsesuccess++;

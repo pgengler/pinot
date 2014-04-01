@@ -256,7 +256,7 @@ void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *h
 	f->help = help;
 	f->blank_after = blank_after;
 
-	DEBUG_LOG << "Added func \"" << f->desc << '"' << std::endl;
+	DEBUG_LOG("Added func \"" << f->desc << '"');
 }
 
 const sc *first_sc_for(int menu, void (*func)(void))
@@ -305,7 +305,7 @@ const sc *first_sc_for(int menu, void (*func)(void))
 		return rawsc;
 	}
 
-	DEBUG_LOG << "Whoops, returning null given func " << func << " in menu " << menu << std::endl;
+	DEBUG_LOG("Whoops, returning null given func " << func << " in menu " << menu);
 	/* Otherwise... */
 	return NULL;
 }
@@ -328,7 +328,7 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 			}
 
 		if (s->menu != menu || s->keystr != scstring) { /* i.e. this is not a replace... */
-			DEBUG_LOG << "No match found..." << std::endl;
+			DEBUG_LOG("No match found...");
 			s->next = new sc;
 			s = s->next;
 			s->next = NULL;
@@ -343,8 +343,8 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 	s->execute = execute;
 	assign_keyinfo(s);
 
-	DEBUG_LOG << "list val = " << s->menu << std::endl;
-	DEBUG_LOG << "Hey, set sequence to " << s->seq << " for shortcut \"" << scstring << '"' << std::endl;
+	DEBUG_LOG("list val = " << s->menu);
+	DEBUG_LOG("Hey, set sequence to " << s->seq << " for shortcut \"" << scstring << '"');
 }
 
 /* Assign one menu's shortcuts to another function */
@@ -443,9 +443,9 @@ void print_sclist(void)
 	for (s = sclist; s != NULL; s = s->next) {
 		f = sctofunc(s);
 		if (f) {
-			DEBUG_LOG << "Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus << std::endl;
+			DEBUG_LOG("Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus);
 		} else {
-			DEBUG_LOG << "Hmm, didnt find a func for \"" << s->keystr << '"' << std::endl;
+			DEBUG_LOG("Hmm, didnt find a func for \"" << s->keystr << '"');
 		}
 	}
 

@@ -1405,7 +1405,7 @@ void do_input(void)
 						reset_multis(openfile->current, FALSE);
 					}
 					if (edit_refresh_needed) {
-						DEBUG_LOG << "running edit_refresh() as edit_refresh_needed is true" << std::endl;
+						DEBUG_LOG("running edit_refresh() as edit_refresh_needed is true");
 						edit_refresh();
 						edit_refresh_needed = FALSE;
 					}
@@ -1442,7 +1442,7 @@ void alloc_multidata_if_needed(filestruct *fileptr)
    rendering (with any hope at all...) */
 void precalc_multicolorinfo(void)
 {
-	DEBUG_LOG << "entering precalc_multicolorinfo()" << std::endl;
+	DEBUG_LOG("entering precalc_multicolorinfo()");
 	if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 		regmatch_t startmatch, endmatch;
 		filestruct *fileptr, *endptr;
@@ -1461,14 +1461,14 @@ void precalc_multicolorinfo(void)
 			if (tmpcolor->end == NULL) {
 				continue;
 			}
-			DEBUG_LOG << "working on color id " << tmpcolor->id << std::endl;
+			DEBUG_LOG("working on color id " << tmpcolor->id);
 
 			for (fileptr = openfile->fileage; fileptr != NULL; fileptr = fileptr->next) {
 				int startx = 0;
 				int nostart = 0;
 
 
-				DEBUG_LOG << "working on lineno " << fileptr->lineno << std::endl;
+				DEBUG_LOG("working on lineno " << fileptr->lineno);
 
 				alloc_multidata_if_needed(fileptr);
 
@@ -1483,20 +1483,20 @@ void precalc_multicolorinfo(void)
 					/* Look for end and start marking how many lines are encompassed
 					   whcih should speed up rendering later */
 					startx += startmatch.rm_eo;
-					DEBUG_LOG << "match found at pos " << startx << std::endl;
+					DEBUG_LOG("match found at pos " << startx);
 
 					/* Look on this line first for end */
 					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, 0)  == 0) {
 						startx += endmatch.rm_eo;
 						fileptr->multidata[tmpcolor->id] |= CSTARTENDHERE;
-						DEBUG_LOG << "end found on this line" << std::endl;
+						DEBUG_LOG("end found on this line");
 						continue;
 					}
 
 					/* Nice, we didn't find the end regex on this line.  Let's start looking for it */
 					for (endptr = fileptr->next; endptr != NULL; endptr = endptr->next) {
 
-						DEBUG_LOG << "advancing to line " << endptr->lineno << " to find end..." << std::endl;
+						DEBUG_LOG("advancing to line " << endptr->lineno << " to find end...");
 						/* Check for keyboard input  again */
 						if ((cur_check = time(NULL)) - last_check > 1) {
 							last_check = cur_check;
@@ -1510,33 +1510,33 @@ void precalc_multicolorinfo(void)
 					}
 
 					if (endptr == NULL) {
-						DEBUG_LOG << "no end found, breaking out" << std::endl;
+						DEBUG_LOG("no end found, breaking out");
 						break;
 					}
 
 
-					DEBUG_LOG << "end found" << std::endl;
+					DEBUG_LOG("end found");
 
 					/* We found it, we found it, la la la la la.  Mark all the
 					lines in between and the ends properly */
 					fileptr->multidata[tmpcolor->id] |= CENDAFTER;
-					DEBUG_LOG << "marking line " << fileptr->lineno << " as CENDAFTER" << std::endl;
+					DEBUG_LOG("marking line " << fileptr->lineno << " as CENDAFTER");
 					for (fileptr = fileptr->next; fileptr != endptr; fileptr = fileptr->next) {
 						alloc_multidata_if_needed(fileptr);
 						fileptr->multidata[tmpcolor->id] = CWHOLELINE;
-						DEBUG_LOG << "marking intermediary line " << fileptr->lineno << " as CWHOLELINE" << std::endl;
+						DEBUG_LOG("marking intermediary line " << fileptr->lineno << " as CWHOLELINE");
 					}
 					alloc_multidata_if_needed(endptr);
-					DEBUG_LOG << "marking line " << fileptr->lineno << " as BEGINBEFORE" << std::endl;
+					DEBUG_LOG("marking line " << fileptr->lineno << " as BEGINBEFORE");
 					endptr->multidata[tmpcolor->id] |= CBEGINBEFORE;
 					/* We should be able to skip all the way to the line of the match.
 					This may introduce more bugs but it's the Right Thing to do */
 					fileptr = endptr;
 					startx = endmatch.rm_eo;
-					DEBUG_LOG << "jumping to line " << endptr->lineno << " pos " << startx << " to continue" << std::endl;
+					DEBUG_LOG("jumping to line " << endptr->lineno << " pos " << startx << " to continue");
 				}
 				if (nostart && startx == 0) {
-					DEBUG_LOG << "no start found on line " << fileptr->lineno << ", continuing" << std::endl;
+					DEBUG_LOG("no start found on line " << fileptr->lineno << ", continuing");
 					fileptr->multidata[tmpcolor->id] = CNONE;
 					continue;
 				}
@@ -1933,7 +1933,7 @@ int main(int argc, char **argv)
 
 		do_rcfile();
 
-		DEBUG_LOG << "After rebinding keys..." << std::endl;
+		DEBUG_LOG("After rebinding keys...");
 #ifdef DEBUG
 		print_sclist();
 #endif
@@ -2067,7 +2067,7 @@ int main(int argc, char **argv)
 	/* Turn the cursor on for sure. */
 	curs_set(1);
 
-	DEBUG_LOG << "Main: set up windows" << std::endl;
+	DEBUG_LOG("Main: set up windows");
 
 	/* Initialize all the windows based on the current screen dimensions. */
 	window_init();
@@ -2078,7 +2078,7 @@ int main(int argc, char **argv)
 	/* Set up the signal handlers. */
 	signal_init();
 
-	DEBUG_LOG << "Main: open file" << std::endl;
+	DEBUG_LOG("Main: open file");
 
 	/* If there's a +LINE or +LINE,COLUMN flag here, it is the first
 	 * non-option argument, and it is followed by at least one other
@@ -2147,7 +2147,7 @@ int main(int argc, char **argv)
 		UNSET(MULTIBUFFER);
 	}
 
-	DEBUG_LOG << "Main: top and bottom win" << std::endl;
+	DEBUG_LOG("Main: top and bottom win");
 
 	if (openfile->syntax && openfile->syntax->nmultis > 0) {
 		precalc_multicolorinfo();

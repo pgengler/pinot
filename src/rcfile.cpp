@@ -260,14 +260,14 @@ void parse_syntax(char *ptr)
 	 * that we always use the last syntax with a given name. */
 	auto existing_syntax = syntaxes[nameptr];
 	if (existing_syntax) {
-		DEBUG_LOG << "Found existing syntax with name \"" << nameptr << "\"; overriding with new definition" << std::endl;
+		DEBUG_LOG("Found existing syntax with name \"" << nameptr << "\"; overriding with new definition");
 		delete existing_syntax;
 		existing_syntax = nullptr;
 	}
 
 	new_syntax = new Syntax(nameptr);
 
-	DEBUG_LOG << "Starting a new syntax type: \"" << nameptr << '"' << std::endl;
+	DEBUG_LOG("Starting a new syntax type: \"" << nameptr << '"');
 
 	/* The "none" syntax is the same as not having a syntax at all, so
 	 * we can't assign any extensions or colors to it. */
@@ -335,7 +335,7 @@ void parse_extends(char *ptr)
 	}
 	ptr = parse_argument(ptr);
 
-	DEBUG_LOG << "Reading a new 'extends': \"" << syntax_name << '"' << std::endl;
+	DEBUG_LOG("Reading a new 'extends': \"" << syntax_name << '"');
 
 	new_syntax->extends.push_back(syntax_name);
 }
@@ -364,7 +364,7 @@ void parse_magictype(char *ptr)
 		return;
 	}
 
-	DEBUG_LOG << "Starting a magic type: \"" << ptr << '"' << std::endl;
+	DEBUG_LOG("Starting a magic type: \"" << ptr << '"');
 
 	/* Now load the extensions into their part of the struct. */
 	while (*ptr != '\0') {
@@ -464,15 +464,14 @@ void parse_keybinding(char *ptr)
 	}
 
 
-	DEBUG_LOG << "newsc now address " << static_cast<void *>(&newsc) << ", menu func assigned = " << newsc->scfunc << ", menu = " << menu << std::endl;
-
+	DEBUG_LOG("newsc now address " << static_cast<void *>(&newsc) << ", menu func assigned = " << newsc->scfunc << ", menu = " << menu);
 
 	newsc->keystr = keycopy;
 	newsc->menu = menu;
 	newsc->type = strtokeytype(newsc->keystr);
 	assign_keyinfo(newsc);
-	DEBUG_LOG << "s->keystr = \"" << newsc->keystr << '"' << std::endl;
-	DEBUG_LOG << "s->seq = " << newsc->seq << std::endl;
+	DEBUG_LOG("s->keystr = \"" << newsc->keystr << '"');
+	DEBUG_LOG("s->seq = " << newsc->seq);
 
 	if (check_bad_binding(newsc)) {
 		rcfile_error(N_("Sorry, keystr \"%s\" is an illegal binding"), newsc->keystr);
@@ -485,7 +484,7 @@ void parse_keybinding(char *ptr)
 	for (s = sclist; s != NULL; s = s->next) {
 		if (((s->menu & newsc->menu)) && s->seq == newsc->seq) {
 			s->menu &= ~newsc->menu;
-			DEBUG_LOG << "replaced menu entry " << s->menu << std::endl;
+			DEBUG_LOG("replaced menu entry " << s->menu);
 		}
 	}
 	newsc->next = sclist;
@@ -513,7 +512,7 @@ void parse_unbinding(char *ptr)
 		keycopy[i] = toupper(keycopy[i]);
 	}
 
-	DEBUG_LOG << "Starting unbinding code" << std::endl;
+	DEBUG_LOG("Starting unbinding code");
 
 	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
 		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
@@ -536,13 +535,13 @@ void parse_unbinding(char *ptr)
 		return;
 	}
 
-	DEBUG_LOG << "unbinding \"" << keycopy << "\" from menu = " << menu << std::endl;
+	DEBUG_LOG("unbinding \"" << keycopy << "\" from menu = " << menu);
 
 	/* Now find the apropriate entries in the menu to delete */
 	for (s = sclist; s != NULL; s = s->next) {
 		if (((s->menu & menu)) && !strcmp(s->keystr,keycopy)) {
 			s->menu &= ~menu;
-			DEBUG_LOG << "deleted menu entry " << s->menu << std::endl;
+			DEBUG_LOG("deleted menu entry " << s->menu);
 		}
 	}
 }
@@ -575,7 +574,7 @@ void parse_include_file(char *filename)
 	pinotrc = filename;
 	lineno = 0;
 
-	DEBUG_LOG << "Parsing file \"" << filename << "\"" << std::endl;
+	DEBUG_LOG("Parsing file \"" << filename << "\"");
 
 	parse_rcfile(rcstream, true);
 }
@@ -774,9 +773,9 @@ void parse_colors(char *ptr, bool icase)
 			new_syntax->add_color(newcolor);
 #ifdef DEBUG
 			if (new_syntax->own_colors().empty()) {
-				DEBUG_LOG << "Starting a new colorstring for fg " << fg << ", bg " << bg << std::endl;
+				DEBUG_LOG("Starting a new colorstring for fg " << fg << ", bg " << bg);
 			} else {
-				DEBUG_LOG << "Adding new entry for fg " << fg << ", bg " << bg << std::endl;
+				DEBUG_LOG("Adding new entry for fg " << fg << ", bg " << bg);
 			}
 #endif
 		} else {
@@ -856,7 +855,7 @@ void parse_headers(char *ptr)
 		if (nregcomp(regstr, 0)) {
 			auto newheader = new SyntaxMatch(regstr);
 
-			DEBUG_LOG << "Starting a new header entry: " << regstr << std::endl;
+			DEBUG_LOG("Starting a new header entry: " << regstr);
 
 			new_syntax->headers.push_back(newheader);
 		}
@@ -1020,7 +1019,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		for (auto rcopt : rcopts) {
 			if (rcopt.name == option) {
 				found = true;
-				DEBUG_LOG << "parse_rcfile(): name = \"" << rcopt.name << '"' << std::endl;
+				DEBUG_LOG("parse_rcfile(): name = \"" << rcopt.name << '"');
 				if (set == 1) {
 					if (rcopt.flag != 0) {
 						/* This option has a flag, so it doesn't take an argument. */
@@ -1038,7 +1037,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
 							break;
 						}
-						DEBUG_LOG << "argument = \"" << argument << '"' << std::endl;
+						DEBUG_LOG("argument = \"" << argument << '"');
 
 						/* Make sure option is a valid multibyte string. */
 						if (!is_valid_mbstring(argument.c_str())) {
@@ -1091,7 +1090,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							assert(false);
 						}
 					}
-					DEBUG_LOG << "flag = " << rcopt.flag << std::endl;
+					DEBUG_LOG("flag = " << rcopt.flag);
 				} else if (rcopt.flag != 0) {
 					UNSET(rcopt.flag);
 				} else {
@@ -1134,7 +1133,7 @@ void do_rcfile(void)
 		}
 	}
 
-	DEBUG_LOG << "Parsing file \"" << pinotrc << '"' << std::endl;
+	DEBUG_LOG("Parsing file \"" << pinotrc << '"');
 
 	/* Try to open the system-wide pinotrc. */
 	std::ifstream rcstream(pinotrc);

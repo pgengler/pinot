@@ -173,7 +173,7 @@ void get_key_buffer(WINDOW *win)
 	/* Switch back to non-blocking input. */
 	nodelay(win, FALSE);
 
-	DEBUG_LOG << "get_key_buffer(): key_buffer_len = " << key_buffer_len << std::endl;
+	DEBUG_LOG("get_key_buffer(): key_buffer_len = " << key_buffer_len);
 }
 
 /* Return the length of the keystroke buffer. */
@@ -646,14 +646,14 @@ int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
 		}
 	}
 
-	DEBUG_LOG << "parse_kbinput(): "
+	DEBUG_LOG("parse_kbinput(): "
 		<< "kbinput = " << *kbinput
 		<< ", meta_key = " << (*meta_key ? "TRUE" : "FALSE")
 		<< ", func_key = " << (*func_key ? "TRUE" : "FALSE")
 		<< ", escapes = " << escapes
 		<< ", byte_digits = " << byte_digits
 		<< ", retval = " << retval
-		<< std::endl;
+	);
 
 	free(kbinput);
 
@@ -1092,7 +1092,7 @@ int get_escape_seq_kbinput(const int *seq, size_t seq_len)
 		}
 	}
 
-	DEBUG_LOG << "get_escape_seq_kbinput(): retval = " << retval << std::endl;
+	DEBUG_LOG("get_escape_seq_kbinput(): retval = " << retval);
 
 	return retval;
 }
@@ -1142,7 +1142,7 @@ int parse_escape_seq_kbinput(WINDOW *win, int kbinput)
 		}
 	}
 
-	DEBUG_LOG << "parse_escape_seq_kbinput(): kbinput = " << kbinput << ", seq_len = " << seq_len << ", retval = " << retval << std::endl;
+	DEBUG_LOG("parse_escape_seq_kbinput(): kbinput = " << kbinput << ", seq_len = " << seq_len << ", retval = " << retval);
 
 	return retval;
 }
@@ -1216,7 +1216,7 @@ int get_byte_kbinput(int kbinput)
 		byte = 0;
 	}
 
-	DEBUG_LOG << "get_byte_kbinput(): kbinput = " << kbinput << ", byte_digits = " << byte_digits << ", byte = " << byte << ", retval = " << retval << std::endl;
+	DEBUG_LOG("get_byte_kbinput(): kbinput = " << kbinput << ", byte_digits = " << byte_digits << ", byte = " << byte << ", retval = " << retval);
 
 	return retval;
 }
@@ -1320,7 +1320,7 @@ long get_unicode_kbinput(int kbinput)
 		uni = 0;
 	}
 
-	DEBUG_LOG << "get_unicode_kbinput(): kbinput = " << kbinput << ", uni_digits = " << uni_digits << ", uni = " << uni << ", retval = " << retval << std::endl;
+	DEBUG_LOG("get_unicode_kbinput(): kbinput = " << kbinput << ", uni_digits = " << uni_digits << ", uni = " << uni << ", retval = " << retval);
 
 	return retval;
 }
@@ -1359,7 +1359,7 @@ int get_control_kbinput(int kbinput)
 		retval = kbinput;
 	}
 
-	DEBUG_LOG << "get_control_kbinput(): kbinput = " << kbinput << ", retval = " << retval << std::endl;
+	DEBUG_LOG("get_control_kbinput(): kbinput = " << kbinput << ", retval = " << retval);
 
 	return retval;
 }
@@ -1507,7 +1507,7 @@ const sc *get_shortcut(int menu, TermKeyKey kbinput)
 {
 	std::string key = keyboard->format_key(kbinput);
 
-	DEBUG_LOG << "get_shortcut(): key is " << key << std::endl;
+	DEBUG_LOG("get_shortcut(): key is " << key);
 
 	for (sc *s = sclist; s != NULL; s = s->next) {
 		// If this shortcut doesn't apply to the current menu, skip it
@@ -1515,12 +1515,12 @@ const sc *get_shortcut(int menu, TermKeyKey kbinput)
 			continue;
 		}
 		if (key == s->keystr) {
-			DEBUG_LOG << "matched seq \"" << s->keystr << "\" (menus " << menu << " = " << s->menu << ")" << std::endl;
+			DEBUG_LOG("matched seq \"" << s->keystr << "\" (menus " << menu << " = " << s->menu << ")");
 			return s;
 		}
 	}
 
-	DEBUG_LOG << "get_shortcut(): matched nothing" << std::endl;
+	DEBUG_LOG("get_shortcut(): matched nothing");
 
 	return NULL;
 }
@@ -1529,20 +1529,20 @@ const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key)
 {
 	sc *s;
 
-	DEBUG_LOG << "get_shortcut(): "
+	DEBUG_LOG("get_shortcut(): "
 		<< "kbinput = " << *kbinput
 		<< ", meta_key = " << (*meta_key ? "TRUE" : "FALSE")
 		<< ", func_key = " << (*func_key ? "TRUE" : "FALSE")
-		<< std::endl;
+	);
 
 	/* Check for shortcuts. */
 	for (s = sclist; s != NULL; s = s->next) {
 		if ((menu & s->menu) && ((s->type == META && *meta_key == TRUE && *kbinput == s->seq) || (s->type != META && *kbinput == s->seq))) {
-			DEBUG_LOG << "matched seq \"" << s->keystr << "\" and btw meta was " << *meta_key << " (menus " << menu << " = " << s->menu << ')' << std::endl;
+			DEBUG_LOG("matched seq \"" << s->keystr << "\" and btw meta was " << *meta_key << " (menus " << menu << " = " << s->menu << ')');
 			return s;
 		}
 	}
-	DEBUG_LOG << "matched nothing btw meta was " << *meta_key << std::endl;
+	DEBUG_LOG("matched nothing btw meta was " << *meta_key);
 
 	return NULL;
 }
@@ -2116,9 +2116,9 @@ void bottombars(int menu)
 
 	blank_bottombars();
 
-	DEBUG_LOG << "In bottombars, and slen == " << slen << std::endl;
+	DEBUG_LOG("In bottombars, and slen == " << slen);
 
-	DEBUG_LOG << "Checking menu items...." << std::endl;
+	DEBUG_LOG("Checking menu items....");
 	for (f = allfuncs, i = 0; i < slen && f != NULL; f = f->next) {
 
 		if ((f->menus & menu) == 0) {
@@ -2129,14 +2129,14 @@ void bottombars(int menu)
 			continue;
 		}
 
-		DEBUG_LOG << "found one! f->menus = " << f->menus << ", desc = \"" << f->desc << '"' << std::endl;
+		DEBUG_LOG("found one! f->menus = " << f->menus << ", desc = \"" << f->desc << '"');
 		s = first_sc_for(menu, f->scfunc);
 		if (s == NULL) {
-			DEBUG_LOG << "Whoops, guess not, no shortcut key found for func!" << std::endl;
+			DEBUG_LOG("Whoops, guess not, no shortcut key found for func!");
 			continue;
 		}
 		wmove(bottomwin, 1 + i % 2, (i / 2) * colwidth);
-		DEBUG_LOG << "Calling onekey with keystr \"" << s->keystr << "\" and desc \"" << f->desc << '"' << std::endl;
+		DEBUG_LOG("Calling onekey with keystr \"" << s->keystr << "\" and desc \"" << f->desc << '"');
 		onekey(s->keystr, _(f->desc), colwidth + (COLS % colwidth));
 		i++;
 	}
@@ -2624,14 +2624,14 @@ int update_line(filestruct *fileptr, size_t index)
 		int full_length = strlenpt(fileptr->data);
 		for (index += COLS; index <= full_length && line < editwinrows; index += COLS) {
 			line++;
-			DEBUG_LOG << "update_line(): Softwrap code, moving to " << line << " index " << index << std::endl;
+			DEBUG_LOG("update_line(): Softwrap code, moving to " << line << " index " << index);
 			blank_line(edit, line, 0, COLS);
 
 			/* Expand the line, replacing tabs with spaces, and control
 			 * characters with their displayed forms. */
 			converted = display_string(fileptr->data, index, COLS, !ISSET(SOFTWRAP));
 			if (ISSET(SOFTWRAP) && strlen(converted) >= COLS - 2) {
-				DEBUG_LOG << "update_line(): converted(2) line == " << converted << std::endl;
+				DEBUG_LOG("update_line(): converted(2) line == " << converted);
 			}
 
 			/* Paint the line. */
@@ -2683,7 +2683,7 @@ void compute_maxrows(void)
 		maxrows += editwinrows - n;
 	}
 
-	DEBUG_LOG << "compute_maxrows(): maxrows = " << maxrows << std::endl;
+	DEBUG_LOG("compute_maxrows(): maxrows = " << maxrows);
 }
 
 /* Scroll the edit window in the given direction and the given number
@@ -2818,7 +2818,7 @@ void edit_redraw(filestruct *old_current, size_t pww_save)
 	        openfile->edittop->lineno || openfile->current->lineno >=
 	        openfile->edittop->lineno + maxrows) {
 
-		DEBUG_LOG << "edit_redraw(): line " << openfile->current->lineno << " was offscreen, oldcurrent = " << old_current->lineno << " edittop = " << openfile->edittop->lineno << std::endl;
+		DEBUG_LOG("edit_redraw(): line " << openfile->current->lineno << " was offscreen, oldcurrent = " << old_current->lineno << " edittop = " << openfile->edittop->lineno);
 
 		/* If the mark is on, update all the lines between old_current
 		 * and either the old first line or old last line (depending on
@@ -2900,7 +2900,7 @@ void edit_refresh(void)
 
 	if (openfile->current->lineno < openfile->edittop->lineno || openfile->current->lineno >= openfile->edittop->lineno + maxrows) {
 
-		DEBUG_LOG << "edit_refresh(): line = " << openfile->current->lineno << ", edittop " << openfile->edittop->lineno << " + maxrows " << maxrows << std::endl;
+		DEBUG_LOG("edit_refresh(): line = " << openfile->current->lineno << ", edittop " << openfile->edittop->lineno << " + maxrows " << maxrows);
 
 		/* Put the top line of the edit window in range of the current line. */
 		edit_update(CENTER);
@@ -2908,7 +2908,7 @@ void edit_refresh(void)
 
 	foo = openfile->edittop;
 
-	DEBUG_LOG << "edit_refresh(): edittop->lineno = " << openfile->edittop->lineno << std::endl;
+	DEBUG_LOG("edit_refresh(): edittop->lineno = " << openfile->edittop->lineno);
 
 	for (nlines = 0; nlines < editwinrows && foo != NULL; nlines++) {
 		nlines += update_line(foo, (foo == openfile->current) ? openfile->current_x : 0);
@@ -2958,7 +2958,7 @@ void edit_update(update_type location)
 		}
 	}
 	openfile->edittop = foo;
-	DEBUG_LOG << "edit_udpate(), setting edittop to lineno " << openfile->edittop->lineno << std::endl;
+	DEBUG_LOG("edit_udpate(), setting edittop to lineno " << openfile->edittop->lineno);
 	compute_maxrows();
 	edit_refresh_needed = TRUE;
 }

@@ -37,7 +37,7 @@
 /* Mark a string that will be sent to gettext() later. */
 
 #ifdef DEBUG
-#define DEBUG_LOG std::cerr << __FILE__ << ':' << __LINE__ << ": "
+#define DEBUG_LOG(message) std::cerr << __FILE__ << ':' << __LINE__ << ": " << message << std::endl
 #else
-#define DEBUG_LOG false && std::cerr
+#define DEBUG_LOG(message) /* Nothing */
 #endif
