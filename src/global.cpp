@@ -606,12 +606,6 @@ void shortcut_init(void)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), FALSE, NOVIEW);
 
-	/* We allow inserting files in view mode if multibuffers are
-	 * available, so that we can view multiple files.  If we're using
-	 * restricted mode, inserting files is disabled, since it allows
-	 * reading from or writing to files not specified on the command
-	 * line. */
-
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), FALSE, VIEW);
 
@@ -632,9 +626,6 @@ void shortcut_init(void)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), FALSE, VIEW);
 
-	/* If we're using restricted mode, spell checking is disabled
-	 * because it allows reading from or writing to files not specified
-	 * on the command line. */
 #ifdef ENABLE_SPELLER
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_spell, MMAIN, spell_msg, IFSCHELP(pinot_spell_msg), TRUE, NOVIEW);
@@ -744,31 +735,18 @@ void shortcut_init(void)
 	add_to_funcs(gototext_void, MGOTOLINE, gototext_msg, IFSCHELP(pinot_whereis_msg), TRUE, VIEW);
 
 #ifndef DISABLE_BROWSER
-	if (!ISSET(RESTRICTED))
-		add_to_funcs(to_files_void, (MGOTOLINE|MINSERTFILE), to_files_msg, IFSCHELP(pinot_tofiles_msg), FALSE, VIEW);
+	add_to_funcs(to_files_void, (MGOTOLINE|MINSERTFILE), to_files_msg, IFSCHELP(pinot_tofiles_msg), FALSE, VIEW);
 #endif
 
-	if (!ISSET(RESTRICTED)) {
-		/* If we're using restricted mode, the DOS format, Mac format,
-		* append, prepend, and backup toggles are disabled.  The first and
-		* second are useless since inserting files is disabled, the third
-		* and fourth are disabled because they allow writing to files not
-		* specified on the command line, and the fifth is useless since
-		* backups are disabled. */
-		add_to_funcs(dos_format_void, MWRITEFILE, dos_format_msg, IFSCHELP(pinot_dos_msg), FALSE, NOVIEW);
-		add_to_funcs(mac_format_void, MWRITEFILE, mac_format_msg, IFSCHELP(pinot_mac_msg), FALSE, NOVIEW);
-		add_to_funcs(append_void, MWRITEFILE, append_msg, IFSCHELP(pinot_append_msg), FALSE, NOVIEW);
-		add_to_funcs(prepend_void, MWRITEFILE, prepend_msg, IFSCHELP(pinot_prepend_msg), FALSE, NOVIEW);
-		add_to_funcs( backup_file_void, MWRITEFILE, backup_file_msg, IFSCHELP(pinot_backup_msg), FALSE, NOVIEW);
+	add_to_funcs(dos_format_void, MWRITEFILE, dos_format_msg, IFSCHELP(pinot_dos_msg), FALSE, NOVIEW);
+	add_to_funcs(mac_format_void, MWRITEFILE, mac_format_msg, IFSCHELP(pinot_mac_msg), FALSE, NOVIEW);
+	add_to_funcs(append_void, MWRITEFILE, append_msg, IFSCHELP(pinot_append_msg), FALSE, NOVIEW);
+	add_to_funcs(prepend_void, MWRITEFILE, prepend_msg, IFSCHELP(pinot_prepend_msg), FALSE, NOVIEW);
+	add_to_funcs( backup_file_void, MWRITEFILE, backup_file_msg, IFSCHELP(pinot_backup_msg), FALSE, NOVIEW);
 
-		/* If we're using restricted mode, command execution is disabled.
-		 * It's useless since inserting files is disabled. */
-		add_to_funcs(ext_cmd_void, MINSERTFILE, ext_cmd_msg, IFSCHELP(pinot_execute_msg), FALSE, NOVIEW);
+	add_to_funcs(ext_cmd_void, MINSERTFILE, ext_cmd_msg, IFSCHELP(pinot_execute_msg), FALSE, NOVIEW);
 
-		/* If we're using restricted mode, the multibuffer toggle is
-		 * disabled.  It's useless since inserting files is disabled. */
-		add_to_funcs(new_buffer_void, MINSERTFILE, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), FALSE, NOVIEW);
-	}
+	add_to_funcs(new_buffer_void, MINSERTFILE, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), FALSE, NOVIEW);
 
 	add_to_funcs(do_insertfile_void, MEXTCMD, insert_file_msg, IFSCHELP(pinot_insert_msg), FALSE, VIEW);
 

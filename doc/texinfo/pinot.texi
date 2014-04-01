@@ -179,13 +179,6 @@ Set the quoting string for justifying.  The default value is
 if extended regular expression support is available, or "> " otherwise.
 Note that @code{\t} above stands for a literal Tab character.
 
-@item -R, --restricted
-Restricted mode: don't read or write to any file not specified on the
-command line; read any pinotrc files; allow suspending; allow a file to
-be appended to, prepended to, or saved under a different name if it
-already has one; or use backup files or spell checking.  Also accessible
-by invoking @code{pinot} with any name beginning with 'r' (e.g. "rpinot").
-
 @item -S, --smooth
 Enable smooth scrolling.  Text will scroll line-by-line, instead of the
 usual chunk-by-chunk behavior.

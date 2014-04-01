@@ -650,13 +650,6 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 	char *retval;
 	bool failed = TRUE;
 
-	/* If we're using restricted mode, don't write any emergency backup
-	 * files, since that would allow reading from or writing to files
-	 * not specified on the command line. */
-	if (ISSET(RESTRICTED)) {
-		return;
-	}
-
 	/* If we can't save, we have really bad problems, but we might as
 	 * well try. */
 	if (*die_filename == '\0') {
@@ -797,7 +790,6 @@ void usage(void)
 	print_opt("-N", "--noconvert", N_("Don't convert files from DOS/Mac format"));
 	print_opt("-O", "--morespace", N_("Use one more line for editing"));
 	print_opt("-P", "--poslog", N_("Log & read location of cursor position"));
-	print_opt("-R", "--restricted", N_("Restricted mode"));
 	print_opt("-S", "--smooth", N_("Scroll by line instead of half-screen"));
 	print_opt(_("-T <#cols>"), _("--tabsize=<#cols>"), N_("Set width of a tab to #cols columns"));
 	print_opt("-U", "--quickblank", N_("Do quick statusbar blanking"));
@@ -1074,12 +1066,6 @@ void handle_hupterm(int signal)
 /* Handler for SIGTSTP (suspend). */
 void do_suspend(int signal)
 {
-
-	if (ISSET(RESTRICTED)) {
-		pinot_disabled_msg();
-		return;
-	}
-
 	/* Move the cursor to the last line of the screen. */
 	move(LINES - 1, 0);
 	endwin();
@@ -1693,7 +1679,6 @@ int main(int argc, char **argv)
 		{"rebindkeypad", 0, NULL, 'K'},
 		{"nonewlines", 0, NULL, 'L'},
 		{"morespace", 0, NULL, 'O'},
-		{"restricted", 0, NULL, 'R'},
 		{"tabsize", 1, NULL, 'T'},
 		{"version", 0, NULL, 'V'},
 		{"syntax", 1, NULL, 'Y'},
@@ -1818,9 +1803,6 @@ int main(int argc, char **argv)
 		case 'P':
 			SET(POS_HISTORY);
 			break;
-		case 'R':
-			SET(RESTRICTED);
-			break;
 		case 'S':
 			SET(SMOOTH_SCROLL);
 			break;
@@ -1916,22 +1898,6 @@ int main(int argc, char **argv)
 			usage();
 		}
 	}
-
-	/* If the executable filename starts with 'r', enable restricted
-	 * mode. */
-	if (*(tail(argv[0])) == 'r') {
-		SET(RESTRICTED);
-	}
-
-	/* If we're using restricted mode, disable suspending, backups, and
-	 * reading rcfiles, since they all would allow reading from or
-	 * writing to files not specified on the command line. */
-	if (ISSET(RESTRICTED)) {
-		UNSET(SUSPEND);
-		UNSET(BACKUP_FILE);
-		no_rcfiles = TRUE;
-	}
-
 
 	/* Set up the shortcut lists.
 	   Need to do this before the rcfile */
@@ -2040,14 +2006,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Set up the backup directory (unless we're using restricted mode,
-	 * in which case backups are disabled, since they would allow
-	 * reading from or writing to files not specified on the command
-	 * line).  This entails making sure it exists and is a directory, so
-	 * that backup files will be saved there. */
-	if (!ISSET(RESTRICTED)) {
-		init_backup_dir();
-	}
+	/* Set up the backup  directory. This entails making sure it exists
+	 * and is a directory, so that backup files will be saved there. */
+	init_backup_dir();
 
 #ifndef DISABLE_OPERATINGDIR
 	/* Set up the operating directory.  This entails chdir()ing there,
@@ -2057,11 +2018,8 @@ int main(int argc, char **argv)
 
 #ifdef ENABLE_SPELLER
 	/* If we don't have an alternative spell checker after reading the
-	 * command line and/or rcfile(s), check $SPELL for one, as Pico
-	 * does (unless we're using restricted mode, in which case spell
-	 * checking is disabled, since it would allow reading from or
-	 * writing to files not specified on the command line). */
-	if (!ISSET(RESTRICTED) && alt_speller == NULL) {
+	 * command line and/or rcfile(s), check $SPELL for one, as Pico does */
+	if (alt_speller == NULL) {
 		char *spellenv = getenv("SPELL");
 		if (spellenv != NULL) {
 			alt_speller = mallocstrcpy(NULL, spellenv);

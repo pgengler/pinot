@@ -1239,12 +1239,6 @@ void do_insertfile(bool execute)
  * allow inserting a file into a new buffer. */
 void do_insertfile_void(void)
 {
-
-	if (ISSET(RESTRICTED)) {
-		pinot_disabled_msg();
-		return;
-	}
-
 	if (ISSET(VIEW_MODE) && !ISSET(MULTIBUFFER)) {
 		statusbar(_("Key invalid in non-multibuffer mode"));
 	} else {
@@ -2165,11 +2159,7 @@ bool do_writeout(bool exiting)
 
 		backupstr = ISSET(BACKUP_FILE) ? _(" [Backup]") : "";
 
-		/* If we're using restricted mode, don't display the "Write
-		 * Selection to File" prompt.  This function is disabled, since
-		 * it allows reading from or writing to files not specified on
-		 * the command line. */
-		if (!ISSET(RESTRICTED) && !exiting && openfile->mark_set) {
+		if (!exiting && openfile->mark_set) {
 			msg = (append == PREPEND) ?
 			      _("Prepend Selection to File") : (append == APPEND) ?
 			      _("Append Selection to File") :
@@ -2180,10 +2170,7 @@ bool do_writeout(bool exiting)
 			      _("File Name to Write");
 		}
 
-		/* If we're using restricted mode, the filename isn't blank,
-		 * and we're at the "Write File" prompt, disable tab
-		 * completion. */
-		i = do_prompt(!ISSET(RESTRICTED) || openfile->filename[0] == '\0',
+		i = do_prompt(TRUE,
 #ifndef DISABLE_TABCOMP
 		              TRUE,
 #endif
@@ -2270,16 +2257,6 @@ bool do_writeout(bool exiting)
 				}
 
 				if (do_warning) {
-					/* If we're using restricted mode, we aren't allowed
-					 * to overwrite an existing file with the current
-					 * file.  We also aren't allowed to change the name
-					 * of the current file if it has one, because that
-					 * would allow reading from or writing to files not
-					 * specified on the command line. */
-					if (ISSET(RESTRICTED)) {
-						continue;
-					}
-
 					if (name_exists) {
 						i = do_yesno_prompt(FALSE, _("File exists, OVERWRITE ? "));
 						if (i == 0 || i == -1) {
@@ -2304,17 +2281,13 @@ bool do_writeout(bool exiting)
 
 			}
 
-			/* Convert newlines to nulls, just before we save the
-			 * file. */
+			/* Convert newlines to nulls, just before we save the file. */
 			sunder(answer);
 			align(&answer);
 
-			/* Here's where we allow the selected text to be written to
-			 * a separate file.  If we're using restricted mode, this
-			 * function is disabled, since it allows reading from or
-			 * writing to files not specified on the command line. */
+			/* Here's where we allow the selected text to be written to a separate file. */
 			retval =
-			    (!ISSET(RESTRICTED) && !exiting && openfile->mark_set) ?
+			    (!exiting && openfile->mark_set) ?
 			    write_marked_file(answer, NULL, FALSE, append) :
 			    write_file(answer, NULL, FALSE, append, FALSE);
 

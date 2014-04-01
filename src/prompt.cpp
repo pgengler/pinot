@@ -91,14 +91,9 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 		 * in view mode, or add the character to the input buffer if
 		 * we're not. */
 		if (input != ERR && !*have_shortcut) {
-			/* If we're using restricted mode, the filename isn't blank,
-			 * and we're at the "Write File" prompt, disable text
-			 * input. */
-			if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
-				kbinput_len++;
-				kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
-				kbinput[kbinput_len - 1] = input;
-			}
+			kbinput_len++;
+			kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
+			kbinput[kbinput_len - 1] = input;
 		}
 
 		/* If we got a shortcut, or if there aren't any other characters
@@ -135,12 +130,7 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 			} else if (s->scfunc == total_refresh) {
 				total_statusbar_refresh(refresh_func);
 			} else if (s->scfunc == do_cut_text_void) {
-				/* If we're using restricted mode, the filename
-				 * isn't blank, and we're at the "Write File"
-				 * prompt, disable Cut. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
-					do_statusbar_cut_text();
-				}
+				do_statusbar_cut_text();
 			} else if (s->scfunc == do_right) {
 				do_statusbar_right();
 			} else if (s->scfunc == do_left) {
@@ -156,39 +146,24 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 			} else if (s->scfunc == do_find_bracket) {
 				do_statusbar_find_bracket();
 			} else if (s->scfunc == do_verbatim_input) {
-				/* If we're using restricted mode, the filename
-				 * isn't blank, and we're at the "Write File"
-				 * prompt, disable verbatim input. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
-					bool got_enter;
-					/* Whether we got the Enter key. */
+				bool got_enter;
+				/* Whether we got the Enter key. */
 
-					do_statusbar_verbatim_input(&got_enter);
+				do_statusbar_verbatim_input(&got_enter);
 
-					/* If we got the Enter key, remove it from
-					 * the input buffer, set input to the key
-					 * value for Enter, and set finished to TRUE
-					 * to indicate that we're done. */
-					if (got_enter) {
-						get_input(NULL, 1);
-						input = sc_seq_or(do_enter_void, 0);
-						*finished = TRUE;
-					}
+				/* If we got the Enter key, remove it from
+				 * the input buffer, set input to the key
+				 * value for Enter, and set finished to TRUE
+				 * to indicate that we're done. */
+				if (got_enter) {
+					get_input(NULL, 1);
+					input = sc_seq_or(do_enter_void, 0);
+					*finished = TRUE;
 				}
 			} else if (s->scfunc == do_delete) {
-				/* If we're using restricted mode, the filename
-				 * isn't blank, and we're at the "Write File"
-				 * prompt, disable Delete. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
-					do_statusbar_delete();
-				}
+				do_statusbar_delete();
 			} else if (s->scfunc == do_backspace) {
-				/* If we're using restricted mode, the filename
-				 * isn't blank, and we're at the "Write File"
-				 * prompt, disable Backspace. */
-				if (!ISSET(RESTRICTED) || openfile->filename[0] == '\0' || currmenu != MWRITEFILE) {
-					do_statusbar_backspace();
-				}
+				do_statusbar_backspace();
 			} else {
 				/* Handle the normal statusbar prompt shortcuts, setting
 				 * ran_func to TRUE if we try to run their associated
@@ -891,11 +866,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 	wnoutrefresh(edit);
 	wnoutrefresh(bottomwin);
 
-	/* If we're using restricted mode, we aren't allowed to change the
-	 * name of the current file once it has one, because that would
-	 * allow writing to files not specified on the command line.  In
-	 * this case, disable all keys that would change the text if the
-	 * filename isn't blank and we're at the "Write File" prompt. */
 	while (1) {
 		kbinput = do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func);
 		assert(statusbar_x <= strlen(answer));
