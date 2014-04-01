@@ -994,7 +994,7 @@ const char *flagtostr(int flag)
 
 /* Interpret the string given by the rc file and return a
     shortcut struct, complete with proper value for execute */
-sc *strtosc(int menu, char *input)
+sc *strtosc(char *input)
 {
 	sc *s;
 

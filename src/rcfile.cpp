@@ -452,7 +452,7 @@ void parse_keybinding(char *ptr)
 	}
 
 	menu = strtomenu(menuptr);
-	newsc = strtosc(menu, funcptr);
+	newsc = strtosc(funcptr);
 	if (newsc == NULL) {
 		rcfile_error(N_("Could not map name \"%s\" to a function"), funcptr);
 		return;
