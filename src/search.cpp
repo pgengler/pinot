@@ -197,7 +197,7 @@ int search_init(bool replacing, bool use_answer)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		void (*func)(void);
+		void (*func)(void) = nullptr;
 
 		for  (s = sclist; s != NULL; s = s->next) {
 			if ((s->menu & currmenu) && i == s->seq) {
