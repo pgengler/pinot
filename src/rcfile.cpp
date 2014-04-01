@@ -42,11 +42,11 @@ std::vector<rcoption> rcopts = {
 	{"fill", 0, true},
 #endif
 	{"locking", LOCKING, false},
-	{"multibuffer", MULTIBUFFER},
-	{"morespace", MORE_SPACE},
-	{"nofollow", NOFOLLOW_SYMLINKS},
-	{"nohelp", NO_HELP},
-	{"nonewlines", NO_NEWLINES},
+	{"multibuffer", MULTIBUFFER, false},
+	{"morespace", MORE_SPACE, false},
+	{"nofollow", NOFOLLOW_SYMLINKS, false},
+	{"nohelp", NO_HELP, false},
+	{"nonewlines", NO_NEWLINES, false},
 #ifndef DISABLE_WRAPPING
 	{"nowrap", NO_WRAP, false},
 #endif
