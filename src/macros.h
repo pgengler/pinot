@@ -36,6 +36,8 @@
 #define N_(string) gettext_noop(string)
 /* Mark a string that will be sent to gettext() later. */
 
+#define UNUSED_ARG(x) ((x) = (x))
+
 #ifdef DEBUG
 #define DEBUG_LOG(message) std::cerr << __FILE__ << ':' << __LINE__ << ": " << message << std::endl
 #else
