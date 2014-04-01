@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(top_builddir)/libtermkey-0.17 -Wall -Wextra
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(top_builddir)/libtermkey-0.17 -Wall -Wextra -Wno-sign-compare
 
 ACLOCAL_AMFLAGS = -I m4
 
