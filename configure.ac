@@ -304,11 +304,11 @@ if test x$CURSES_LIB_NAME = xslang; then
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
 fi
 
-AC_ARG_ENABLE(altrcname,
-AS_HELP_STRING([--enable-altrcname], [Specify alternate rcfile name (default: .pinotrc)]))
-if test "x$enableval" != no; then
+AC_ARG_ENABLE(altrcname, AS_HELP_STRING([--enable-altrcname], [Specify alternate rcfile name (default: .pinotrc)]), [
+  if test "x$enableval" != no; then
     AC_DEFINE_UNQUOTED(RCFILE_NAME, "$enableval", [Specify alternate rcfile name (default: .pinotrc)]) rcfilename=$enableval
-fi
+  fi
+])
 
 dnl Checks for functions.
 
