@@ -33,3 +33,9 @@ std::string Key::format()
 
 	return std::string(keybuffer);
 }
+
+
+Key::operator std::string()
+{
+	return format();
+}

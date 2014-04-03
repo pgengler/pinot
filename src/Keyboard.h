@@ -13,6 +13,7 @@ class Key
 		Key(TermKey* termkey, TermKeyKey key);
 
 		std::string format();
+		operator std::string();
 	private:
 		TermKey *termkey;
 		TermKeyKey key;
