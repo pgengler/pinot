@@ -348,6 +348,7 @@ void disable_flow_control(void);
 void enable_flow_control(void);
 void terminal_init(void);
 void do_input(void);
+void do_output(const std::string& output, bool allow_cntrls);
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
@@ -538,7 +539,7 @@ size_t get_key_buffer_len(void);
 void unget_input(int *input, size_t input_len);
 void unget_kbinput(int kbinput, bool meta_key, bool func_key);
 int *get_input(WINDOW *win, size_t input_len);
-TermKeyKey get_kbinput(WINDOW *win);
+Key get_kbinput(WINDOW *win);
 int get_kbinput(WINDOW *win, bool *meta_key, bool *func_key);
 int parse_kbinput(WINDOW *win, bool *meta_key, bool *func_key);
 int get_escape_seq_kbinput(const int *seq, size_t seq_len);
@@ -553,7 +554,7 @@ int get_control_kbinput(int kbinput);
 void unparse_kbinput(char *output, size_t output_len);
 int *get_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
-const sc *get_shortcut(int menu, TermKeyKey kbinput);
+const sc *get_shortcut(int menu, const Key &kbinput);
 const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key);
 const sc *first_sc_for(int menu, void (*func)(void));
 void blank_line(WINDOW *win, int y, int x, int n);

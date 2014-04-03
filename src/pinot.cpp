@@ -1350,7 +1350,7 @@ void terminal_init(void)
  * with shortcut keys. */
 void do_input(void)
 {
-	TermKeyKey input = get_kbinput(edit);
+	Key input = get_kbinput(edit);
 	bool cut_copy = false;
 
 	/* Check for a shortcut in the main list. */
@@ -1389,7 +1389,7 @@ void do_input(void)
 
 
 	if (!have_shortcut) {
-		do_output(input.utf8, strlen(input.utf8), FALSE);
+		do_output(input, FALSE);
 	} else {
 		/* If the function associated with this shortcut is
 		* cutting or copying text, indicate this. */
@@ -1555,6 +1555,11 @@ precalc_cleanup:
 /* The user typed output_len multibyte characters.  Add them to the edit
  * buffer, filtering out all ASCII control characters if allow_cntrls is
  * TRUE. */
+void do_output(const std::string& output, bool allow_cntrls)
+{
+	do_output(output.c_str(), output.length(), allow_cntrls);
+}
+
 void do_output(char *output, size_t output_len, bool allow_cntrls)
 {
 	size_t current_len, orig_lenpt = 0, i = 0;

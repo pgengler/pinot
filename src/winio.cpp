@@ -288,13 +288,13 @@ int *get_input(WINDOW *win, size_t input_len)
 	return input;
 }
 
-TermKeyKey get_kbinput(WINDOW *win)
+Key get_kbinput(WINDOW *win)
 {
 	// This is a hack but so far is the only way I've found to get
 	// things to display correctly.
 	wnoutrefresh(edit);
 	doupdate();
-	TermKeyKey key = keyboard->get_key();
+	Key key = keyboard->get_key();
 
 	if (win == edit) {
 		check_statusblank();
@@ -1503,9 +1503,9 @@ int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len)
  * example, passing in a meta key sequence that corresponds to a
  * function with a control key, a function key, and a meta key sequence
  * will return the control key corresponding to that function. */
-const sc *get_shortcut(int menu, TermKeyKey kbinput)
+const sc *get_shortcut(int menu, const Key &kbinput)
 {
-	std::string key = keyboard->format_key(kbinput);
+	std::string key = key.format();
 
 	DEBUG_LOG("get_shortcut(): key is " << key);
 
