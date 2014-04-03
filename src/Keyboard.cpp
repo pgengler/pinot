@@ -25,7 +25,7 @@ Key::Key(TermKey* termkey, TermKeyKey key)
 
 }
 
-std::string Key::format() const
+std::string Key::format()
 {
 	char keybuffer[50];
 	TermKeyFormat format = static_cast<TermKeyFormat>(TERMKEY_FORMAT_ALTISMETA | TERMKEY_FORMAT_CARETCTRL);

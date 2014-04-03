@@ -12,7 +12,7 @@ class Key
 	public:
 		Key(TermKey* termkey, TermKeyKey key);
 
-		std::string format() const;
+		std::string format();
 	private:
 		TermKey *termkey;
 		TermKeyKey key;

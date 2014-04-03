@@ -1503,7 +1503,7 @@ int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len)
  * example, passing in a meta key sequence that corresponds to a
  * function with a control key, a function key, and a meta key sequence
  * will return the control key corresponding to that function. */
-const sc *get_shortcut(int menu, const Key &kbinput)
+const sc *get_shortcut(int menu, Key &kbinput)
 {
 	std::string key = kbinput.format();
 
