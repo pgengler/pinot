@@ -1505,7 +1505,7 @@ int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len)
  * will return the control key corresponding to that function. */
 const sc *get_shortcut(int menu, const Key &kbinput)
 {
-	std::string key = key.format();
+	std::string key = kbinput.format();
 
 	DEBUG_LOG("get_shortcut(): key is " << key);
 
