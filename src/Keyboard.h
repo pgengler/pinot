@@ -11,7 +11,8 @@ class Key
 {
 	public:
 		Key(TermKey* termkey, TermKeyKey key);
-		std::string format();
+
+		std::string format() const;
 	private:
 		TermKey *termkey;
 		TermKeyKey key;
