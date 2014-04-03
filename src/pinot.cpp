@@ -1557,7 +1557,7 @@ precalc_cleanup:
  * TRUE. */
 void do_output(const std::string& output, bool allow_cntrls)
 {
-	do_output(output.c_str(), output.length(), allow_cntrls);
+	do_output((char *)output.c_str(), output.length(), allow_cntrls);
 }
 
 void do_output(char *output, size_t output_len, bool allow_cntrls)
