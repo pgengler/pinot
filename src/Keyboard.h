@@ -7,15 +7,22 @@
 #include "termkey-internal.h"
 #include "termkey.h"
 
+class Key
+{
+	public:
+		Key(TermKey termkey, TermKeyKey key);
+		std::string format();
+	private:
+		TermKeyKey key;
+};
+
 class Keyboard
 {
 	public:
 		Keyboard();
 
 		bool has_input() const;
-		TermKeyKey get_key();
-		std::string format_key(TermKeyKey key);
-
+		Key get_key();
 	private:
 		TermKey *termkey;
 };
