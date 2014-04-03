@@ -272,7 +272,6 @@ void thanks_for_all_the_fish(void);
 void do_help_void(void);
 void do_help(void (*refresh_func)(void));
 void help_init(void);
-void parse_help_input(int *kbinput, bool *meta_key, bool *func_key);
 size_t help_line_len(const char *ptr);
 
 /* All functions in move.c. */

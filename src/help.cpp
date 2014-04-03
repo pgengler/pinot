@@ -33,7 +33,6 @@ static char *help_text = NULL;
  * call to refresh the edit window. */
 void do_help(void (*refresh_func)(void))
 {
-	int kbinput = ERR;
 	bool meta_key, func_key, old_no_help = ISSET(NO_HELP);
 	bool abort = FALSE;
 	/* Whether we should abort the help browser. */
@@ -88,7 +87,7 @@ void do_help(void (*refresh_func)(void))
 
 		/* Display the help text if we don't have a key, or if the help
 		 * text has moved. */
-		if (kbinput == ERR || line != old_line) {
+		if (!keyboard->has_input() || line != old_line) {
 			blank_edit();
 
 			ptr = help_text;
@@ -117,10 +116,10 @@ void do_help(void (*refresh_func)(void))
 
 		old_line = line;
 
-		kbinput = get_kbinput(edit, &meta_key, &func_key);
+		Key kbinput = get_kbinput(edit);
+		std::string key(kbinput);
 
-		parse_help_input(&kbinput, &meta_key, &func_key);
-		s = get_shortcut(MHELP, &kbinput, &meta_key, &func_key);
+		s = get_shortcut(MHELP, kbinput);
 		if (!s) {
 			continue;
 		}
@@ -129,16 +128,13 @@ void do_help(void (*refresh_func)(void))
 			continue;
 		}
 
-		if (f->scfunc == total_refresh) {
-			total_redraw();
-			break;
-		} else if (f->scfunc == do_page_up) {
+		if (f->scfunc == do_page_up || key == " ") {
 			if (line > editwinrows - 2) {
 				line -= editwinrows - 2;
 			} else {
 				line = 0;
 			}
-		} else if (f->scfunc == do_page_down) {
+		} else if (f->scfunc == do_page_down || key == "-") {
 			if (line + (editwinrows - 1) < last_line) {
 				line += editwinrows - 2;
 			}
@@ -162,8 +158,8 @@ void do_help(void (*refresh_func)(void))
 				}
 			}
 			break;
+		} else if (f->scfunc == do_exit || key == "E" || key == "e") {
 			/* Abort the help browser. */
-		} else if (f->scfunc == do_exit) {
 			abort = TRUE;
 			break;
 		}
@@ -476,33 +472,6 @@ void help_init(void)
 	/* If all went well, we didn't overwrite the allocated space for
 	 * help_text. */
 	assert(strlen(help_text) <= allocsize + 1);
-}
-
-/* Determine the shortcut key corresponding to the values of kbinput
- * (the key itself), meta_key (whether the key is a meta sequence), and
- * func_key (whether the key is a function key), if any.  In the
- * process, convert certain non-shortcut keys into their corresponding
- * shortcut keys. */
-void parse_help_input(int *kbinput, bool *meta_key, bool *func_key)
-{
-	get_shortcut(MHELP, kbinput, meta_key, func_key);
-
-	if (!*meta_key) {
-		switch (*kbinput) {
-			/* For consistency with the file browser. */
-		case ' ':
-			*kbinput = sc_seq_or(do_page_down, 0);
-			break;
-		case '-':
-			*kbinput = sc_seq_or(do_page_up, 0);
-			break;
-			/* Cancel is equivalent to Exit here. */
-		case 'E':
-		case 'e':
-			*kbinput = sc_seq_or(do_exit, 0);
-			break;
-		}
-	}
 }
 
 /* Calculate the next line of help_text, starting at ptr. */
