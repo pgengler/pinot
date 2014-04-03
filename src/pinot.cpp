@@ -1389,7 +1389,7 @@ void do_input(void)
 
 
 	if (!have_shortcut) {
-		do_output(input, FALSE);
+		do_output(input.format(), FALSE);
 	} else {
 		/* If the function associated with this shortcut is
 		* cutting or copying text, indicate this. */
