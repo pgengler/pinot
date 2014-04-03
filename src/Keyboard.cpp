@@ -19,7 +19,7 @@ Key Keyboard::get_key()
 	return Key(termkey, key);
 }
 
-Key::Key(TermKey termkey, TermKeyKey key)
+Key::Key(TermKey* termkey, TermKeyKey key)
 : termkey(termkey), key(key)
 {
 
