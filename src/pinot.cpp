@@ -1362,15 +1362,16 @@ void do_input(void)
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
-/*
 	if (!have_shortcut) {
-		if (is_ascii_cntrl_char(input) || meta_key || func_key) {
-			statusbar(_("Unknown Command"));
-			beep();
-			input = ERR;
+		if (input.is_ascii_control_char() || input.has_meta_key()) {
+			if (!input.is_escape_key()) {
+				/* Silently ignore plain Escape key */
+				statusbar(_("Unknown Command"));
+				beep();
+			}
+			return;
 		}
 	}
-*/
 
 	/* If we got a character, and it isn't a shortcut or toggle, it's a
 	 * normal text character.  Display a warning if we're in view mode */
@@ -1386,7 +1387,6 @@ void do_input(void)
 		wrap_reset();
 	}
 #endif
-
 
 	if (!have_shortcut) {
 		do_output(input.format(), FALSE);

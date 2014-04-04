@@ -14,6 +14,10 @@ class Key
 
 		std::string format();
 		operator std::string();
+
+		bool is_ascii_control_char();
+		bool is_escape_key();
+		bool has_meta_key();
 	private:
 		TermKey *termkey;
 		TermKeyKey key;
