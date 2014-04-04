@@ -1,7 +1,5 @@
 #include "Keyboard.h"
 
-#include "proto.h"
-
 Keyboard::Keyboard()
 {
 	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS|TERMKEY_FLAG_CONVERTKP);
@@ -44,14 +42,9 @@ Key::operator std::string()
 	return "";
 }
 
-bool Key::is_ascii_control_char()
+bool Key::has_control_key()
 {
-	return is_ascii_cntrl_char(std::string(*this)[0]);
-}
-
-bool Key::is_escape_key()
-{
-	return (key.type == TERMKEY_TYPE_KEYSYM && key.code.sym == TERMKEY_SYM_ESCAPE);
+	return (key.modifiers & TERMKEY_KEYMOD_CTRL);
 }
 
 bool Key::has_meta_key()
