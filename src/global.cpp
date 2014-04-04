@@ -101,13 +101,6 @@ const char *locking_prefix = ".";
 /* Prefix of how to store the vim-style lock file */
 const char *locking_suffix = ".swp";
 /* Suffix of the vim-style lock file */
-#ifndef DISABLE_OPERATINGDIR
-char *operating_dir = NULL;
-/* The relative path to the operating directory, which we can't
- * move outside of. */
-char *full_operating_dir = NULL;
-/* The full path to it. */
-#endif
 
 #ifdef ENABLE_SPELLER
 char *alt_speller = NULL;
@@ -1248,14 +1241,6 @@ void thanks_for_all_the_fish(void)
 	if (backup_dir != NULL) {
 		free(backup_dir);
 	}
-#ifndef DISABLE_OPERATINGDIR
-	if (operating_dir != NULL) {
-		free(operating_dir);
-	}
-	if (full_operating_dir != NULL) {
-		free(full_operating_dir);
-	}
-#endif
 	if (last_search != NULL) {
 		free(last_search);
 	}

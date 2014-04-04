@@ -292,13 +292,6 @@ void open_buffer(const char *filename, bool undoable)
 
 	assert(filename != NULL);
 
-#ifndef DISABLE_OPERATINGDIR
-	if (check_operating_dir(filename, FALSE)) {
-		statusbar(_("Can't insert file from outside of %s"), operating_dir);
-		return;
-	}
-#endif
-
 	/* If we're loading into a new buffer, add a new entry to openfile. */
 	if (new_buffer) {
 		make_new_buffer();
@@ -948,13 +941,7 @@ void do_execute_command()
 	while (TRUE) {
 		msg = _("Command to execute (no output) [from %s]");
 
-		i = do_prompt(TRUE,
-		              TRUE,
-		              MEXTCMD, ans, &meta_key, &func_key, NULL, edit_refresh, msg,
-#ifndef DISABLE_OPERATINGDIR
-		              operating_dir != NULL && strcmp(operating_dir, ".") != 0 ? operating_dir :
-#endif
-		              "./");
+		i = do_prompt(TRUE, TRUE, MEXTCMD, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
 
 		/* Cancel if the command was empty or the user cancelled */
 		if (i == -1 || (i == -2 || *answer == '\n')) {
@@ -1042,17 +1029,7 @@ void do_insertfile(bool execute)
 			msg = ISSET(MULTIBUFFER) ? _("File to insert into new buffer [from %s] ") : _("File to insert [from %s] ");
 		}
 
-		i = do_prompt(TRUE,
-		              TRUE,
-		              execute ? MEXTCMD : MINSERTFILE, ans,
-		              &meta_key, &func_key,
-		              NULL,
-		              edit_refresh, msg,
-#ifndef DISABLE_OPERATINGDIR
-		              operating_dir != NULL && strcmp(operating_dir,
-		                      ".") != 0 ? operating_dir :
-#endif
-		              "./");
+		i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
 
 		/* If we're in multibuffer mode and the filename or command is
 		 * blank, open a new buffer instead of canceling.  If the
@@ -1453,83 +1430,6 @@ char *safe_tempfile(FILE **f)
 	return full_tempdir;
 }
 
-#ifndef DISABLE_OPERATINGDIR
-/* Initialize full_operating_dir based on operating_dir. */
-void init_operating_dir(void)
-{
-	assert(full_operating_dir == NULL);
-
-	if (operating_dir == NULL) {
-		return;
-	}
-
-	full_operating_dir = get_full_path(operating_dir);
-
-	/* If get_full_path() failed or the operating directory is
-	 * inaccessible, unset operating_dir. */
-	if (full_operating_dir == NULL || chdir(full_operating_dir) == -1) {
-		free(full_operating_dir);
-		full_operating_dir = NULL;
-		free(operating_dir);
-		operating_dir = NULL;
-	}
-}
-
-/* Check to see if we're inside the operating directory.  Return FALSE
- * if we are, or TRUE otherwise.  If allow_tabcomp is TRUE, allow
- * incomplete names that would be matches for the operating directory,
- * so that tab completion will work. */
-bool check_operating_dir(const char *currpath, bool allow_tabcomp)
-{
-	/* full_operating_dir is global for memory cleanup.  It should have
-	 * already been initialized by init_operating_dir().  Also, a
-	 * relative operating directory path will only be handled properly
-	 * if this is done. */
-
-	char *fullpath;
-	bool retval = FALSE;
-	const char *whereami1, *whereami2 = NULL;
-
-	/* If no operating directory is set, don't bother doing anything. */
-	if (operating_dir == NULL) {
-		return FALSE;
-	}
-
-	assert(full_operating_dir != NULL);
-
-	fullpath = get_full_path(currpath);
-
-	/* If fullpath is NULL, it means some directory in the path doesn't
-	 * exist or is unreadable.  If allow_tabcomp is FALSE, then currpath
-	 * is what the user typed somewhere.  We don't want to report a
-	 * non-existent directory as being outside the operating directory,
-	 * so we return FALSE.  If allow_tabcomp is TRUE, then currpath
-	 * exists, but is not executable.  So we say it isn't in the
-	 * operating directory. */
-	if (fullpath == NULL) {
-		return allow_tabcomp;
-	}
-
-	whereami1 = strstr(fullpath, full_operating_dir);
-	if (allow_tabcomp) {
-		whereami2 = strstr(full_operating_dir, fullpath);
-	}
-
-	/* If both searches failed, we're outside the operating directory.
-	 * Otherwise, check the search results.  If the full operating
-	 * directory path is not at the beginning of the full current path
-	 * (for normal usage) and vice versa (for tab completion, if we're
-	 * allowing it), we're outside the operating directory. */
-	if (whereami1 != fullpath && whereami2 != full_operating_dir) {
-		retval = TRUE;
-	}
-	free(fullpath);
-
-	/* Otherwise, we're still inside it. */
-	return retval;
-}
-#endif
-
 /* Although this sucks, it sucks less than having a single 'my system is messed up
  * and I'm blanket allowing insecure file writing operations.
  */
@@ -1660,15 +1560,6 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bo
 	}
 
 	realname = real_dir_from_tilde(name);
-
-#ifndef DISABLE_OPERATINGDIR
-	/* If we're writing a temporary file, we're probably going outside
-	 * the operating directory, so skip the operating directory test. */
-	if (!tmp && check_operating_dir(realname, FALSE)) {
-		statusbar(_("Can't write outside of %s"), operating_dir);
-		goto cleanup_and_exit;
-	}
-#endif
 
 	anyexists = (lstat(realname, &lst) != -1);
 
@@ -2432,14 +2323,6 @@ char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_
 			/* Cool, found a match.  Add it to the list.  This makes a
 			 * lot more sense to me (Chris) this way... */
 
-#ifndef DISABLE_OPERATINGDIR
-			/* ...unless the match exists outside the operating
-			 * directory, in which case just go to the next match. */
-			if (check_operating_dir(userdata->pw_dir, TRUE)) {
-				continue;
-			}
-#endif
-
 			matches = (char **)nrealloc(matches, (*num_matches + 1) * sizeof(char *));
 			matches[*num_matches] = charalloc(strlen(userdata->pw_name) + 2);
 			sprintf(matches[*num_matches], "~%s", userdata->pw_name);
@@ -2509,15 +2392,7 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches
 			char *tmp = charalloc(strlen(dirname) + strlen(nextdir->d_name) + 1);
 			sprintf(tmp, "%s%s", dirname, nextdir->d_name);
 
-#ifndef DISABLE_OPERATINGDIR
-			/* ...unless the match exists outside the operating
-			 * directory, in which case just go to the next match. */
-			if (check_operating_dir(tmp, TRUE)) {
-				skip_match = TRUE;
-			}
-#endif
-
-			/* ...or unless the match isn't a directory and allow_files
+			/* ...unless the match isn't a directory and allow_files
 			 * isn't set, in which case just go to the next match. */
 			if (!allow_files && !is_dir(tmp)) {
 				skip_match = TRUE;

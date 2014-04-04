@@ -50,9 +50,6 @@ std::vector<rcoption> rcopts = {
 #ifndef DISABLE_WRAPPING
 	{"nowrap", NO_WRAP, false},
 #endif
-#ifndef DISABLE_OPERATINGDIR
-	{"operatingdir", 0, false},
-#endif
 	{"preserve", PRESERVE, false},
 	{"rebinddelete", REBIND_DELETE, false},
 	{"rebindkeypad", REBIND_KEYPAD, false},
@@ -1041,11 +1038,6 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							break;
 						}
 
-#ifndef DISABLE_OPERATINGDIR
-						if (rcopt.name == "operatingdir") {
-							operating_dir = mallocstrcpy(operating_dir, argument.c_str());
-						} else
-#endif
 #ifndef DISABLE_WRAPPING
 						if (rcopt.name == "fill") {
 							if (!parse_num(argument.c_str(), &wrap_at)) {

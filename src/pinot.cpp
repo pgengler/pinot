@@ -801,9 +801,6 @@ void usage(void)
 	print_opt("-i", "--autoindent", N_("Automatically indent new lines"));
 	print_opt("-k", "--cut", N_("Cut from cursor to end of line"));
 	print_opt("-l", "--nofollow", N_("Don't follow symbolic links, overwrite"));
-#ifndef DISABLE_OPERATINGDIR
-	print_opt(_("-o <dir>"), _("--operatingdir=<dir>"), N_("Set operating directory"));
-#endif
 	print_opt("-p", "--preserve", N_("Preserve XON (^Q) and XOFF (^S) keys"));
 	print_opt("-q", "--quiet", N_("Silently ignore startup issues like rc file errors"));
 #ifndef DISABLE_WRAPPING
@@ -843,9 +840,6 @@ void version(void)
 
 #ifndef ENABLE_NLS
 	printf(" --disable-nls");
-#endif
-#ifdef DISABLE_OPERATINGDIR
-	printf(" --disable-operatingdir");
 #endif
 #ifdef DISABLE_WRAPPING
 	printf(" --disable-wrapping");
@@ -1684,9 +1678,6 @@ int main(int argc, char **argv)
 		{"const", 0, NULL, 'c'},
 		{"rebinddelete", 0, NULL, 'd'},
 		{"nofollow", 0, NULL, 'l'},
-#ifndef DISABLE_OPERATINGDIR
-		{"operatingdir", 1, NULL, 'o'},
-#endif
 		{"preserve", 0, NULL, 'p'},
 		{"quiet", 0, NULL, 'q'},
 #ifndef DISABLE_WRAPPING
@@ -1839,11 +1830,6 @@ int main(int argc, char **argv)
 		case 'l':
 			SET(NOFOLLOW_SYMLINKS);
 			break;
-#ifndef DISABLE_OPERATINGDIR
-		case 'o':
-			operating_dir = mallocstrcpy(operating_dir, optarg);
-			break;
-#endif
 		case 'p':
 			SET(PRESERVE);
 			break;
@@ -1906,9 +1892,6 @@ int main(int argc, char **argv)
 	 * and values that are set, and read the rcfile(s).  If the values
 	 * haven't changed afterward, restore the backed-up values. */
 	if (!no_rcfiles) {
-#ifndef DISABLE_OPERATINGDIR
-		char *operating_dir_cpy = operating_dir;
-#endif
 #ifndef DISABLE_WRAPPING
 		ssize_t wrap_at_cpy = wrap_at;
 #endif
@@ -1922,9 +1905,6 @@ int main(int argc, char **argv)
 
 		memcpy(flags_cpy, flags, sizeof(flags_cpy));
 
-#ifndef DISABLE_OPERATINGDIR
-		operating_dir = NULL;
-#endif
 		backup_dir = NULL;
 #ifdef ENABLE_SPELLER
 		alt_speller = NULL;
@@ -1937,12 +1917,6 @@ int main(int argc, char **argv)
 		print_sclist();
 #endif
 
-#ifndef DISABLE_OPERATINGDIR
-		if (operating_dir_cpy != NULL) {
-			free(operating_dir);
-			operating_dir = operating_dir_cpy;
-		}
-#endif
 #ifndef DISABLE_WRAPPING
 		if (fill_used) {
 			wrap_at = wrap_at_cpy;
@@ -2008,12 +1982,6 @@ int main(int argc, char **argv)
 	/* Set up the backup  directory. This entails making sure it exists
 	 * and is a directory, so that backup files will be saved there. */
 	init_backup_dir();
-
-#ifndef DISABLE_OPERATINGDIR
-	/* Set up the operating directory.  This entails chdir()ing there,
-	 * so that file reads and writes will be based there. */
-	init_operating_dir();
-#endif
 
 #ifdef ENABLE_SPELLER
 	/* If we don't have an alternative spell checker after reading the

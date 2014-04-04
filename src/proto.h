@@ -65,10 +65,6 @@ extern ssize_t tabsize;
 extern char *backup_dir;
 extern const char *locking_prefix;
 extern const char *locking_suffix;
-#ifndef DISABLE_OPERATINGDIR
-extern char *operating_dir;
-extern char *full_operating_dir;
-#endif
 
 #ifdef ENABLE_SPELLER
 extern char *alt_speller;
@@ -221,10 +217,6 @@ void do_execute_command();
 char *get_full_path(const char *origpath);
 char *check_writable_directory(const char *path);
 char *safe_tempfile(FILE **f);
-#ifndef DISABLE_OPERATINGDIR
-void init_operating_dir(void);
-bool check_operating_dir(const char *currpath, bool allow_tabcomp);
-#endif
 void init_backup_dir(void);
 int delete_lockfile(const char *lockfilename);
 int write_lockfile(const char *lockfilename, const char *origfilename, bool modified);

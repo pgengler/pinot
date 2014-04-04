@@ -66,12 +66,6 @@ AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debugging (disable
   fi
 ])
 
-AC_ARG_ENABLE(operatingdir, AS_HELP_STRING([--disable-operatingdir], [Disable setting of operating directory (chroot of sorts)]), [
-  if test "x$enableval" != xyes; then
-    AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
-  fi
-])
-
 AC_ARG_ENABLE(speller, AS_HELP_STRING([--enable-speller], [Enable spell checker functions]), [
   if test "x$enableval" = xyes; then
     AC_DEFINE(ENABLE_SPELLER, 1, [Define this to enable the spell checker functions.])

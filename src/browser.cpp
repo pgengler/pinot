@@ -210,14 +210,6 @@ change_browser_directory:
 				sprintf(new_path, "%s%s", path, answer);
 			}
 
-#ifndef DISABLE_OPERATINGDIR
-			if (check_operating_dir(new_path, FALSE)) {
-				statusbar(_("Can't go outside of %s in restricted mode"), operating_dir);
-				free(new_path);
-				continue;
-			}
-#endif
-
 			dir = opendir(new_path);
 			if (dir == NULL) {
 				/* We can't open this directory for some reason. Complain. */
@@ -254,17 +246,6 @@ change_browser_directory:
 				beep();
 				continue;
 			}
-
-#ifndef DISABLE_OPERATINGDIR
-			/* Note: The selected file can be outside the operating
-			 * directory if it's ".." or if it's a symlink to a
-			 * directory outside the operating directory. */
-			if (check_operating_dir(filelist[selected], FALSE)) {
-				statusbar(_("Can't go outside of %s in restricted mode"), operating_dir);
-				beep();
-				continue;
-			}
-#endif
 
 			if (stat(filelist[selected], &st) == -1) {
 				/* We can't open this file for some reason. Complain. */
@@ -352,14 +333,6 @@ char *do_browse_from(const char *inpath)
 			}
 		}
 	}
-
-#ifndef DISABLE_OPERATINGDIR
-	/* If the resulting path isn't in the operating directory, use
-	 * the operating directory instead. */
-	if (check_operating_dir(path, FALSE)) {
-		path = mallocstrcpy(path, operating_dir);
-	}
-#endif
 
 	if (path != NULL) {
 		dir = opendir(path);
