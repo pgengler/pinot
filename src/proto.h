@@ -100,7 +100,6 @@ extern int reverse_attr;
 extern char *homedir;
 
 /* All functions in browser.c. */
-#ifndef DISABLE_BROWSER
 char *do_browser(char *path, DIR *dir);
 char *do_browse_from(const char *inpath);
 void browser_init(const char *path, DIR *dir);
@@ -116,7 +115,6 @@ void do_fileresearch(void);
 void do_first_file(void);
 void do_last_file(void);
 char *striponedir(const char *path);
-#endif
 
 /* All functions in chars.c. */
 #ifdef ENABLE_UTF8
@@ -236,10 +234,8 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 char *real_dir_from_tilde(const char *buf);
-#ifndef DISABLE_BROWSER
 int diralphasort(const void *va, const void *vb);
 void free_chararray(char **array, size_t len);
-#endif
 bool is_dir(const char *buf);
 char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_len);
 char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches, size_t buf_len);

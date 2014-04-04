@@ -965,7 +965,6 @@ void do_execute_command()
 
 			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
 
-#ifndef DISABLE_BROWSER
 			if (s && s->scfunc == to_files_void) {
 				char *tmp = do_browse_from(answer);
 
@@ -979,7 +978,6 @@ void do_execute_command()
 
 				i = 0;
 			}
-#endif
 
 			/* If we don't have a file yet, go back to the prompt. */
 			if (i != 0) {
@@ -1076,26 +1074,24 @@ void do_insertfile(bool execute)
 					TOGGLE(MULTIBUFFER);
 				}
 				continue;
-			} else
+			} else {
 				if (s && s->scfunc == ext_cmd_void) {
 					execute = !execute;
 					continue;
-				}
-#ifndef DISABLE_BROWSER
-				else if (s && s->scfunc == to_files_void) {
-						char *tmp = do_browse_from(answer);
+				} else if (s && s->scfunc == to_files_void) {
+					char *tmp = do_browse_from(answer);
 
-						if (tmp == NULL) {
-							continue;
-						}
-
-						/* We have a file now.  Indicate this. */
-						free(answer);
-						answer = tmp;
-
-						i = 0;
+					if (tmp == NULL) {
+						continue;
 					}
-#endif
+
+					/* We have a file now.  Indicate this. */
+					free(answer);
+					answer = tmp;
+
+					i = 0;
+				}
+			}
 
 			/* If we don't have a file yet, go back to the statusbar prompt. */
 			if (i != 0 && (i != -2 || !ISSET(MULTIBUFFER))) {
@@ -2185,7 +2181,6 @@ bool do_writeout(bool exiting)
 			ans = mallocstrcpy(ans, answer);
 			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
 
-#ifndef DISABLE_BROWSER
 			if (s && s->scfunc == to_files_void) {
 				char *tmp = do_browse_from(answer);
 
@@ -2196,8 +2191,7 @@ bool do_writeout(bool exiting)
 				/* We have a file now.  Indicate this. */
 				free(answer);
 				answer = tmp;
-			} else
-#endif /* !DISABLE_BROWSER */
+			} else {
 				if (s && s->scfunc == dos_format_void) {
 					openfile->fmt = (openfile->fmt == DOS_FILE) ? NIX_FILE : DOS_FILE;
 					continue;
@@ -2216,6 +2210,7 @@ bool do_writeout(bool exiting)
 				} else if (s && s->scfunc == do_help_void) {
 					continue;
 				}
+			}
 
 			DEBUG_LOG("filename is " << answer);
 
@@ -2349,7 +2344,6 @@ char *real_dir_from_tilde(const char *buf)
 	return retval;
 }
 
-#ifndef DISABLE_BROWSER
 /* Our sort routine for file listings.  Sort alphabetically and
  * case-insensitively, and sort directories before filenames. */
 int diralphasort(const void *va, const void *vb)
@@ -2385,7 +2379,6 @@ void free_chararray(char **array, size_t len)
 	}
 	free(array);
 }
-#endif
 
 /* Is the given path a directory? */
 bool is_dir(const char *buf)

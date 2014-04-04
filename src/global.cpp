@@ -470,12 +470,10 @@ const char *next_history_msg = N_("NextHstory");
 const char *gototext_msg = N_("Go To Text");
 /* TRANSLATORS: Try to keep the next three strings at most 12 characters. */
 const char *whereis_next_msg = N_("WhereIs Next");
-#ifndef DISABLE_BROWSER
 const char *first_file_msg = N_("First File");
 const char *last_file_msg = N_("Last File");
 /* TRANSLATORS: Try to keep the next nine strings at most 16 characters. */
 const char *to_files_msg = N_("To Files");
-#endif
 const char *dos_format_msg = N_("DOS Format");
 const char *mac_format_msg = N_("Mac Format");
 const char *append_msg = N_("Append");
@@ -562,9 +560,7 @@ void shortcut_init(void)
 	const char *pinot_regexp_msg = N_("Toggle the use of regular expressions");
 	const char *pinot_prev_history_msg = N_("Recall the previous search/replace string");
 	const char *pinot_next_history_msg = N_("Recall the next search/replace string");
-#ifndef DISABLE_BROWSER
 	const char *pinot_tofiles_msg = N_("Go to file browser");
-#endif
 	const char *pinot_dos_msg = N_("Toggle the use of DOS format");
 	const char *pinot_mac_msg = N_("Toggle the use of Mac format");
 	const char *pinot_append_msg = N_("Toggle appending");
@@ -572,14 +568,12 @@ void shortcut_init(void)
 	const char *pinot_backup_msg = N_("Toggle backing up of the original file");
 	const char *pinot_execute_msg = N_("Execute external command");
 	const char *pinot_multibuffer_msg = N_("Toggle the use of a new buffer");
-#ifndef DISABLE_BROWSER
 	const char *pinot_exitbrowser_msg = N_("Exit from the file browser");
 	const char *pinot_firstfile_msg = N_("Go to the first file in the list");
 	const char *pinot_lastfile_msg = N_("Go to the last file in the list");
 	const char *pinot_forwardfile_msg = N_("Go to the next file in the list");
 	const char *pinot_backfile_msg = N_("Go to the previous file in the list");
 	const char *pinot_gotodir_msg = N_("Go to directory");
-#endif
 	const char *pinot_prevlint_msg = N_("Go to previous linter msg");
 	const char *pinot_nextlint_msg = N_("Go to next linter msg");
 
@@ -603,9 +597,7 @@ void shortcut_init(void)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_exit, MMAIN, openfile != NULL && openfile != openfile->next ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), FALSE, VIEW);
 
-#ifndef DISABLE_BROWSER
 	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), FALSE, VIEW);
-#endif
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), FALSE, NOVIEW);
@@ -665,17 +657,13 @@ void shortcut_init(void)
 
 	add_to_funcs(do_right, MMAIN, N_("Forward"), IFSCHELP(pinot_forward_msg), FALSE, VIEW);
 
-#ifndef DISABLE_BROWSER
 	add_to_funcs(do_right, MBROWSER, N_("Forward"), IFSCHELP(pinot_forwardfile_msg), FALSE, VIEW);
-#endif
 
 	add_to_funcs(do_right, MALL, "", "", FALSE, VIEW);
 
 	add_to_funcs(do_left, MMAIN, N_("Back"), IFSCHELP(pinot_back_msg), FALSE, VIEW);
 
-#ifndef DISABLE_BROWSER
 	add_to_funcs(do_left, MBROWSER, N_("Back"), IFSCHELP(pinot_backfile_msg), FALSE, VIEW);
-#endif
 
 	add_to_funcs(do_left, MALL, "", "", FALSE, VIEW);
 
@@ -738,9 +726,7 @@ void shortcut_init(void)
 
 	add_to_funcs(gototext_void, MGOTOLINE, gototext_msg, IFSCHELP(pinot_whereis_msg), TRUE, VIEW);
 
-#ifndef DISABLE_BROWSER
 	add_to_funcs(to_files_void, (MGOTOLINE|MINSERTFILE), to_files_msg, IFSCHELP(pinot_tofiles_msg), FALSE, VIEW);
-#endif
 
 	add_to_funcs(dos_format_void, MWRITEFILE, dos_format_msg, IFSCHELP(pinot_dos_msg), FALSE, NOVIEW);
 	add_to_funcs(mac_format_void, MWRITEFILE, mac_format_msg, IFSCHELP(pinot_mac_msg), FALSE, NOVIEW);
@@ -760,14 +746,11 @@ void shortcut_init(void)
 
 	add_to_funcs(do_exit, MHELP, exit_msg, IFSCHELP(pinot_exit_msg), FALSE, VIEW);
 
-#ifndef DISABLE_BROWSER
-
 	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), first_file_msg, IFSCHELP(pinot_firstfile_msg), FALSE, VIEW);
 
 	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), last_file_msg, IFSCHELP(pinot_lastfile_msg), FALSE, VIEW);
 
 	add_to_funcs(goto_dir_void, MBROWSER, goto_dir_msg, IFSCHELP(pinot_gotodir_msg), FALSE, VIEW);
-#endif
 
 	currmenu = MMAIN;
 
@@ -859,12 +842,10 @@ void shortcut_init(void)
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MHELP, "^Y", do_first_line, 0, TRUE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MHELP, "^V", do_last_line, 0, TRUE);
 
-#ifndef DISABLE_BROWSER
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-\\", do_first_file, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-|", do_first_file, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-/", do_last_file, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-?", do_last_file, 0, TRUE);
-#endif
 	add_to_sclist(MBROWSER|MWHEREISFILE, "^_", goto_dir_void, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "F13", goto_dir_void, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-G", goto_dir_void, 0, TRUE);
@@ -1199,14 +1180,12 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "newbuffer")) {
 			s->scfunc =  new_buffer_void;
 			s->execute = FALSE;
-#ifndef DISABLE_BROWSER
 		} else if (!strcasecmp(input, "firstfile")) {
 			s->scfunc =  do_first_file;
 			s->execute = FALSE;
 		} else if (!strcasecmp(input, "lastfile")) {
 			s->scfunc = do_last_file;
 			s->execute = FALSE;
-#endif
 		} else {
 			delete s;
 			return NULL;

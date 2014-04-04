@@ -1891,13 +1891,12 @@ void titlebar(const char *path)
 		space -= verlen;
 	}
 
-#ifndef DISABLE_BROWSER
 	/* Don't display the state if we're in the file browser. */
 	if (path != NULL) {
 		state = "";
-	} else
-#endif
+	} else {
 		state = openfile->modified ? _("Modified") : ISSET(VIEW_MODE) ? _("View") : "";
+	}
 
 	statelen = strlenpt((*state == '\0' && path == NULL) ? _("Modified") : state);
 
@@ -1908,18 +1907,17 @@ void titlebar(const char *path)
 		goto the_end;
 	}
 
-#ifndef DISABLE_BROWSER
 	/* path should be a directory if we're in the file browser. */
 	if (path != NULL) {
 		prefix = _("DIR:");
-	} else
-#endif
+	} else {
 		if (openfile->filename[0] == '\0') {
 			prefix = _("New Buffer");
 			newfie = TRUE;
 		} else {
 			prefix = _("File:");
 		}
+	}
 
 	prefixlen = strnlenpt(prefix, space - statelen) + 1;
 

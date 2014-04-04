@@ -27,8 +27,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-#ifndef DISABLE_BROWSER
-
 static char **filelist = NULL;
 /* The list of files to display in the file browser. */
 static size_t filelist_len = 0;
@@ -1007,5 +1005,3 @@ char *striponedir(const char *path)
 
 	return retval;
 }
-
-#endif /* !DISABLE_BROWSER */

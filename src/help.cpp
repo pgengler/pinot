@@ -255,9 +255,7 @@ void help_init(void)
 		            "are available in Write File mode:\n\n");
 		htx[1] = NULL;
 		htx[2] = NULL;
-	}
-#ifndef DISABLE_BROWSER
-	else if (currmenu == MBROWSER) {
+	}	else if (currmenu == MBROWSER) {
 		htx[0] = N_("File Browser Help Text\n\n "
 		            "The file browser is used to visually browse the "
 		            "directory structure to select a file for reading "
@@ -294,7 +292,6 @@ void help_init(void)
 		htx[1] = NULL;
 		htx[2] = NULL;
 	}
-#endif /* !DISABLE_BROWSER */
 #ifdef ENABLE_SPELLER
 	else if (currmenu == MSPELL) {
 		htx[0] = N_("Spell Check Help Text\n\n "
@@ -506,13 +503,9 @@ size_t help_line_len(const char *ptr)
 void do_help_void(void)
 {
 	/* Start the help browser, with the correct refresher for afterwards. */
-#ifndef DISABLE_BROWSER
 	if (currmenu == MBROWSER || currmenu == MWHEREISFILE || currmenu == MGOTODIR) {
 		do_help(&browser_refresh);
 	} else {
-#endif
 		do_help(&edit_refresh);
-#ifndef DISABLE_BROWSER
 	}
-#endif
 }

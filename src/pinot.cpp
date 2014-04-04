@@ -841,9 +841,6 @@ void version(void)
 	printf( _(" Email: phil@pgengler.net	Web: http://github.com/pgengler"));
 	printf(_("\n Compiled options:"));
 
-#ifdef DISABLE_BROWSER
-	printf(" --disable-browser");
-#endif
 #ifndef ENABLE_NLS
 	printf(" --disable-nls");
 #endif
