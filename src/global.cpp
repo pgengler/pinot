@@ -35,14 +35,12 @@ sigjmp_buf jump_buf;
 
 Keyboard *keyboard = nullptr;
 
-#ifndef DISABLE_WRAPPING
 ssize_t fill = 0;
 /* The column where we will wrap lines. */
 ssize_t wrap_at = -CHARS_FROM_EOL;
 /* The position where we will wrap lines.  fill is equal to this
  * if it's greater than zero, and equal to (COLS + this) if it
  * isn't. */
-#endif
 
 char *last_search = NULL;
 /* The last string we searched for. */

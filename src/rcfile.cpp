@@ -38,18 +38,14 @@
 std::vector<rcoption> rcopts = {
 	{"boldtext", BOLD_TEXT, false},
 	{"const", CONST_UPDATE, false},
-#ifndef DISABLE_WRAPPING
 	{"fill", 0, true},
-#endif
 	{"locking", LOCKING, false},
 	{"multibuffer", MULTIBUFFER, false},
 	{"morespace", MORE_SPACE, false},
 	{"nofollow", NOFOLLOW_SYMLINKS, false},
 	{"nohelp", NO_HELP, false},
 	{"nonewlines", NO_NEWLINES, false},
-#ifndef DISABLE_WRAPPING
 	{"nowrap", NO_WRAP, false},
-#endif
 	{"preserve", PRESERVE, false},
 	{"rebinddelete", REBIND_DELETE, false},
 	{"rebindkeypad", REBIND_KEYPAD, false},
@@ -1038,15 +1034,12 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							break;
 						}
 
-#ifndef DISABLE_WRAPPING
 						if (rcopt.name == "fill") {
 							if (!parse_num(argument.c_str(), &wrap_at)) {
 								rcfile_error(N_("Requested fill size \"%s\" is invalid"), argument.c_str());
 								wrap_at = -CHARS_FROM_EOL;
 							}
-						} else
-#endif
-						if (rcopt.name == "matchbrackets") {
+						} else if (rcopt.name == "matchbrackets") {
 							matchbrackets = mallocstrcpy(matchbrackets, argument.c_str());
 							if (has_blank_mbchars(matchbrackets)) {
 								rcfile_error(N_("Non-blank characters required"));

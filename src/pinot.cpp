@@ -694,7 +694,6 @@ void window_init(void)
 		die(_("Window size is too small for pinot...\n"));
 	}
 
-#ifndef DISABLE_WRAPPING
 	/* Set up fill, based on the screen width. */
 	fill = wrap_at;
 	if (fill <= 0) {
@@ -703,7 +702,6 @@ void window_init(void)
 	if (fill < 0) {
 		fill = 0;
 	}
-#endif
 
 	if (topwin != NULL) {
 		delwin(topwin);
@@ -803,9 +801,7 @@ void usage(void)
 	print_opt("-l", "--nofollow", N_("Don't follow symbolic links, overwrite"));
 	print_opt("-p", "--preserve", N_("Preserve XON (^Q) and XOFF (^S) keys"));
 	print_opt("-q", "--quiet", N_("Silently ignore startup issues like rc file errors"));
-#ifndef DISABLE_WRAPPING
 	print_opt(_("-r <#cols>"), _("--fill=<#cols>"), N_("Set wrapping point at column #cols"));
-#endif
 #ifdef ENABLE_SPELLER
 	print_opt(_("-s <prog>"), _("--speller=<prog>"), N_("Enable alternate speller"));
 #endif
@@ -813,9 +809,7 @@ void usage(void)
 	print_opt("-u", "--undo", N_("Allow generic undo [EXPERIMENTAL]"));
 
 	print_opt("-v", "--view", N_("View mode (read-only)"));
-#ifndef DISABLE_WRAPPING
 	print_opt("-w", "--nowrap", N_("Don't wrap long lines"));
-#endif
 	print_opt("-x", "--nohelp", N_("Don't show the two help lines"));
 	print_opt("-z", "--suspend", N_("Enable suspension"));
 	print_opt("-$", "--softwrap", N_("Enable soft line wrapping"));
@@ -840,9 +834,6 @@ void version(void)
 
 #ifndef ENABLE_NLS
 	printf(" --disable-nls");
-#endif
-#ifdef DISABLE_WRAPPING
-	printf(" --disable-wrapping");
 #endif
 #ifdef DISABLE_ROOTWRAPPING
 	printf(" --disable-wrapping-as-root");
@@ -1208,11 +1199,7 @@ void do_toggle(int flag)
 
 	enabled = ISSET(flag);
 
-	if (flag ==  NO_HELP || flag == NO_COLOR_SYNTAX
-#ifndef DISABLE_WRAPPING
-	        || flag == NO_WRAP
-#endif
-	   ) {
+	if (flag ==  NO_HELP || flag == NO_COLOR_SYNTAX || flag == NO_WRAP) {
 		enabled = !enabled;
 	}
 
@@ -1363,13 +1350,11 @@ void do_input(void)
 		return;
 	}
 
-#ifndef DISABLE_WRAPPING
 	/* If we got a shortcut or toggle, and it's not the shortcut
 	 * for verbatim input, turn off prepending of wrapped text. */
 	if (have_shortcut && s->scfunc != do_verbatim_input) {
 		wrap_reset();
 	}
-#endif
 
 	if (!have_shortcut) {
 		do_output(input, FALSE);
@@ -1612,13 +1597,11 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 		openfile->current_x += char_buf_len;
 
-#ifndef DISABLE_WRAPPING
 		/* If we're wrapping text, we need to call edit_refresh(). */
 		if (!ISSET(NO_WRAP))
 			if (do_wrap(openfile->current, FALSE)) {
 				edit_refresh_needed = TRUE;
 			}
-#endif
 
 		/* If color syntaxes are available and turned on, we need to
 		 * call edit_refresh(). */
@@ -1656,10 +1639,8 @@ int main(int argc, char **argv)
 	/* Line to try and start at. */
 	ssize_t startcol = 1;
 	/* Column to try and start at. */
-#ifndef DISABLE_WRAPPING
 	bool fill_used = FALSE;
 	/* Was the fill option used? */
-#endif
 	bool old_multibuffer;
 	/* The old value of the multibuffer option, restored after we
 	 * load all files on the command line. */
@@ -1680,17 +1661,13 @@ int main(int argc, char **argv)
 		{"nofollow", 0, NULL, 'l'},
 		{"preserve", 0, NULL, 'p'},
 		{"quiet", 0, NULL, 'q'},
-#ifndef DISABLE_WRAPPING
 		{"fill", 1, NULL, 'r'},
-#endif
 #ifdef ENABLE_SPELLER
 		{"speller", 1, NULL, 's'},
 #endif
 		{"tempfile", 0, NULL, 't'},
 		{"view", 0, NULL, 'v'},
-#ifndef DISABLE_WRAPPING
 		{"nowrap", 0, NULL, 'w'},
-#endif
 		{"nohelp", 0, NULL, 'x'},
 		{"suspend", 0, NULL, 'z'},
 		{"smarthome", 0, NULL, 'A'},
@@ -1836,7 +1813,6 @@ int main(int argc, char **argv)
 		case 'q':
 			SET(QUIET);
 			break;
-#ifndef DISABLE_WRAPPING
 		case 'r':
 			if (!parse_num(optarg, &wrap_at)) {
 				fprintf(stderr, _("Requested fill size \"%s\" is invalid"), optarg);
@@ -1845,7 +1821,6 @@ int main(int argc, char **argv)
 			}
 			fill_used = TRUE;
 			break;
-#endif
 #ifdef ENABLE_SPELLER
 		case 's':
 			alt_speller = mallocstrcpy(alt_speller, optarg);
@@ -1860,7 +1835,6 @@ int main(int argc, char **argv)
 		case 'v':
 			SET(VIEW_MODE);
 			break;
-#ifndef DISABLE_WRAPPING
 		case 'w':
 			SET(NO_WRAP);
 
@@ -1869,7 +1843,6 @@ int main(int argc, char **argv)
 			fill_used = FALSE;
 
 			break;
-#endif
 		case 'x':
 			SET(NO_HELP);
 			break;
@@ -1892,9 +1865,7 @@ int main(int argc, char **argv)
 	 * and values that are set, and read the rcfile(s).  If the values
 	 * haven't changed afterward, restore the backed-up values. */
 	if (!no_rcfiles) {
-#ifndef DISABLE_WRAPPING
 		ssize_t wrap_at_cpy = wrap_at;
-#endif
 		char *backup_dir_cpy = backup_dir;
 #ifdef ENABLE_SPELLER
 		char *alt_speller_cpy = alt_speller;
@@ -1917,11 +1888,9 @@ int main(int argc, char **argv)
 		print_sclist();
 #endif
 
-#ifndef DISABLE_WRAPPING
 		if (fill_used) {
 			wrap_at = wrap_at_cpy;
 		}
-#endif
 		if (backup_dir_cpy != NULL) {
 			free(backup_dir);
 			backup_dir = backup_dir_cpy;
@@ -1948,13 +1917,11 @@ int main(int argc, char **argv)
 	}
 #endif
 
-#ifndef DISABLE_WRAPPING
 	/* Overwrite an rcfile "set nowrap" or --disable-wrapping-as-root
 	   if a --fill option was given on the command line. */
 	if (fill_used) {
 		UNSET(NO_WRAP);
 	}
-#endif
 
 	/* If we're using bold text instead of reverse video text, set it up
 	 * now. */

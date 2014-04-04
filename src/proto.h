@@ -31,10 +31,8 @@ extern bool use_undo;
 
 extern Keyboard *keyboard;
 
-#ifndef DISABLE_WRAPPING
 extern ssize_t fill;
 extern ssize_t wrap_at;
-#endif
 
 extern char *last_search;
 extern char *last_replace;
@@ -438,11 +436,9 @@ void do_enter_void(void);
 void cancel_command(int signal);
 bool execute_command(const char *command);
 int execute_command_silently(const char *command);
-#ifndef DISABLE_WRAPPING
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
 ssize_t break_line(const char *line, ssize_t goal, bool newln);
-#endif
 size_t indent_length(const char *line);
 #ifdef ENABLE_SPELLER
 bool do_int_spell_fix(const char *word);

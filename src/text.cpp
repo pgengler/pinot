@@ -33,10 +33,8 @@
 static pid_t pid = -1;
 /* The PID of the forked process in execute_command(), for use
  * with the cancel_command() signal handler. */
-#ifndef DISABLE_WRAPPING
 static bool prepend_wrap = FALSE;
 /* Should we prepend wrapped text to the next line? */
-#endif
 
 /* Toggle the mark. */
 void do_mark(void)
@@ -465,7 +463,6 @@ void do_undo(void)
 			openfile->current_x += strlen(u->strdata);
 		}
 		break;
-#ifndef DISABLE_WRAPPING
 	case SPLIT:
 		undidmsg = _("line wrap");
 		f->data = (char *) nrealloc(f->data, strlen(f->data) + strlen(u->strdata) + 1);
@@ -479,7 +476,6 @@ void do_undo(void)
 		}
 		renumber(f);
 		break;
-#endif /* DISABLE_WRAPPING */
 	case UNSPLIT:
 		undidmsg = _("line join");
 		t = make_new_node(f);
@@ -605,7 +601,6 @@ void do_redo(void)
 		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
 		do_enter(TRUE);
 		break;
-#ifndef DISABLE_WRAPPING
 	case SPLIT:
 		undidmsg = _("line wrap");
 		if (u->xflags & UNsplit_madenew) {
@@ -614,7 +609,6 @@ void do_redo(void)
 		do_wrap(f, TRUE);
 		renumber(f);
 		break;
-#endif /* DISABLE_WRAPPING */
 	case UNSPLIT:
 		undidmsg = _("line join");
 		len = strlen(f->data) + strlen(u->strdata + 1);
@@ -979,7 +973,6 @@ void add_undo(undo_type current_action)
 			u->strdata = data;
 		}
 		break;
-#ifndef DISABLE_WRAPPING
 	case SPLIT:
 		wrap_loc = break_line(openfile->current->data, fill, FALSE);
 		u->strdata = mallocstrcpy(NULL, &openfile->current->data[wrap_loc]);
@@ -990,7 +983,6 @@ void add_undo(undo_type current_action)
 		}
 		u->begin = wrap_loc;
 		break;
-#endif /* DISABLE_WRAPPING */
 	case INSERT:
 	case REPLACE:
 		data = mallocstrcpy(NULL, fs->current->data);
@@ -1124,13 +1116,11 @@ void update_undo(undo_type action)
 	case INSERT:
 		u->mark_begin_lineno = openfile->current->lineno;
 		break;
-#ifndef DISABLE_WRAPPING
 	case SPLIT:
 		/* This will only be called if we made a completely new line,
 		   and as such we should note that so we can destroy it later */
 		u->xflags = UNsplit_madenew;
 		break;
-#endif /* DISABLE_WRAPPING */
 	case UNSPLIT:
 		/* These cases are handled by the earlier check for a new line and action */
 	case ENTER:
@@ -1146,7 +1136,6 @@ void update_undo(undo_type action)
 	fs->last_action = action;
 }
 
-#ifndef DISABLE_WRAPPING
 /* Unset the prepend_wrap flag.  We need to do this as soon as we do
  * something other than type text. */
 void wrap_reset(void)
@@ -1466,7 +1455,6 @@ ssize_t break_line(const char *line, ssize_t goal, bool newln)
 
 	return blank_loc;
 }
-#endif /* !DISABLE_WRAPPING */
 
 /* The "indentation" of a line is the whitespace between the quote part
  * and the non-whitespace of the line. */

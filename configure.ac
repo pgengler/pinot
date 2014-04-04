@@ -72,12 +72,6 @@ AC_ARG_ENABLE(speller, AS_HELP_STRING([--enable-speller], [Enable spell checker 
   fi
 ])
 
-AC_ARG_ENABLE(wrapping, AS_HELP_STRING([--disable-wrapping], [Disable all wrapping of text (and -w flag)]), [
-  if test "x$enableval" != xyes; then
-    AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
-  fi
-])
-
 AC_ARG_ENABLE(wrapping-as-root, AS_HELP_STRING([--disable-wrapping-as-root], [Disable wrapping of text as root by default]), [
   if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_ROOTWRAPPING, 1, [Define this to disable text wrapping as root by default.])
