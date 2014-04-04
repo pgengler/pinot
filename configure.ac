@@ -90,12 +90,6 @@ AC_ARG_ENABLE(speller, AS_HELP_STRING([--enable-speller], [Enable spell checker 
   fi
 ])
 
-AC_ARG_ENABLE(tabcomp, AS_HELP_STRING([--disable-tabcomp], [Disable tab completion functions]), [
-  if test "x$enableval" != xyes; then
-    AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
-  fi
-])
-
 AC_ARG_ENABLE(wrapping, AS_HELP_STRING([--disable-wrapping], [Disable all wrapping of text (and -w flag)]), [
   if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
@@ -300,7 +294,6 @@ if test x$CURSES_LIB_NAME = xslang; then
     AC_DEFINE(DISABLE_BROWSER, 1, [Define this to disable the built-in file browser.])
     AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
-    AC_DEFINE(DISABLE_TABCOMP, 1, [Define to disable the tab completion functions for files and search strings.])
     AC_DEFINE(DISABLE_WRAPPING, 1, [Define this to disable all text wrapping.])
 fi
 

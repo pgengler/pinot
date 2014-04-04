@@ -162,27 +162,20 @@ int search_init(bool replacing, bool use_answer)
 
 	/* This is now one simple call.  It just does a lot. */
 	i = do_prompt(FALSE,
-#ifndef DISABLE_TABCOMP
 	              TRUE,
-#endif
 	              replacing ? MREPLACE : MWHEREIS, backupstring,
 	              &meta_key, &func_key,
 	              &search_history,
 	              edit_refresh, "%s%s%s%s%s%s", _("Search"),
 	              /* TRANSLATORS: This string is just a modifier for the search
 	               * prompt; no grammar is implied. */
-	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") :
-	              "",
+	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") : "",
 	              /* TRANSLATORS: This string is just a modifier for the search
 	               * prompt; no grammar is implied. */
-	              ISSET(USE_REGEXP) ? _(" [Regexp]") :
-	              "",
+	              ISSET(USE_REGEXP) ? _(" [Regexp]") : "",
 	              /* TRANSLATORS: This string is just a modifier for the search
 	               * prompt; no grammar is implied. */
-	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") :
-	              "", replacing ?
-	              openfile->mark_set ? _(" (to replace) in selection") :
-	              _(" (to replace)") : "", buf);
+	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "", replacing ? (openfile->mark_set ? _(" (to replace) in selection") : _(" (to replace)")) : "", buf);
 
 	fflush(stderr);
 
@@ -846,9 +839,7 @@ void do_replace(void)
 	last_replace = mallocstrcpy(last_replace, "");
 
 	i = do_prompt(FALSE,
-#ifndef DISABLE_TABCOMP
 	              TRUE,
-#endif
 	              MREPLACE2, last_replace,
 	              &meta_key, &func_key,
 	              &replace_history,
@@ -914,9 +905,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 
 		/* Ask for the line and column. */
 		int i = do_prompt(FALSE,
-#ifndef DISABLE_TABCOMP
 		                  TRUE,
-#endif
 		                  MGOTOLINE, use_answer ? ans : "",
 		                  &meta_key, &func_key,
 		                  NULL,
@@ -1343,7 +1332,6 @@ void get_history_older_void(void)
 	;
 }
 
-#ifndef DISABLE_TABCOMP
 /* Move h to the next string that's a tab completion of the string s,
  * looking at only the first len characters of s, and return that string.
  *  If there isn't one, or if len is 0, don't move h and return s. */
@@ -1398,4 +1386,3 @@ char *get_history_completion(filestruct **h, const char *s, size_t len)
 	 * match, or len is 0.  Return s. */
 	return (char *)s;
 }
-#endif /* !DISABLE_TABCOMP */

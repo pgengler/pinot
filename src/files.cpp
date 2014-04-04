@@ -949,9 +949,7 @@ void do_execute_command()
 		msg = _("Command to execute (no output) [from %s]");
 
 		i = do_prompt(TRUE,
-#ifndef DISABLE_TABCOMP
 		              TRUE,
-#endif
 		              MEXTCMD, ans, &meta_key, &func_key, NULL, edit_refresh, msg,
 #ifndef DISABLE_OPERATINGDIR
 		              operating_dir != NULL && strcmp(operating_dir, ".") != 0 ? operating_dir :
@@ -1047,9 +1045,7 @@ void do_insertfile(bool execute)
 		}
 
 		i = do_prompt(TRUE,
-#ifndef DISABLE_TABCOMP
 		              TRUE,
-#endif
 		              execute ? MEXTCMD : MINSERTFILE, ans,
 		              &meta_key, &func_key,
 		              NULL,
@@ -2171,9 +2167,7 @@ bool do_writeout(bool exiting)
 		}
 
 		i = do_prompt(TRUE,
-#ifndef DISABLE_TABCOMP
 		              TRUE,
-#endif
 		              MWRITEFILE, ans,
 		              &meta_key, &func_key,
 		              NULL,
@@ -2355,7 +2349,7 @@ char *real_dir_from_tilde(const char *buf)
 	return retval;
 }
 
-#if !defined(DISABLE_TABCOMP) || !defined(DISABLE_BROWSER)
+#ifndef DISABLE_BROWSER
 /* Our sort routine for file listings.  Sort alphabetically and
  * case-insensitively, and sort directories before filenames. */
 int diralphasort(const void *va, const void *vb)
@@ -2393,7 +2387,6 @@ void free_chararray(char **array, size_t len)
 }
 #endif
 
-#ifndef DISABLE_TABCOMP
 /* Is the given path a directory? */
 bool is_dir(const char *buf)
 {
@@ -2726,7 +2719,6 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 
 	return buf;
 }
-#endif /* !DISABLE_TABCOMP */
 
 /* Only print the last part of a path.  Isn't there a shell command for this? */
 const char *tail(const char *foo)

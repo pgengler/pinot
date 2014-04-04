@@ -850,9 +850,6 @@ void version(void)
 #ifdef DISABLE_OPERATINGDIR
 	printf(" --disable-operatingdir");
 #endif
-#ifdef DISABLE_TABCOMP
-	printf(" --disable-tabcomp");
-#endif
 #ifdef DISABLE_WRAPPING
 	printf(" --disable-wrapping");
 #endif

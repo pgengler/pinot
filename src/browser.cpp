@@ -171,9 +171,7 @@ change_browser_directory:
 			curs_set(1);
 
 			i = do_prompt(TRUE,
-#ifndef DISABLE_TABCOMP
 			              FALSE,
-#endif
 			              MGOTODIR, ans,
 			              &meta_key, &func_key,
 			              NULL,
@@ -748,9 +746,7 @@ int filesearch_init(void)
 
 	/* This is now one simple call.  It just does a lot. */
 	i = do_prompt(FALSE,
-#ifndef DISABLE_TABCOMP
 	              TRUE,
-#endif
 	              MWHEREISFILE, backupstring,
 	              &meta_key, &func_key,
 	              &search_history,

@@ -801,39 +801,24 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(int *actual, bool allow_tabs,
-#ifndef DISABLE_TABCOMP
-                            bool allow_files,
-#endif
-                            const char *curranswer,
-                            bool *meta_key, bool *func_key,
-                            filestruct **history_list,
-                            void (*refresh_func)(void), int menu
-#ifndef DISABLE_TABCOMP
-                            , bool *list
-#endif
-                           )
+const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
 	int kbinput = ERR;
 	bool have_shortcut, ran_func, finished;
 	size_t curranswer_len;
 	const sc *s;
-#ifndef DISABLE_TABCOMP
 	bool tabbed = FALSE;
 	/* Whether we've pressed Tab. */
-#endif
 	char *history = NULL;
 	/* The current history string. */
 	char *magichistory = NULL;
 	/* The temporary string typed at the bottom of the history, if
 	 * any. */
-#ifndef DISABLE_TABCOMP
 	int last_kbinput = ERR;
 	/* The key we pressed before the current key. */
 	size_t complete_len = 0;
 	/* The length of the original string that we're trying to
 	 * tab complete, if any. */
-#endif
 
 	answer = mallocstrcpy(answer, curranswer);
 	curranswer_len = strlen(answer);
@@ -878,13 +863,10 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 			}
 		}
 
-#ifndef DISABLE_TABCOMP
 		if (s && s->scfunc != do_tab) {
 			tabbed = FALSE;
 		}
-#endif
 
-#ifndef DISABLE_TABCOMP
 		if (s && s->scfunc == do_tab) {
 			if (history_list != NULL) {
 				if (last_kbinput != sc_seq_or(do_tab, PINOT_CONTROL_I)) {
@@ -900,8 +882,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 			}
 
 			update_statusbar_line(answer, statusbar_x);
-		} else
-#endif /* !DISABLE_TABCOMP */
+		} else {
 			if (s && s->scfunc == get_history_older_void) {
 				if (history_list != NULL) {
 					/* If we're scrolling up at the bottom of the
@@ -967,6 +948,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 				 * prompt. */
 				finished = FALSE;
 			}
+		}
 
 		/* If we have a shortcut with an associated function, break out
 		 * if we're finished after running or trying to run the
@@ -975,9 +957,7 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
 			break;
 		}
 
-#ifndef DISABLE_TABCOMP
 		last_kbinput = kbinput;
-#endif
 
 		reset_statusbar_cursor();
 		wnoutrefresh(bottomwin);
@@ -1031,21 +1011,12 @@ const sc *get_prompt_string(int *actual, bool allow_tabs,
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-int do_prompt(bool allow_tabs,
-#ifndef DISABLE_TABCOMP
-              bool allow_files,
-#endif
-              int menu, const char *curranswer,
-              bool *meta_key, bool *func_key,
-              filestruct **history_list,
-              void (*refresh_func)(void), const char *msg, ...)
+int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
 	int retval;
 	const sc *s;
-#ifndef DISABLE_TABCOMP
 	bool list = FALSE;
-#endif
 
 	/* prompt has been freed and set to NULL unless the user resized
 	 * while at the statusbar prompt. */
@@ -1062,18 +1033,7 @@ int do_prompt(bool allow_tabs,
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(&retval, allow_tabs,
-#ifndef DISABLE_TABCOMP
-	                      allow_files,
-#endif
-	                      curranswer,
-	                      meta_key, func_key,
-	                      history_list,
-	                      refresh_func, menu
-#ifndef DISABLE_TABCOMP
-	                      , &list
-#endif
-	                     );
+	s = get_prompt_string(&retval, allow_tabs, allow_files, curranswer, meta_key, func_key, history_list, refresh_func, menu , &list);
 
 	free(prompt);
 	prompt = NULL;
@@ -1096,14 +1056,12 @@ int do_prompt(bool allow_tabs,
 
 	DEBUG_LOG("answer = \"" << answer << '"');
 
-#ifndef DISABLE_TABCOMP
 	/* If we've done tab completion, there might be a list of filename
 	 * matches on the edit window at this point.  Make sure that they're
 	 * cleared off. */
 	if (list) {
 		refresh_func();
 	}
-#endif
 
 	return retval;
 }

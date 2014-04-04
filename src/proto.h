@@ -236,16 +236,14 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 char *real_dir_from_tilde(const char *buf);
-#if !defined(DISABLE_TABCOMP) || !defined(DISABLE_BROWSER)
+#ifndef DISABLE_BROWSER
 int diralphasort(const void *va, const void *vb);
 void free_chararray(char **array, size_t len);
 #endif
-#ifndef DISABLE_TABCOMP
 bool is_dir(const char *buf);
 char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_len);
 char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches, size_t buf_len);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
-#endif
 const char *tail(const char *foo);
 char *histfilename(void);
 void load_history(void);
@@ -352,6 +350,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
 int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
+void do_statubar_output(std::string& output, bool *got_enter, bool allow_cntrls);
 void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls);
 void do_statusbar_home(void);
 void do_statusbar_end(void);
@@ -371,26 +370,8 @@ void reset_statusbar_cursor(void);
 void update_statusbar_line(const char *curranswer, size_t index);
 bool need_statusbar_horizontal_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
-const sc *get_prompt_string(int *value, bool allow_tabs,
-#ifndef DISABLE_TABCOMP
-                            bool allow_files,
-#endif
-                            const char *curranswer,
-                            bool *meta_key, bool *func_key,
-                            filestruct **history_list,
-                            void (*refresh_func)(void), int menu
-#ifndef DISABLE_TABCOMP
-                            , bool *list
-#endif
-                           );
-int do_prompt(bool allow_tabs,
-#ifndef DISABLE_TABCOMP
-              bool allow_files,
-#endif
-              int menu, const char *curranswer,
-              bool *meta_key, bool *func_key,
-              filestruct **history_list,
-              void (*refresh_func)(void), const char *msg, ...);
+const sc *get_prompt_string(int *value, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
+int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 int do_yesno_prompt(bool all, const char *msg);
 
@@ -452,9 +433,7 @@ char *get_history_older(filestruct **h);
 char *get_history_newer(filestruct **h);
 void get_history_older_void(void);
 void get_history_newer_void(void);
-#ifndef DISABLE_TABCOMP
 char *get_history_completion(filestruct **h, const char *s, size_t len);
-#endif
 
 /* All functions in text.c. */
 void do_mark(void);
