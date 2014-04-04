@@ -1474,7 +1474,7 @@ void precalc_multicolorinfo(void)
 
 				if ((cur_check = time(NULL)) - last_check > 1) {
 					last_check = cur_check;
-					if (wgetch(edit) != ERR) {
+					if (keyboard->has_input()) {
 						goto precalc_cleanup;
 					}
 				}
@@ -1500,7 +1500,7 @@ void precalc_multicolorinfo(void)
 						/* Check for keyboard input  again */
 						if ((cur_check = time(NULL)) - last_check > 1) {
 							last_check = cur_check;
-							if (wgetch(edit) != ERR) {
+							if (keyboard->has_input()) {
 								goto precalc_cleanup;
 							}
 						}
