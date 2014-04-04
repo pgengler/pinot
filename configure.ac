@@ -72,12 +72,6 @@ AC_ARG_ENABLE(browser, AS_HELP_STRING([--disable-browser], [Disable built-in fil
   fi
 ])
 
-AC_ARG_ENABLE(mouse, AS_HELP_STRING([--disable-mouse], [Disable mouse support (and -m flag)]), [
-  if test "x$enableval" != xyes; then
-    AC_DEFINE(DISABLE_MOUSE, 1, [Define this to disable the mouse support.])
-  fi
-])
-
 AC_ARG_ENABLE(operatingdir, AS_HELP_STRING([--disable-operatingdir], [Disable setting of operating directory (chroot of sorts)]), [
   if test "x$enableval" != xyes; then
     AC_DEFINE(DISABLE_OPERATINGDIR, 1, [Define this to disable the setting of the operating directory (chroot of sorts).])
