@@ -58,10 +58,7 @@ dnl Checks for options.
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debugging (disabled by default)]), [
   if test "x$enableval" = xyes; then
     AC_DEFINE(DEBUG, 1, [Define this to enable debug messages and assert warnings.])
-    debug_support=yes
-  fi
-
-  if test x$debug_support != xyes; then
+  else
     AC_DEFINE(NDEBUG, 1, [Shut up assert warnings :-)])
   fi
 ])
@@ -112,7 +109,7 @@ int main(void)
     SLutf8_enable(1);
     return 0;
 }]])],[AC_MSG_RESULT(yes)
-		    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
+		    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
 		    CURSES_LIB_WIDE=yes
 		    if test x$with_slang != xyes; then
 			CURSES_LIB="-L${with_slang}/lib -lslang"
@@ -137,7 +134,7 @@ int main(void)
     return 0;
 }],
 			[AC_MSG_RESULT(yes)
-			AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
+			AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
 			CURSES_LIB_WIDE=yes
 			if test x$with_slang != xyes; then
 			    CURSES_LIB="-L${with_slang}/lib -lslang $tcap"
@@ -158,7 +155,7 @@ int main(void)
     return 0;
 }],
 			    [AC_MSG_RESULT(yes)
-			    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
+			    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
 			    CURSES_LIB_WIDE=yes
 			    if test x$with_slang != xyes; then
 				CURSES_LIB="-L${with_slang}/lib -lslang $tcap -lm"
@@ -193,7 +190,7 @@ int main(void)
     SLtt_initialize(NULL);
     return 0;
 }]])],[AC_MSG_RESULT(yes)
-		    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
+		    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
 		    if test x$with_slang != xyes; then
 			CURSES_LIB="-L${with_slang}/lib -lslang"
 		    else
@@ -217,7 +214,7 @@ int main(void)
     return 0;
 }],
 			[AC_MSG_RESULT(yes)
-			AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.]) slang_support=yes
+			AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
 			if test x$with_slang != xyes; then
 			    CURSES_LIB="-L${with_slang}/lib -lslang $tcap"
 			else
@@ -238,7 +235,6 @@ int main(void)
 }],
 			    [AC_MSG_RESULT(yes)
 			    AC_DEFINE(USE_SLANG, 1, [Define to use the slang wrappers for curses instead of native curses.])
-          slang_support=yes
 			    if test "x$with_slang" != xyes; then
 				CURSES_LIB="-L${with_slang}/lib -lslang $tcap -lm"
 			    else
@@ -430,6 +426,9 @@ else
 fi
 AM_CONDITIONAL(GROFF_HTML, test x$groff_html_support = xyes)
 
+# Check for the availability of makeinfo.
+AC_CHECK_PROG(haveit, makeinfo, yes, no)
+AM_CONDITIONAL(HAVE_MAKEINFO, test x$haveit = xyes)
 
 AC_CONFIG_FILES([
 Makefile

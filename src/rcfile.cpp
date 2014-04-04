@@ -888,7 +888,7 @@ static void check_vitals_mapped(void)
 			if (f->scfunc == vitals[v] && f->menus & inmenus[v]) {
 				const sc *s = first_sc_for(inmenus[v], f->scfunc);
 				if (!s) {
-					rcfile_error(N_("Fatal error: no keys mapped for function \"%s\""), f->desc);
+					fprintf(stderr, N_("Fatal error: no keys mapped for function \"%s\""), f->desc);
 					fprintf(stderr, N_("Exiting.  Please use pinot with the -I option if needed to adjust your pinotrc settings\n"));
 					exit(1);
 				}
