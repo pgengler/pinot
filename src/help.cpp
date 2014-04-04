@@ -128,7 +128,9 @@ void do_help(void (*refresh_func)(void))
 			continue;
 		}
 
-		if (f->scfunc == do_page_up || key == " ") {
+		if (f->scfunc == total_refresh) {
+			total_redraw();
+		} else if (f->scfunc == do_page_up || key == " ") {
 			if (line > editwinrows - 2) {
 				line -= editwinrows - 2;
 			} else {

@@ -720,7 +720,7 @@ void shortcut_init(void)
 
 	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), FALSE, VIEW);
 
-	add_to_funcs(total_refresh, MMAIN, refresh_msg, IFSCHELP(pinot_refresh_msg), FALSE, VIEW);
+	add_to_funcs(total_refresh, (MMAIN|MHELP), refresh_msg, IFSCHELP(pinot_refresh_msg), FALSE, VIEW);
 
 	add_to_funcs(do_suspend_void, MMAIN, suspend_msg, IFSCHELP(pinot_suspend_msg), TRUE, VIEW);
 
