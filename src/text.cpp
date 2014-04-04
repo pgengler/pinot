@@ -2257,8 +2257,6 @@ void do_linter(void)
 
 	while (1) {
 		ssize_t tmpcol = 1;
-		int kbinput;
-		bool meta_key, func_key;
 
 		if (curr_lint->colno > 0) {
 			tmpcol = curr_lint->colno;
@@ -2312,8 +2310,8 @@ void do_linter(void)
 			bottombars(MLINTER);
 		}
 
-		kbinput = get_kbinput(bottomwin, &meta_key, &func_key);
-		s = get_shortcut(currmenu, &kbinput, &meta_key, &func_key);
+		Key kbinput = get_kbinput(bottomwin);
+		s = get_shortcut(currmenu, kbinput);
 		last_lint = curr_lint;
 
 		if (!s) {
