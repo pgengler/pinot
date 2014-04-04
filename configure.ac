@@ -471,6 +471,9 @@ else
 fi
 AM_CONDITIONAL(GROFF_HTML, test x$groff_html_support = xyes)
 
+# Check for the availability of makeinfo.
+AC_CHECK_PROG(haveit, makeinfo, yes, no)
+AM_CONDITIONAL(HAVE_MAKEINFO, test x$haveit = xyes)
 
 AC_CONFIG_FILES([
 Makefile
