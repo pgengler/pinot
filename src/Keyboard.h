@@ -3,7 +3,7 @@
 #include <string>
 
 // need to include "termkey-internal.h" because that actually defines
-// the TermKeyStruct and we get compiler errord without it
+// the TermKeyStruct and we get compiler errors without it
 #include "termkey-internal.h"
 #include "termkey.h"
 
