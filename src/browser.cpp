@@ -46,7 +46,6 @@ static bool search_last_file = FALSE;
 char *do_browser(char *path, DIR *dir)
 {
 	char *retval = NULL;
-	int kbinput;
 	bool meta_key, func_key, old_const_update = ISSET(CONST_UPDATE);
 	bool abort = FALSE;
 	/* Whether we should abort the file browser. */
@@ -71,9 +70,6 @@ char *do_browser(char *path, DIR *dir)
 
 change_browser_directory:
 	/* We go here after we select a new directory. */
-
-	/* Start with no key pressed. */
-	kbinput = ERR;
 
 	path = mallocstrassn(path, get_full_path(path));
 
@@ -103,68 +99,79 @@ change_browser_directory:
 
 	titlebar(path);
 
+	void (*func)() = nullptr;
+
+	Key *kbinput = nullptr;
 	while (!abort) {
 		struct stat st;
 		int i;
 		size_t fileline = selected / width;
 		/* The line number the selected file is on. */
 		char *new_path;
-		/* The path we switch to at the "Go to Directory"
-		 * prompt. */
+		/* The path we switch to at the "Go to Directory" prompt. */
+
+		if (kbinput) {
+			delete kbinput;
+			kbinput = nullptr;
+		}
 
 		/* Display the file list if we don't have a key, or if the
 		 * selected file has changed, and set width in the process. */
-		if (kbinput == ERR || old_selected != selected) {
+		if (old_selected != selected) {
 			browser_refresh();
 		}
 
 		old_selected = selected;
 
-		kbinput = get_kbinput(edit, &meta_key, &func_key);
+		if (!func) {
+			// Deal with the keyboard input
+			kbinput = new Key(get_kbinput(edit));
 
-		s = get_shortcut(MBROWSER, &kbinput, &meta_key, &func_key);
-		if (!s) {
-			continue;
-		}
-		f = sctofunc((sc *) s);
-		if (!f) {
-			break;
+			s = get_shortcut(MBROWSER, *kbinput);
+			if (!s) {
+				continue;
+			}
+			f = sctofunc((sc *) s);
+			if (!f) {
+				break;
+			}
+			func = f->scfunc;
 		}
 
-		if (f->scfunc == total_refresh) {
+		if (func == total_refresh) {
 			total_redraw();
-		} else if (f->scfunc == do_help_void) {
+		} else if (func == do_help_void) {
 			do_help_void();
 			curs_set(0);
 			/* Search for a filename. */
-		} else if (f->scfunc == do_search) {
+		} else if (func == do_search) {
 			curs_set(1);
 			do_filesearch();
 			curs_set(0);
 			/* Search for another filename. */
-		} else if (f->scfunc == do_research) {
+		} else if (func == do_research) {
 			do_fileresearch();
-		} else if (f->scfunc == do_page_up) {
+		} else if (func == do_page_up) {
 			if (selected >= (editwinrows + fileline % editwinrows) * width) {
 				selected -= (editwinrows + fileline % editwinrows) * width;
 			} else {
 				selected = 0;
 			}
-		} else if (f->scfunc == do_page_down) {
+		} else if (func == do_page_down) {
 			selected += (editwinrows - fileline % editwinrows) * width;
 			if (selected > filelist_len - 1) {
 				selected = filelist_len - 1;
 			}
-		} else if (f->scfunc == do_first_file) {
-			if (meta_key) {
+		} else if (func == do_first_file) {
+			if (kbinput->has_meta_key()) {
 				selected = 0;
 			}
-		} else if (f->scfunc == do_last_file) {
-			if (meta_key) {
+		} else if (func == do_last_file) {
+			if (kbinput->has_meta_key()) {
 				selected = filelist_len - 1;
 			}
 			/* Go to a specific directory. */
-		} else if (f->scfunc == goto_dir_void) {
+		} else if (func == goto_dir_void) {
 			curs_set(1);
 
 			i = do_prompt(TRUE,
@@ -184,14 +191,15 @@ change_browser_directory:
 				 * blank out ans, since we're done with it. */
 				statusbar(_("Cancelled"));
 				ans = mallocstrcpy(ans, "");
+				func = nullptr;
 				continue;
 			} else if (i != 0) {
 				/* Put back the "Go to Directory" key and save
 				 * answer in ans, so that the file list is displayed
 				 * again, the prompt is displayed again, and what we
 				 * typed before at the prompt is displayed again. */
-				unget_kbinput(sc_seq_or(do_gotolinecolumn_void, 0), FALSE, FALSE);
 				ans = mallocstrcpy(ans, answer);
+				func = goto_dir_void;
 				continue;
 			}
 
@@ -215,6 +223,7 @@ change_browser_directory:
 				statusbar(_("Error reading %s: %s"), answer, strerror(errno));
 				beep();
 				free(new_path);
+				func = nullptr;
 				continue;
 			}
 
@@ -222,27 +231,28 @@ change_browser_directory:
 			free(path);
 			path = new_path;
 			goto change_browser_directory;
-		} else if (f->scfunc == do_up_void) {
+		} else if (func == do_up_void) {
 			if (selected >= width) {
 				selected -= width;
 			}
-		} else if (f->scfunc == do_left) {
+		} else if (func == do_left) {
 			if (selected > 0) {
 				selected--;
 			}
-		} else if (f->scfunc == do_down_void) {
+		} else if (func == do_down_void) {
 			if (selected + width <= filelist_len - 1) {
 				selected += width;
 			}
-		} else if (f->scfunc == do_right) {
+		} else if (func == do_right) {
 			if (selected < filelist_len - 1) {
 				selected++;
 			}
-		} else if (f->scfunc == do_enter_void) {
+		} else if (func == do_enter_void) {
 			/* We can't move up from "/". */
 			if (strcmp(filelist[selected], "/..") == 0) {
 				statusbar(_("Can't move up a directory"));
 				beep();
+				func = nullptr;
 				continue;
 			}
 
@@ -250,6 +260,7 @@ change_browser_directory:
 				/* We can't open this file for some reason. Complain. */
 				statusbar(_("Error reading %s: %s"), filelist[selected], strerror(errno));
 				beep();
+				func = nullptr;
 				continue;
 			}
 
@@ -257,18 +268,21 @@ change_browser_directory:
 			if (!S_ISDIR(st.st_mode)) {
 				retval = mallocstrcpy(NULL, filelist[selected]);
 				abort = TRUE;
+				func = nullptr;
 				continue;
 				/* If we've successfully opened a directory, and it's
 				 * "..", save the current directory in prev_dir, so that
 				 * we can select it later. */
-			} else if (strcmp(tail(filelist[selected]), "..") == 0)
+			} else if (strcmp(tail(filelist[selected]), "..") == 0) {
 				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected]));
+			}
 
 			dir = opendir(filelist[selected]);
 			if (dir == NULL) {
 				/* We can't open this directory for some reason. Complain. */
 				statusbar(_("Error reading %s: %s"), filelist[selected], strerror(errno));
 				beep();
+				func = nullptr;
 				continue;
 			}
 
@@ -277,9 +291,13 @@ change_browser_directory:
 			/* Start over again with the new path value. */
 			goto change_browser_directory;
 			/* Abort the file browser. */
-		} else if (f->scfunc == do_exit) {
+		} else if (func == do_exit) {
 			abort = TRUE;
 		}
+		func = nullptr;
+	}
+	if (kbinput) {
+		delete kbinput;
 	}
 	titlebar(NULL);
 	edit_refresh();
