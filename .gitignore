@@ -1,3 +1,6 @@
+*~
+*.la
+*.lo
 *.o
 .deps
 .libs
@@ -17,13 +20,16 @@ Makefile.in
 /configure
 /depcomp
 /install-sh
+/libtool
 /ltmain.sh
 /missing
 /mkinstalldirs
 /stamp-h1
 
-/mt/libtool.m4
+/m4/libtool.m4
 /m4/lt*
+
+/po/*.gmo
 
 /pinot.spec
 /src/pinot
