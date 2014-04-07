@@ -122,7 +122,6 @@ change_browser_directory:
 
 		kbinput = get_kbinput(edit, &meta_key, &func_key);
 
-		parse_browser_input(&kbinput, &meta_key, &func_key);
 		s = get_shortcut(MBROWSER, &kbinput, &meta_key, &func_key);
 		if (!s) {
 			continue;
@@ -464,48 +463,6 @@ void browser_init(const char *path, DIR *dir)
 	 * it means that width is equal to longest. */
 	if (width == 0) {
 		width = longest;
-	}
-}
-
-/* Determine the shortcut key corresponding to the values of kbinput
- * (the key itself), meta_key (whether the key is a meta sequence), and
- * func_key (whether the key is a function key), if any.  In the
- * process, convert certain non-shortcut keys into their corresponding
- * shortcut keys. */
-void parse_browser_input(int *kbinput, bool *meta_key, bool *func_key)
-{
-	get_shortcut(MBROWSER, kbinput, meta_key, func_key);
-
-	/* Pico compatibility. */
-	if (!*meta_key) {
-		switch (*kbinput) {
-		case ' ':
-			*kbinput = sc_seq_or(do_page_down, 0);
-			break;
-		case '-':
-			*kbinput = sc_seq_or(do_page_up, 0);
-			break;
-		case '?':
-			*kbinput = sc_seq_or(do_help_void, 0);
-			break;
-			/* Cancel equivalent to Exit here. */
-		case 'E':
-		case 'e':
-			*kbinput = sc_seq_or(do_exit, 0);
-			break;
-		case 'G':
-		case 'g':
-			*kbinput = sc_seq_or(goto_dir_void, 0);
-			break;
-		case 'S':
-		case 's':
-			*kbinput = sc_seq_or(do_enter_void, 0);
-			break;
-		case 'W':
-		case 'w':
-			*kbinput = sc_seq_or(do_search, 0);
-			break;
-		}
 	}
 }
 
