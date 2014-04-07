@@ -723,7 +723,7 @@ void do_enter_void(void)
  * execute_command(). */
 void cancel_command(int signal)
 {
-	UNUSED_ARG(signal);
+	UNUSED_VAR(signal);
 	if (kill(pid, SIGKILL) == -1) {
 		nperror("kill");
 	}

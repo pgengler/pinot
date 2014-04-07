@@ -675,6 +675,7 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 		int shush;
 		shush = chmod(retval, die_stat->st_mode);
 		shush = chown(retval, die_stat->st_uid, die_stat->st_gid);
+		UNUSED_VAR(shush);
 	}
 
 	free(retval);
@@ -964,7 +965,7 @@ void finish_stdin_pager(void)
 /* Cancel reading from stdin like a pager */
 void cancel_stdin_pager(int signal)
 {
-	UNUSED_ARG(signal);
+	UNUSED_VAR(signal);
 	/* Currently do nothing, just handle the intr silently */
 	pager_input_aborted = TRUE;
 }
@@ -1040,14 +1041,14 @@ void signal_init(void)
 /* Handler for SIGHUP (hangup) and SIGTERM (terminate). */
 void handle_hupterm(int signal)
 {
-	UNUSED_ARG(signal);
+	UNUSED_VAR(signal);
 	die(_("Received SIGHUP or SIGTERM\n"));
 }
 
 /* Handler for SIGTSTP (suspend). */
 void do_suspend(int signal)
 {
-	UNUSED_ARG(signal);
+	UNUSED_VAR(signal);
 	/* Move the cursor to the last line of the screen. */
 	move(LINES - 1, 0);
 	endwin();
@@ -1080,7 +1081,7 @@ void do_suspend_void(void)
 /* Handler for SIGCONT (continue after suspend). */
 void do_continue(int signal)
 {
-	UNUSED_ARG(signal);
+	UNUSED_VAR(signal);
 	/* Perhaps the user resized the window while we slept.  Handle it,
 	 * and restore the terminal to its previous state and update the
 	 * screen in the process. */
@@ -1090,7 +1091,7 @@ void do_continue(int signal)
 /* Handler for SIGWINCH (window size change). */
 void handle_sigwinch(int signal)
 {
-	UNUSED_ARG(signal);
+	UNUSED_VAR(signal);
 	const char *tty = ttyname(0);
 	int fd, result = 0;
 	struct winsize win;
