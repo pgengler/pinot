@@ -215,24 +215,6 @@ void unget_input(int *input, size_t input_len)
 	memcpy(key_buffer, input, input_len * sizeof(int));
 }
 
-/* Put back the character stored in kbinput, putting it in byte range
- * beforehand.  If meta_key is TRUE, put back the Escape character after
- * putting back kbinput.  If func_key is TRUE, put back the function key
- * (a value outside byte range) without putting it in byte range. */
-void unget_kbinput(int kbinput, bool meta_key, bool func_key)
-{
-	if (!func_key) {
-		kbinput = (char)kbinput;
-	}
-
-	unget_input(&kbinput, 1);
-
-	if (meta_key) {
-		kbinput = PINOT_CONTROL_3;
-		unget_input(&kbinput, 1);
-	}
-}
-
 /* Try to read input_len characters from the keystroke buffer.  If the
  * keystroke buffer is empty and win isn't NULL, try to read in more
  * characters from win and add them to the keystroke buffer before doing
