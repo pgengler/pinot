@@ -33,7 +33,7 @@ static char *help_text = NULL;
  * call to refresh the edit window. */
 void do_help(void (*refresh_func)(void))
 {
-	bool meta_key, func_key, old_no_help = ISSET(NO_HELP);
+	bool old_no_help = ISSET(NO_HELP);
 	bool abort = FALSE;
 	/* Whether we should abort the help browser. */
 	size_t line = 0;
@@ -149,12 +149,12 @@ void do_help(void (*refresh_func)(void))
 				line++;
 			}
 		} else if (f->scfunc == do_first_line) {
-			if (meta_key) {
+			if (kbinput.has_meta_key()) {
 				line = 0;
 			}
 			break;
 		} else if (f->scfunc == do_last_line) {
-			if (meta_key) {
+			if (kbinput.has_meta_key()) {
 				if (line + (editwinrows - 1) < last_line) {
 					line = last_line - (editwinrows - 1);
 				}
