@@ -49,14 +49,8 @@ static bool reset_statusbar_x = FALSE;
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys.  refresh_func is the function we will call to
  * refresh the edit window. */
-int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
+Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
 {
-	int input;
-	/* The character we read in. */
-	static int *kbinput = NULL;
-	/* The input buffer. */
-	static size_t kbinput_len = 0;
-	/* The length of the input buffer. */
 	const sc *s;
 	const subnfunc *f;
 
@@ -65,10 +59,10 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 	*finished = FALSE;
 
 	/* Read in a character. */
-	input = get_kbinput(bottomwin, meta_key, func_key);
+	Key input = get_kbinput(bottomwin);
 
 	/* Check for a shortcut in the current list. */
-	s = get_shortcut(currmenu, &input, meta_key, func_key);
+	s = get_shortcut(currmenu, input);
 
 	/* If we got a shortcut from the current list, or a "universal"
 	 * statusbar prompt shortcut, set have_shortcut to TRUE. */
@@ -76,54 +70,13 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
-	if (!*have_shortcut) {
-		if (is_ascii_cntrl_char(input) || *meta_key || *func_key) {
-			beep();
-			*meta_key = FALSE;
-			*func_key = FALSE;
-			input = ERR;
-		}
+	if (!have_shortcut && (input.has_control_key() || input.has_meta_key())) {
+		beep();
+		*meta_key = FALSE;
+		*func_key = FALSE;
 	}
 
 	if (allow_funcs) {
-		/* If we got a character, and it isn't a shortcut or toggle,
-		 * it's a normal text character.  Display the warning if we're
-		 * in view mode, or add the character to the input buffer if
-		 * we're not. */
-		if (input != ERR && !*have_shortcut) {
-			kbinput_len++;
-			kbinput = (int *)nrealloc(kbinput, kbinput_len * sizeof(int));
-			kbinput[kbinput_len - 1] = input;
-		}
-
-		/* If we got a shortcut, or if there aren't any other characters
-		 * waiting after the one we read in, we need to display all the
-		 * characters in the input buffer if it isn't empty. */
-		if (*have_shortcut || get_key_buffer_len() == 0) {
-			if (kbinput != NULL) {
-				/* Display all the characters in the input buffer at
-				 * once, filtering out control characters. */
-				char *output = charalloc(kbinput_len + 1);
-				size_t i;
-				bool got_enter;
-				/* Whether we got the Enter key. */
-
-				for (i = 0; i < kbinput_len; i++) {
-					output[i] = (char)kbinput[i];
-				}
-				output[i] = '\0';
-
-				do_statusbar_output(output, kbinput_len, &got_enter, FALSE);
-
-				free(output);
-
-				/* Empty the input buffer. */
-				kbinput_len = 0;
-				free(kbinput);
-				kbinput = NULL;
-			}
-		}
-
 		if (*have_shortcut) {
 			if (s->scfunc == do_tab || s->scfunc == do_enter_void) {
 				;
@@ -155,11 +108,13 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 				 * the input buffer, set input to the key
 				 * value for Enter, and set finished to TRUE
 				 * to indicate that we're done. */
+/*
 				if (got_enter) {
 					get_input(NULL, 1);
 					input = sc_seq_or(do_enter_void, 0);
 					*finished = TRUE;
 				}
+*/
 			} else if (s->scfunc == do_delete) {
 				do_statusbar_delete();
 			} else if (s->scfunc == do_backspace) {
@@ -180,6 +135,9 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 				}
 				*finished = TRUE;
 			}
+		} else {
+			bool got_enter;
+			do_statusbar_output(std::string(input), &got_enter, FALSE);
 		}
 	}
 
@@ -190,6 +148,13 @@ int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
  * statusbar prompt, setting got_enter to TRUE if we get a newline, and
  * filtering out all ASCII control characters if allow_cntrls is
  * TRUE. */
+void do_statusbar_output(std::string output, bool *got_enter, bool allow_cntrls)
+{
+	char *out = mallocstrcpy(NULL, output.c_str());
+	do_statusbar_output(out, output.length(), got_enter, allow_cntrls);
+	free(out);
+}
+
 void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls)
 {
 	size_t answer_len, i = 0;
@@ -801,9 +766,9 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
+const sc *get_prompt_string(Key *actual, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
-	int kbinput = ERR;
+	Key* kbinput = nullptr;
 	bool have_shortcut, ran_func, finished;
 	size_t curranswer_len;
 	const sc *s;
@@ -814,8 +779,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, cons
 	char *magichistory = NULL;
 	/* The temporary string typed at the bottom of the history, if
 	 * any. */
-	int last_kbinput = ERR;
-	/* The key we pressed before the current key. */
 	size_t complete_len = 0;
 	/* The length of the original string that we're trying to
 	 * tab complete, if any. */
@@ -846,16 +809,21 @@ const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, cons
 	DEBUG_LOG("get_prompt_string: answer = \"" << answer << "\", statusbar_x = " << statusbar_x);
 
 	update_statusbar_line(answer, statusbar_x);
+	reset_statusbar_cursor();
 
 	/* Refresh the edit window and the statusbar before getting input. */
 	wnoutrefresh(edit);
 	wnoutrefresh(bottomwin);
 
 	while (1) {
-		kbinput = do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func);
+		if (kbinput) {
+			delete kbinput;
+			kbinput = nullptr;
+		}
+		kbinput = new Key(do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func));
 		assert(statusbar_x <= strlen(answer));
 
-		s = get_shortcut(currmenu, &kbinput, meta_key, func_key);
+		s = get_shortcut(currmenu, *kbinput);
 
 		if (s) {
 			if (s->scfunc == do_cancel || s->scfunc == do_enter_void) {
@@ -869,9 +837,11 @@ const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, cons
 
 		if (s && s->scfunc == do_tab) {
 			if (history_list != NULL) {
+/*
 				if (last_kbinput != sc_seq_or(do_tab, PINOT_CONTROL_I)) {
 					complete_len = strlen(answer);
 				}
+*/
 
 				if (complete_len > 0) {
 					answer = mallocstrcpy(answer, get_history_completion(history_list, answer, complete_len));
@@ -957,8 +927,6 @@ const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, cons
 			break;
 		}
 
-		last_kbinput = kbinput;
-
 		reset_statusbar_cursor();
 		wnoutrefresh(bottomwin);
 	}
@@ -995,14 +963,14 @@ const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, cons
 		}
 	}
 
-	*actual = kbinput;
+	actual = kbinput;
 	return s;
 }
 
 /* Ask a question on the statusbar.  The prompt will be stored in the
  * static prompt, which should be NULL initially, and the answer will be
- * stored in the answer global.  Returns -1 on aborted enter, -2 on a
- * blank string, and 0 otherwise, the valid shortcut key caught.
+ * stored in the answer global.  Returns -1 on abort, -2 on a blank string,
+ * 0 if enter was pressed, and 1 otherwise.
  * curranswer is any editable text that we want to put up by default,
  * and refresh_func is the function we want to call to refresh the edit
  * window.
@@ -1014,7 +982,8 @@ const sc *get_prompt_string(int *actual, bool allow_tabs, bool allow_files, cons
 int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
-	int retval;
+	Key* input = nullptr;
+	int retval = 0;
 	const sc *s;
 	bool list = FALSE;
 
@@ -1033,7 +1002,7 @@ int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswe
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(&retval, allow_tabs, allow_files, curranswer, meta_key, func_key, history_list, refresh_func, menu , &list);
+	s = get_prompt_string(input, allow_tabs, allow_files, curranswer, meta_key, func_key, history_list, refresh_func, menu , &list);
 
 	free(prompt);
 	prompt = NULL;
@@ -1043,12 +1012,13 @@ int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswe
 	old_statusbar_x = statusbar_x;
 	old_pww = statusbar_pww;
 
-	/* If we left the prompt via Cancel or Enter, set the return value
-	 * properly. */
+	/* If we left the prompt via Cancel or Enter, set the return value properly. */
 	if (s && s->scfunc ==  do_cancel) {
 		retval = -1;
 	} else if (s && s->scfunc == do_enter_void) {
 		retval = (*answer == '\0') ? -2 : 0;
+	} else {
+		retval = 1;
 	}
 
 	blank_statusbar();

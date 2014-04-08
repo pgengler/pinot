@@ -334,8 +334,8 @@ void do_output(const std::string& output, bool allow_cntrls);
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
-int do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
-void do_statubar_output(std::string& output, bool *got_enter, bool allow_cntrls);
+Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
+void do_statusbar_output(std::string output, bool *got_enter, bool allow_cntrls);
 void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls);
 void do_statusbar_home(void);
 void do_statusbar_end(void);
@@ -355,7 +355,7 @@ void reset_statusbar_cursor(void);
 void update_statusbar_line(const char *curranswer, size_t index);
 bool need_statusbar_horizontal_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
-const sc *get_prompt_string(int *value, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
+const sc *get_prompt_string(Key *value, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
 int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 int do_yesno_prompt(bool all, const char *msg);

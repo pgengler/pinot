@@ -274,7 +274,7 @@ Key get_kbinput(WINDOW *win)
 {
 	// This is a hack but so far is the only way I've found to get
 	// things to display correctly.
-	wnoutrefresh(edit);
+	wnoutrefresh(win);
 	doupdate();
 	Key key = keyboard->get_key();
 
