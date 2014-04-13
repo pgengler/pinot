@@ -1105,12 +1105,10 @@ int do_yesno_prompt(bool all, const char *msg)
 	wnoutrefresh(bottomwin);
 
 	do {
-		int kbinput;
-		bool meta_key, func_key;
-
 		currmenu = MYESNO;
-		kbinput = get_kbinput(bottomwin, &meta_key, &func_key);
-		s = get_shortcut(currmenu, &kbinput, &meta_key, &func_key);
+		Key kbinput = get_kbinput(bottomwin);
+		s = get_shortcut(currmenu, kbinput);
+		std::string input(kbinput);
 
 		if (s && s->scfunc ==  do_cancel) {
 			ok = -1;
@@ -1118,13 +1116,12 @@ int do_yesno_prompt(bool all, const char *msg)
 			total_redraw();
 			continue;
 		} else {
-			/* Look for the kbinput in the Yes, No and (optionally)
-			 * All strings. */
-			if (strchr(yesstr, kbinput) != NULL) {
+			/* Look for the kbinput in the Yes, No and (optionally) All strings. */
+			if (input.find_first_of(yesstr) != std::string::npos) {
 				ok = 1;
-			} else if (strchr(nostr, kbinput) != NULL) {
+			} else if (input.find_first_of(nostr) != std::string::npos) {
 				ok = 0;
-			} else if (all && strchr(allstr, kbinput) != NULL) {
+			} else if (all && input.find_first_of(allstr) != std::string::npos) {
 				ok = 2;
 			}
 		}
