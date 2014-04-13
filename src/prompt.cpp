@@ -126,8 +126,6 @@ Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 			* associated functions. */
 
 			f = sctofunc((sc *) s);
-			sc debug_s = *s;
-			DEBUG_LOG(" s -> " << debug_s);
 			if (s->scfunc != 0 && s->execute == TRUE) {
 				*ran_func = TRUE;
 				if (f && (!ISSET(VIEW_MODE) || (f->viewok))) {
