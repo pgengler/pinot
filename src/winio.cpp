@@ -285,34 +285,6 @@ Key get_kbinput(WINDOW *win)
 	return key;
 }
 
-/* Read in a single character.  If it's ignored, swallow it and go on.
- * Otherwise, try to translate it from ASCII, meta key sequences, escape
- * sequences, and/or extended keypad values.  Set meta_key to TRUE when
- * we get a meta key sequence, and set func_key to TRUE when we get an
- * extended keypad value.  Supported extended keypad values consist of
- * [arrow key], Ctrl-[arrow key], Shift-[arrow key], Enter, Backspace,
- * the editing keypad (Insert, Delete, Home, End, PageUp, and PageDown),
- * the function keypad (F1-F16), and the numeric keypad with NumLock
- * off.  Assume nodelay(win) is FALSE. */
-int get_kbinput(WINDOW *win, bool *meta_key, bool *func_key)
-{
-	int kbinput;
-
-	/* Read in a character and interpret it.  Continue doing this until
-	 * we get a recognized value or sequence. */
-	while ((kbinput = parse_kbinput(win, meta_key, func_key)) == ERR) {
-		;
-	}
-
-	/* If we read from the edit window, blank the statusbar if we need
-	 * to. */
-	if (win == edit) {
-		check_statusblank();
-	}
-
-	return kbinput;
-}
-
 /* Translate ASCII characters, extended keypad values, and escape
  * sequences into their corresponding key values.  Set meta_key to TRUE
  * when we get a meta key sequence, and set func_key to TRUE when we get
