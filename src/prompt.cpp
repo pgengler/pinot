@@ -98,22 +98,7 @@ Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 		} else if (s->scfunc == do_find_bracket) {
 			do_statusbar_find_bracket();
 		} else if (s->scfunc == do_verbatim_input) {
-			bool got_enter;
-			/* Whether we got the Enter key. */
-
-			do_statusbar_verbatim_input(&got_enter);
-
-			/* If we got the Enter key, remove it from
-			* the input buffer, set input to the key
-			* value for Enter, and set finished to TRUE
-			* to indicate that we're done. */
-/*
-			if (got_enter) {
-				get_input(NULL, 1);
-				input = sc_seq_or(do_enter_void, 0);
-				*finished = TRUE;
-			}
-*/
+			do_statusbar_verbatim_input();
 		} else if (s->scfunc == do_delete) {
 			do_statusbar_delete();
 		} else if (s->scfunc == do_backspace) {
@@ -135,25 +120,22 @@ Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 			*finished = TRUE;
 		}
 	} else {
-		bool got_enter;
-		do_statusbar_output(std::string(input), &got_enter, FALSE);
+		do_statusbar_output(std::string(input),  FALSE);
 	}
 
 	return input;
 }
 
-/* The user typed output_len multibyte characters.  Add them to the
- * statusbar prompt, setting got_enter to TRUE if we get a newline, and
- * filtering out all ASCII control characters if allow_cntrls is
- * TRUE. */
-void do_statusbar_output(std::string output, bool *got_enter, bool allow_cntrls)
+/* The user typed output_len multibyte characters.  Add them to thestatusbar prompt,
+ * filtering out all ASCII control characters if allow_cntrls is TRUE. */
+void do_statusbar_output(std::string output, bool allow_cntrls)
 {
 	char *out = mallocstrcpy(NULL, output.c_str());
-	do_statusbar_output(out, output.length(), got_enter, allow_cntrls);
+	do_statusbar_output(out, output.length(), allow_cntrls);
 	free(out);
 }
 
-void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls)
+void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
 {
 	size_t answer_len, i = 0;
 	char *char_buf = charalloc(mb_cur_max());
@@ -162,7 +144,6 @@ void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool 
 	assert(answer != NULL);
 
 	answer_len = strlen(answer);
-	*got_enter = FALSE;
 
 	while (i < output_len) {
 		/* If allow_cntrls is TRUE, convert nulls and newlines
@@ -171,16 +152,6 @@ void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool 
 			/* Null to newline, if needed. */
 			if (output[i] == '\0') {
 				output[i] = '\n';
-			}
-			/* Newline to Enter, if needed. */
-			else if (output[i] == '\n') {
-				/* Set got_enter to TRUE to indicate that we got the
-				 * Enter key, put back the rest of the characters in
-				 * output so that they can be parsed and output again,
-				 * and get out. */
-				*got_enter = TRUE;
-				unparse_kbinput(output + i, output_len - i);
-				return;
 			}
 		}
 
@@ -501,15 +472,12 @@ bool do_statusbar_prev_word(bool allow_punct)
 	return started_on_word;
 }
 
-/* Get verbatim input.  Set got_enter to TRUE if we got the Enter key as
- * part of the verbatim input. */
-void do_statusbar_verbatim_input(bool *got_enter)
+/* Get verbatim input. */
+void do_statusbar_verbatim_input(void)
 {
 	int *kbinput;
 	size_t kbinput_len, i;
 	char *output;
-
-	*got_enter = FALSE;
 
 	/* Read in all the verbatim characters. */
 	kbinput = get_verbatim_kbinput(bottomwin, &kbinput_len);
@@ -523,7 +491,7 @@ void do_statusbar_verbatim_input(bool *got_enter)
 	}
 	output[i] = '\0';
 
-	do_statusbar_output(output, kbinput_len, got_enter, TRUE);
+	do_statusbar_output(output, kbinput_len, TRUE);
 
 	free(output);
 }

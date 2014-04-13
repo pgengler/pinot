@@ -335,8 +335,8 @@ void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
 Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
-void do_statusbar_output(std::string output, bool *got_enter, bool allow_cntrls);
-void do_statusbar_output(char *output, size_t output_len, bool *got_enter, bool allow_cntrls);
+void do_statusbar_output(std::string output, bool allow_cntrls);
+void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls);
 void do_statusbar_home(void);
 void do_statusbar_end(void);
 void do_statusbar_left(void);
@@ -346,7 +346,7 @@ void do_statusbar_delete(void);
 void do_statusbar_cut_text(void);
 bool do_statusbar_next_word(bool allow_punct);
 bool do_statusbar_prev_word(bool allow_punct);
-void do_statusbar_verbatim_input(bool *got_enter);
+void do_statusbar_verbatim_input(void);
 bool find_statusbar_bracket_match(bool reverse, const char *bracket_set);
 void do_statusbar_find_bracket(void);
 size_t statusbar_xplustabs(void);

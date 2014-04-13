@@ -2120,10 +2120,8 @@ int main(int argc, char **argv)
 		 * statusbar cursor position is reset. */
 		do_prompt_abort();
 
-		/* If constant cursor position display is on, and there are no
-		 * keys waiting in the input buffer, display the current cursor
-		 * position on the statusbar. */
-		if (ISSET(CONST_UPDATE) && get_key_buffer_len() == 0) {
+		/* If constant cursor position display is on, display the current cursor position on the statusbar. */
+		if (ISSET(CONST_UPDATE)) {
 			do_cursorpos(TRUE);
 		}
 
