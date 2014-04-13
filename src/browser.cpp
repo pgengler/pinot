@@ -100,8 +100,8 @@ change_browser_directory:
 	titlebar(path);
 
 	void (*func)() = nullptr;
-
 	Key *kbinput = nullptr;
+
 	while (!abort) {
 		struct stat st;
 		int i;
@@ -174,9 +174,10 @@ change_browser_directory:
 		} else if (func == goto_dir_void) {
 			curs_set(1);
 
+			std::shared_ptr<Key> key;
 			i = do_prompt(TRUE,
 			              FALSE,
-			              MGOTODIR, ans,
+			              MGOTODIR, key, ans,
 			              &meta_key, &func_key,
 			              NULL,
 			              browser_refresh, N_("Go To Directory"));
@@ -691,9 +692,10 @@ int filesearch_init(void)
 	}
 
 	/* This is now one simple call.  It just does a lot. */
+	std::shared_ptr<Key> key;
 	i = do_prompt(FALSE,
 	              TRUE,
-	              MWHEREISFILE, backupstring,
+	              MWHEREISFILE, key, backupstring,
 	              &meta_key, &func_key,
 	              &search_history,
 	              browser_refresh, "%s%s%s%s%s%s", _("Search"),

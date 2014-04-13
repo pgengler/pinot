@@ -931,6 +931,7 @@ char *get_next_filename(const char *name, const char *suffix)
 void do_execute_command()
 {
 	int i, status;
+	std::shared_ptr<Key> key;
 	char statusbartext[50];
 	const char *msg;
 	char *ans = mallocstrcpy(NULL, "");
@@ -941,7 +942,7 @@ void do_execute_command()
 	while (TRUE) {
 		msg = _("Command to execute (no output) [from %s]");
 
-		i = do_prompt(TRUE, TRUE, MEXTCMD, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
+		i = do_prompt(TRUE, TRUE, MEXTCMD, key, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
 
 		/* Cancel if the command was empty or the user cancelled */
 		if (i == -1 || (i == -2 || *answer == '\n')) {
@@ -1029,7 +1030,8 @@ void do_insertfile(bool execute)
 			msg = ISSET(MULTIBUFFER) ? _("File to insert into new buffer [from %s] ") : _("File to insert [from %s] ");
 		}
 
-		i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
+		std::shared_ptr<Key> key;
+		i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, key, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
 
 		/* If we're in multibuffer mode and the filename or command is
 		 * blank, open a new buffer instead of canceling.  If the
@@ -2053,9 +2055,10 @@ bool do_writeout(bool exiting)
 			      _("File Name to Write");
 		}
 
+		std::shared_ptr<Key> key;
 		i = do_prompt(TRUE,
 		              TRUE,
-		              MWRITEFILE, ans,
+		              MWRITEFILE, key, ans,
 		              &meta_key, &func_key,
 		              NULL,
 		              edit_refresh, "%s%s%s", msg,

@@ -125,8 +125,8 @@ void search_init_globals(void)
 int search_init(bool replacing, bool use_answer)
 {
 	int i = 0;
+	std::shared_ptr<Key> key;
 	char *buf;
-	sc *s;
 	bool meta_key = FALSE, func_key = FALSE;
 	static char *backupstring = NULL;
 	/* The search string we'll be using. */
@@ -161,23 +161,23 @@ int search_init(bool replacing, bool use_answer)
 	}
 
 	/* This is now one simple call.  It just does a lot. */
+DEBUG_LOG("Calling do_prompt...");
 	i = do_prompt(FALSE,
 	              TRUE,
-	              replacing ? MREPLACE : MWHEREIS, backupstring,
+	              replacing ? MREPLACE : MWHEREIS, key, backupstring,
 	              &meta_key, &func_key,
 	              &search_history,
 	              edit_refresh, "%s%s%s%s%s%s", _("Search"),
-	              /* TRANSLATORS: This string is just a modifier for the search
-	               * prompt; no grammar is implied. */
+	              /* TRANSLATORS: This string is just a modifier for the search prompt; no grammar is implied. */
 	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") : "",
-	              /* TRANSLATORS: This string is just a modifier for the search
-	               * prompt; no grammar is implied. */
+	              /* TRANSLATORS: This string is just a modifier for the search prompt; no grammar is implied. */
 	              ISSET(USE_REGEXP) ? _(" [Regexp]") : "",
-	              /* TRANSLATORS: This string is just a modifier for the search
-	               * prompt; no grammar is implied. */
+	              /* TRANSLATORS: This string is just a modifier for the search prompt; no grammar is implied. */
 	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "", replacing ? (openfile->mark_set ? _(" (to replace) in selection") : _(" (to replace)")) : "", buf);
 
 	fflush(stderr);
+
+DEBUG_LOG("do_prompt returned " << i);
 
 	/* Release buf now that we don't need it anymore. */
 	free(buf);
@@ -190,14 +190,11 @@ int search_init(bool replacing, bool use_answer)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		void (*func)(void) = nullptr;
+DEBUG_LOG("key == " << key);
+		const sc *s = key ? get_shortcut(currmenu, *key) : nullptr;
+		auto func = s ? s->scfunc : nullptr;
 
-		for  (s = sclist; s != NULL; s = s->next) {
-			if ((s->menu & currmenu) && i == s->seq) {
-				func = s->scfunc;
-				break;
-			}
-		}
+DEBUG_LOG("func == " << (void *)func << " (case_sens_void == " << (void *)case_sens_void << ")");
 
 		if (i == -2 || i == 0) {
 			/* Use last_search if answer is an empty string, or
@@ -838,9 +835,10 @@ void do_replace(void)
 
 	last_replace = mallocstrcpy(last_replace, "");
 
+	std::shared_ptr<Key> key;
 	i = do_prompt(FALSE,
 	              TRUE,
-	              MREPLACE2, last_replace,
+	              MREPLACE2, key, last_replace,
 	              &meta_key, &func_key,
 	              &replace_history,
 	              edit_refresh, _("Replace with"));
@@ -904,9 +902,10 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 		char *ans = mallocstrcpy(NULL, answer);
 
 		/* Ask for the line and column. */
+		std::shared_ptr<Key> key;
 		int i = do_prompt(FALSE,
 		                  TRUE,
-		                  MGOTOLINE, use_answer ? ans : "",
+		                  MGOTOLINE, key, use_answer ? ans : "",
 		                  &meta_key, &func_key,
 		                  NULL,
 		                  edit_refresh, _("Enter line number, column number"));

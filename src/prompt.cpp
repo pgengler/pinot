@@ -70,75 +70,75 @@ Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
-	if (!have_shortcut && (input.has_control_key() || input.has_meta_key())) {
+	if (!*have_shortcut && (input.has_control_key() || input.has_meta_key())) {
 		beep();
 		*meta_key = FALSE;
 		*func_key = FALSE;
 	}
 
-	if (allow_funcs) {
-		if (*have_shortcut) {
-			if (s->scfunc == do_tab || s->scfunc == do_enter_void) {
-				;
-			} else if (s->scfunc == total_refresh) {
-				total_statusbar_refresh(refresh_func);
-			} else if (s->scfunc == do_cut_text_void) {
-				do_statusbar_cut_text();
-			} else if (s->scfunc == do_right) {
-				do_statusbar_right();
-			} else if (s->scfunc == do_left) {
-				do_statusbar_left();
-			} else if (s->scfunc == do_next_word_void) {
-				do_statusbar_next_word(FALSE);
-			} else if (s->scfunc == do_prev_word_void) {
-				do_statusbar_prev_word(FALSE);
-			} else if (s->scfunc == do_home) {
-				do_statusbar_home();
-			} else if (s->scfunc == do_end) {
-				do_statusbar_end();
-			} else if (s->scfunc == do_find_bracket) {
-				do_statusbar_find_bracket();
-			} else if (s->scfunc == do_verbatim_input) {
-				bool got_enter;
-				/* Whether we got the Enter key. */
+	if (allow_funcs && *have_shortcut) {
+		if (s->scfunc == do_tab || s->scfunc == do_enter_void) {
+			;
+		} else if (s->scfunc == total_refresh) {
+			total_statusbar_refresh(refresh_func);
+		} else if (s->scfunc == do_cut_text_void) {
+			do_statusbar_cut_text();
+		} else if (s->scfunc == do_right) {
+			do_statusbar_right();
+		} else if (s->scfunc == do_left) {
+			do_statusbar_left();
+		} else if (s->scfunc == do_next_word_void) {
+			do_statusbar_next_word(FALSE);
+		} else if (s->scfunc == do_prev_word_void) {
+			do_statusbar_prev_word(FALSE);
+		} else if (s->scfunc == do_home) {
+			do_statusbar_home();
+		} else if (s->scfunc == do_end) {
+			do_statusbar_end();
+		} else if (s->scfunc == do_find_bracket) {
+			do_statusbar_find_bracket();
+		} else if (s->scfunc == do_verbatim_input) {
+			bool got_enter;
+			/* Whether we got the Enter key. */
 
-				do_statusbar_verbatim_input(&got_enter);
+			do_statusbar_verbatim_input(&got_enter);
 
-				/* If we got the Enter key, remove it from
-				 * the input buffer, set input to the key
-				 * value for Enter, and set finished to TRUE
-				 * to indicate that we're done. */
+			/* If we got the Enter key, remove it from
+			* the input buffer, set input to the key
+			* value for Enter, and set finished to TRUE
+			* to indicate that we're done. */
 /*
-				if (got_enter) {
-					get_input(NULL, 1);
-					input = sc_seq_or(do_enter_void, 0);
-					*finished = TRUE;
-				}
-*/
-			} else if (s->scfunc == do_delete) {
-				do_statusbar_delete();
-			} else if (s->scfunc == do_backspace) {
-				do_statusbar_backspace();
-			} else {
-				/* Handle the normal statusbar prompt shortcuts, setting
-				 * ran_func to TRUE if we try to run their associated
-				 * functions and setting finished to TRUE to indicate
-				 * that we're done after running or trying to run their
-				 * associated functions. */
-
-				f = sctofunc((sc *) s);
-				if (s->scfunc != 0 &&  s->execute == TRUE) {
-					*ran_func = TRUE;
-					if (f && (!ISSET(VIEW_MODE) || (f->viewok))) {
-						f->scfunc();
-					}
-				}
+			if (got_enter) {
+				get_input(NULL, 1);
+				input = sc_seq_or(do_enter_void, 0);
 				*finished = TRUE;
 			}
+*/
+		} else if (s->scfunc == do_delete) {
+			do_statusbar_delete();
+		} else if (s->scfunc == do_backspace) {
+			do_statusbar_backspace();
 		} else {
-			bool got_enter;
-			do_statusbar_output(std::string(input), &got_enter, FALSE);
+			/* Handle the normal statusbar prompt shortcuts, setting
+			* ran_func to TRUE if we try to run their associated
+			* functions and setting finished to TRUE to indicate
+			* that we're done after running or trying to run their
+			* associated functions. */
+
+			f = sctofunc((sc *) s);
+			sc debug_s = *s;
+			DEBUG_LOG(" s -> " << debug_s);
+			if (s->scfunc != 0 && s->execute == TRUE) {
+				*ran_func = TRUE;
+				if (f && (!ISSET(VIEW_MODE) || (f->viewok))) {
+					f->scfunc();
+				}
+			}
+			*finished = TRUE;
 		}
+	} else {
+		bool got_enter;
+		do_statusbar_output(std::string(input), &got_enter, FALSE);
 	}
 
 	return input;
@@ -766,9 +766,9 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(Key *actual, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
+const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
-	Key* kbinput = nullptr;
+	std::shared_ptr<Key> kbinput;
 	bool have_shortcut, ran_func, finished;
 	size_t curranswer_len;
 	const sc *s;
@@ -816,13 +816,10 @@ const sc *get_prompt_string(Key *actual, bool allow_tabs, bool allow_files, cons
 	wnoutrefresh(bottomwin);
 
 	while (1) {
-		if (kbinput) {
-			delete kbinput;
-			kbinput = nullptr;
-		}
-		kbinput = new Key(do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func));
+		kbinput = std::make_shared<Key>(do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func));
 		assert(statusbar_x <= strlen(answer));
 
+DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 		s = get_shortcut(currmenu, *kbinput);
 
 		if (s) {
@@ -931,7 +928,6 @@ const sc *get_prompt_string(Key *actual, bool allow_tabs, bool allow_files, cons
 		wnoutrefresh(bottomwin);
 	}
 
-
 	/* Set the current position in the history list to the bottom and
 	 * free magichistory, if we need to. */
 	if (history_list != NULL) {
@@ -979,10 +975,9 @@ const sc *get_prompt_string(Key *actual, bool allow_tabs, bool allow_files, cons
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
+int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
-	Key* input = nullptr;
 	int retval = 0;
 	const sc *s;
 	bool list = FALSE;
@@ -1002,13 +997,12 @@ int do_prompt(bool allow_tabs, bool allow_files, int menu, const char *curranswe
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(input, allow_tabs, allow_files, curranswer, meta_key, func_key, history_list, refresh_func, menu , &list);
+	s = get_prompt_string(key, allow_tabs, allow_files, curranswer, meta_key, func_key, history_list, refresh_func, menu, &list);
 
 	free(prompt);
 	prompt = NULL;
 
-	/* We're done with the prompt, so save the statusbar cursor
-	 * position. */
+	/* We're done with the prompt, so save the statusbar cursor position. */
 	old_statusbar_x = statusbar_x;
 	old_pww = statusbar_pww;
 
