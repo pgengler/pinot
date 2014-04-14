@@ -959,38 +959,18 @@ int get_control_kbinput(int kbinput)
 
 std::string get_verbatim_kbinput(WINDOW *win)
 {
-	return get_kbinput(win).verbatim();
-}
-
-/* Read in a stream of characters verbatim, and return the length of the
- * string in kbinput_len.  Assume nodelay(win) is FALSE. */
-int *get_verbatim_kbinput(WINDOW *win, size_t *kbinput_len)
-{
-	int *retval;
-
-	/* Turn off flow control characters if necessary so that we can type
-	 * them in verbatim, and turn the keypad off if necessary so that we
-	 * don't get extended keypad values. */
+	/* Turn off flow control characters if necessary so that we can type them in verbatim */
 	if (ISSET(PRESERVE)) {
 		disable_flow_control();
 	}
-	if (!ISSET(REBIND_KEYPAD)) {
-		keypad(win, FALSE);
-	}
+	std::string result = get_kbinput(win).verbatim();
 
-	/* Read in a stream of characters and interpret it if possible. */
-	retval = parse_verbatim_kbinput(win, kbinput_len);
-
-	/* Turn flow control characters back on if necessary and turn the
-	 * keypad back on if necessary now that we're done. */
+	/* Turn flow control characters back on if necessary */
 	if (ISSET(PRESERVE)) {
 		enable_flow_control();
 	}
-	if (!ISSET(REBIND_KEYPAD)) {
-		keypad(win, TRUE);
-	}
 
-	return retval;
+	return result;
 }
 
 /* Read in a stream of all available characters, and return the length
