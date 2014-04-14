@@ -552,7 +552,7 @@ void do_statusbar_find_bracket(void)
 
 	ch = answer + statusbar_x;
 
-	if (ch == '\0' || (ch = mbstrchr(matchbrackets, ch)) == NULL) {
+	if (ch[0] == '\0' || (ch = mbstrchr(matchbrackets, ch)) == NULL) {
 		return;
 	}
 
