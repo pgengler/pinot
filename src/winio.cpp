@@ -30,11 +30,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-static int *key_buffer = NULL;
-/* The keystroke buffer, containing all the keystrokes we
- * haven't handled yet at a given point. */
-static size_t key_buffer_len = 0;
-/* The length of the keystroke buffer. */
 static int statusblank = 0;
 /* The number of keystrokes left after we call statusbar(),
  * before we actually blank the statusbar. */
