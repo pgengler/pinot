@@ -509,7 +509,6 @@ long get_unicode_kbinput(int kbinput);
 #endif
 int get_control_kbinput(int kbinput);
 std::string get_verbatim_kbinput(WINDOW *win);
-int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 const sc *get_shortcut(int menu, Key& kbinput);
 const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key);
 const sc *first_sc_for(int menu, void (*func)(void));
