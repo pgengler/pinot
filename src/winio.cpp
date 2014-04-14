@@ -740,37 +740,6 @@ int get_escape_seq_abcd(int kbinput)
 	}
 }
 
-/* Interpret the escape sequence in the keystroke buffer, the first
- * character of which is kbinput.  Assume that the keystroke buffer
- * isn't empty, and that the initial escape has already been read in. */
-int parse_escape_seq_kbinput(WINDOW *win, int kbinput)
-{
-	int retval, *seq;
-	size_t seq_len;
-
-	/* Put back the non-escape character, get the complete escape
-	 * sequence, translate the sequence into its corresponding key
-	 * value, and save that as the result. */
-	unget_input(&kbinput, 1);
-	seq_len = get_key_buffer_len();
-	seq = get_input(NULL, seq_len);
-	retval = get_escape_seq_kbinput(seq, seq_len);
-
-	free(seq);
-
-	/* If we got an unrecognized escape sequence, throw it out. */
-	if (retval == ERR) {
-		if (win == edit) {
-			statusbar(_("Unknown Command"));
-			beep();
-		}
-	}
-
-	DEBUG_LOG("parse_escape_seq_kbinput(): kbinput = " << kbinput << ", seq_len = " << seq_len << ", retval = " << retval);
-
-	return retval;
-}
-
 /* Translate a byte sequence: turn a three-digit decimal number (from
  * 000 to 255) into its corresponding byte value. */
 int get_byte_kbinput(int kbinput)
