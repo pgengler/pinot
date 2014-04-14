@@ -950,7 +950,7 @@ void do_execute_command()
 		} else {
 			ans = mallocstrcpy(ans, answer);
 
-			s = get_shortcut(currmenu, &i);
+			s = get_shortcut(currmenu, *key);
 
 			if (s && s->scfunc == to_files_void) {
 				char *tmp = do_browse_from(answer);
@@ -1044,7 +1044,7 @@ void do_insertfile(bool execute)
 
 			ans = mallocstrcpy(ans, answer);
 
-			s = get_shortcut(currmenu, &i);
+			s = get_shortcut(currmenu, *key);
 
 			if (s && s->scfunc == new_buffer_void) {
 				/* Don't allow toggling if we're in view mode. */
@@ -2071,7 +2071,7 @@ bool do_writeout(bool exiting)
 			break;
 		} else {
 			ans = mallocstrcpy(ans, answer);
-			s = get_shortcut(currmenu, &i);
+			s = get_shortcut(currmenu, *key);
 
 			if (s && s->scfunc == to_files_void) {
 				char *tmp = do_browse_from(answer);

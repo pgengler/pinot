@@ -827,25 +827,6 @@ const sc *get_shortcut(int menu, Key &kbinput)
 	return NULL;
 }
 
-const sc *get_shortcut(int menu, int *kbinput)
-{
-	sc *s;
-
-	DEBUG_LOG("get_shortcut(): " << "kbinput = " << *kbinput);
-
-	/* Check for shortcuts. */
-	for (s = sclist; s != NULL; s = s->next) {
-		if ((menu & s->menu) && (*kbinput == s->seq)) {
-			DEBUG_LOG("matched seq \"" << s->keystr << "\" (menus " << menu << " = " << s->menu << ')');
-			return s;
-		}
-	}
-	DEBUG_LOG("matched nothing");
-
-	return NULL;
-}
-
-
 /* Try to get a function back from a window.  Just a wrapper so
    functions to need to create function_key meta_key blah blah
     mmenu - what menu name to look through for valid funcs */

@@ -718,7 +718,7 @@ int filesearch_init(void)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		s = get_shortcut(MBROWSER, &i);
+		s = get_shortcut(MBROWSER, *key);
 		if (i == -2 || i == 0) {
 			/* Use last_search if answer is an empty string, or
 			 * answer if it isn't. */
