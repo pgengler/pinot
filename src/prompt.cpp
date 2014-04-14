@@ -475,25 +475,8 @@ bool do_statusbar_prev_word(bool allow_punct)
 /* Get verbatim input. */
 void do_statusbar_verbatim_input(void)
 {
-	int *kbinput;
-	size_t kbinput_len, i;
-	char *output;
-
-	/* Read in all the verbatim characters. */
-	kbinput = get_verbatim_kbinput(bottomwin, &kbinput_len);
-
-	/* Display all the verbatim characters at once, not filtering out
-	 * control characters. */
-	output = charalloc(kbinput_len + 1);
-
-	for (i = 0; i < kbinput_len; i++) {
-		output[i] = (char)kbinput[i];
-	}
-	output[i] = '\0';
-
-	do_statusbar_output(output, kbinput_len, TRUE);
-
-	free(output);
+	std::string kbinput = get_verbatim_kbinput(bottomwin);
+	do_statusbar_output(kbinput, TRUE);
 }
 
 /* Search for a match to one of the two characters in bracket_set.  If
