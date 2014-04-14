@@ -1507,23 +1507,14 @@ const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key)
     mmenu - what menu name to look through for valid funcs */
 const subnfunc *getfuncfromkey(WINDOW *win)
 {
-	int kbinput;
-	bool func_key = FALSE, meta_key = FALSE;
-	const sc *s;
-	const subnfunc *f;
+	Key kbinput = get_kbinput(win);
 
-	kbinput = parse_kbinput(win, &meta_key, &func_key);
-	if (kbinput == 0) {
-		return NULL;
-	}
-
-	s = get_shortcut(currmenu, &kbinput, &meta_key, &func_key);
+	const sc *s = get_shortcut(currmenu, kbinput);
 	if (!s) {
 		return NULL;
 	}
 
-	f = sctofunc((sc *) s);
-	return f;
+	return sctofunc((sc *) s);
 
 }
 
