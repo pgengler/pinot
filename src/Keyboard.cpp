@@ -46,7 +46,7 @@ std::string Key::verbatim()
 {
 	if (key.type == TERMKEY_TYPE_UNICODE) {
 		if (has_control_key()) {
-			return control_char(key.utf8[0]);
+			return control_char(key.code.codepoint);
 		} else {
 			return std::string(key.utf8);
 		}
