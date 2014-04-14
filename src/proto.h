@@ -509,7 +509,6 @@ long add_unicode_digit(int kbinput, long factor, long *uni);
 long get_unicode_kbinput(int kbinput);
 #endif
 int get_control_kbinput(int kbinput);
-void unparse_kbinput(char *output, size_t output_len);
 int *get_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 int *parse_verbatim_kbinput(WINDOW *win, size_t *kbinput_len);
 const sc *get_shortcut(int menu, Key& kbinput);
