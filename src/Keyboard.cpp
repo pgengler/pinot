@@ -42,6 +42,18 @@ Key::operator std::string()
 	return "";
 }
 
+std::string Key::verbatim()
+{
+	if (key.type == TERMKEY_TYPE_UNICODE) {
+		if (has_control_key()) {
+			return control_char(key.utf8[0]);
+		} else {
+			return std::string(key.utf8);
+		}
+	}
+	return "";
+}
+
 bool Key::has_control_key()
 {
 	return (key.modifiers & TERMKEY_KEYMOD_CTRL);
@@ -50,4 +62,10 @@ bool Key::has_control_key()
 bool Key::has_meta_key()
 {
 	return (key.modifiers & TERMKEY_KEYMOD_ALT);
+}
+
+std::string Key::control_char(char c) const
+{
+	char control_char = (tolower(c) - 'a') + 1;
+	return std::string(&control_char, 1);
 }

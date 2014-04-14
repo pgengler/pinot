@@ -2388,16 +2388,12 @@ void do_wordlinechar_count(void)
 /* Get verbatim input. */
 void do_verbatim_input(void)
 {
-	int *kbinput;
-	size_t kbinput_len, i;
-	char *output;
-
 	/* TRANSLATORS: This is displayed when the next keystroke will be
 	 * inserted verbatim. */
 	statusbar(_("Verbatim Input"));
 
 	/* Read in all the verbatim characters. */
-	kbinput = get_verbatim_kbinput(edit, &kbinput_len);
+	std::string kbinput = get_verbatim_kbinput(edit);
 
 	/* If constant cursor position display is on, make sure the current
 	 * cursor position will be properly displayed on the statusbar.
@@ -2409,18 +2405,6 @@ void do_verbatim_input(void)
 		wnoutrefresh(bottomwin);
 	}
 
-	/* Display all the verbatim characters at once, not filtering out
-	 * control characters. */
-	output = charalloc(kbinput_len + 1);
-
-	for (i = 0; i < kbinput_len; i++) {
-		output[i] = (char)kbinput[i];
-	}
-	output[i] = '\0';
-
-	free(kbinput);
-
-	do_output(output, kbinput_len, TRUE);
-
-	free(output);
+	/* Display all the verbatim characters at once, not filtering out control characters. */
+	do_output(kbinput, TRUE);
 }

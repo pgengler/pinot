@@ -957,6 +957,11 @@ int get_control_kbinput(int kbinput)
 	return retval;
 }
 
+std::string get_verbatim_kbinput(WINDOW *win)
+{
+	return get_kbinput(win).verbatim();
+}
+
 /* Read in a stream of characters verbatim, and return the length of the
  * string in kbinput_len.  Assume nodelay(win) is FALSE. */
 int *get_verbatim_kbinput(WINDOW *win, size_t *kbinput_len)

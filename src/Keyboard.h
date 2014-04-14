@@ -14,10 +14,13 @@ class Key
 
 		std::string format();
 		operator std::string();
+		std::string verbatim();
 
 		bool has_control_key();
 		bool has_meta_key();
 	private:
+		std::string control_char(char c) const;
+
 		TermKey *termkey;
 		TermKeyKey key;
 };
