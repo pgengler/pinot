@@ -46,7 +46,7 @@ static bool search_last_file = FALSE;
 char *do_browser(char *path, DIR *dir)
 {
 	char *retval = NULL;
-	bool meta_key, func_key, old_const_update = ISSET(CONST_UPDATE);
+	bool old_const_update = ISSET(CONST_UPDATE);
 	bool abort = FALSE;
 	/* Whether we should abort the file browser. */
 	char *prev_dir = NULL;
@@ -178,7 +178,6 @@ change_browser_directory:
 			i = do_prompt(TRUE,
 			              FALSE,
 			              MGOTODIR, key, ans,
-			              &meta_key, &func_key,
 			              NULL,
 			              browser_refresh, N_("Go To Directory"));
 
@@ -662,7 +661,6 @@ int filesearch_init(void)
 {
 	int i = 0;
 	char *buf;
-	bool meta_key, func_key;
 	const sc *s;
 	static char *backupstring = NULL;
 	/* The search string we'll be using. */
@@ -696,7 +694,6 @@ int filesearch_init(void)
 	i = do_prompt(FALSE,
 	              TRUE,
 	              MWHEREISFILE, key, backupstring,
-	              &meta_key, &func_key,
 	              &search_history,
 	              browser_refresh, "%s%s%s%s%s%s", _("Search"),
 	              /* This string is just a modifier for the search prompt; no
@@ -721,7 +718,7 @@ int filesearch_init(void)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		s = get_shortcut(MBROWSER, &i, &meta_key, &func_key);
+		s = get_shortcut(MBROWSER, &i);
 		if (i == -2 || i == 0) {
 			/* Use last_search if answer is an empty string, or
 			 * answer if it isn't. */

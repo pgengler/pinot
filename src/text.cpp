@@ -1492,7 +1492,6 @@ bool do_int_spell_fix(const char *word)
 	char *save_search, *save_replace;
 	size_t match_len, current_x_save = openfile->current_x;
 	size_t pww_save = openfile->placewewant;
-	bool meta_key = FALSE, func_key = FALSE;
 	filestruct *edittop_save = openfile->edittop;
 	filestruct *current_save = openfile->current;
 	/* Save where we are. */
@@ -1560,7 +1559,7 @@ bool do_int_spell_fix(const char *word)
 
 			/* Allow all instances of the word to be corrected. */
 			std::shared_ptr<Key> key;
-			canceled = (do_prompt(FALSE, TRUE, MSPELL, key, word, &meta_key, &func_key, NULL, edit_refresh, _("Edit a replacement")) == -1);
+			canceled = (do_prompt(FALSE, TRUE, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == -1);
 
 			do_replace_highlight(FALSE, exp_word);
 

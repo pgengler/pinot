@@ -935,14 +935,13 @@ void do_execute_command()
 	char statusbartext[50];
 	const char *msg;
 	char *ans = mallocstrcpy(NULL, "");
-	bool meta_key = FALSE, func_key = FALSE;
 	const sc *s;
 	currmenu = MEXTCMD;
 
 	while (TRUE) {
 		msg = _("Command to execute (no output) [from %s]");
 
-		i = do_prompt(TRUE, TRUE, MEXTCMD, key, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
+		i = do_prompt(TRUE, TRUE, MEXTCMD, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* Cancel if the command was empty or the user cancelled */
 		if (i == -1 || (i == -2 || *answer == '\n')) {
@@ -951,7 +950,7 @@ void do_execute_command()
 		} else {
 			ans = mallocstrcpy(ans, answer);
 
-			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
+			s = get_shortcut(currmenu, &i);
 
 			if (s && s->scfunc == to_files_void) {
 				char *tmp = do_browse_from(answer);
@@ -1017,7 +1016,7 @@ void do_insertfile(bool execute)
 	filestruct *edittop_save = openfile->edittop;
 	size_t current_x_save = openfile->current_x;
 	ssize_t current_y_save = openfile->current_y;
-	bool edittop_inside = FALSE, meta_key = FALSE, func_key = FALSE;
+	bool edittop_inside = FALSE;
 	const sc *s;
 	bool right_side_up = FALSE, single_line = FALSE;
 
@@ -1031,7 +1030,7 @@ void do_insertfile(bool execute)
 		}
 
 		std::shared_ptr<Key> key;
-		i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, key, ans, &meta_key, &func_key, NULL, edit_refresh, msg, "./");
+		i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* If we're in multibuffer mode and the filename or command is
 		 * blank, open a new buffer instead of canceling.  If the
@@ -1045,7 +1044,7 @@ void do_insertfile(bool execute)
 
 			ans = mallocstrcpy(ans, answer);
 
-			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
+			s = get_shortcut(currmenu, &i);
 
 			if (s && s->scfunc == new_buffer_void) {
 				/* Don't allow toggling if we're in view mode. */
@@ -2020,7 +2019,7 @@ bool do_writeout(bool exiting)
 	append_type append = OVERWRITE;
 	char *ans;
 	/* The last answer the user typed at the statusbar prompt. */
-	bool retval = FALSE, meta_key = FALSE, func_key = FALSE;
+	bool retval = FALSE;
 	const sc *s;
 
 	currmenu = MWRITEFILE;
@@ -2059,7 +2058,6 @@ bool do_writeout(bool exiting)
 		i = do_prompt(TRUE,
 		              TRUE,
 		              MWRITEFILE, key, ans,
-		              &meta_key, &func_key,
 		              NULL,
 		              edit_refresh, "%s%s%s", msg,
 		              formatstr, backupstr
@@ -2073,7 +2071,7 @@ bool do_writeout(bool exiting)
 			break;
 		} else {
 			ans = mallocstrcpy(ans, answer);
-			s = get_shortcut(currmenu, &i, &meta_key, &func_key);
+			s = get_shortcut(currmenu, &i);
 
 			if (s && s->scfunc == to_files_void) {
 				char *tmp = do_browse_from(answer);

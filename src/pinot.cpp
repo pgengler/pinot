@@ -1316,9 +1316,8 @@ void terminal_init(void)
 }
 
 /* Read in a character, interpret it as a shortcut or toggle if
- * necessary, and return it.  Set meta_key to TRUE if the character is a
- * meta sequence, set func_key to TRUE if the character is a function
- * key, set s_or_t to TRUE if the character is a shortcut or toggle
+ * necessary, and return it.
+ * Set s_or_t to TRUE if the character is a shortcut or toggle
  * key, set ran_func to TRUE if we ran a function associated with a
  * shortcut key, and set finished to TRUE if we're done after running
  * or trying to run a function associated with a shortcut key.  If

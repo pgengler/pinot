@@ -40,16 +40,14 @@ static bool reset_statusbar_x = FALSE;
 /* Should we reset the cursor position at the statusbar prompt? */
 
 /* Read in a character, interpret it as a shortcut or toggle if
- * necessary, and return it.  Set meta_key to TRUE if the character is a
- * meta sequence, set func_key to TRUE if the character is a function
- * key, set have_shortcut to TRUE if the character is a shortcut
- * key, set ran_func to TRUE if we ran a function associated with a
- * shortcut key, and set finished to TRUE if we're done after running
+ * necessary, and return it. Sset have_shortcut to TRUE if the character
+ * is a shortcut key, set ran_func to TRUE if we ran a function associated
+ * with a shortcut key, and set finished to TRUE if we're done after running
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is FALSE, don't actually run any functions associated
  * with shortcut keys.  refresh_func is the function we will call to
  * refresh the edit window. */
-Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
+Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
 {
 	const sc *s;
 	const subnfunc *f;
@@ -72,8 +70,6 @@ Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool
 	 * function key, and it's not a shortcut or toggle, throw it out. */
 	if (!*have_shortcut && (input.has_control_key() || input.has_meta_key())) {
 		beep();
-		*meta_key = FALSE;
-		*func_key = FALSE;
 	}
 
 	if (allow_funcs && *have_shortcut) {
@@ -715,7 +711,7 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
+const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
 	std::shared_ptr<Key> kbinput;
 	bool have_shortcut, ran_func, finished;
@@ -765,7 +761,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	wnoutrefresh(bottomwin);
 
 	while (1) {
-		kbinput = std::make_shared<Key>(do_statusbar_input(meta_key, func_key, &have_shortcut, &ran_func, &finished, TRUE, refresh_func));
+		kbinput = std::make_shared<Key>(do_statusbar_input(&have_shortcut, &ran_func, &finished, TRUE, refresh_func));
 		assert(statusbar_x <= strlen(answer));
 
 DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
@@ -924,7 +920,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
+int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
 	int retval = 0;
@@ -946,7 +942,7 @@ int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>&
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(key, allow_tabs, allow_files, curranswer, meta_key, func_key, history_list, refresh_func, menu, &list);
+	s = get_prompt_string(key, allow_tabs, allow_files, curranswer, history_list, refresh_func, menu, &list);
 
 	free(prompt);
 	prompt = NULL;

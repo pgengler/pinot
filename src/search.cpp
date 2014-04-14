@@ -127,7 +127,6 @@ int search_init(bool replacing, bool use_answer)
 	int i = 0;
 	std::shared_ptr<Key> key;
 	char *buf;
-	bool meta_key = FALSE, func_key = FALSE;
 	static char *backupstring = NULL;
 	/* The search string we'll be using. */
 
@@ -165,7 +164,6 @@ DEBUG_LOG("Calling do_prompt...");
 	i = do_prompt(FALSE,
 	              TRUE,
 	              replacing ? MREPLACE : MWHEREIS, key, backupstring,
-	              &meta_key, &func_key,
 	              &search_history,
 	              edit_refresh, "%s%s%s%s%s%s", _("Search"),
 	              /* TRANSLATORS: This string is just a modifier for the search prompt; no grammar is implied. */
@@ -798,7 +796,6 @@ void do_replace(void)
 {
 	filestruct *edittop_save, *begin;
 	size_t begin_x, pww_save;
-	bool meta_key = FALSE, func_key = FALSE;
 	ssize_t numreplaced;
 	int i;
 
@@ -839,7 +836,6 @@ void do_replace(void)
 	i = do_prompt(FALSE,
 	              TRUE,
 	              MREPLACE2, key, last_replace,
-	              &meta_key, &func_key,
 	              &replace_history,
 	              edit_refresh, _("Replace with"));
 
@@ -895,7 +891,6 @@ void do_replace(void)
  * the line and column numbers should be one-based. */
 void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool interactive, bool save_pos, bool allow_update)
 {
-	bool meta_key = FALSE, func_key = FALSE;
 	const sc *s;
 
 	if (interactive) {
@@ -906,7 +901,6 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 		int i = do_prompt(FALSE,
 		                  TRUE,
 		                  MGOTOLINE, key, use_answer ? ans : "",
-		                  &meta_key, &func_key,
 		                  NULL,
 		                  edit_refresh, _("Enter line number, column number"));
 
@@ -920,7 +914,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 		}
 
 
-		s = get_shortcut(currmenu, &i, &meta_key, &func_key);
+		s = get_shortcut(currmenu, &i);
 		if (s && s->scfunc ==  gototext_void) {
 			/* Keep answer up on the statusbar. */
 			search_init(TRUE, TRUE);

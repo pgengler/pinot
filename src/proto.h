@@ -334,7 +334,7 @@ void do_output(const std::string& output, bool allow_cntrls);
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
-Key do_statusbar_input(bool *meta_key, bool *func_key, bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
+Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
 void do_statusbar_output(std::string output, bool allow_cntrls);
 void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls);
 void do_statusbar_home(void);
@@ -355,8 +355,8 @@ void reset_statusbar_cursor(void);
 void update_statusbar_line(const char *curranswer, size_t index);
 bool need_statusbar_horizontal_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
-const sc *get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
-int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, bool *meta_key, bool *func_key, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
+const sc *get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
+int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 int do_yesno_prompt(bool all, const char *msg);
 
@@ -506,7 +506,7 @@ long get_unicode_kbinput(int kbinput);
 int get_control_kbinput(int kbinput);
 std::string get_verbatim_kbinput(WINDOW *win);
 const sc *get_shortcut(int menu, Key& kbinput);
-const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key);
+const sc *get_shortcut(int menu, int *kbinput);
 const sc *first_sc_for(int menu, void (*func)(void));
 void blank_line(WINDOW *win, int y, int x, int n);
 void blank_titlebar(void);

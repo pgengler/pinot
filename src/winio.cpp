@@ -799,13 +799,11 @@ std::string get_verbatim_kbinput(WINDOW *win)
 	return result;
 }
 
-/* Return the shortcut corresponding to the values of kbinput (the key
- * itself), meta_key (whether the key is a meta sequence), and func_key
- * (whether the key is a function key), if any.  The shortcut will be
- * the first one in the list (control key, meta key sequence, function
- * key, other meta key sequence) for the corresponding function.  For
- * example, passing in a meta key sequence that corresponds to a
- * function with a control key, a function key, and a meta key sequence
+/* Return the shortcut corresponding to the values of kbinput, if any.
+ * The shortcut will be the first one in the list (control key, meta key
+ * sequence, function key, other meta key sequence) for the corresponding
+ * function.  For example, passing in a meta key sequence that corresponds
+ * to a function with a control key, a function key, and a meta key sequence
  * will return the control key corresponding to that function. */
 const sc *get_shortcut(int menu, Key &kbinput)
 {
@@ -829,24 +827,20 @@ const sc *get_shortcut(int menu, Key &kbinput)
 	return NULL;
 }
 
-const sc *get_shortcut(int menu, int *kbinput, bool *meta_key, bool *func_key)
+const sc *get_shortcut(int menu, int *kbinput)
 {
 	sc *s;
 
-	DEBUG_LOG("get_shortcut(): "
-		<< "kbinput = " << *kbinput
-		<< ", meta_key = " << (*meta_key ? "TRUE" : "FALSE")
-		<< ", func_key = " << (*func_key ? "TRUE" : "FALSE")
-	);
+	DEBUG_LOG("get_shortcut(): " << "kbinput = " << *kbinput);
 
 	/* Check for shortcuts. */
 	for (s = sclist; s != NULL; s = s->next) {
-		if ((menu & s->menu) && ((s->type == META && *meta_key == TRUE && *kbinput == s->seq) || (s->type != META && *kbinput == s->seq))) {
-			DEBUG_LOG("matched seq \"" << s->keystr << "\" and btw meta was " << *meta_key << " (menus " << menu << " = " << s->menu << ')');
+		if ((menu & s->menu) && (*kbinput == s->seq)) {
+			DEBUG_LOG("matched seq \"" << s->keystr << "\" (menus " << menu << " = " << s->menu << ')');
 			return s;
 		}
 	}
-	DEBUG_LOG("matched nothing btw meta was " << *meta_key);
+	DEBUG_LOG("matched nothing");
 
 	return NULL;
 }
