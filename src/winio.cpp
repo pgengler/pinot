@@ -34,67 +34,7 @@ static int statusblank = 0;
 /* The number of keystrokes left after we call statusbar(),
  * before we actually blank the statusbar. */
 static bool disable_cursorpos = FALSE;
-/* Should we temporarily disable constant cursor position
- * display? */
-
-/* Control character compatibility:
- *
- * - PINOT_BACKSPACE_KEY is Ctrl-H, which is Backspace under ASCII, ANSI,
- *   VT100, and VT220.
- * - PINOT_TAB_KEY is Ctrl-I, which is Tab under ASCII, ANSI, VT100,
- *   VT220, and VT320.
- * - PINOT_ENTER_KEY is Ctrl-M, which is Enter under ASCII, ANSI, VT100,
- *   VT220, and VT320.
- * - PINOT_XON_KEY is Ctrl-Q, which is XON under ASCII, ANSI, VT100,
- *   VT220, and VT320.
- * - PINOT_XOFF_KEY is Ctrl-S, which is XOFF under ASCII, ANSI, VT100,
- *   VT220, and VT320.
- * - PINOT_CONTROL_8 is Ctrl-8 (Ctrl-?), which is Delete under ASCII,
- *   ANSI, VT100, and VT220, and which is Backspace under VT320.
- *
- * Note: VT220 and VT320 also generate Esc [ 3 ~ for Delete.  By
- * default, xterm assumes it's running on a VT320 and generates Ctrl-8
- * (Ctrl-?) for Backspace and Esc [ 3 ~ for Delete.  This causes
- * problems for VT100-derived terminals such as the FreeBSD console,
- * which expect Ctrl-H for Backspace and Ctrl-8 (Ctrl-?) for Delete, and
- * on which the VT320 sequences are translated by the keypad to KEY_DC
- * and [nothing].  We work around this conflict via the REBIND_DELETE
- * flag: if it's not set, we assume VT320 compatibility, and if it is,
- * we assume VT100 compatibility.  Thanks to Lee Nelson and Wouter van
- * Hemel for helping work this conflict out.
- *
- * Escape sequence compatibility:
- *
- * We support escape sequences for ANSI, VT100, VT220, VT320, the Linux
- * console, the FreeBSD console, the Mach console, xterm, rxvt, Eterm,
- * and Terminal.  Among these, there are several conflicts and
- * omissions, outlined as follows:
- *
- * - Tab on ANSI == PageUp on FreeBSD console; the former is omitted.
- *   (Ctrl-I is also Tab on ANSI, which we already support.)
- * - PageDown on FreeBSD console == Center (5) on numeric keypad with
- *   NumLock off on Linux console; the latter is omitted.  (The editing
- *   keypad key is more important to have working than the numeric
- *   keypad key, because the latter has no value when NumLock is off.)
- * - F1 on FreeBSD console == the mouse key on xterm/rxvt/Eterm; the
- *   latter is omitted.  (Mouse input will only work properly if the
- *   extended keypad value KEY_MOUSE is generated on mouse events
- *   instead of the escape sequence.)
- * - F9 on FreeBSD console == PageDown on Mach console; the former is
- *   omitted.  (The editing keypad is more important to have working
- *   than the function keys, because the functions of the former are not
- *   arbitrary and the functions of the latter are.)
- * - F10 on FreeBSD console == PageUp on Mach console; the former is
- *   omitted.  (Same as above.)
- * - F13 on FreeBSD console == End on Mach console; the former is
- *   omitted.  (Same as above.)
- * - F15 on FreeBSD console == Shift-Up on rxvt/Eterm; the former is
- *   omitted.  (The arrow keys, with or without modifiers, are more
- *   important to have working than the function keys, because the
- *   functions of the former are not arbitrary and the functions of the
- *   latter are.)
- * - F16 on FreeBSD console == Shift-Down on rxvt/Eterm; the former is
- *   omitted.  (Same as above.) */
+/* Should we temporarily disable constant cursor position display? */
 
 Key get_kbinput(WINDOW *win)
 {
