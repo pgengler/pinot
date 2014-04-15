@@ -296,33 +296,6 @@ typedef struct openfilestruct {
 	/* Previous node. */
 } openfilestruct;
 
-typedef struct shortcut {
-	const char *desc;
-	/* The function's description, e.g. "Page Up". */
-	const char *help;
-	/* The help file entry text for this function. */
-	bool blank_after;
-	/* Whether there should be a blank line after the help entry
-	 * text for this function. */
-	/* Note: Key values that aren't used should be set to
-	 * PINOT_NO_KEY. */
-	int ctrlval;
-	/* The special sentinel key or control key we want bound, if
-	 * any. */
-	int metaval;
-	/* The meta key we want bound, if any. */
-	int funcval;
-	/* The function key we want bound, if any. */
-	int miscval;
-	/* The other meta key we want bound, if any. */
-	bool viewok;
-	/* Is this function allowed when in view mode? */
-	void (*func)(void);
-	/* The function to call when we get this key. */
-	struct shortcut *next;
-	/* Next shortcut. */
-} shortcut;
-
 typedef struct rcoption {
 	std::string name;
 	/* The name of the rcfile option. */
