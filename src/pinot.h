@@ -222,7 +222,6 @@ typedef struct poshiststruct {
 	/* Line number we left off on */
 	ssize_t xno;
 	/* x position in the file we left off on */
-	struct poshiststruct *next;
 } poshiststruct;
 
 

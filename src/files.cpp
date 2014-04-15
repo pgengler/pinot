@@ -2776,7 +2776,6 @@ void save_poshistory(void)
 {
 	char *poshist;
 	char *statusstr = NULL;
-	poshiststruct *posptr;
 
 	poshist = poshistfilename();
 
@@ -2790,9 +2789,9 @@ void save_poshistory(void)
 			 * history file. */
 			chmod(poshist, S_IRUSR | S_IWUSR);
 
-			for (posptr = poshistory; posptr != NULL; posptr = posptr->next) {
-				statusstr = charalloc(strlen(posptr->filename) + 2 * sizeof(ssize_t) + 4);
-				sprintf(statusstr, "%s %d %d\n", posptr->filename, (int) posptr->lineno, (int) posptr->xno);
+			for (auto pos : poshistory) {
+				statusstr = charalloc(strlen(pos->filename) + 2 * sizeof(ssize_t) + 4);
+				sprintf(statusstr, "%s %d %d\n", pos->filename, (int) pos->lineno, (int) pos->xno);
 				if (fwrite(statusstr, sizeof(char), strlen(statusstr), hist) < strlen(statusstr)) {
 					history_error(N_("Error writing %s: %s"), poshist, strerror(errno));
 				}
@@ -2809,35 +2808,27 @@ void save_poshistory(void)
  */
 void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos)
 {
-	poshiststruct *posptr, *posprev = NULL;
 	char *fullpath = get_full_path(filename);
 
 	if (fullpath == NULL) {
 		return;
 	}
 
-	for (posptr = poshistory; posptr != NULL; posptr = posptr->next) {
-		if (!strcmp(posptr->filename, fullpath)) {
-			posptr->lineno = lineno;
-			posptr->xno = xpos;
+	for (auto pos : poshistory) {
+		if (!strcmp(pos->filename, fullpath)) {
+			pos->lineno = lineno;
+			pos->xno    = xpos;
 			return;
 		}
-		posprev = posptr;
 	}
 
 	/* Didn't find it, make a new node yo! */
 
-	posptr = (poshiststruct *) nmalloc(sizeof(poshiststruct));
-	posptr->filename = mallocstrcpy(NULL, fullpath);
-	posptr->lineno = lineno;
-	posptr->xno = xpos;
-	posptr->next = NULL;
-
-	if (!poshistory) {
-		poshistory = posptr;
-	} else {
-		posprev->next = posptr;
-	}
+	auto pos = new poshiststruct;
+	pos->filename = mallocstrcpy(NULL, fullpath);
+	pos->lineno   = lineno;
+	pos->xno      = xpos;
+	poshistory.push_back(pos);
 
 	free(fullpath);
 }
@@ -2849,17 +2840,16 @@ void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos)
  */
 int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
 {
-	poshiststruct *posptr;
 	char *fullpath = get_full_path(file);
 
 	if (fullpath == NULL) {
 		return 0;
 	}
 
-	for (posptr = poshistory; posptr != NULL; posptr = posptr->next) {
-		if (!strcmp(posptr->filename, fullpath)) {
-			*line = posptr->lineno;
-			*column = posptr->xno;
+	for (auto pos : poshistory) {
+		if (!strcmp(pos->filename, fullpath)) {
+			*line = pos->lineno;
+			*column = pos->xno;
 			free(fullpath);
 			return 1;
 		}
@@ -2888,7 +2878,6 @@ void load_poshistory(void)
 			char *line = NULL, *lineptr, *xptr;
 			size_t buf_len = 0;
 			ssize_t read, lineno, xno;
-			poshiststruct *posptr;
 
 			/* See if we can find the file we're currently editing */
 			while ((read = getline(&line, &buf_len, hist)) >= 0) {
@@ -2903,23 +2892,12 @@ void load_poshistory(void)
 				xptr = parse_next_word(lineptr);
 				lineno = atoi(lineptr);
 				xno = atoi(xptr);
-				if (poshistory == NULL) {
-					poshistory = (poshiststruct *) nmalloc(sizeof(poshiststruct));
-					poshistory->filename = mallocstrcpy(NULL, line);
-					poshistory->lineno = lineno;
-					poshistory->xno = xno;
-					poshistory->next = NULL;
-				} else {
-					for (posptr = poshistory; posptr->next != NULL; posptr = posptr->next) {
-						;
-					}
-					posptr->next = (poshiststruct *) nmalloc(sizeof(poshiststruct));
-					posptr->next->filename = mallocstrcpy(NULL, line);
-					posptr->next->lineno = lineno;
-					posptr->next->xno = xno;
-					posptr->next->next = NULL;
-				}
 
+				auto pos = new poshiststruct;
+				pos->filename = mallocstrcpy(NULL, line);
+				pos->lineno   = lineno;
+				pos->xno      = xno;
+				poshistory.push_back(pos);
 			}
 
 			fclose(hist);

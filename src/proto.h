@@ -83,7 +83,7 @@ extern filestruct *searchbot;
 extern filestruct *replace_history;
 extern filestruct *replaceage;
 extern filestruct *replacebot;
-extern poshiststruct *poshistory;
+extern std::list<poshiststruct *> poshistory;
 void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos);
 
 extern regex_t search_regexp;
