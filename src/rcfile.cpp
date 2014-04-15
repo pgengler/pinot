@@ -877,14 +877,13 @@ void parse_linter(char *ptr)
 sequence we consider 'vital', like the exit function */
 static void check_vitals_mapped(void)
 {
-	subnfunc *f;
 	int v;
 #define VITALS 5
 	void (*vitals[VITALS])(void) = { do_exit, do_exit, do_cancel, do_cancel, do_cancel };
 	int inmenus[VITALS] = { MMAIN, MHELP, MWHEREIS, MREPLACE, MGOTOLINE };
 
 	for  (v = 0; v < VITALS; v++) {
-		for (f = allfuncs; f != NULL; f = f->next) {
+		for (auto f : allfuncs) {
 			if (f->scfunc == vitals[v] && f->menus & inmenus[v]) {
 				const sc *s = first_sc_for(inmenus[v], f->scfunc);
 				if (!s) {

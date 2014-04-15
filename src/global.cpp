@@ -121,7 +121,7 @@ int currmenu;
 
 sc *sclist = NULL;
 /* New shortcut key struct */
-subnfunc *allfuncs = NULL;
+std::list<subnfunc *> allfuncs;
 /* New struct for the function list */
 
 filestruct *search_history = NULL;
@@ -155,13 +155,13 @@ char *homedir = NULL;
 /* Return the number of entries in the shortcut list s for a given menu. */
 size_t length_of_list(int menu)
 {
-	subnfunc *f;
 	size_t i = 0;
 
-	for (f = allfuncs; f != NULL; f = f->next)
+	for (auto f : allfuncs) {
 		if ((f->menus & menu) != 0 && strlen(f->help) > 0) {
 			i++;
 		}
+	}
 	return i;
 }
 
@@ -227,25 +227,14 @@ function_type strtokeytype(const char *str)
    Does not allow updates, yet anyway */
 void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *help, bool blank_after, bool viewok)
 {
-	subnfunc *f;
-
-	if (allfuncs == NULL) {
-		allfuncs = new subnfunc;
-		f = allfuncs;
-	} else {
-		for (f = allfuncs; f->next != NULL; f = f->next) {
-			;
-		}
-		f->next = new subnfunc;
-		f = f->next;
-	}
-	f->next = NULL;
+	auto f = new subnfunc;
 	f->scfunc = func;
 	f->menus = menus;
 	f->desc = desc;
 	f->viewok = viewok;
 	f->help = help;
 	f->blank_after = blank_after;
+	allfuncs.push_back(f);
 
 	DEBUG_LOG("Added func \"" << f->desc << '"');
 }
@@ -571,9 +560,9 @@ void shortcut_init(void)
 // FIXME
 #define IFSCHELP(help) help
 
-	while (allfuncs != NULL) {
-		subnfunc *f = allfuncs;
-		allfuncs = (allfuncs)->next;
+	while (allfuncs.size() > 0) {
+		auto f = allfuncs.front();
+		allfuncs.pop_front();
 		delete f;
 	}
 
@@ -913,13 +902,12 @@ void set_spell_shortcuts(void)
 
 const subnfunc *sctofunc(sc *s)
 {
-	subnfunc *f;
-
-	for (f = allfuncs; f != NULL && s->scfunc != f->scfunc; f = f->next) {
-		;
+	for (auto f : allfuncs) {
+		if (s->scfunc == f->scfunc) {
+			return f;
+		}
 	}
-
-	return f;
+	return nullptr;
 }
 
 /* Now lets come up with a single (hopefully)

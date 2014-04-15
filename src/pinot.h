@@ -368,8 +368,6 @@ typedef struct subnfunc {
 	/* Is this function allowed when in view mode? */
 	long toggle;
 	/* If this is a toggle, if nonzero what toggle to set */
-	struct subnfunc *next;
-	/* next item in the list */
 } subnfunc;
 
 

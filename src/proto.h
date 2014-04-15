@@ -69,7 +69,7 @@ extern char *alt_speller;
 #endif
 
 extern sc *sclist;
-extern subnfunc *allfuncs;
+extern std::list<subnfunc*> allfuncs;
 extern SyntaxMap syntaxes;
 extern char *syntaxstr;
 

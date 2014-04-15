@@ -623,8 +623,7 @@ void statusbar(const char *msg, ...)
  * portion of the window. */
 void bottombars(int menu)
 {
-	size_t i, colwidth, slen;
-	subnfunc *f;
+	size_t i = 0, colwidth, slen;
 	const sc *s;
 
 	if (ISSET(NO_HELP)) {
@@ -655,8 +654,7 @@ void bottombars(int menu)
 	DEBUG_LOG("In bottombars, and slen == " << slen);
 
 	DEBUG_LOG("Checking menu items....");
-	for (f = allfuncs, i = 0; i < slen && f != NULL; f = f->next) {
-
+	for (auto f : allfuncs) {
 		if ((f->menus & menu) == 0) {
 			continue;
 		}
@@ -674,7 +672,9 @@ void bottombars(int menu)
 		wmove(bottomwin, 1 + i % 2, (i / 2) * colwidth);
 		DEBUG_LOG("Calling onekey with keystr \"" << s->keystr << "\" and desc \"" << f->desc << '"');
 		onekey(s->keystr, _(f->desc), colwidth + (COLS % colwidth));
-		i++;
+		if (++i >= slen) {
+			break;
+		}
 	}
 
 	wnoutrefresh(bottomwin);

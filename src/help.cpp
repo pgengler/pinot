@@ -196,7 +196,6 @@ void help_init(void)
 				 * full string is too long for the
 				 * compiler to handle. */
 	char *ptr;
-	const subnfunc *f;
 	const sc *s;
 	int scsfound = 0;
 
@@ -365,10 +364,11 @@ void help_init(void)
 	/* Count the shortcut help text.  Each entry has up to three keys,
 	 * which fill 24 columns, plus translated text, plus one or two
 	 * \n's. */
-	for (f = allfuncs; f != NULL; f = f->next)
+	for (auto f : allfuncs) {
 		if (f->menus & currmenu) {
 			allocsize += (24 * mb_cur_max()) + strlen(f->help) + 2;
 		}
+	}
 
 	/* If we're on the main list, we also count the toggle help text.
 	 * Each entry has "M-%c\t\t\t", which fills 24 columns, plus a
@@ -404,7 +404,7 @@ void help_init(void)
 	ptr = help_text + strlen(help_text);
 
 	/* Now add our shortcut info. */
-	for (f = allfuncs; f != NULL; f = f->next) {
+	for (auto f : allfuncs) {
 
 		if ((f->menus & currmenu) == 0) {
 			continue;
