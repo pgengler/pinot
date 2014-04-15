@@ -496,7 +496,6 @@ void dump_filestruct_reverse(void);
 
 /* All functions in winio.c. */
 Key get_kbinput(WINDOW *win);
-int get_control_kbinput(int kbinput);
 std::string get_verbatim_kbinput(WINDOW *win);
 const sc *get_shortcut(int menu, Key& kbinput);
 const sc *first_sc_for(int menu, void (*func)(void));

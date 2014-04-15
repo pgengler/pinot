@@ -111,44 +111,6 @@ Key get_kbinput(WINDOW *win)
 	return key;
 }
 
-/* Translate a control character sequence: turn an ASCII non-control
- * character into its corresponding control character. */
-int get_control_kbinput(int kbinput)
-{
-	int retval;
-
-	/* Ctrl-Space (Ctrl-2, Ctrl-@, Ctrl-`) */
-	if (kbinput == ' ' || kbinput == '2') {
-		retval = PINOT_CONTROL_SPACE;
-	}
-	/* Ctrl-/ (Ctrl-7, Ctrl-_) */
-	else if (kbinput == '/') {
-		retval = PINOT_CONTROL_7;
-	}
-	/* Ctrl-3 (Ctrl-[, Esc) to Ctrl-7 (Ctrl-/, Ctrl-_) */
-	else if ('3' <= kbinput && kbinput <= '7') {
-		retval = kbinput - 24;
-	}
-	/* Ctrl-8 (Ctrl-?) */
-	else if (kbinput == '8' || kbinput == '?') {
-		retval = PINOT_CONTROL_8;
-	}
-	/* Ctrl-@ (Ctrl-Space, Ctrl-2, Ctrl-`) to Ctrl-_ (Ctrl-/, Ctrl-7) */
-	else if ('@' <= kbinput && kbinput <= '_') {
-		retval = kbinput - '@';
-	}
-	/* Ctrl-` (Ctrl-2, Ctrl-Space, Ctrl-@) to Ctrl-~ (Ctrl-6, Ctrl-^) */
-	else if ('`' <= kbinput && kbinput <= '~') {
-		retval = kbinput - '`';
-	} else {
-		retval = kbinput;
-	}
-
-	DEBUG_LOG("get_control_kbinput(): kbinput = " << kbinput << ", retval = " << retval);
-
-	return retval;
-}
-
 std::string get_verbatim_kbinput(WINDOW *win)
 {
 	/* Turn off flow control characters if necessary so that we can type them in verbatim */
