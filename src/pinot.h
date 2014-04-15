@@ -321,8 +321,6 @@ typedef struct sc {
 	bool execute;
 	/* Whether to execute the function in question or just return
 	   so the sequence can be caught by the calling code */
-	struct sc *next;
-	/* Next in the list */
 } sc;
 
 typedef struct subnfunc {

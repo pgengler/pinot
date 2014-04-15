@@ -68,7 +68,7 @@ extern const char *locking_suffix;
 extern char *alt_speller;
 #endif
 
-extern sc *sclist;
+extern std::list<sc*> sclist;
 extern std::list<subnfunc*> allfuncs;
 extern SyntaxMap syntaxes;
 extern char *syntaxstr;
@@ -528,6 +528,7 @@ void do_replace_highlight(bool highlight, const char *word);
 const char *flagtostr(int flag);
 const subnfunc *sctofunc(sc *s);
 const subnfunc *getfuncfromkey(WINDOW *win);
+void empty_sclist(void);
 void print_sclist(void);
 sc *strtosc(char *input);
 function_type strtokeytype(const char *str);

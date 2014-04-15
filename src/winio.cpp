@@ -79,7 +79,7 @@ const sc *get_shortcut(int menu, Key &kbinput)
 
 	DEBUG_LOG("get_shortcut(): key is " << key);
 
-	for (sc *s = sclist; s != NULL; s = s->next) {
+	for (auto s : sclist) {
 		// If this shortcut doesn't apply to the current menu, skip it
 		if (!(menu & s->menu)) {
 			continue;

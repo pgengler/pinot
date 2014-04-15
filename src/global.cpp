@@ -117,9 +117,9 @@ bool edit_refresh_needed = 0;
 int currmenu;
 /* The currently loaded menu */
 
-sc *sclist = NULL;
+std::list<sc*> sclist;
 /* New shortcut key struct */
-std::list<subnfunc *> allfuncs;
+std::list<subnfunc*> allfuncs;
 /* New struct for the function list */
 
 filestruct *search_history = NULL;
@@ -239,12 +239,11 @@ void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *h
 
 const sc *first_sc_for(int menu, void (*func)(void))
 {
-	const sc *s;
 	const sc *fkeysc = NULL;
 	const sc *metasc = NULL;
 	const sc *rawsc  = NULL;
 
-	for (s = sclist; s != NULL; s = s->next) {
+	for (auto s : sclist) {
 		if ((s->menu & menu) && s->scfunc == func) {
 			/* Try to use a meta sequence as as last resorts. Otherwise we will
 			   run into problems when we try and handle things like the arrow keys,
@@ -293,51 +292,47 @@ const sc *first_sc_for(int menu, void (*func)(void))
    Allows updates to existing entries in the list */
 void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggle, int execute)
 {
-	sc *s;
+	auto shortcut = new sc;
+	shortcut->type = strtokeytype(scstring);
+	shortcut->menu = menu;
+	shortcut->toggle = toggle;
+	shortcut->keystr = (char *) scstring;
+	shortcut->scfunc = func;
+	shortcut->execute = execute;
+	assign_keyinfo(shortcut);
 
-	if (sclist == NULL) {
-		sclist = new sc;
-		s = sclist;
-		s->next = NULL;
-	} else {
-		for (s = sclist; s->next != NULL; s = s->next)
-			if (s->menu == menu && s->keystr == scstring) {
-				break;
-			}
+	DEBUG_LOG("list val = " << shortcut->menu);
+	DEBUG_LOG("Setting sequence to " << shortcut->seq << " for shortcut \"" << scstring << '"');
 
-		if (s->menu != menu || s->keystr != scstring) { /* i.e. this is not a replace... */
-			DEBUG_LOG("No match found...");
-			s->next = new sc;
-			s = s->next;
-			s->next = NULL;
+	// First look if we already have a shortcut for this menu and key string
+	for (auto s : sclist) {
+		if (s->menu == menu && s->keystr == scstring) {
+			// If we do, replace the existing one
+			*s = *shortcut;
+			delete shortcut;
+			return;
 		}
 	}
 
-	s->type = strtokeytype(scstring);
-	s->menu = menu;
-	s->toggle = toggle;
-	s->keystr = (char *) scstring;
-	s->scfunc = func;
-	s->execute = execute;
-	assign_keyinfo(s);
-
-	DEBUG_LOG("list val = " << s->menu);
-	DEBUG_LOG("Hey, set sequence to " << s->seq << " for shortcut \"" << scstring << '"');
+	sclist.push_back(shortcut);
 }
 
 /* Assign one menu's shortcuts to another function */
 void replace_scs_for(void (*oldfunc)(void), void (*newfunc)(void))
 {
-	sc *s;
-
-	if (sclist == NULL) {
-		return;
-	}
-
-	for (s = sclist; s->next != NULL; s = s->next) {
+	for (auto s : sclist) {
 		if (s->scfunc == oldfunc) {
 			s->scfunc = newfunc;
 		}
+	}
+}
+
+void empty_sclist(void)
+{
+	while (sclist.size() > 0) {
+		auto s = sclist.front();
+		sclist.pop_front();
+		delete s;
 	}
 }
 
@@ -415,18 +410,14 @@ void assign_keyinfo(sc *s)
 
 void print_sclist(void)
 {
-	sc *s;
-	const subnfunc *f;
-
-	for (s = sclist; s != NULL; s = s->next) {
-		f = sctofunc(s);
+	for (auto s : sclist) {
+		auto f = sctofunc(s);
 		if (f) {
 			DEBUG_LOG("Shortcut \"" << s->keystr << "\", function: " << f->desc << ", menus " << f->menus);
 		} else {
 			DEBUG_LOG("Hmm, didnt find a func for \"" << s->keystr << '"');
 		}
 	}
-
 }
 #endif
 
@@ -732,11 +723,7 @@ void shortcut_init(void)
 
 	currmenu = MMAIN;
 
-	while (sclist != NULL) {
-		sc *s = sclist;
-		sclist = s->next;
-		free(s);
-	}
+	empty_sclist();
 
 	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "^G", do_help_void, 0, TRUE);
 	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "F1", do_help_void, 0, TRUE);

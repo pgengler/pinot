@@ -196,7 +196,6 @@ void help_init(void)
 				 * full string is too long for the
 				 * compiler to handle. */
 	char *ptr;
-	const sc *s;
 	int scsfound = 0;
 
 	bool old_whitespace = ISSET(WHITESPACE_DISPLAY);
@@ -376,11 +375,11 @@ void help_init(void)
 	if (currmenu == MMAIN) {
 		size_t endis_len = strlen(_("enable/disable"));
 
-		for (s = sclist; s != NULL; s = s->next)
+		for (auto s : sclist) {
 			if (s->scfunc ==  do_toggle_void) {
 				allocsize += strlen(_(flagtostr(s->toggle))) + endis_len + 9;
 			}
-
+		}
 	}
 
 	/* help_text has been freed and set to NULL unless the user resized
@@ -416,8 +415,8 @@ void help_init(void)
 
 		/* Lets just try and use the first 3 shortcuts
 		   from the new struct... */
-		for (s = sclist, scsfound = 0; s != NULL; s = s->next) {
-
+		scsfound = 0;
+		for (auto s : sclist) {
 			if (scsfound == 3) {
 				continue;
 			}
@@ -456,7 +455,7 @@ void help_init(void)
 
 	/* And the toggles... */
 	if (currmenu == MMAIN) {
-		for (s = sclist; s != NULL; s = s->next) {
+		for (auto s : sclist) {
 			if (s->scfunc == do_toggle_void) {
 				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n", s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
 			}

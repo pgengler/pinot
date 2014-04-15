@@ -404,7 +404,7 @@ int check_bad_binding(sc *s)
 void parse_keybinding(char *ptr)
 {
 	char *keyptr = NULL, *keycopy = NULL, *funcptr = NULL, *menuptr = NULL;
-	sc *s, *newsc;
+	sc *newsc;
 	int i, menu;
 
 	assert(ptr != NULL);
@@ -474,21 +474,19 @@ void parse_keybinding(char *ptr)
 	/* now let's have some fun.  Try and delete the other entries
 	   we found for the same menu, then make this new new
 	   beginning */
-	for (s = sclist; s != NULL; s = s->next) {
+	for (auto s : sclist) {
 		if (((s->menu & newsc->menu)) && s->seq == newsc->seq) {
 			s->menu &= ~newsc->menu;
 			DEBUG_LOG("replaced menu entry " << s->menu);
 		}
 	}
-	newsc->next = sclist;
-	sclist = newsc;
+	sclist.push_back(newsc);
 }
 
 /* Let user unbind a sequence from a given (or all) menus */
 void parse_unbinding(char *ptr)
 {
 	char *keyptr = NULL, *keycopy = NULL, *menuptr = NULL;
-	sc *s;
 	int i, menu;
 
 	assert(ptr != NULL);
@@ -531,7 +529,7 @@ void parse_unbinding(char *ptr)
 	DEBUG_LOG("unbinding \"" << keycopy << "\" from menu = " << menu);
 
 	/* Now find the apropriate entries in the menu to delete */
-	for (s = sclist; s != NULL; s = s->next) {
+	for (auto s : sclist) {
 		if (((s->menu & menu)) && !strcmp(s->keystr,keycopy)) {
 			s->menu &= ~menu;
 			DEBUG_LOG("deleted menu entry " << s->menu);
