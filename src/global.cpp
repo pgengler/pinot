@@ -114,8 +114,6 @@ bool edit_refresh_needed = 0;
 /* Did a command mangle enough of the buffer refresh that we
    should repaint the screen */
 
-const shortcut *currshortcut;
-/* The current shortcut list we're using. */
 int currmenu;
 /* The currently loaded menu */
 

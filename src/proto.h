@@ -74,7 +74,6 @@ extern SyntaxMap syntaxes;
 extern char *syntaxstr;
 
 extern bool edit_refresh_needed;
-extern const shortcut *currshortcut;
 extern int currmenu;
 
 extern filestruct *search_history;
