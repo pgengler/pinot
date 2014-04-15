@@ -111,25 +111,6 @@ Key get_kbinput(WINDOW *win)
 	return key;
 }
 
-/* Return the equivalent arrow key value for the case-insensitive
- * letters A (up), B (down), C (right), and D (left).  These are common
- * to many escape sequences. */
-int get_escape_seq_abcd(int kbinput)
-{
-	switch (tolower(kbinput)) {
-	case 'a':
-		return sc_seq_or(do_up_void, 0);
-	case 'b':
-		return sc_seq_or(do_down_void, 0);
-	case 'c':
-		return sc_seq_or(do_right, 0);
-	case 'd':
-		return sc_seq_or(do_left, 0);
-	default:
-		return ERR;
-	}
-}
-
 /* Translate a byte sequence: turn a three-digit decimal number (from
  * 000 to 255) into its corresponding byte value. */
 int get_byte_kbinput(int kbinput)
