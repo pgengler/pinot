@@ -496,7 +496,6 @@ void dump_filestruct_reverse(void);
 
 /* All functions in winio.c. */
 Key get_kbinput(WINDOW *win);
-int get_escape_seq_kbinput(const int *seq, size_t seq_len);
 int get_escape_seq_abcd(int kbinput);
 int get_byte_kbinput(int kbinput);
 #ifdef ENABLE_UTF8
