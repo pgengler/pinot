@@ -681,7 +681,7 @@ void shortcut_init(void)
 
 	add_to_funcs(gototext_void, MGOTOLINE, gototext_msg, IFSCHELP(pinot_whereis_msg), TRUE, VIEW);
 
-	add_to_funcs(to_files_void, (MGOTOLINE|MINSERTFILE), to_files_msg, IFSCHELP(pinot_tofiles_msg), FALSE, VIEW);
+	add_to_funcs(to_files_void, MINSERTFILE, to_files_msg, IFSCHELP(pinot_tofiles_msg), FALSE, VIEW);
 
 	add_to_funcs(dos_format_void, MWRITEFILE, dos_format_msg, IFSCHELP(pinot_dos_msg), FALSE, NOVIEW);
 	add_to_funcs(mac_format_void, MWRITEFILE, mac_format_msg, IFSCHELP(pinot_mac_msg), FALSE, NOVIEW);
