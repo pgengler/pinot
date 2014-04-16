@@ -1423,8 +1423,6 @@ void precalc_multicolorinfo(void)
 		   message before starting this later if it takes
 		   too long to do this routine.  For now silently
 		   abort if they hit a key */
-		nodelay(edit, FALSE);
-
 		for (auto tmpcolor : openfile->colorstrings) {
 
 			/* If it's not a multi-line regex, amscray */
@@ -1437,7 +1435,6 @@ void precalc_multicolorinfo(void)
 				int startx = 0;
 				int nostart = 0;
 
-
 				DEBUG_LOG("working on lineno " << fileptr->lineno);
 
 				alloc_multidata_if_needed(fileptr);
@@ -1445,7 +1442,7 @@ void precalc_multicolorinfo(void)
 				if ((cur_check = time(NULL)) - last_check > 1) {
 					last_check = cur_check;
 					if (keyboard->has_input()) {
-						goto precalc_cleanup;
+						return;
 					}
 				}
 
@@ -1467,11 +1464,11 @@ void precalc_multicolorinfo(void)
 					for (endptr = fileptr->next; endptr != NULL; endptr = endptr->next) {
 
 						DEBUG_LOG("advancing to line " << endptr->lineno << " to find end...");
-						/* Check for keyboard input  again */
+						/* Check for keyboard input again */
 						if ((cur_check = time(NULL)) - last_check > 1) {
 							last_check = cur_check;
 							if (keyboard->has_input()) {
-								goto precalc_cleanup;
+								return;
 							}
 						}
 						if (regexec(tmpcolor->end, endptr->data, 1, &endmatch, 0) == 0) {
@@ -1513,8 +1510,6 @@ void precalc_multicolorinfo(void)
 			}
 		}
 	}
-precalc_cleanup:
-	nodelay(edit, FALSE);
 }
 
 /* The user typed output_len multibyte characters.  Add them to the edit
