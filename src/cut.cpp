@@ -165,10 +165,10 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 		if (cutbuffer != NULL) {
 			if (cb_save != NULL) {
 				cb_save->data += cb_save_len;
-				copy_from_filestruct(cb_save, cutbottom);
+				copy_from_filestruct(cb_save);
 				cb_save->data -= cb_save_len;
 			} else {
-				copy_from_filestruct(cutbuffer, cutbottom);
+				copy_from_filestruct(cutbuffer);
 			}
 
 			/* Set the current place we want to where the text from the
@@ -236,7 +236,7 @@ void do_uncut_text(void)
 
 	/* Add a copy of the text in the cutbuffer to the current filestruct
 	 * at the current cursor position. */
-	copy_from_filestruct(cutbuffer, cutbottom);
+	copy_from_filestruct(cutbuffer);
 
 	/* Set the current place we want to where the text from the
 	 * cutbuffer ends. */

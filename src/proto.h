@@ -287,7 +287,7 @@ void renumber(filestruct *fileptr);
 partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, size_t bot_x);
 void unpartition_filestruct(partition **p);
 void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct *top, size_t top_x, filestruct *bot, size_t bot_x);
-void copy_from_filestruct(filestruct *file_top, filestruct *file_bot);
+void copy_from_filestruct(filestruct *some_buffer);
 openfilestruct *make_new_opennode(void);
 void splice_opennode(openfilestruct *begin, openfilestruct *newnode, openfilestruct *end);
 void unlink_opennode(openfilestruct *fileptr);

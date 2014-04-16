@@ -355,7 +355,7 @@ void undo_cut(undo *u)
 		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
 	}
 
-	copy_from_filestruct(cutbuffer, cutbottom);
+	copy_from_filestruct(cutbuffer);
 	free_filestruct(cutbuffer);
 	cutbuffer = NULL;
 
@@ -641,7 +641,7 @@ void do_redo(void)
 	case INSERT:
 		undidmsg = _("text insert");
 		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
-		copy_from_filestruct(u->cutbuffer, u->cutbottom);
+		copy_from_filestruct(u->cutbuffer);
 		openfile->placewewant = xplustabs();
 		break;
 	default:
