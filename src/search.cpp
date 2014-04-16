@@ -160,7 +160,6 @@ int search_init(bool replacing, bool use_answer)
 	}
 
 	/* This is now one simple call.  It just does a lot. */
-DEBUG_LOG("Calling do_prompt...");
 	i = do_prompt(FALSE,
 	              TRUE,
 	              replacing ? MREPLACE : MWHEREIS, key, backupstring,
@@ -175,8 +174,6 @@ DEBUG_LOG("Calling do_prompt...");
 
 	fflush(stderr);
 
-DEBUG_LOG("do_prompt returned " << i);
-
 	/* Release buf now that we don't need it anymore. */
 	free(buf);
 
@@ -188,11 +185,8 @@ DEBUG_LOG("do_prompt returned " << i);
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-DEBUG_LOG("key == " << key);
 		const sc *s = key ? get_shortcut(currmenu, *key) : nullptr;
 		auto func = s ? s->scfunc : nullptr;
-
-DEBUG_LOG("func == " << (void *)func << " (case_sens_void == " << (void *)case_sens_void << ")");
 
 		if (i == -2 || i == 0) {
 			/* Use last_search if answer is an empty string, or
