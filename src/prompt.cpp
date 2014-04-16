@@ -713,7 +713,7 @@ void total_statusbar_refresh(void (*refresh_func)(void))
  * called from do_prompt(). */
 const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
-	std::shared_ptr<Key> kbinput;
+	std::shared_ptr<Key> kbinput, last_kbinput;
 	bool have_shortcut, ran_func, finished;
 	size_t curranswer_len;
 	const sc *s;
@@ -779,11 +779,9 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 
 		if (s && s->scfunc == do_tab) {
 			if (history_list != NULL) {
-/*
-				if (last_kbinput != sc_seq_or(do_tab, PINOT_CONTROL_I)) {
+				if (last_kbinput->format() != "Tab") {
 					complete_len = strlen(answer);
 				}
-*/
 
 				if (complete_len > 0) {
 					answer = mallocstrcpy(answer, get_history_completion(history_list, answer, complete_len));
@@ -869,6 +867,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 			break;
 		}
 
+		last_kbinput = kbinput;
 		reset_statusbar_cursor();
 		wnoutrefresh(bottomwin);
 	}
