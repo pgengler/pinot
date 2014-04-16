@@ -707,8 +707,6 @@ void shortcut_init(void)
 
 	add_to_funcs(goto_dir_void, MBROWSER, goto_dir_msg, IFSCHELP(pinot_gotodir_msg), FALSE, VIEW);
 
-	currmenu = MMAIN;
-
 	empty_sclist();
 
 	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "^G", do_help_void, 0, TRUE);
