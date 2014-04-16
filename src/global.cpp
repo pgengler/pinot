@@ -541,9 +541,7 @@ void shortcut_init(void)
 		delete f;
 	}
 
-	add_to_funcs(do_help_void,
-	             (MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER),
-	             get_help_msg, IFSCHELP(pinot_help_msg), FALSE, VIEW);
+	add_to_funcs(do_help_void, MMOST, get_help_msg, IFSCHELP(pinot_help_msg), FALSE, VIEW);
 
 	add_to_funcs(do_cancel,
 	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
@@ -709,8 +707,8 @@ void shortcut_init(void)
 
 	empty_sclist();
 
-	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "^G", do_help_void, 0, TRUE);
-	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "F1", do_help_void, 0, TRUE);
+	add_to_sclist(MMOST, "^G", do_help_void, 0, TRUE);
+	add_to_sclist(MMOST, "F1", do_help_void, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "^X", do_exit, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "F2", do_exit, 0, TRUE);
 	add_to_sclist(MMAIN, "^_", do_gotolinecolumn_void, 0, TRUE);
