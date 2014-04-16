@@ -840,7 +840,7 @@ void shortcut_init(void)
 	add_to_sclist(MWRITEFILE|MINSERTFILE, "^T", to_files_void, 0, FALSE);
 	add_to_sclist(MINSERTFILE, "^X", ext_cmd_void, 0, FALSE);
 	add_to_sclist(MMAIN, "^Z", do_suspend_void, 0, FALSE);
-	add_to_sclist(MMAIN, "^L", total_refresh, 0, TRUE);
+	add_to_sclist(MMAIN|MHELP, "^L", total_refresh, 0, TRUE);
 	add_to_sclist(MALL, "Tab", do_tab, 0, TRUE);
 	add_to_sclist(MALL, "Enter", do_enter_void, 0, TRUE);
 	add_to_sclist(MALL, "KPEnter", do_enter_void, 0, TRUE);
