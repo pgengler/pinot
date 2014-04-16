@@ -583,8 +583,8 @@ void shortcut_init(void)
 #endif
 	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), TRUE, NOVIEW);
 
-	add_to_funcs(do_first_line, (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), first_line_msg, IFSCHELP(pinot_firstline_msg), FALSE, VIEW);
-	add_to_funcs(do_last_line, (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), last_line_msg, IFSCHELP(pinot_lastline_msg), TRUE, VIEW);
+	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), first_line_msg, IFSCHELP(pinot_firstline_msg), FALSE, VIEW);
+	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), last_line_msg, IFSCHELP(pinot_lastline_msg), TRUE, VIEW);
 
 	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), go_to_line_msg, IFSCHELP(pinot_gotoline_msg), FALSE, VIEW);
 
@@ -784,10 +784,10 @@ void shortcut_init(void)
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-B", backwards_void, 0, FALSE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-R", regexp_void, 0, FALSE);
 
-	add_to_sclist(MMAIN, "M-\\", do_first_line, 0, TRUE);
-	add_to_sclist(MMAIN, "M-|", do_first_line, 0, TRUE);
-	add_to_sclist(MMAIN, "M-/", do_last_line, 0, TRUE);
-	add_to_sclist(MMAIN, "M-?", do_last_line, 0, TRUE);
+	add_to_sclist(MMAIN|MHELP, "M-\\", do_first_line, 0, TRUE);
+	add_to_sclist(MMAIN|MHELP, "M-|", do_first_line, 0, TRUE);
+	add_to_sclist(MMAIN|MHELP, "M-/", do_last_line, 0, TRUE);
+	add_to_sclist(MMAIN|MHELP, "M-?", do_last_line, 0, TRUE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MHELP, "^Y", do_first_line, 0, TRUE);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MHELP, "^V", do_last_line, 0, TRUE);
 

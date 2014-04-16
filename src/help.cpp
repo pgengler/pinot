@@ -149,17 +149,11 @@ void do_help(void (*refresh_func)(void))
 				line++;
 			}
 		} else if (f->scfunc == do_first_line) {
-			if (kbinput.has_meta_key()) {
-				line = 0;
-			}
-			break;
+			line = 0;
 		} else if (f->scfunc == do_last_line) {
-			if (kbinput.has_meta_key()) {
-				if (line + (editwinrows - 1) < last_line) {
-					line = last_line - (editwinrows - 1);
-				}
+			if (line + (editwinrows - 1) < last_line) {
+				line = last_line - (editwinrows - 1);
 			}
-			break;
 		} else if (f->scfunc == do_exit || key == "E" || key == "e") {
 			/* Abort the help browser. */
 			abort = TRUE;
