@@ -812,10 +812,6 @@ void usage(void)
 	print_opt("-z", "--suspend", N_("Enable suspension"));
 	print_opt("-$", "--softwrap", N_("Enable soft line wrapping"));
 
-	/* This is a special case. */
-	print_opt("-a, -b, -e,", "", NULL);
-	print_opt("-f, -g, -j", "", N_("(ignored, for Pico compatibility)"));
-
 	exit(0);
 }
 
@@ -1705,21 +1701,13 @@ int main(int argc, char **argv)
 
 	while ((optchr =
 #ifdef HAVE_GETOPT_LONG
-	            getopt_long(argc, argv, "h?ABC:DEFGHIKLNOPQ:RST:UVWY:abcdefgijklmo:pqr:s:tuvwxz$", long_options, NULL)
+	            getopt_long(argc, argv, "h?ABC:DEFGHIKLNOPQ:RST:UVWY:cdiklmo:pqr:s:tuvwxz$", long_options, NULL)
 #else
 	            getopt(argc, argv,
-	                   "h?ABC:DEFGHIKLNOPQ:RST:UVWY:abcdefgijklmo:pqr:s:tuvwxz$")
+	                   "h?ABC:DEFGHIKLNOPQ:RST:UVWY:cdiklmo:pqr:s:tuvwxz$")
 #endif
 	       ) != -1) {
 		switch (optchr) {
-		case 'a':
-		case 'b':
-		case 'e':
-		case 'f':
-		case 'g':
-		case 'j':
-			/* Pico compatibility flags. */
-			break;
 		case 'A':
 			SET(SMART_HOME);
 			break;
