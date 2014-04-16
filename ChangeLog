@@ -1,3 +1,16 @@
+0.0.6
+-----
+* Change to use libtermkey (http://www.leonerd.org.uk/code/libtermkey/) for keyboard input, instead of ncurses.
+* Allow relative line movement with "go to line" feature (by prefixing amount with + or -).
+* Always build with file browser enabled (removed --disable-browser option to configure).
+* Remove mouse support (which never worked that well anyway).
+* Remove "restricted mode".
+* Remove text justification support.
+* Use C++ ostream for debug logging.
+* Incorporate various fixes/changes from 'nano', including:
+  * Support file globs (wildcards) with "include" directory in pinotrc files.
+  * Add syntax highlighting for "Go" language.
+
 0.0.5
 -----
 * Add "linter" option to rcfile and reuse ^T (speller) shortcut to run lint
