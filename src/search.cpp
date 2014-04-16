@@ -124,7 +124,6 @@ void search_init_globals(void)
  * from do_search(). */
 int search_init(bool replacing, bool use_answer)
 {
-	int i = 0;
 	std::shared_ptr<Key> key;
 	char *buf;
 	static char *backupstring = NULL;
@@ -160,7 +159,7 @@ int search_init(bool replacing, bool use_answer)
 	}
 
 	/* This is now one simple call.  It just does a lot. */
-	i = do_prompt(FALSE,
+	PromptResult i = do_prompt(FALSE,
 	              TRUE,
 	              replacing ? MREPLACE : MWHEREIS, key, backupstring,
 	              &search_history,
@@ -181,20 +180,19 @@ int search_init(bool replacing, bool use_answer)
 	backupstring = NULL;
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == -1 || (i < 0 && *last_search == '\0') || (!replacing && i == 0 && *answer == '\0')) {
+	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && *last_search == '\0') || (!replacing && i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
 		const sc *s = key ? get_shortcut(currmenu, *key) : nullptr;
 		auto func = s ? s->scfunc : nullptr;
 
-		if (i == -2 || i == 0) {
+		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
 			/* Use last_search if answer is an empty string, or
 			 * answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == -2) ? last_search : answer)) {
+			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search : answer)) {
 				return -1;
 			}
-			;
 		} else if (func == case_sens_void) {
 			TOGGLE(CASE_SENSITIVE);
 			backupstring = mallocstrcpy(backupstring, answer);
@@ -791,7 +789,6 @@ void do_replace(void)
 	filestruct *edittop_save, *begin;
 	size_t begin_x, pww_save;
 	ssize_t numreplaced;
-	int i;
 
 	if (ISSET(VIEW_MODE)) {
 		print_view_warning();
@@ -799,21 +796,21 @@ void do_replace(void)
 		return;
 	}
 
-	i = search_init(TRUE, FALSE);
-	if (i == -1) {
+	int search_i = search_init(TRUE, FALSE);
+	if (search_i == -1) {
 		/* Cancel, Go to Line, blank search string, or regcomp() failed. */
 		search_replace_abort();
 		return;
-	} else if (i == -2) {
+	} else if (search_i == -2) {
 		/* No Replace. */
 		do_search();
 		return;
-	} else if (i == 1) {
+	} else if (search_i == 1) {
 		/* Case Sensitive, Backwards, or Regexp search toggle. */
 		do_replace();
 	}
 
-	if (i != 0) {
+	if (search_i != 0) {
 		return;
 	}
 
@@ -827,7 +824,7 @@ void do_replace(void)
 	last_replace = mallocstrcpy(last_replace, "");
 
 	std::shared_ptr<Key> key;
-	i = do_prompt(FALSE,
+	PromptResult i = do_prompt(FALSE,
 	              TRUE,
 	              MREPLACE2, key, last_replace,
 	              &replace_history,
@@ -835,12 +832,12 @@ void do_replace(void)
 
 	/* Add this replace string to the replace history list.  i == 0
 	 * means that the string is not "". */
-	if (i == 0) {
+	if (i == PROMPT_ENTER_PRESSED) {
 		update_history(&replace_history, answer);
 	}
 
-	if (i != 0 && i != -2) {
-		if (i == -1) {		/* Cancel. */
+	if (i != PROMPT_ENTER_PRESSED && i != PROMPT_BLANK_STRING) {
+		if (i == PROMPT_ABORTED) {  /* Cancel. */
 			if (last_replace[0] != '\0') {
 				answer = mallocstrcpy(answer, last_replace);
 			}
@@ -892,7 +889,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 
 		/* Ask for the line and column. */
 		std::shared_ptr<Key> key;
-		int i = do_prompt(FALSE,
+		PromptResult i = do_prompt(FALSE,
 		                  TRUE,
 		                  MGOTOLINE, key, use_answer ? ans : "",
 		                  NULL,
@@ -901,7 +898,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 		free(ans);
 
 		/* Cancel, or Enter with blank string. */
-		if (i < 0) {
+		if (i == PROMPT_BLANK_STRING || i == PROMPT_ABORTED) {
 			statusbar(_("Cancelled"));
 			display_main_list();
 			return;

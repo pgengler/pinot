@@ -1559,7 +1559,7 @@ bool do_int_spell_fix(const char *word)
 
 			/* Allow all instances of the word to be corrected. */
 			std::shared_ptr<Key> key;
-			canceled = (do_prompt(FALSE, TRUE, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == -1);
+			canceled = (do_prompt(FALSE, TRUE, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == PROMPT_ABORTED);
 
 			do_replace_highlight(FALSE, exp_word);
 

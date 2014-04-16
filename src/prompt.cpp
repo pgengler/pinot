@@ -919,10 +919,10 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
-	int retval = 0;
+	PromptResult retval;
 	const sc *s;
 	bool list = FALSE;
 
@@ -952,11 +952,11 @@ int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>&
 
 	/* If we left the prompt via Cancel or Enter, set the return value properly. */
 	if (s && s->scfunc ==  do_cancel) {
-		retval = -1;
+		retval = PROMPT_ABORTED;
 	} else if (s && s->scfunc == do_enter_void) {
-		retval = (*answer == '\0') ? -2 : 0;
+		retval = (*answer == '\0') ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
 	} else {
-		retval = 1;
+		retval = PROMPT_OTHER_KEY;
 	}
 
 	blank_statusbar();
@@ -988,9 +988,10 @@ void do_prompt_abort(void)
 /* Ask a simple Yes/No (and optionally All) question, specified in msg,
  * on the statusbar.  Return 1 for Yes, 0 for No, 2 for All (if all is
  * TRUE when passed in), and -1 for Cancel. */
-int do_yesno_prompt(bool all, const char *msg)
+YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 {
-	int ok = -2, width = 16;
+	YesNoPromptResult ok = YESNO_PROMPT_UNKNOWN;
+	int width = 16;
 	const char *yesstr;		/* String of Yes characters accepted. */
 	const char *nostr;		/* Same for No. */
 	const char *allstr;		/* And All, surprise! */
@@ -1057,21 +1058,21 @@ int do_yesno_prompt(bool all, const char *msg)
 		std::string input(kbinput);
 
 		if (s && s->scfunc ==  do_cancel) {
-			ok = -1;
+			ok = YESNO_PROMPT_ABORTED;
 		} else if  (s && s->scfunc == total_refresh) {
 			total_redraw();
 			continue;
 		} else {
 			/* Look for the kbinput in the Yes, No and (optionally) All strings. */
 			if (input.find_first_of(yesstr) != std::string::npos) {
-				ok = 1;
+				ok = YESNO_PROMPT_YES;
 			} else if (input.find_first_of(nostr) != std::string::npos) {
-				ok = 0;
+				ok = YESNO_PROMPT_NO;
 			} else if (all && input.find_first_of(allstr) != std::string::npos) {
-				ok = 2;
+				ok = YESNO_PROMPT_ALL;
 			}
 		}
-	} while (ok == -2);
+	} while (ok == YESNO_PROMPT_UNKNOWN);
 
 	currmenu = oldmenu;
 	return ok;

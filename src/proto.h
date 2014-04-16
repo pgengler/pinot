@@ -354,9 +354,9 @@ void update_statusbar_line(const char *curranswer, size_t index);
 bool need_statusbar_horizontal_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
 const sc *get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
-int do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
-int do_yesno_prompt(bool all, const char *msg);
+YesNoPromptResult do_yesno_prompt(bool all, const char *msg);
 
 /* All functions in rcfile.c. */
 void rcfile_error(const char *msg, ...);

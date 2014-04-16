@@ -152,6 +152,14 @@ typedef enum {
 	ADD, DEL, REPLACE, SPLIT, UNSPLIT, CUT, UNCUT, ENTER, INSERT, OTHER
 } undo_type;
 
+typedef enum {
+	PROMPT_BLANK_STRING = -2, PROMPT_ABORTED, PROMPT_ENTER_PRESSED, PROMPT_OTHER_KEY
+} PromptResult;
+
+typedef enum {
+	YESNO_PROMPT_ABORTED = -1, YESNO_PROMPT_NO, YESNO_PROMPT_YES, YESNO_PROMPT_ALL, YESNO_PROMPT_UNKNOWN = 255
+} YesNoPromptResult;
+
 #include "syntax.h"
 
 /* Structure types. */

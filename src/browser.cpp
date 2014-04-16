@@ -104,7 +104,6 @@ change_browser_directory:
 
 	while (!abort) {
 		struct stat st;
-		int i;
 		size_t fileline = selected / width;
 		/* The line number the selected file is on. */
 		char *new_path;
@@ -175,7 +174,7 @@ change_browser_directory:
 			curs_set(1);
 
 			std::shared_ptr<Key> key;
-			i = do_prompt(TRUE,
+			PromptResult i = do_prompt(TRUE,
 			              FALSE,
 			              MGOTODIR, key, ans,
 			              NULL,
@@ -186,14 +185,14 @@ change_browser_directory:
 
 			/* If the directory begins with a newline (i.e. an
 			 * encoded null), treat it as though it's blank. */
-			if (i < 0 || *answer == '\n') {
+			if (i == PROMPT_ABORTED || i == PROMPT_BLANK_STRING || *answer == '\n') {
 				/* We canceled.  Indicate that on the statusbar, and
 				 * blank out ans, since we're done with it. */
 				statusbar(_("Cancelled"));
 				ans = mallocstrcpy(ans, "");
 				func = nullptr;
 				continue;
-			} else if (i != 0) {
+			} else if (i != PROMPT_ENTER_PRESSED) {
 				/* Put back the "Go to Directory" key and save
 				 * answer in ans, so that the file list is displayed
 				 * again, the prompt is displayed again, and what we
@@ -659,7 +658,6 @@ bool browser_select_filename(const char *needle)
  * program. */
 int filesearch_init(void)
 {
-	int i = 0;
 	char *buf;
 	const sc *s;
 	static char *backupstring = NULL;
@@ -691,7 +689,7 @@ int filesearch_init(void)
 
 	/* This is now one simple call.  It just does a lot. */
 	std::shared_ptr<Key> key;
-	i = do_prompt(FALSE,
+	PromptResult i = do_prompt(FALSE,
 	              TRUE,
 	              MWHEREISFILE, key, backupstring,
 	              &search_history,
@@ -714,15 +712,15 @@ int filesearch_init(void)
 	backupstring = NULL;
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == -1 || (i < 0 && *last_search == '\0') || (i == 0 && *answer == '\0')) {
+	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && *last_search == '\0') || (i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
 		s = get_shortcut(MBROWSER, *key);
-		if (i == -2 || i == 0) {
+		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
 			/* Use last_search if answer is an empty string, or
 			 * answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == -2) ? last_search : answer)) {
+			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search : answer)) {
 				return -1;
 			}
 		} else if (s && s->scfunc == case_sens_void) {

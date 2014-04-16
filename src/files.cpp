@@ -930,7 +930,7 @@ char *get_next_filename(const char *name, const char *suffix)
  * process's exit code shown). */
 void do_execute_command()
 {
-	int i, status;
+	int status;
 	std::shared_ptr<Key> key;
 	char statusbartext[50];
 	const char *msg;
@@ -941,10 +941,10 @@ void do_execute_command()
 	while (TRUE) {
 		msg = _("Command to execute (no output) [from %s]");
 
-		i = do_prompt(TRUE, TRUE, MEXTCMD, key, ans, NULL, edit_refresh, msg, "./");
+		PromptResult i = do_prompt(TRUE, TRUE, MEXTCMD, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* Cancel if the command was empty or the user cancelled */
-		if (i == -1 || (i == -2 || *answer == '\n')) {
+		if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING || *answer == '\n')) {
 			statusbar(_("Cancelled"));
 			break;
 		} else {
@@ -962,12 +962,8 @@ void do_execute_command()
 				/* User selected a file */
 				free(answer);
 				answer = tmp;
-
-				i = 0;
-			}
-
-			/* If we don't have a file yet, go back to the prompt. */
-			if (i != 0) {
+			} else {
+				/* If we don't have a file yet, go back to the prompt. */
 				continue;
 			}
 
@@ -1009,7 +1005,6 @@ void do_execute_command()
  * output of an executed command instead of a file. */
 void do_insertfile(bool execute)
 {
-	int i;
 	const char *msg;
 	char *ans = mallocstrcpy(NULL, "");
 	/* The last answer the user typed at the statusbar prompt. */
@@ -1030,13 +1025,13 @@ void do_insertfile(bool execute)
 		}
 
 		std::shared_ptr<Key> key;
-		i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, key, ans, NULL, edit_refresh, msg, "./");
+		PromptResult i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* If we're in multibuffer mode and the filename or command is
 		 * blank, open a new buffer instead of canceling.  If the
 		 * filename or command begins with a newline (i.e. an encoded
 		 * null), treat it as though it's blank. */
-		if (i == -1 || ((i == -2 || *answer == '\n') && !ISSET(MULTIBUFFER))) {
+		if (i == PROMPT_ABORTED || ((i == PROMPT_BLANK_STRING || *answer == '\n') && !ISSET(MULTIBUFFER))) {
 			statusbar(_("Cancelled"));
 			break;
 		} else {
@@ -1067,12 +1062,12 @@ void do_insertfile(bool execute)
 					free(answer);
 					answer = tmp;
 
-					i = 0;
+					i = PROMPT_ENTER_PRESSED;
 				}
 			}
 
 			/* If we don't have a file yet, go back to the statusbar prompt. */
-			if (i != 0 && (i != -2 || !ISSET(MULTIBUFFER))) {
+			if (i != PROMPT_ENTER_PRESSED && (i != PROMPT_BLANK_STRING || !ISSET(MULTIBUFFER))) {
 				continue;
 			}
 
@@ -2015,7 +2010,6 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
  * TEMP_FILE flag is set.  Return TRUE on success or FALSE on error. */
 bool do_writeout(bool exiting)
 {
-	int i;
 	append_type append = OVERWRITE;
 	char *ans;
 	/* The last answer the user typed at the statusbar prompt. */
@@ -2055,7 +2049,7 @@ bool do_writeout(bool exiting)
 		}
 
 		std::shared_ptr<Key> key;
-		i = do_prompt(TRUE,
+		PromptResult i = do_prompt(TRUE,
 		              TRUE,
 		              MWRITEFILE, key, ans,
 		              NULL,
@@ -2065,7 +2059,7 @@ bool do_writeout(bool exiting)
 
 		/* If the filename or command begins with a newline (i.e. an
 		 * encoded null), treat it as though it's blank. */
-		if (i < 0 || *answer == '\n') {
+		if (i == PROMPT_ABORTED || i == PROMPT_BLANK_STRING || *answer == '\n') {
 			statusbar(_("Cancelled"));
 			retval = FALSE;
 			break;
@@ -2139,13 +2133,13 @@ bool do_writeout(bool exiting)
 
 				if (do_warning) {
 					if (name_exists) {
-						i = do_yesno_prompt(FALSE, _("File exists, OVERWRITE ? "));
-						if (i == 0 || i == -1) {
+						YesNoPromptResult prompt_result = do_yesno_prompt(FALSE, _("File exists, OVERWRITE ? "));
+						if (prompt_result == YESNO_PROMPT_NO || prompt_result == YESNO_PROMPT_ABORTED) {
 							continue;
 						}
 					} else if (exiting || !openfile->mark_set) {
-						i = do_yesno_prompt(FALSE, _("Save file under DIFFERENT NAME ? "));
-						if (i == 0 || i == -1) {
+						YesNoPromptResult prompt_result = do_yesno_prompt(FALSE, _("Save file under DIFFERENT NAME ? "));
+						if (prompt_result == YESNO_PROMPT_NO || prompt_result == YESNO_PROMPT_ABORTED) {
 							continue;
 						}
 					}
@@ -2154,8 +2148,8 @@ bool do_writeout(bool exiting)
 				    stat information we had before does not match what we have now */
 				else if (name_exists && openfile->current_stat && (openfile->current_stat->st_mtime < st.st_mtime ||
 				         openfile->current_stat->st_dev != st.st_dev || openfile->current_stat->st_ino != st.st_ino)) {
-					i = do_yesno_prompt(FALSE, _("File was modified since you opened it, continue saving ? "));
-					if (i == 0 || i == -1) {
+					YesNoPromptResult prompt_result = do_yesno_prompt(FALSE, _("File was modified since you opened it, continue saving ? "));
+					if (prompt_result == YESNO_PROMPT_NO || prompt_result == YESNO_PROMPT_ABORTED) {
 						continue;
 					}
 				}
