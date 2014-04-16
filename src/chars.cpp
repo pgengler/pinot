@@ -214,7 +214,7 @@ char control_rep(char c)
 	/* Treat newlines embedded in a line as encoded nulls. */
 	if (c == '\n') {
 		return '@';
-	} else if (c == PINOT_CONTROL_8) {
+	} else if (c == 127) {
 		return '?';
 	} else {
 		return c + 64;
@@ -231,7 +231,7 @@ wchar_t control_wrep(wchar_t wc)
 	/* Treat newlines embedded in a line as encoded nulls. */
 	if (wc == '\n') {
 		return '@';
-	} else if (wc == PINOT_CONTROL_8) {
+	} else if (wc == 127) {
 		return '?';
 	} else {
 		return wc + 64;
