@@ -536,7 +536,6 @@ int strtomenu(char *input);
 void assign_keyinfo(sc *s);
 void xon_complaint(void);
 void xoff_complaint(void);
-int sc_seq_or (void (*func)(void), int defaultval);
 void do_suspend_void(void);
 
 void enable_nodelay(void);

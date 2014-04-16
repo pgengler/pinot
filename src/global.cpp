@@ -336,20 +336,6 @@ void empty_sclist(void)
 	}
 }
 
-/* Return the given menu's first shortcut sequence, or the default value
-  (2nd arg).  Assumes currmenu for the menu to check */
-int sc_seq_or(void (*func)(void), int defaultval)
-{
-	const sc *s = first_sc_for(currmenu, func);
-
-	if (s) {
-		return s->seq;
-	}
-	/* else */
-	return defaultval;
-
-}
-
 /* Assign the info to the shortcut struct
    Assumes keystr is already assigned, naturally */
 void assign_keyinfo(sc *s)
