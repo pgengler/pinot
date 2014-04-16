@@ -826,7 +826,7 @@ void do_replace(void)
 	std::shared_ptr<Key> key;
 	PromptResult i = do_prompt(FALSE,
 	              TRUE,
-	              MREPLACE2, key, last_replace,
+	              MREPLACEWITH, key, last_replace,
 	              &replace_history,
 	              edit_refresh, _("Replace with"));
 

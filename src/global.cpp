@@ -542,11 +542,11 @@ void shortcut_init(void)
 	}
 
 	add_to_funcs(do_help_void,
-	             (MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER),
+	             (MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER),
 	             get_help_msg, IFSCHELP(pinot_help_msg), FALSE, VIEW);
 
 	add_to_funcs(do_cancel,
-	              (MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
+	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
 	              cancel_msg, IFSCHELP(pinot_cancel_msg), FALSE, VIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
@@ -583,8 +583,8 @@ void shortcut_init(void)
 #endif
 	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), TRUE, NOVIEW);
 
-	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), first_line_msg, IFSCHELP(pinot_firstline_msg), FALSE, VIEW);
-	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE), last_line_msg, IFSCHELP(pinot_lastline_msg), TRUE, VIEW);
+	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), first_line_msg, IFSCHELP(pinot_firstline_msg), FALSE, VIEW);
+	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), last_line_msg, IFSCHELP(pinot_lastline_msg), TRUE, VIEW);
 
 	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), go_to_line_msg, IFSCHELP(pinot_gotoline_msg), FALSE, VIEW);
 
@@ -644,7 +644,7 @@ void shortcut_init(void)
 	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), IFSCHELP(pinot_nextfile_msg), TRUE, VIEW);
 
 	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim Input"), IFSCHELP(pinot_verbatim_msg), FALSE, NOVIEW);
-	add_to_funcs(do_verbatim_input, MWHEREIS|MREPLACE|MREPLACE2|MEXTCMD|MSPELL, "", "", FALSE, NOVIEW);
+	add_to_funcs(do_verbatim_input, MWHEREIS|MREPLACE|MREPLACEWITH|MEXTCMD|MSPELL, "", "", FALSE, NOVIEW);
 
 	add_to_funcs(do_tab, MMAIN, N_("Tab"), IFSCHELP(pinot_tab_msg), FALSE, NOVIEW);
 	add_to_funcs(do_tab, MMOST, "", "", FALSE, NOVIEW);
@@ -673,9 +673,9 @@ void shortcut_init(void)
 
 	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE|MWHEREISFILE), regexp_msg, IFSCHELP(pinot_regexp_msg), FALSE, VIEW);
 
-	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE), prev_history_msg, IFSCHELP(pinot_prev_history_msg), FALSE, VIEW);
+	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), prev_history_msg, IFSCHELP(pinot_prev_history_msg), FALSE, VIEW);
 
-	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE), next_history_msg, IFSCHELP(pinot_next_history_msg), FALSE, VIEW);
+	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), next_history_msg, IFSCHELP(pinot_next_history_msg), FALSE, VIEW);
 
 	add_to_funcs(no_replace_void, MREPLACE, no_replace_msg, IFSCHELP(pinot_whereis_msg), FALSE, VIEW);
 
@@ -709,8 +709,8 @@ void shortcut_init(void)
 
 	empty_sclist();
 
-	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "^G", do_help_void, 0, TRUE);
-	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "F1", do_help_void, 0, TRUE);
+	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "^G", do_help_void, 0, TRUE);
+	add_to_sclist(MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER, "F1", do_help_void, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "^X", do_exit, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "F2", do_exit, 0, TRUE);
 	add_to_sclist(MMAIN, "^_", do_gotolinecolumn_void, 0, TRUE);
@@ -776,20 +776,20 @@ void shortcut_init(void)
 	add_to_sclist(MMOST, "Home", do_home, 0, TRUE);
 	add_to_sclist(MMOST, "^E", do_end, 0, TRUE);
 	add_to_sclist(MMOST, "End", do_end, 0, TRUE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^P", get_history_older_void, 0, FALSE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "Up", get_history_older_void, 0, FALSE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "^N", get_history_newer_void, 0, FALSE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MWHEREISFILE, "Down", get_history_newer_void, 0, FALSE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-C", case_sens_void, 0, FALSE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-B", backwards_void, 0, FALSE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2, "M-R", regexp_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^P", get_history_older_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Up", get_history_older_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^N", get_history_newer_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Down", get_history_newer_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH, "M-C", case_sens_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH, "M-B", backwards_void, 0, FALSE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH, "M-R", regexp_void, 0, FALSE);
 
 	add_to_sclist(MMAIN|MHELP, "M-\\", do_first_line, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP, "M-|", do_first_line, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP, "M-/", do_last_line, 0, TRUE);
 	add_to_sclist(MMAIN|MHELP, "M-?", do_last_line, 0, TRUE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MHELP, "^Y", do_first_line, 0, TRUE);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MHELP, "^V", do_last_line, 0, TRUE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MHELP, "^Y", do_first_line, 0, TRUE);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MHELP, "^V", do_last_line, 0, TRUE);
 
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-\\", do_first_file, 0, TRUE);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-|", do_first_file, 0, TRUE);
@@ -831,7 +831,7 @@ void shortcut_init(void)
 	add_to_sclist(MHELP, "^G", do_exit, 0, TRUE);
 	add_to_sclist(MGOTOLINE, "^T",  gototext_void, 0, FALSE);
 	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F", new_buffer_void, 0, FALSE);
-	add_to_sclist((MWHEREIS|MREPLACE|MREPLACE2|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER), "^C", do_cancel, 0, FALSE);
+	add_to_sclist((MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER), "^C", do_cancel, 0, FALSE);
 	add_to_sclist(MWRITEFILE, "M-D", dos_format_void, 0, FALSE);
 	add_to_sclist(MWRITEFILE, "M-M", mac_format_void, 0, FALSE);
 	add_to_sclist(MWRITEFILE, "M-A", append_void, 0, FALSE);
@@ -1155,7 +1155,7 @@ int strtomenu(char *input)
 	} else if (!strcasecmp(input, "replace")) {
 		return MREPLACE;
 	} else if (!strcasecmp(input, "replace2") || !strcasecmp(input, "replacewith")) {
-		return MREPLACE2;
+		return MREPLACEWITH;
 	} else if (!strcasecmp(input, "gotoline")) {
 		return MGOTOLINE;
 	} else if (!strcasecmp(input, "writeout")) {

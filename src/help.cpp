@@ -192,7 +192,7 @@ void help_init(void)
 	UNSET(WHITESPACE_DISPLAY);
 
 	/* First, set up the initial help text for the current function. */
-	if (currmenu == MWHEREIS || currmenu == MREPLACE || currmenu == MREPLACE2) {
+	if (currmenu == MWHEREIS || currmenu == MREPLACE || currmenu == MREPLACEWITH) {
 		htx[0] = N_("Search Command Help Text\n\n "
 		            "Enter the words or characters you would like to "
 		            "search for, and then press Enter.  If there is a "
