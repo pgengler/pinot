@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "macros.h"
 
 #ifdef HAVE_CONFIG_H

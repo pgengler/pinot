@@ -222,11 +222,12 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 char *real_dir_from_tilde(const char *buf);
+bool sort_directories(const std::string& a, const std::string& b);
 int diralphasort(const void *va, const void *vb);
 void free_chararray(char **array, size_t len);
 bool is_dir(const char *buf);
-char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_len);
-char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches, size_t buf_len);
+std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len);
+std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 const char *tail(const char *foo);
 char *histfilename(void);

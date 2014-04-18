@@ -22,6 +22,8 @@
 
 #include "proto.h"
 
+#include <algorithm>
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -2232,6 +2234,26 @@ char *real_dir_from_tilde(const char *buf)
 
 /* Our sort routine for file listings.  Sort alphabetically and
  * case-insensitively, and sort directories before filenames. */
+bool sort_directories(const std::string& a, const std::string& b)
+{
+	struct stat fileinfo;
+	bool a_is_dir = (stat(a.c_str(), &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
+	bool b_is_dir = (stat(b.c_str(), &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
+
+	if (a_is_dir && !b_is_dir) {
+		return true;
+	}
+	if (!a_is_dir && b_is_dir) {
+		return false;
+	}
+
+	if (a < b) {
+		return true;
+	}
+
+	return false;
+}
+
 int diralphasort(const void *va, const void *vb)
 {
 	struct stat fileinfo;
@@ -2302,26 +2324,20 @@ bool is_dir(const char *buf)
  * This code is 'as is' with no warranty.
  * This code may safely be consumed by a BSD or GPL license. */
 
-/* We consider the first buf_len characters of buf for ~username tab
- * completion. */
-char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_len)
+/* We consider the first buf_len characters of buf for ~username tab completion. */
+std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len)
 {
-	char **matches = NULL;
 	const struct passwd *userdata;
+	std::vector<std::string> matches;
 
-	assert(buf != NULL && num_matches != NULL && buf_len > 0);
-
-	*num_matches = 0;
+	assert(buf != NULL && buf_len > 0);
 
 	while ((userdata = getpwent()) != NULL) {
 		if (strncmp(userdata->pw_name, buf + 1, buf_len - 1) == 0) {
 			/* Cool, found a match.  Add it to the list.  This makes a
 			 * lot more sense to me (Chris) this way... */
 
-			matches = (char **)nrealloc(matches, (*num_matches + 1) * sizeof(char *));
-			matches[*num_matches] = charalloc(strlen(userdata->pw_name) + 2);
-			sprintf(matches[*num_matches], "~%s", userdata->pw_name);
-			++(*num_matches);
+			matches.push_back(std::string("~") + std::string(userdata->pw_name));
 		}
 	}
 	endpwent();
@@ -2329,19 +2345,17 @@ char **username_tab_completion(const char *buf, size_t *num_matches, size_t buf_
 	return matches;
 }
 
-/* We consider the first buf_len characters of buf for filename tab
- * completion. */
-char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches, size_t buf_len)
+/* We consider the first buf_len characters of buf for filename tab completion. */
+std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len)
 {
 	char *dirname = mallocstrcpy(NULL, buf), *filename;
 	size_t filenamelen;
-	char **matches = NULL;
 	DIR *dir;
 	const struct dirent *nextdir;
+	std::vector<std::string> matches;
 
-	assert(dirname != NULL && num_matches != NULL);
+	assert(dirname != NULL);
 
-	*num_matches = 0;
 	null_at(&dirname, buf_len);
 
 	/* Okie, if there's a / in the buffer, strip out the directory part. */
@@ -2368,7 +2382,7 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches
 		beep();
 		free(filename);
 		free(dirname);
-		return NULL;
+		return matches;
 	}
 
 	filenamelen = strlen(filename);
@@ -2376,7 +2390,7 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches
 	while ((nextdir = readdir(dir)) != NULL) {
 		bool skip_match = FALSE;
 
-		DEBUG_LOG("Comparing \'" << nextdir->d_name << "\'");
+		DEBUG_LOG("Comparing name '" << nextdir->d_name << "' against given partial filname '" << buf << "'");
 		/* See if this matches. */
 		if (strncmp(nextdir->d_name, filename, filenamelen) == 0 &&
 		        (*filename == '.' || (strcmp(nextdir->d_name, ".") !=
@@ -2399,9 +2413,7 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches
 				continue;
 			}
 
-			matches = (char **)nrealloc(matches, (*num_matches + 1) * sizeof(char *));
-			matches[*num_matches] = mallocstrcpy(NULL, nextdir->d_name);
-			++(*num_matches);
+			matches.push_back(std::string(nextdir->d_name));
 		}
 	}
 
@@ -2417,8 +2429,8 @@ char **cwd_tab_completion(const char *buf, bool allow_files, size_t *num_matches
  * call to refresh the edit window. */
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
 {
-	size_t num_matches = 0, buf_len;
-	char **matches = NULL;
+	size_t buf_len;
+	std::vector<std::string> matches;
 
 	assert(buf != NULL && place != NULL && *place <= strlen(buf) && lastwastab != NULL && refresh_func != NULL && list != NULL);
 
@@ -2430,21 +2442,21 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 		const char *bob = strchr(buf, '/');
 
 		if (bob == NULL || bob >= buf + *place) {
-			matches = username_tab_completion(buf, &num_matches, *place);
+			matches = username_tab_completion(buf, *place);
 		}
 	}
 
 	/* Match against files relative to the current working directory. */
-	if (matches == NULL) {
-		matches = cwd_tab_completion(buf, allow_files, &num_matches, *place);
+	if (matches.size() == 0) {
+		matches = cwd_tab_completion(buf, allow_files, *place);
 	}
 
 	buf_len = strlen(buf);
 
-	if (num_matches == 0 || *place != buf_len) {
+	if (matches.size() == 0 || *place != buf_len) {
 		beep();
 	} else {
-		size_t match, common_len = 0;
+		size_t common_len = 0;
 		char *mzero;
 		const char *lastslash = revstrstr(buf, "/", buf + *place);
 		size_t lastslash_len = (lastslash == NULL) ? 0 : lastslash - buf + 1;
@@ -2453,11 +2465,12 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 		int match1_mb_len, match2_mb_len;
 
 		while (TRUE) {
-			for (match = 1; match < num_matches; match++) {
+			size_t match;
+			for (match = 1; match < matches.size(); match++) {
 				/* Get the number of single-byte characters that all the
 				 * matches have in common. */
-				match1_mb_len = parse_mbchar(matches[0] + common_len, match1_mb, NULL);
-				match2_mb_len = parse_mbchar(matches[match] + common_len, match2_mb, NULL);
+				match1_mb_len = parse_mbchar(matches[0].c_str() + common_len, match1_mb, NULL);
+				match2_mb_len = parse_mbchar(matches[match].c_str() + common_len, match2_mb, NULL);
 				match1_mb[match1_mb_len] = '\0';
 				match2_mb[match2_mb_len] = '\0';
 				if (strcmp(match1_mb, match2_mb) != 0) {
@@ -2465,7 +2478,7 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 				}
 			}
 
-			if (match < num_matches || matches[0][common_len] == '\0') {
+			if (match < matches.size() || matches[0][common_len] == '\0') {
 				break;
 			}
 
@@ -2478,20 +2491,20 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 		mzero = charalloc(lastslash_len + common_len + 1);
 
 		strncpy(mzero, buf, lastslash_len);
-		strncpy(mzero + lastslash_len, matches[0], common_len);
+		strncpy(mzero + lastslash_len, matches[0].c_str(), common_len);
 
 		common_len += lastslash_len;
 		mzero[common_len] = '\0';
 
 		assert(common_len >= *place);
 
-		if (num_matches == 1 && is_dir(mzero)) {
+		if (matches.size() == 1 && is_dir(mzero)) {
 			mzero[common_len++] = '/';
 
 			assert(common_len > *place);
 		}
 
-		if (num_matches > 1 && (common_len != *place || !*lastwastab)) {
+		if (matches.size() > 1 && (common_len != *place || !*lastwastab)) {
 			beep();
 		}
 
@@ -2505,19 +2518,19 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			charmove(buf + common_len, buf + *place, buf_len - *place + 1);
 			strncpy(buf, mzero, common_len);
 			*place = common_len;
-		} else if (!*lastwastab || num_matches < 2) {
+		} else if (!*lastwastab || matches.size() < 2) {
 			*lastwastab = TRUE;
 		} else {
 			int longest_name = 0, ncols, editline = 0;
 
 			/* Now we show a list of the available choices. */
-			assert(num_matches > 1);
+			assert(matches.size() > 1);
 
 			/* Sort the list. */
-			qsort(matches, num_matches, sizeof(char *), diralphasort);
+			std::sort(matches.begin(), matches.end(), sort_directories);
 
-			for (match = 0; match < num_matches; match++) {
-				common_len = strnlenpt(matches[match], COLS - 1);
+			for (auto match : matches) {
+				common_len = strnlenpt(match.c_str(), COLS - 1);
 
 				if (common_len > COLS - 1) {
 					longest_name = COLS - 1;
@@ -2543,17 +2556,17 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			/* Disable el cursor. */
 			curs_set(0);
 
-			for (match = 0; match < num_matches; match++) {
+			for (size_t match = 0; match < matches.size(); match++) {
 				char *disp;
 
 				wmove(edit, editline, (longest_name + 2) * (match % ncols));
 
-				if (match % ncols == 0 && editline == editwinrows - 1 && num_matches - match > ncols) {
+				if (match % ncols == 0 && editline == editwinrows - 1 && matches.size() - match > ncols) {
 					waddstr(edit, _("(more)"));
 					break;
 				}
 
-				disp = display_string(matches[match], 0, longest_name, FALSE);
+				disp = display_string(matches[match].c_str(), 0, longest_name, FALSE);
 				waddstr(edit, disp);
 				free(disp);
 
@@ -2568,8 +2581,6 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 
 		free(mzero);
 	}
-
-	free_chararray(matches, num_matches);
 
 	/* Only refresh the edit window if we don't have a list of filename
 	 * matches on it. */
