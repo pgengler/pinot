@@ -2276,18 +2276,6 @@ int diralphasort(const void *va, const void *vb)
 	return mbstrcasecmp(a, b);
 }
 
-/* Free the memory allocated for array, which should contain len
- * elements. */
-void free_chararray(char **array, size_t len)
-{
-	assert(array != NULL);
-
-	for (; len > 0; len--) {
-		free(array[len - 1]);
-	}
-	free(array);
-}
-
 /* Is the given path a directory? */
 bool is_dir(const char *buf)
 {
