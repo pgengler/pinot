@@ -99,8 +99,8 @@ void cut_to_eof(void)
 }
 
 /* Move text from the current filestruct into the cutbuffer.  If
- * copy_text is TRUE, copy the text back into the filestruct afterward.
- * If cut_till_end is TRUE, move all text from the current cursor
+ * copy_text is true, copy the text back into the filestruct afterward.
+ * If cut_till_end is true, move all text from the current cursor
  * position to the end of the file into the cutbuffer. */
 void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 {
@@ -129,18 +129,18 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 			cb_save_len = strlen(cutbottom->data);
 		}
 
-		/* Set NO_NEWLINES to TRUE, so that we don't disturb the last
+		/* Set NO_NEWLINES to true, so that we don't disturb the last
 		 * line of the file when moving text to the cutbuffer. */
 		SET(NO_NEWLINES);
 	}
 
-	/* Set keep_cutbuffer to TRUE, so that the text we're going to move
+	/* Set keep_cutbuffer to true, so that the text we're going to move
 	 * into the cutbuffer will be added to the text already in the
 	 * cutbuffer instead of replacing it. */
-	keep_cutbuffer = TRUE;
+	keep_cutbuffer = true;
 
 	if (cut_till_end) {
-		/* If cut_till_end is TRUE, move all text up to the end of the
+		/* If cut_till_end is true, move all text up to the end of the
 		 * file into the cutbuffer. */
 		cut_to_eof();
 	} else if (openfile->mark_set) {
@@ -192,7 +192,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 	}
 
 	/* Update the screen. */
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 
 	reset_multis(openfile->current, false);
 
@@ -212,14 +212,14 @@ void do_cut_text_void(void)
  * back into the filestruct afterward. */
 void do_copy_text(void)
 {
-	do_cut_text(TRUE, false, false);
+	do_cut_text(true, false, false);
 }
 
 /* Cut from the current cursor position to the end of the file. */
 void do_cut_till_end(void)
 {
 	add_undo(CUT);
-	do_cut_text(false, TRUE, false);
+	do_cut_text(false, true, false);
 }
 
 /* Copy text from the cutbuffer into the current filestruct. */
@@ -246,7 +246,7 @@ void do_uncut_text(void)
 	set_modified();
 
 	/* Update the screen. */
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 
 	reset_multis(openfile->current, false);
 

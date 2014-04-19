@@ -172,7 +172,7 @@ change_browser_directory:
 			curs_set(1);
 
 			std::shared_ptr<Key> key;
-			PromptResult i = do_prompt(TRUE,
+			PromptResult i = do_prompt(true,
 			              false,
 			              MGOTODIR, key, ans,
 			              NULL,
@@ -264,7 +264,7 @@ change_browser_directory:
 			/* If we've successfully opened a file, we're done, so get out. */
 			if (!S_ISDIR(st.st_mode)) {
 				retval = mallocstrcpy(NULL, filelist[selected].c_str());
-				abort = TRUE;
+				abort = true;
 				func = nullptr;
 				continue;
 				/* If we've successfully opened a directory, and it's
@@ -289,7 +289,7 @@ change_browser_directory:
 			goto change_browser_directory;
 			/* Abort the file browser. */
 		} else if (func == do_exit) {
-			abort = TRUE;
+			abort = true;
 		}
 		func = nullptr;
 	}
@@ -496,7 +496,7 @@ void browser_refresh(void)
 		 * and 12 for "(parent dir)". */
 		bool dots = (COLS >= 15 && filetaillen >= longest - foomaxlen - 1);
 		/* Do we put an ellipsis before the filename?  Don't set
-		 * this to TRUE if we have fewer than 15 columns (i.e.
+		 * this to true if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
 		 * filename other than ".."). */
 		char *disp = display_string(filetail, dots ? filetaillen - longest + foomaxlen + 4 : 0, longest, false);
@@ -513,7 +513,7 @@ void browser_refresh(void)
 
 		blank_line(edit, line, col, longest);
 
-		/* If dots is TRUE, we will display something like "...ename". */
+		/* If dots is true, we will display something like "...ename". */
 		if (dots) {
 			mvwaddstr(edit, line, col, "...");
 		}
@@ -616,7 +616,7 @@ bool browser_select_filename(const char *needle)
 
 	for (currselected = 0; currselected < filelist.size(); currselected++) {
 		if (filelist[currselected] == needle) {
-			found = TRUE;
+			found = true;
 			break;
 		}
 	}
@@ -666,7 +666,7 @@ int filesearch_init(void)
 	/* This is now one simple call.  It just does a lot. */
 	std::shared_ptr<Key> key;
 	PromptResult i = do_prompt(false,
-	              TRUE,
+	              true,
 	              MWHEREISFILE, key, backupstring,
 	              &search_history,
 	              browser_refresh, "%s%s%s%s%s%s", _("Search"),
@@ -721,7 +721,7 @@ int filesearch_init(void)
 	return 0;
 }
 
-/* Look for needle.  If no_sameline is TRUE, skip over selected when
+/* Look for needle.  If no_sameline is true, skip over selected when
  * looking for needle.  begin is the location of the filename where we
  * first started searching.  The return value specifies whether we found
  * anything. */
@@ -739,7 +739,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 	}
 
 	/* Look for needle in the current filename we're searching. */
-	while (TRUE) {
+	while (true) {
 		found = strstrwrapper(filetail, needle, rev_start);
 
 		/* We've found a potential match.  If we're not allowed to find
@@ -775,7 +775,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 
 		/* We've reached the original starting file. */
 		if (currselected == begin) {
-			search_last_file = TRUE;
+			search_last_file = true;
 		}
 
 		filetail = tail(filelist[currselected].c_str());
@@ -789,7 +789,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 	/* We've definitely found something. */
 	selected = currselected;
 
-	return TRUE;
+	return true;
 }
 
 /* Clear the flag indicating that a search reached the last file in the
@@ -850,7 +850,7 @@ void do_filesearch(void)
 		/* Do the search again, skipping over the current line.  We
 		 * should only end up back at the same position if the string
 		 * isn't found again, in which case it's the only occurrence. */
-		didfind = findnextfile(TRUE, begin, answer);
+		didfind = findnextfile(true, begin, answer);
 		if (selected == begin && !didfind) {
 			statusbar(_("This is the only occurrence"));
 		}
@@ -883,7 +883,7 @@ void do_fileresearch(void)
 			 * should only end up back at the same position if the
 			 * string isn't found again, in which case it's the only
 			 * occurrence. */
-			didfind = findnextfile(TRUE, begin, answer);
+			didfind = findnextfile(true, begin, answer);
 			if (selected == begin && !didfind) {
 				statusbar(_("This is the only occurrence"));
 			}

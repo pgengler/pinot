@@ -261,7 +261,7 @@ void reset_multis_after(filestruct *fileptr, int mindex)
 			break;
 		}
 	}
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 }
 
 void reset_multis_before(filestruct *fileptr, int mindex)
@@ -290,7 +290,7 @@ void reset_multis_before(filestruct *fileptr, int mindex)
 		}
 	}
 
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 }
 
 /* Reset one multiline regex info */
@@ -321,7 +321,7 @@ void reset_multis(filestruct *fileptr, bool force)
 		}
 
 		alloc_multidata_if_needed(fileptr);
-		if (force == TRUE) {
+		if (force == true) {
 			reset_multis_for_id(fileptr, tmpcolor->id);
 			continue;
 		}

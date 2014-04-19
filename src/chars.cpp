@@ -45,7 +45,7 @@ static const int bad_mbchar_len = 3;
 /* Enable UTF-8 support. */
 void utf8_init(void)
 {
-	use_utf8 = TRUE;
+	use_utf8 = true;
 }
 
 /* Is UTF-8 support enabled? */
@@ -71,7 +71,7 @@ bool niswblank(wchar_t wc)
 }
 #endif
 
-/* Return TRUE if the value of c is in byte range, and false
+/* Return true if the value of c is in byte range, and false
  * otherwise. */
 bool is_byte(int c)
 {
@@ -195,9 +195,9 @@ bool is_punct_mbchar(const char *c)
 		return ispunct((unsigned char)*c);
 }
 
-/* Return TRUE for a multibyte character found in a word (currently only
+/* Return true for a multibyte character found in a word (currently only
  * an alphanumeric or punctuation character, and only the latter if
- * allow_punct is TRUE) and false otherwise. */
+ * allow_punct is true) and false otherwise. */
 bool is_word_mbchar(const char *c, bool allow_punct)
 {
 	assert(c != NULL);
@@ -561,7 +561,7 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 			if (mbtowc(&ws1, s1_mb, s1_mb_len) < 0) {
 				mbtowc_reset();
 				ws1 = (unsigned char)*s1_mb;
-				bad_s1_mb = TRUE;
+				bad_s1_mb = true;
 			}
 
 			s2_mb_len = parse_mbchar(s2, s2_mb, NULL);
@@ -569,7 +569,7 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 			if (mbtowc(&ws2, s2_mb, s2_mb_len) < 0) {
 				mbtowc_reset();
 				ws2 = (unsigned char)*s2_mb;
-				bad_s2_mb = TRUE;
+				bad_s2_mb = true;
 			}
 
 			if (bad_s1_mb != bad_s2_mb || towlower(ws1) != towlower(ws2)) {
@@ -726,7 +726,7 @@ char *mbrevstrcasestr(const char *haystack, const char *needle, const char *rev_
 			}
 
 			if (rev_start == haystack) {
-				begin_line = TRUE;
+				begin_line = true;
 			} else {
 				rev_start = haystack + move_mbleft(haystack, rev_start - haystack);
 				rev_start_len++;
@@ -796,7 +796,7 @@ char *mbstrchr(const char *s, const char *c)
 		if (c_mb_len < 0) {
 			mbtowc_reset();
 			wc = (unsigned char)*c;
-			bad_c_mb = TRUE;
+			bad_c_mb = true;
 		}
 
 		while (*s != '\0') {
@@ -805,7 +805,7 @@ char *mbstrchr(const char *s, const char *c)
 			if (mbtowc(&ws, s_mb, s_mb_len) < 0) {
 				mbtowc_reset();
 				ws = (unsigned char)*s;
-				bad_s_mb = TRUE;
+				bad_s_mb = true;
 			}
 
 			if (bad_s_mb == bad_c_mb && ws == wc) {
@@ -883,7 +883,7 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 			}
 
 			if (rev_start == s) {
-				begin_line = TRUE;
+				begin_line = true;
 			} else {
 				rev_start = s + move_mbleft(s, rev_start - s);
 			}
@@ -895,7 +895,7 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 		return revstrpbrk(s, accept, rev_start);
 }
 
-/* Return TRUE if the string s contains one or more blank characters,
+/* Return true if the string s contains one or more blank characters,
  * and false otherwise. */
 bool has_blank_chars(const char *s)
 {
@@ -903,14 +903,14 @@ bool has_blank_chars(const char *s)
 
 	for (; *s != '\0'; s++) {
 		if (isblank(*s)) {
-			return TRUE;
+			return true;
 		}
 	}
 
 	return false;
 }
 
-/* Return TRUE if the multibyte string s contains one or more blank
+/* Return true if the multibyte string s contains one or more blank
  * multibyte characters, and false otherwise. */
 bool has_blank_mbchars(const char *s)
 {
@@ -925,7 +925,7 @@ bool has_blank_mbchars(const char *s)
 			parse_mbchar(s, chr_mb, NULL);
 
 			if (is_blank_mbchar(chr_mb)) {
-				retval = TRUE;
+				retval = true;
 				break;
 			}
 		}
@@ -939,7 +939,7 @@ bool has_blank_mbchars(const char *s)
 }
 
 #ifdef ENABLE_UTF8
-/* Return TRUE if wc is valid Unicode, and false otherwise. */
+/* Return true if wc is valid Unicode, and false otherwise. */
 bool is_valid_unicode(wchar_t wc)
 {
 	return (
@@ -950,7 +950,7 @@ bool is_valid_unicode(wchar_t wc)
 }
 #endif
 
-/* Check if the string s is a valid multibyte string.  Return TRUE if it
+/* Check if the string s is a valid multibyte string.  Return true if it
  * is, and false otherwise. */
 bool is_valid_mbstring(const char *s)
 {
@@ -960,5 +960,5 @@ bool is_valid_mbstring(const char *s)
 #ifdef ENABLE_UTF8
 	    use_utf8 ? (mbstowcs(NULL, s, 0) != (size_t)-1) :
 #endif
-	    TRUE;
+	    true;
 }

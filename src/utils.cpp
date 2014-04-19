@@ -65,7 +65,7 @@ void get_homedir(void)
 
 /* Read a ssize_t from str, and store it in *val (if val is not NULL).
  * On error, we return false and don't change *val.  Otherwise, we
- * return TRUE. */
+ * return true. */
 bool parse_num(const char *str, ssize_t *val)
 {
 	char *first_error;
@@ -87,15 +87,15 @@ bool parse_num(const char *str, ssize_t *val)
 		*val = j;
 	}
 
-	return TRUE;
+	return true;
 }
 
 /* Read two ssize_t's, separated by a comma, from str, and store them in
  * *line and *column (if they're not both NULL).  Return false on error,
- * or TRUE otherwise. */
+ * or true otherwise. */
 bool parse_line_column(const char *str, ssize_t *line, ssize_t *column)
 {
-	bool retval = TRUE;
+	bool retval = true;
 	const char *comma;
 
 	assert(str != NULL);
@@ -583,7 +583,7 @@ void remove_magicline(void)
 
 /* Set top_x and bot_x to the top and bottom x-coordinates of the mark,
  * respectively, based on the locations of top and bot.  If
- * right_side_up isn't NULL, set it to TRUE if the mark begins with
+ * right_side_up isn't NULL, set it to true if the mark begins with
  * (mark_begin, mark_begin_x) and ends with (current, current_x), or
  * false otherwise. */
 void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, size_t *bot_x, bool *right_side_up)
@@ -596,7 +596,7 @@ void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, s
 		*bot = openfile->current;
 		*bot_x = openfile->current_x;
 		if (right_side_up != NULL) {
-			*right_side_up = TRUE;
+			*right_side_up = true;
 		}
 	} else {
 		*bot = openfile->mark_begin;

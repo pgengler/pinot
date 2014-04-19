@@ -186,7 +186,7 @@ void check_statusblank(void)
  * extending for at most len columns.  start_col is zero-based.  len is
  * one-based, so len == 0 means you get "" returned.  The returned
  * string is dynamically allocated, and should be freed.  If dollars is
- * TRUE, the caller might put "$" at the beginning or end of the line if
+ * true, the caller might put "$" at the beginning or end of the line if
  * it's too long. */
 char *display_string(const char *buf, size_t start_col, size_t len, bool dollars)
 {
@@ -203,7 +203,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 	char *buf_mb;
 	int buf_mb_len;
 
-	/* If dollars is TRUE, make room for the "$" at the end of the
+	/* If dollars is true, make room for the "$" at the end of the
 	 * line. */
 	if (dollars && len > 0 && strlenpt(buf) > start_col + len) {
 		len--;
@@ -451,7 +451,7 @@ void titlebar(const char *path)
 	} else {
 		if (openfile->filename[0] == '\0') {
 			prefix = _("New Buffer");
-			newfie = TRUE;
+			newfie = true;
 		} else {
 			prefix = _("File:");
 		}
@@ -481,7 +481,7 @@ void titlebar(const char *path)
 	if (!newfie) {
 		size_t lenpt = strlenpt(path), start_col;
 
-		/* Don't set dots to TRUE if we have fewer than eight columns
+		/* Don't set dots to true if we have fewer than eight columns
 		 * (i.e. one column for padding, plus seven columns for a
 		 * filename). */
 		dots = (space >= 8 && lenpt >= space);
@@ -496,7 +496,7 @@ void titlebar(const char *path)
 		exppath = display_string(path, start_col, space, false);
 	}
 
-	/* If dots is TRUE, we will display something like "File:
+	/* If dots is true, we will display something like "File:
 	 * ...ename". */
 	if (dots) {
 		mvwaddnstr(topwin, 0, verlen - 1, prefix, actual_x(prefix, prefixlen));
@@ -546,7 +546,7 @@ the_end:
 void set_modified(void)
 {
 	if (!openfile->modified) {
-		openfile->modified = TRUE;
+		openfile->modified = true;
 		titlebar(NULL);
 		if (ISSET(LOCKING)) {
 			if (strcmp(openfile->filename, "") != 0) {
@@ -556,14 +556,14 @@ void set_modified(void)
 				/* Translators: Try to keep this at most 80 characters. */
 				statusbar(_("Warning: Modifying a file which is not locked, check directory permission?"));
 			} else {
-				write_lockfile(openfile->lock_filename, get_full_path(openfile->filename), TRUE);
+				write_lockfile(openfile->lock_filename, get_full_path(openfile->filename), true);
 			}
 		}
 	}
 }
 
 /* Display a message on the statusbar, and set disable_cursorpos to
- * TRUE, so that the message won't be immediately overwritten if
+ * true, so that the message won't be immediately overwritten if
  * constant cursor position display is on. */
 void statusbar(const char *msg, ...)
 {
@@ -610,7 +610,7 @@ void statusbar(const char *msg, ...)
 	/* Leave the cursor at its position in the edit window, not in
 	 * the statusbar. */
 
-	disable_cursorpos = TRUE;
+	disable_cursorpos = true;
 
 	/* If we're doing quick statusbar blanking, and constant cursor
 	 * position display is off, blank the statusbar after only one
@@ -911,7 +911,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					 * containing a start match.  Is there a start on
 					 * this line not followed by an end on this line? */
 					start_col = 0;
-					while (TRUE) {
+					while (true) {
 						start_col += startmatch.rm_so;
 						startmatch.rm_eo -= startmatch.rm_so;
 						if (regexec(tmpcolor->end, start_line->data + start_col + startmatch.rm_eo, 0, NULL, (start_col + startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
@@ -1179,7 +1179,7 @@ int update_line(filestruct *fileptr, size_t index)
 	return extralinesused;
 }
 
-/* Return TRUE if we need an update after moving horizontally, and false
+/* Return true if we need an update after moving horizontally, and false
  * otherwise.  We need one if the mark is on or if pww_save and
  * placewewant are on different pages. */
 bool need_horizontal_update(size_t pww_save)
@@ -1187,7 +1187,7 @@ bool need_horizontal_update(size_t pww_save)
 	return openfile->mark_set || get_page_start(pww_save) != get_page_start(openfile->placewewant);
 }
 
-/* Return TRUE if we need an update after moving vertically, and false
+/* Return true if we need an update after moving vertically, and false
  * otherwise.  We need one if the mark is on or if pww_save and
  * placewewant are on different pages. */
 bool need_vertical_update(size_t pww_save)
@@ -1240,7 +1240,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 	}
 
 	if (need_vertical_update(0)) {
-		do_redraw = TRUE;
+		do_redraw = true;
 	}
 
 	/* Part 1: nlines is the number of lines we're going to scroll the
@@ -1266,7 +1266,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 			ssize_t len = strlenpt(openfile->edittop->data) / COLS;
 			i -= len;
 			if (len > 0) {
-				do_redraw = TRUE;
+				do_redraw = true;
 			}
 		}
 	}
@@ -1279,14 +1279,14 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 	 * call edit_refresh() beforehand if we need to. */
 	if (nlines == 0 || do_redraw || nlines >= editwinrows) {
 		if (do_redraw || nlines >= editwinrows) {
-			edit_refresh_needed = TRUE;
+			edit_refresh_needed = true;
 		}
 		return;
 	}
 
 	/* Scroll the text of the edit window up or down nlines lines,
 	 * depending on the value of direction. */
-	scrollok(edit, TRUE);
+	scrollok(edit, true);
 	wscrl(edit, (direction == UP_DIR) ? -nlines : nlines);
 	scrollok(edit, false);
 
@@ -1496,7 +1496,7 @@ void edit_update(update_type location)
 	openfile->edittop = foo;
 	DEBUG_LOG("edit_udpate(), setting edittop to lineno " << openfile->edittop->lineno);
 	compute_maxrows();
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 }
 
 /* Unconditionally redraw the entire screen. */
@@ -1534,10 +1534,10 @@ void display_main_list(void)
 	bottombars(MMAIN);
 }
 
-/* If constant is TRUE, we display the current cursor position only if
+/* If constant is true, we display the current cursor position only if
  * disable_cursorpos is false.  Otherwise, we display it
  * unconditionally and set disable_cursorpos to false.  If constant is
- * TRUE and disable_cursorpos is TRUE, we also set disable_cursorpos to
+ * true and disable_cursorpos is true, we also set disable_cursorpos to
  * false, so that we leave the current statusbar alone this time, and
  * display the current cursor position next time. */
 void do_cursorpos(bool constant)
@@ -1590,8 +1590,8 @@ void do_cursorpos_void(void)
 
 void enable_nodelay(void)
 {
-	nodelay_mode = TRUE;
-	nodelay(edit, TRUE);
+	nodelay_mode = true;
+	nodelay(edit, true);
 }
 
 void disable_nodelay(void)

@@ -421,7 +421,7 @@ enum {
   can go cut my wrists after writing the big switch statement
   that will necessitate. */
 
-#define VIEW TRUE
+#define VIEW true
 #define NOVIEW false
 
 /* The maximum number of entries displayed in the main shortcut list. */

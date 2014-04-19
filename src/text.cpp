@@ -88,7 +88,7 @@ void do_delete(void)
 
 		/* If we're deleting at the end of a line, we need to call edit_refresh(). */
 		if (openfile->current->data[openfile->current_x] == '\0') {
-			edit_refresh_needed = TRUE;
+			edit_refresh_needed = true;
 		}
 
 		openfile->current->data = charealloc(openfile->current->data, openfile->current_x + strlen(foo->data) + 1);
@@ -118,7 +118,7 @@ void do_delete(void)
 
 	if (ISSET(SOFTWRAP) && edit_refresh_needed == false)
 		if (strlenpt(openfile->current->data) / COLS != orig_lenpt / COLS) {
-			edit_refresh_needed  = TRUE;
+			edit_refresh_needed  = true;
 		}
 
 	set_modified();
@@ -156,11 +156,11 @@ void do_tab(void)
 		charset(output, ' ', output_len);
 		output[output_len] = '\0';
 
-		do_output(output, output_len, TRUE);
+		do_output(output, output_len, true);
 
 		free(output);
 	} else {
-		do_output((char *) "\t", 1, TRUE);
+		do_output((char *) "\t", 1, true);
 	}
 }
 
@@ -189,14 +189,14 @@ void do_indent(ssize_t cols)
 		return;
 	}
 
-	/* If cols is negative, make it positive and set unindent to TRUE. */
+	/* If cols is negative, make it positive and set unindent to true. */
 	if (cols < 0) {
 		cols = -cols;
-		unindent = TRUE;
+		unindent = true;
 		/* Otherwise, we're indenting, in which case the file will always be
-		 * modified, so set indent_changed to TRUE. */
+		 * modified, so set indent_changed to true. */
 	} else {
-		indent_changed = TRUE;
+		indent_changed = true;
 	}
 
 	if (openfile->mark_set) {
@@ -297,9 +297,9 @@ void do_indent(ssize_t cols)
 					}
 				}
 
-				/* We've unindented, so set indent_changed to TRUE. */
+				/* We've unindented, so set indent_changed to true. */
 				if (!indent_changed) {
-					indent_changed = TRUE;
+					indent_changed = true;
 				}
 			}
 		}
@@ -315,7 +315,7 @@ void do_indent(ssize_t cols)
 		set_modified();
 
 		/* Update the screen. */
-		edit_refresh_needed = TRUE;
+		edit_refresh_needed = true;
 	}
 }
 
@@ -397,15 +397,15 @@ void redo_cut(undo *u)
 		}
 		openfile->mark_begin = t;
 		openfile->mark_begin_x = 0;
-		openfile->mark_set = TRUE;
+		openfile->mark_set = true;
 	}
 
 	openfile->mark_begin_x = u->mark_begin_x;
-	do_cut_text(false, u->to_end, TRUE);
+	do_cut_text(false, u->to_end, true);
 	openfile->mark_set = false;
 	openfile->mark_begin = NULL;
 	openfile->mark_begin_x = 0;
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 }
 
 /* Undo the last thing(s) we did */
@@ -514,7 +514,7 @@ void do_undo(void)
 		   add its value here */
 		openfile->mark_begin = fsfromline(u->lineno + u->mark_begin_lineno - 1);
 		openfile->mark_begin_x = 0;
-		openfile->mark_set = TRUE;
+		openfile->mark_set = true;
 		do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
 		cut_marked();
 		u->cutbuffer = cutbuffer;
@@ -536,7 +536,7 @@ void do_undo(void)
 
 	}
 	renumber(f);
-	do_gotolinecolumn(u->lineno, u->begin, false, false, false, TRUE);
+	do_gotolinecolumn(u->lineno, u->begin, false, false, false, true);
 	statusbar(_("Undid action (%s)"), undidmsg);
 	openfile->current_undo = openfile->current_undo->next;
 	openfile->last_action = OTHER;
@@ -599,14 +599,14 @@ void do_redo(void)
 	case ENTER:
 		undidmsg = _("line break");
 		do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
-		do_enter(TRUE);
+		do_enter(true);
 		break;
 	case SPLIT:
 		undidmsg = _("line wrap");
 		if (u->xflags & UNsplit_madenew) {
-			prepend_wrap = TRUE;
+			prepend_wrap = true;
 		}
-		do_wrap(f, TRUE);
+		do_wrap(f, true);
 		renumber(f);
 		break;
 	case UNSPLIT:
@@ -649,7 +649,7 @@ void do_redo(void)
 		break;
 
 	}
-	do_gotolinecolumn(u->lineno, u->begin, false, false, false, TRUE);
+	do_gotolinecolumn(u->lineno, u->begin, false, false, false, true);
 	statusbar(_("Redid action (%s)"), undidmsg);
 
 	openfile->current_undo = u;
@@ -710,7 +710,7 @@ void do_enter(bool undoing)
 
 	openfile->placewewant = xplustabs();
 
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 }
 
 /* Need this again... */
@@ -729,7 +729,7 @@ void cancel_command(int signal)
 	}
 }
 
-/* Execute command in a shell.  Return TRUE on success. */
+/* Execute command in a shell.  Return true on success. */
 bool execute_command(const char *command)
 {
 	int fd[2];
@@ -781,12 +781,12 @@ bool execute_command(const char *command)
 	enable_signals();
 
 	if (sigaction(SIGINT, NULL, &newaction) == -1) {
-		sig_failed = TRUE;
+		sig_failed = true;
 		nperror("sigaction");
 	} else {
 		newaction.sa_handler = cancel_command;
 		if (sigaction(SIGINT, &newaction, &oldaction) == -1) {
-			sig_failed = TRUE;
+			sig_failed = true;
 			nperror("sigaction");
 		}
 	}
@@ -799,7 +799,7 @@ bool execute_command(const char *command)
 		nperror("fdopen");
 	}
 
-	read_file(f, 0, "stdin", TRUE, false);
+	read_file(f, 0, "stdin", true, false);
 
 	if (wait(NULL) == -1) {
 		nperror("wait");
@@ -814,7 +814,7 @@ bool execute_command(const char *command)
 	 * use Ctrl-C for other things. */
 	terminal_init();
 
-	return TRUE;
+	return true;
 }
 
 /* Execute command in a shell without saving its output. Returns -1 if an
@@ -869,12 +869,12 @@ int execute_command_silently(const char *command)
 	enable_signals();
 
 	if (sigaction(SIGINT, NULL, &newaction) == -1) {
-		sig_failed = TRUE;
+		sig_failed = true;
 		nperror("sigaction");
 	} else {
 		newaction.sa_handler = cancel_command;
 		if (sigaction(SIGINT, &newaction, &oldaction) == -1) {
-			sig_failed = TRUE;
+			sig_failed = true;
 			nperror("sigaction");
 		}
 	}
@@ -994,7 +994,7 @@ void add_undo(undo_type current_action)
 			u->mark_begin_lineno = openfile->mark_begin->lineno;
 			u->mark_begin_x = openfile->mark_begin_x;
 		}
-		u->to_end = (ISSET(CUT_TO_END)) ? TRUE : false;
+		u->to_end = (ISSET(CUT_TO_END)) ? true : false;
 		last_cutu = u;
 		break;
 	case UNCUT:
@@ -1144,7 +1144,7 @@ void wrap_reset(void)
 }
 
 /* We wrap the given line.  Precondition: we assume the cursor has been
- * moved forward since the last typed character.  Return TRUE if we
+ * moved forward since the last typed character.  Return true if we
  * wrapped, and false otherwise. */
 bool do_wrap(filestruct *line, bool undoing)
 {
@@ -1256,7 +1256,7 @@ bool do_wrap(filestruct *line, bool undoing)
 		next_line_len = strlen(next_line);
 
 		if (after_break_len + next_line_len <= fill) {
-			prepending = TRUE;
+			prepending = true;
 			new_line_len += next_line_len;
 		}
 	}
@@ -1334,7 +1334,7 @@ bool do_wrap(filestruct *line, bool undoing)
 
 	/* Set the prepend_wrap flag, so that later wraps of this line will
 	 * be prepended to the next line. */
-	prepend_wrap = TRUE;
+	prepend_wrap = true;
 
 	/* Each line knows its number.  We recalculate these if we inserted
 	 * a new line. */
@@ -1364,14 +1364,14 @@ bool do_wrap(filestruct *line, bool undoing)
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 /* We are trying to break a chunk off line.  We find the last blank such
  * that the display length to there is at most (goal + 1).  If there is
  * no such blank, then we find the first blank.  We then take the last
  * blank in that group of blanks.  The terminating '\0' counts as a
- * blank, as does a '\n' if newline is TRUE. */
+ * blank, as does a '\n' if newline is true. */
 ssize_t break_line(const char *line, ssize_t goal, bool newln)
 {
 	ssize_t blank_loc = -1;
@@ -1422,7 +1422,7 @@ ssize_t break_line(const char *line, ssize_t goal, bool newln)
 
 			if (is_blank_mbchar(line) || (newln && *line == '\n')) {
 				if (!found_blank) {
-					found_blank = TRUE;
+					found_blank = true;
 				}
 				found_blank_loc = cur_loc;
 			} else if (found_blank) {
@@ -1504,7 +1504,7 @@ bool do_int_spell_fix(const char *word)
 	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
 	bool right_side_up = false;
-	/* TRUE if (mark_begin, mark_begin_x) is the top of the mark,
+	/* true if (mark_begin, mark_begin_x) is the top of the mark,
 	 * false if (current, current_x) is. */
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
@@ -1548,18 +1548,18 @@ bool do_int_spell_fix(const char *word)
 
 	/* Find the first whole occurrence of word. */
 	findnextstr_wrap_reset();
-	while (findnextstr(TRUE, false, openfile->fileage, 0, word, &match_len)) {
+	while (findnextstr(true, false, openfile->fileage, 0, word, &match_len)) {
 		if (is_whole_word(openfile->current_x, openfile->current->data, word)) {
 			size_t xpt = xplustabs();
 			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, false);
 
 			edit_refresh();
 
-			do_replace_highlight(TRUE, exp_word);
+			do_replace_highlight(true, exp_word);
 
 			/* Allow all instances of the word to be corrected. */
 			std::shared_ptr<Key> key;
-			canceled = (do_prompt(false, TRUE, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == PROMPT_ABORTED);
+			canceled = (do_prompt(false, true, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == PROMPT_ABORTED);
 
 			do_replace_highlight(false, exp_word);
 
@@ -1567,7 +1567,7 @@ bool do_int_spell_fix(const char *word)
 
 			if (!canceled && strcmp(word, answer) != 0) {
 				openfile->current_x--;
-				do_replace_loop(TRUE, &canceled, openfile->current, &openfile->current_x, word);
+				do_replace_loop(true, &canceled, openfile->current, &openfile->current_x, word);
 			}
 
 			break;
@@ -1597,7 +1597,7 @@ bool do_int_spell_fix(const char *word)
 		/* Unpartition the filestruct so that it contains all the text
 		 * again, and turn the mark back on. */
 		unpartition_filestruct(&filepart);
-		openfile->mark_set = TRUE;
+		openfile->mark_set = true;
 	}
 
 	/* Restore the search/replace strings. */
@@ -1786,7 +1786,7 @@ const char *do_int_speller(const char *tempfile_name)
 
 	free(read_buff);
 	search_replace_abort();
-	edit_refresh_needed = TRUE;
+	edit_refresh_needed = true;
 
 	/* Process the end of the spell process. */
 	waitpid(pid_spell, &spell_status, 0);
@@ -1837,7 +1837,7 @@ const char *do_alt_speller(char *tempfile_name)
 	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
 	bool right_side_up = false;
-	/* TRUE if (mark_begin, mark_begin_x) is the top of the mark,
+	/* true if (mark_begin, mark_begin_x) is the top of the mark,
 	 * false if (current, current_x) is. */
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
@@ -1990,7 +1990,7 @@ const char *do_alt_speller(char *tempfile_name)
 		openfile->mark_begin_x = openfile->current_x;
 
 		/* Turn the mark back on. */
-		openfile->mark_set = TRUE;
+		openfile->mark_set = true;
 	}
 
 	/* Go back to the old position, and mark the file as modified. */
@@ -1998,7 +1998,7 @@ const char *do_alt_speller(char *tempfile_name)
 	set_modified();
 
 	/* Handle a pending SIGWINCH again. */
-	allow_pending_sigwinch(TRUE);
+	allow_pending_sigwinch(true);
 
 	return NULL;
 }
@@ -2017,7 +2017,7 @@ void do_spell(void)
 		return;
 	}
 
-	status = openfile->mark_set ? write_marked_file(temp, temp_file, TRUE, OVERWRITE) : write_file(temp, temp_file, TRUE, OVERWRITE, false);
+	status = openfile->mark_set ? write_marked_file(temp, temp_file, true, OVERWRITE) : write_file(temp, temp_file, true, OVERWRITE, false);
 
 	if (!status) {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
@@ -2074,7 +2074,7 @@ void do_linter(void)
 		int i = do_yesno_prompt(false, _("Save modified buffer before linting?"));
 
 		if (i == 1) {
-			if (do_writeout(false) != TRUE) {
+			if (do_writeout(false) != true) {
 				return;
 			}
 		}
@@ -2355,7 +2355,7 @@ void do_wordlinechar_count(void)
 	 * until we reach the end of the file, incrementing the total word
 	 * count whenever we're on a word just before moving. */
 	while (openfile->current != openfile->filebot || openfile->current->data[openfile->current_x] != '\0') {
-		if (do_next_word(TRUE, false)) {
+		if (do_next_word(true, false)) {
 			words++;
 		}
 	}
@@ -2369,7 +2369,7 @@ void do_wordlinechar_count(void)
 		/* Unpartition the filestruct so that it contains all the text
 		 * again, and turn the mark back on. */
 		unpartition_filestruct(&filepart);
-		openfile->mark_set = TRUE;
+		openfile->mark_set = true;
 	} else {
 		nlines = openfile->filebot->lineno;
 		chars = openfile->totsize;
@@ -2398,12 +2398,12 @@ void do_verbatim_input(void)
 	 * cursor position will be properly displayed on the statusbar.
 	 * Otherwise, blank the statusbar. */
 	if (ISSET(CONST_UPDATE)) {
-		do_cursorpos(TRUE);
+		do_cursorpos(true);
 	} else {
 		blank_statusbar();
 		wnoutrefresh(bottomwin);
 	}
 
 	/* Display all the verbatim characters at once, not filtering out control characters. */
-	do_output(kbinput, TRUE);
+	do_output(kbinput, true);
 }

@@ -40,9 +40,9 @@ static bool reset_statusbar_x = false;
 /* Should we reset the cursor position at the statusbar prompt? */
 
 /* Read in a character, interpret it as a shortcut or toggle if
- * necessary, and return it. Sset have_shortcut to TRUE if the character
- * is a shortcut key, set ran_func to TRUE if we ran a function associated
- * with a shortcut key, and set finished to TRUE if we're done after running
+ * necessary, and return it. Sset have_shortcut to true if the character
+ * is a shortcut key, set ran_func to true if we ran a function associated
+ * with a shortcut key, and set finished to true if we're done after running
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is false, don't actually run any functions associated
  * with shortcut keys.  refresh_func is the function we will call to
@@ -63,7 +63,7 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 	s = get_shortcut(currmenu, input);
 
 	/* If we got a shortcut from the current list, or a "universal"
-	 * statusbar prompt shortcut, set have_shortcut to TRUE. */
+	 * statusbar prompt shortcut, set have_shortcut to true. */
 	*have_shortcut = (s != NULL);
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
@@ -101,19 +101,19 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 			do_statusbar_backspace();
 		} else {
 			/* Handle the normal statusbar prompt shortcuts, setting
-			* ran_func to TRUE if we try to run their associated
-			* functions and setting finished to TRUE to indicate
+			* ran_func to true if we try to run their associated
+			* functions and setting finished to true to indicate
 			* that we're done after running or trying to run their
 			* associated functions. */
 
 			f = sctofunc((sc *) s);
-			if (s->scfunc != 0 && s->execute == TRUE) {
-				*ran_func = TRUE;
+			if (s->scfunc != 0 && s->execute == true) {
+				*ran_func = true;
 				if (f && (!ISSET(VIEW_MODE) || (f->viewok))) {
 					f->scfunc();
 				}
 			}
-			*finished = TRUE;
+			*finished = true;
 		}
 	} else {
 		do_statusbar_output(std::string(input),  false);
@@ -123,7 +123,7 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 }
 
 /* The user typed output_len multibyte characters.  Add them to thestatusbar prompt,
- * filtering out all ASCII control characters if allow_cntrls is TRUE. */
+ * filtering out all ASCII control characters if allow_cntrls is true. */
 void do_statusbar_output(std::string output, bool allow_cntrls)
 {
 	char *out = mallocstrcpy(NULL, output.c_str());
@@ -142,7 +142,7 @@ void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
 	answer_len = strlen(answer);
 
 	while (i < output_len) {
-		/* If allow_cntrls is TRUE, convert nulls and newlines
+		/* If allow_cntrls is true, convert nulls and newlines
 		 * properly. */
 		if (allow_cntrls) {
 			/* Null to newline, if needed. */
@@ -295,8 +295,8 @@ void do_statusbar_cut_text(void)
 	update_statusbar_line(answer, statusbar_x);
 }
 
-/* Move to the next word in the prompt text.  If allow_punct is TRUE,
- * treat punctuation as part of a word.  Return TRUE if we started on a
+/* Move to the next word in the prompt text.  If allow_punct is true,
+ * treat punctuation as part of a word.  Return true if we started on a
  * word, and false otherwise. */
 bool do_statusbar_next_word(bool allow_punct)
 {
@@ -320,11 +320,11 @@ bool do_statusbar_next_word(bool allow_punct)
 		}
 
 		/* If we haven't found it, then we've started on a word, so set
-		 * started_on_word to TRUE. */
-		started_on_word = TRUE;
+		 * started_on_word to true. */
+		started_on_word = true;
 
 		if (answer[statusbar_x] == '\0') {
-			end_line = TRUE;
+			end_line = true;
 		} else {
 			statusbar_x += char_mb_len;
 		}
@@ -332,7 +332,7 @@ bool do_statusbar_next_word(bool allow_punct)
 
 	/* Move forward until we find the first letter of the next word. */
 	if (answer[statusbar_x] == '\0') {
-		end_line = TRUE;
+		end_line = true;
 	} else {
 		statusbar_x += char_mb_len;
 	}
@@ -346,7 +346,7 @@ bool do_statusbar_next_word(bool allow_punct)
 		}
 
 		if (answer[statusbar_x] == '\0') {
-			end_line = TRUE;
+			end_line = true;
 		} else {
 			statusbar_x += char_mb_len;
 		}
@@ -365,7 +365,7 @@ bool do_statusbar_next_word(bool allow_punct)
 }
 
 /* Move to the previous word in the prompt text.  If allow_punct is
- * TRUE, treat punctuation as part of a word.  Return TRUE if we started
+ * true, treat punctuation as part of a word.  Return true if we started
  * on a word, and false otherwise. */
 bool do_statusbar_prev_word(bool allow_punct)
 {
@@ -390,11 +390,11 @@ bool do_statusbar_prev_word(bool allow_punct)
 		}
 
 		/* If we haven't found it, then we've started on a word, so set
-		 * started_on_word to TRUE. */
-		started_on_word = TRUE;
+		 * started_on_word to true. */
+		started_on_word = true;
 
 		if (statusbar_x == 0) {
-			begin_line = TRUE;
+			begin_line = true;
 		} else {
 			statusbar_x = move_mbleft(answer, statusbar_x);
 		}
@@ -403,7 +403,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 	/* Move backward until we find the last letter of the previous
 	 * word. */
 	if (statusbar_x == 0) {
-		begin_line = TRUE;
+		begin_line = true;
 	} else {
 		statusbar_x = move_mbleft(answer, statusbar_x);
 	}
@@ -418,7 +418,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 		}
 
 		if (statusbar_x == 0) {
-			begin_line = TRUE;
+			begin_line = true;
 		} else {
 			statusbar_x = move_mbleft(answer, statusbar_x);
 		}
@@ -428,7 +428,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 	 * before the first letter of the previous word. */
 	if (!begin_line) {
 		if (statusbar_x == 0) {
-			begin_line = TRUE;
+			begin_line = true;
 		} else {
 			statusbar_x = move_mbleft(answer, statusbar_x);
 		}
@@ -443,7 +443,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 			}
 
 			if (statusbar_x == 0) {
-				begin_line = TRUE;
+				begin_line = true;
 			} else {
 				statusbar_x = move_mbleft(answer, statusbar_x);
 			}
@@ -472,12 +472,12 @@ bool do_statusbar_prev_word(bool allow_punct)
 void do_statusbar_verbatim_input(void)
 {
 	std::string kbinput = get_verbatim_kbinput(bottomwin);
-	do_statusbar_output(kbinput, TRUE);
+	do_statusbar_output(kbinput, true);
 }
 
 /* Search for a match to one of the two characters in bracket_set.  If
- * reverse is TRUE, search backwards for the leftmost bracket.
- * Otherwise, search forwards for the rightmost bracket.  Return TRUE if
+ * reverse is true, search backwards for the leftmost bracket.
+ * Otherwise, search forwards for the rightmost bracket.  Return true if
  * we found a match, and false otherwise. */
 bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 {
@@ -490,7 +490,7 @@ bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 	 * it below in that case. */
 	rev_start = reverse ? answer + (statusbar_x - 1) : answer + (statusbar_x + 1);
 
-	while (TRUE) {
+	while (true) {
 		/* Look for either of the two characters in bracket_set.
 		 * rev_start can be 1 character before the start or after the
 		 * end of the line.  In either case, just act as though no match
@@ -513,7 +513,7 @@ bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 	statusbar_x = found - answer;
 	statusbar_pww = statusbar_xplustabs();
 
-	return TRUE;
+	return true;
 }
 
 /* Search for a match to the bracket at the current cursor position, if
@@ -600,7 +600,7 @@ void do_statusbar_find_bracket(void)
 
 	found_ch = charalloc(mb_cur_max() + 1);
 
-	while (TRUE) {
+	while (true) {
 		if (find_statusbar_bracket_match(reverse, bracket_set)) {
 			/* If we found an identical bracket, increment count.  If we
 			 * found a complementary bracket, decrement it. */
@@ -692,7 +692,7 @@ void update_statusbar_line(const char *curranswer, size_t index)
 	wnoutrefresh(bottomwin);
 }
 
-/* Return TRUE if we need an update after moving horizontally, and false
+/* Return true if we need an update after moving horizontally, and false
  * otherwise.  We need one if pww_save and statusbar_pww are on
  * different pages. */
 bool need_statusbar_horizontal_update(size_t pww_save)
@@ -731,7 +731,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	answer = mallocstrcpy(answer, curranswer);
 	curranswer_len = strlen(answer);
 
-	/* If reset_statusbar_x is TRUE, restore statusbar_x and
+	/* If reset_statusbar_x is true, restore statusbar_x and
 	 * statusbar_pww to what they were before this prompt.  Then, if
 	 * statusbar_x is uninitialized or past the end of curranswer, put
 	 * statusbar_x at the end of the string and update statusbar_pww
@@ -761,7 +761,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	wnoutrefresh(bottomwin);
 
 	while (1) {
-		kbinput = std::make_shared<Key>(do_statusbar_input(&have_shortcut, &ran_func, &finished, TRUE, refresh_func));
+		kbinput = std::make_shared<Key>(do_statusbar_input(&have_shortcut, &ran_func, &finished, true, refresh_func));
 		assert(statusbar_x <= strlen(answer));
 
 DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
@@ -814,7 +814,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 
 					/* This key has a shortcut list entry when it's used
 					 * to move to an older search, which means that
-					 * finished has been set to TRUE.  Set it back to
+					 * finished has been set to true.  Set it back to
 					 * false here, so that we aren't kicked out of the
 					 * statusbar prompt. */
 					finished = false;
@@ -842,7 +842,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 
 					/* This key has a shortcut list entry when it's used
 					 * to move to a newer search, which means that
-					 * finished has been set to TRUE.  Set it back to
+					 * finished has been set to true.  Set it back to
 					 * false here, so that we aren't kicked out of the
 					 * statusbar prompt. */
 					finished = false;
@@ -853,7 +853,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 				/* This key has a shortcut list entry when it's used to
 				 * go to the help browser or display a message
 				 * indicating that help is disabled, which means that
-				 * finished has been set to TRUE.  Set it back to false
+				 * finished has been set to true.  Set it back to false
 				 * here, so that we aren't kicked out of the statusbar
 				 * prompt. */
 				finished = false;
@@ -893,7 +893,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 			statusbar_pww = old_pww;
 
 			if (!ran_func) {
-				reset_statusbar_x = TRUE;
+				reset_statusbar_x = true;
 			}
 			/* Otherwise, we're still putting in an answer or a shortcut with
 			 * an associated function, so leave the statusbar cursor position
@@ -982,12 +982,12 @@ void do_prompt_abort(void)
 	old_statusbar_x = (size_t)-1;
 	old_pww = (size_t)-1;
 
-	reset_statusbar_x = TRUE;
+	reset_statusbar_x = true;
 }
 
 /* Ask a simple Yes/No (and optionally All) question, specified in msg,
  * on the statusbar.  Return 1 for Yes, 0 for No, 2 for All (if all is
- * TRUE when passed in), and -1 for Cancel. */
+ * true when passed in), and -1 for Cancel. */
 YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 {
 	YesNoPromptResult ok = YESNO_PROMPT_UNKNOWN;

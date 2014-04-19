@@ -114,9 +114,9 @@ void do_page_down(void)
 	edit_update(NONE);
 }
 
-/* Move to the next word in the file.  If allow_punct is TRUE, treat
- * punctuation as part of a word.  If allow_update is TRUE, update the
- * screen afterwards.  Return TRUE if we started on a word, and false
+/* Move to the next word in the file.  If allow_punct is true, treat
+ * punctuation as part of a word.  If allow_update is true, update the
+ * screen afterwards.  Return true if we started on a word, and false
  * otherwise. */
 bool do_next_word(bool allow_punct, bool allow_update)
 {
@@ -141,11 +141,11 @@ bool do_next_word(bool allow_punct, bool allow_update)
 		}
 
 		/* If we haven't found it, then we've started on a word, so set
-		 * started_on_word to TRUE. */
-		started_on_word = TRUE;
+		 * started_on_word to true. */
+		started_on_word = true;
 
 		if (openfile->current->data[openfile->current_x] == '\0') {
-			end_line = TRUE;
+			end_line = true;
 		} else {
 			openfile->current_x += char_mb_len;
 		}
@@ -153,7 +153,7 @@ bool do_next_word(bool allow_punct, bool allow_update)
 
 	/* Move forward until we find the first letter of the next word. */
 	if (openfile->current->data[openfile->current_x] == '\0') {
-		end_line = TRUE;
+		end_line = true;
 	} else {
 		openfile->current_x += char_mb_len;
 	}
@@ -170,7 +170,7 @@ bool do_next_word(bool allow_punct, bool allow_update)
 			}
 
 			if (openfile->current->data[openfile->current_x] == '\0') {
-				end_line = TRUE;
+				end_line = true;
 			} else {
 				openfile->current_x += char_mb_len;
 			}
@@ -197,7 +197,7 @@ bool do_next_word(bool allow_punct, bool allow_update)
 
 	openfile->placewewant = xplustabs();
 
-	/* If allow_update is TRUE, update the screen. */
+	/* If allow_update is true, update the screen. */
 	if (allow_update) {
 		edit_redraw(current_save, pww_save);
 	}
@@ -211,12 +211,12 @@ bool do_next_word(bool allow_punct, bool allow_update)
  * afterwards. */
 void do_next_word_void(void)
 {
-	do_next_word(ISSET(WORD_BOUNDS), TRUE);
+	do_next_word(ISSET(WORD_BOUNDS), true);
 }
 
-/* Move to the previous word in the file.  If allow_punct is TRUE, treat
- * punctuation as part of a word.  If allow_update is TRUE, update the
- * screen afterwards.  Return TRUE if we started on a word, and false
+/* Move to the previous word in the file.  If allow_punct is true, treat
+ * punctuation as part of a word.  If allow_update is true, update the
+ * screen afterwards.  Return true if we started on a word, and false
  * otherwise. */
 bool do_prev_word(bool allow_punct, bool allow_update)
 {
@@ -242,11 +242,11 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 		}
 
 		/* If we haven't found it, then we've started on a word, so set
-		 * started_on_word to TRUE. */
-		started_on_word = TRUE;
+		 * started_on_word to true. */
+		started_on_word = true;
 
 		if (openfile->current_x == 0) {
-			begin_line = TRUE;
+			begin_line = true;
 		} else
 			openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 	}
@@ -254,7 +254,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	/* Move backward until we find the last letter of the previous
 	 * word. */
 	if (openfile->current_x == 0) {
-		begin_line = TRUE;
+		begin_line = true;
 	} else
 		openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 
@@ -268,7 +268,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 			}
 
 			if (openfile->current_x == 0) {
-				begin_line = TRUE;
+				begin_line = true;
 			} else
 				openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 		}
@@ -292,7 +292,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	 * before the first letter of the previous word. */
 	else if (!begin_line) {
 		if (openfile->current_x == 0) {
-			begin_line = TRUE;
+			begin_line = true;
 		} else {
 			openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 		}
@@ -306,7 +306,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 			}
 
 			if (openfile->current_x == 0) {
-				begin_line = TRUE;
+				begin_line = true;
 			} else {
 				openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 			}
@@ -323,7 +323,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 
 	openfile->placewewant = xplustabs();
 
-	/* If allow_update is TRUE, update the screen. */
+	/* If allow_update is true, update the screen. */
 	if (allow_update) {
 		edit_redraw(current_save, pww_save);
 	}
@@ -337,7 +337,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
  * afterwards. */
 void do_prev_word_void(void)
 {
-	do_prev_word(ISSET(WORD_BOUNDS), TRUE);
+	do_prev_word(ISSET(WORD_BOUNDS), true);
 }
 
 /* Move to the beginning of the current line.  If the SMART_HOME flag is
@@ -381,11 +381,11 @@ void do_end(void)
 	}
 }
 
-/* If scroll_only is false, move up one line.  If scroll_only is TRUE,
+/* If scroll_only is false, move up one line.  If scroll_only is true,
  * scroll up one line without scrolling the cursor. */
 void do_up(bool scroll_only)
 {
-	/* If we're at the top of the file, or if scroll_only is TRUE and
+	/* If we're at the top of the file, or if scroll_only is true and
 	 * the top of the file is onscreen, get out. */
 	if (openfile->current == openfile->fileage || (scroll_only && openfile->edittop == openfile->fileage)) {
 		return;
@@ -400,7 +400,7 @@ void do_up(bool scroll_only)
 	/* If scroll_only is false and if we're on the first line of the
 	 * edit window, scroll the edit window up one line if we're in
 	 * smooth scrolling mode, or up half a page if we're not.  If
-	 * scroll_only is TRUE, scroll the edit window up one line
+	 * scroll_only is true, scroll the edit window up one line
 	 * unconditionally. */
 	if (openfile->current_y == 0 || (ISSET(SOFTWRAP) && openfile->edittop->lineno == openfile->current->next->lineno) || scroll_only) {
 		edit_scroll(UP_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? 1 : editwinrows / 2 + 1);
@@ -427,10 +427,10 @@ void do_up_void(void)
 /* Scroll up one line without scrolling the cursor. */
 void do_scroll_up(void)
 {
-	do_up(TRUE);
+	do_up(true);
 }
 
-/* If scroll_only is false, move down one line.  If scroll_only is TRUE,
+/* If scroll_only is false, move down one line.  If scroll_only is true,
  * scroll down one line without scrolling the cursor. */
 void do_down(bool scroll_only)
 {
@@ -467,7 +467,7 @@ void do_down(bool scroll_only)
 	/* If scroll_only is false and if we're on the last line of the
 	 * edit window, scroll the edit window down one line if we're in
 	 * smooth scrolling mode, or down half a page if we're not.  If
-	 * scroll_only is TRUE, scroll the edit window down one line
+	 * scroll_only is true, scroll the edit window down one line
 	 * unconditionally. */
 	if (openfile->current_y == editwinrows - 1 || amount > 0 || scroll_only) {
  		if (amount < 1 || scroll_only) {
@@ -475,7 +475,7 @@ void do_down(bool scroll_only)
 		}
 		edit_scroll(DOWN_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? amount : editwinrows / 2 + 1);
 
-		edit_refresh_needed = TRUE;
+		edit_refresh_needed = true;
 	}
 	/* If we're above the last line of the edit window, update the line
 	 * we were on before and the line we're on now.  The former needs to
@@ -498,7 +498,7 @@ void do_down_void(void)
 /* Scroll down one line without scrolling the cursor. */
 void do_scroll_down(void)
 {
-	do_down(TRUE);
+	do_down(true);
 }
 
 /* Move left one character. */

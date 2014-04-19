@@ -645,7 +645,7 @@ void die(const char *msg, ...)
 void die_save_file(const char *die_filename, struct stat *die_stat)
 {
 	char *retval;
-	bool failed = TRUE;
+	bool failed = true;
 
 	/* If we can't save, we have really bad problems, but we might as
 	 * well try. */
@@ -655,7 +655,7 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 
 	retval = get_next_filename(die_filename, ".save");
 	if (retval[0] != '\0') {
-		failed = !write_file(retval, NULL, TRUE, OVERWRITE, TRUE);
+		failed = !write_file(retval, NULL, true, OVERWRITE, true);
 	}
 
 	if (!failed) {
@@ -718,9 +718,9 @@ void window_init(void)
 
 	/* Turn the keypad on for the windows, if necessary. */
 	if (!ISSET(REBIND_KEYPAD)) {
-		keypad(topwin, TRUE);
-		keypad(edit, TRUE);
-		keypad(bottomwin, TRUE);
+		keypad(topwin, true);
+		keypad(edit, true);
+		keypad(bottomwin, true);
 	}
 }
 
@@ -895,7 +895,7 @@ void do_exit(void)
 
 	/* If the user chose not to save, or if the user chose to save and
 	 * the save succeeded, we're ready to exit. */
-	if (i == 0 || (i == 1 && do_writeout(TRUE))) {
+	if (i == 0 || (i == 1 && do_writeout(true))) {
 		if (ISSET(LOCKING) && openfile->lock_filename) {
 			delete_lockfile(openfile->lock_filename);
 		}
@@ -936,7 +936,7 @@ void finish_stdin_pager(void)
 		nperror("fopen");
 	}
 
-	read_file(f, 0, "stdin", TRUE, false);
+	read_file(f, 0, "stdin", true, false);
 	ttystdin = open("/dev/tty", O_RDONLY);
 	if (!ttystdin) {
 		die(_("Couldn't reopen stdin from keyboard, sorry\n"));
@@ -960,7 +960,7 @@ void cancel_stdin_pager(int signal)
 {
 	UNUSED_VAR(signal);
 	/* Currently do nothing, just handle the intr silently */
-	pager_input_aborted = TRUE;
+	pager_input_aborted = true;
 }
 
 /* Let pinot read stdin for the first file at least */
@@ -978,12 +978,12 @@ void stdin_pager(void)
 	enable_signals();
 
 	if (sigaction(SIGINT, NULL, &pager_newaction) == -1) {
-		pager_sig_failed = TRUE;
+		pager_sig_failed = true;
 		nperror("sigaction");
 	} else {
 		pager_newaction.sa_handler = cancel_stdin_pager;
 		if (sigaction(SIGINT, &pager_newaction, &pager_oldaction) == -1) {
-			pager_sig_failed = TRUE;
+			pager_sig_failed = true;
 			nperror("sigaction");
 		}
 	}
@@ -1151,7 +1151,7 @@ void handle_sigwinch(int signal)
 	siglongjmp(jump_buf, 1);
 }
 
-/* If allow is TRUE, block any SIGWINCH signals that we get, so that we
+/* If allow is true, block any SIGWINCH signals that we get, so that we
  * can deal with them later.  If allow is false, unblock any SIGWINCH
  * signals that we have, so that we can deal with them now. */
 void allow_pending_sigwinch(bool allow)
@@ -1301,7 +1301,7 @@ void terminal_init(void)
 		}
 
 		tcgetattr(0, &newterm);
-		newterm_set = TRUE;
+		newterm_set = true;
 	} else {
 		tcsetattr(0, TCSANOW, &newterm);
 	}
@@ -1310,9 +1310,9 @@ void terminal_init(void)
 
 /* Read in a character, interpret it as a shortcut or toggle if
  * necessary, and return it.
- * Set s_or_t to TRUE if the character is a shortcut or toggle
- * key, set ran_func to TRUE if we ran a function associated with a
- * shortcut key, and set finished to TRUE if we're done after running
+ * Set s_or_t to true if the character is a shortcut or toggle
+ * key, set ran_func to true if we ran a function associated with a
+ * shortcut key, and set finished to true if we're done after running
  * or trying to run a function associated with a shortcut key.  If
  * allow_funcs is false, don't actually run any functions associated
  * with shortcut keys. */
@@ -1325,7 +1325,7 @@ void do_input(void)
 	const sc *s = get_shortcut(MMAIN, input);
 
 	/* If we got a shortcut from the main list, or a "universal"
-	 * edit window shortcut, set have_shortcut to TRUE. */
+	 * edit window shortcut, set have_shortcut to true. */
 	bool have_shortcut = (s != NULL);
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
@@ -1355,7 +1355,7 @@ void do_input(void)
 		/* If the function associated with this shortcut is
 		* cutting or copying text, indicate this. */
 		if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_end) {
-			cut_copy = TRUE;
+			cut_copy = true;
 		}
 
 		if (s->scfunc != 0) {
@@ -1510,7 +1510,7 @@ void precalc_multicolorinfo(void)
 
 /* The user typed output_len multibyte characters.  Add them to the edit
  * buffer, filtering out all ASCII control characters if allow_cntrls is
- * TRUE. */
+ * true. */
 void do_output(const std::string& output, bool allow_cntrls)
 {
 	do_output((char *)output.c_str(), output.length(), allow_cntrls);
@@ -1530,7 +1530,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	}
 
 	while (i < output_len) {
-		/* If allow_cntrls is TRUE, convert nulls and newlines
+		/* If allow_cntrls is true, convert nulls and newlines
 		 * properly. */
 		if (allow_cntrls) {
 			/* Null to newline, if needed. */
@@ -1588,13 +1588,13 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		/* If we're wrapping text, we need to call edit_refresh(). */
 		if (!ISSET(NO_WRAP))
 			if (do_wrap(openfile->current, false)) {
-				edit_refresh_needed = TRUE;
+				edit_refresh_needed = true;
 			}
 
 		/* If color syntaxes are available and turned on, we need to
 		 * call edit_refresh(). */
 		if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
-			edit_refresh_needed = TRUE;
+			edit_refresh_needed = true;
 		}
 	}
 
@@ -1602,7 +1602,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	   line length to be a new multiple of COLS */
 	if (ISSET(SOFTWRAP) && edit_refresh_needed == false) {
 		if (strlenpt(openfile->current->data) / COLS != orig_lenpt / COLS) {
-			edit_refresh_needed = TRUE;
+			edit_refresh_needed = true;
 		}
 	}
 
@@ -1612,7 +1612,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 
 	reset_multis(openfile->current, false);
-	if (edit_refresh_needed == TRUE) {
+	if (edit_refresh_needed == true) {
 		edit_refresh();
 		edit_refresh_needed = false;
 	} else {
@@ -1733,7 +1733,7 @@ int main(int argc, char **argv)
 			SET(HISTORYLOG);
 			break;
 		case 'I':
-			no_rcfiles = TRUE;
+			no_rcfiles = true;
 			break;
 		case 'K':
 			SET(REBIND_KEYPAD);
@@ -1799,7 +1799,7 @@ int main(int argc, char **argv)
 				fprintf(stderr, "\n");
 				exit(1);
 			}
-			fill_used = TRUE;
+			fill_used = true;
 			break;
 #ifdef ENABLE_SPELLER
 		case 's':
@@ -2081,7 +2081,7 @@ int main(int argc, char **argv)
 
 	display_buffer();
 
-	while (TRUE) {
+	while (true) {
 		/* Make sure the cursor is in the edit window. */
 		reset_cursor();
 		wnoutrefresh(edit);
@@ -2101,7 +2101,7 @@ int main(int argc, char **argv)
 
 		/* If constant cursor position display is on, display the current cursor position on the statusbar. */
 		if (ISSET(CONST_UPDATE)) {
-			do_cursorpos(TRUE);
+			do_cursorpos(true);
 		}
 
 		currmenu = MMAIN;

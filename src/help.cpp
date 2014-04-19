@@ -469,7 +469,7 @@ size_t help_line_len(const char *ptr)
 
 	/* Try to break the line at (COLS - 1) columns if we have more than
 	 * 24 columns, and at 24 columns otherwise. */
-	ssize_t wrap_loc = break_line(ptr, help_cols, TRUE);
+	ssize_t wrap_loc = break_line(ptr, help_cols, true);
 	size_t retval = (wrap_loc < 0) ? 0 : wrap_loc;
 	size_t retval_save = retval;
 

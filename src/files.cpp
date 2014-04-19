@@ -192,7 +192,7 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 	strncpy(&lockdata[28], mypwuid->pw_name, 16);
 	strncpy(&lockdata[68], myhostname, 31);
 	strncpy(&lockdata[108], origfilename, 768);
-	if (modified == TRUE) {
+	if (modified == true) {
 		lockdata[1007] = 0x55;
 	}
 
@@ -350,7 +350,7 @@ void replace_buffer(const char *filename)
 
 	/* If the filename isn't blank, open the file.  Otherwise, treat it
 	 * as a new file. */
-	rc = (filename[0] != '\0') ? open_file(filename, TRUE, &f) : -2;
+	rc = (filename[0] != '\0') ? open_file(filename, true, &f) : -2;
 
 	/* Reinitialize the text of the current buffer. */
 	free_filestruct(openfile->fileage);
@@ -358,7 +358,7 @@ void replace_buffer(const char *filename)
 
 	/* If we have a non-new file, read it in. */
 	if (rc > 0) {
-		read_file(f, rc, filename, false, TRUE);
+		read_file(f, rc, filename, false, true);
 	}
 
 	/* Move back to the beginning of the first line of the buffer. */
@@ -382,7 +382,7 @@ void display_buffer(void)
 	edit_refresh();
 }
 
-/* Switch to the next file buffer if next_buf is TRUE.  Otherwise,
+/* Switch to the next file buffer if next_buf is true.  Otherwise,
  * switch to the previous file buffer. */
 void switch_to_prevnext_buffer(bool next_buf)
 {
@@ -423,11 +423,11 @@ void switch_to_prev_buffer_void(void)
 /* Switch to the next entry in the openfile filebuffer. */
 void switch_to_next_buffer_void(void)
 {
-	switch_to_prevnext_buffer(TRUE);
+	switch_to_prevnext_buffer(true);
 }
 
 /* Delete an entry from the openfile filebuffer, and switch to the one
- * after it.  Return TRUE on success, or false if there are no more open
+ * after it.  Return true on success, or false if there are no more open
  * file buffers. */
 bool close_buffer(void)
 {
@@ -448,13 +448,13 @@ bool close_buffer(void)
 
 	display_main_list();
 
-	return TRUE;
+	return true;
 }
 
 /* A bit of a copy and paste from open_file(), is_file_writable()
  * just checks whether the file is appendable as a quick
  * permissions check, and we tend to err on the side of permissiveness
- * (reporting TRUE when it might be wrong) to not fluster users
+ * (reporting true when it might be wrong) to not fluster users
  * editing on odd filesystems by printing incorrect warnings.
  */
 int is_file_writable(const char *filename)
@@ -463,11 +463,11 @@ int is_file_writable(const char *filename)
 	int fd;
 	FILE *f;
 	char *full_filename;
-	bool ans = TRUE;
+	bool ans = true;
 
 
 	if (ISSET(VIEW_MODE)) {
-		return TRUE;
+		return true;
 	}
 
 	assert(filename != NULL);
@@ -493,7 +493,7 @@ int is_file_writable(const char *filename)
 }
 
 /* We make a new line of text from buf.  buf is length buf_len.  If
- * first_line_ins is TRUE, then we put the new line at the top of the
+ * first_line_ins is true, then we put the new line at the top of the
  * file.  Otherwise, we assume prevnode is the last line of the file,
  * and put our line after prevnode. */
 filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, size_t buf_len)
@@ -545,7 +545,7 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, siz
 /* Read an open file into the current buffer.  f should be set to the
  * open file, and filename should be set to the name of the file.
  * undoable  means do we want to create undo records to try and undo this.
- * Will also attempt to check file writability if fd > 0 and checkwritable == TRUE
+ * Will also attempt to check file writability if fd > 0 and checkwritable == true
  */
 void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkwritable)
 {
@@ -568,7 +568,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	int input_int;
 	/* The current value we read from the file, whether an input
 	 * character or EOF. */
-	bool writable = TRUE;
+	bool writable = true;
 	/* Is the file writable (if we care) */
 	int format = 0;
 	/* 0 = *nix, 1 = DOS, 2 = Mac, 3 = both DOS and Mac. */
@@ -583,7 +583,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 	}
 
 	if (openfile->current == openfile->fileage) {
-		first_line_ins = TRUE;
+		first_line_ins = true;
 	} else {
 		fileptr = openfile->current->prev;
 	}
@@ -812,7 +812,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 		             (unsigned long)num_lines), (unsigned long)num_lines);
 }
 
-/* Open the file (and decide if it exists).  If newfie is TRUE, display
+/* Open the file (and decide if it exists).  If newfie is true, display
  * "New File" if the file is missing.  Otherwise, say "[filename] not
  * found".
  *
@@ -906,7 +906,7 @@ char *get_next_filename(const char *name, const char *suffix)
 	buf = charalloc(namelen + suffixlen + ulmax_digits + 2);
 	sprintf(buf, "%s%s", name, suffix);
 
-	while (TRUE) {
+	while (true) {
 		struct stat fs;
 
 		if (stat(buf, &fs) == -1) {
@@ -940,10 +940,10 @@ void do_execute_command()
 	const sc *s;
 	currmenu = MEXTCMD;
 
-	while (TRUE) {
+	while (true) {
 		msg = _("Command to execute (no output) [from %s]");
 
-		PromptResult i = do_prompt(TRUE, TRUE, MEXTCMD, key, ans, NULL, edit_refresh, msg, "./");
+		PromptResult i = do_prompt(true, true, MEXTCMD, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* Cancel if the command was empty or the user cancelled */
 		if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING || *answer == '\n')) {
@@ -1003,7 +1003,7 @@ void do_execute_command()
 }
 
 /* Insert a file into a new buffer if the MULTIBUFFER flag is set, or
- * into the current buffer if it isn't.  If execute is TRUE, insert the
+ * into the current buffer if it isn't.  If execute is true, insert the
  * output of an executed command instead of a file. */
 void do_insertfile(bool execute)
 {
@@ -1019,7 +1019,7 @@ void do_insertfile(bool execute)
 
 	currmenu = MINSERTFILE;
 
-	while (TRUE) {
+	while (true) {
 		if (execute) {
 			msg = ISSET(MULTIBUFFER) ? _("Command to execute in new buffer [from %s] ") : _("Command to execute [from %s] ");
 		} else {
@@ -1027,7 +1027,7 @@ void do_insertfile(bool execute)
 		}
 
 		std::shared_ptr<Key> key;
-		PromptResult i = do_prompt(TRUE, TRUE, execute ? MEXTCMD : MINSERTFILE, key, ans, NULL, edit_refresh, msg, "./");
+		PromptResult i = do_prompt(true, true, execute ? MEXTCMD : MINSERTFILE, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* If we're in multibuffer mode and the filename or command is
 		 * blank, open a new buffer instead of canceling.  If the
@@ -1121,7 +1121,7 @@ void do_insertfile(bool execute)
 				answer = mallocstrassn(answer, real_dir_from_tilde(answer));
 
 				/* Save the file specified in answer in the current buffer. */
-				open_buffer(answer, TRUE);
+				open_buffer(answer, true);
 			}
 
 			if (ISSET(MULTIBUFFER)) {
@@ -1263,11 +1263,11 @@ char *get_full_path(const char *origpath)
 	d_there = real_dir_from_tilde(origpath);
 
 	/* If stat()ing d_there fails, assume that d_there refers to a new
-	 * file that hasn't been saved to disk yet.  Set path_only to TRUE
+	 * file that hasn't been saved to disk yet.  Set path_only to true
 	 * if d_there refers to a directory, and false otherwise. */
 	path_only = (stat(d_there, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
 
-	/* If path_only is TRUE, make sure d_there ends in a slash. */
+	/* If path_only is true, make sure d_there ends in a slash. */
 	if (path_only) {
 		size_t d_there_len = strlen(d_there);
 
@@ -1318,11 +1318,11 @@ char *get_full_path(const char *origpath)
 					strcat(d_there, "/");
 				}
 			} else
-				/* Otherwise, set path_only to TRUE, so that we clean up
+				/* Otherwise, set path_only to true, so that we clean up
 				 * correctly, free all allocated memory, and return
 				 * NULL. */
 			{
-				path_only = TRUE;
+				path_only = true;
 			}
 
 			/* Finally, go back to the path specified in d_here,
@@ -1501,7 +1501,7 @@ int copy_file(FILE *inn, FILE *out)
 
 /* Write a file out to disk.  If f_open isn't NULL, we assume that it is
  * a stream associated with the file, and we don't try to open it
- * ourselves.  If tmp is TRUE, we set the umask to disallow anyone else
+ * ourselves.  If tmp is true, we set the umask to disallow anyone else
  * from accessing the file, we don't set the filename to its name, and
  * we don't print out how many lines we wrote on the statusbar.
  *
@@ -1509,11 +1509,11 @@ int copy_file(FILE *inn, FILE *out)
  * use it when spell checking or dumping the file on an error.  If
  * append is APPEND, it means we are appending instead of overwriting.
  * If append is PREPEND, it means we are prepending instead of
- * overwriting.  If nonamechange is TRUE, we don't change the current
+ * overwriting.  If nonamechange is true, we don't change the current
  * filename.  nonamechange is ignored if tmp is false, we're appending,
  * or we're prepending.
  *
- * Return TRUE on success or false on error. */
+ * Return true on success or false on error. */
 bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bool nonamechange)
 {
 	bool retval = false;
@@ -1526,7 +1526,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bo
 	mode_t original_umask = 0;
 	/* Our umask, from when pinot started. */
 	bool realexists;
-	/* The result of stat().  TRUE if the file exists, false
+	/* The result of stat().  true if the file exists, false
 	 * otherwise.  If name is a link that points nowhere, realexists
 	 * is false. */
 	struct stat st;
@@ -1762,7 +1762,7 @@ skip_backup:
 		original_umask = umask(0);
 
 		/* If we create a temp file, we don't let anyone else access it.
-		 * We create a temp file if tmp is TRUE. */
+		 * We create a temp file if tmp is true. */
 		if (tmp) {
 			umask(S_IRWXG | S_IRWXO);
 		} else {
@@ -1816,7 +1816,7 @@ skip_backup:
 	}
 
 	if (f_open == NULL) {
-		/* Now open the file in place.  Use O_EXCL if tmp is TRUE.  This
+		/* Now open the file in place.  Use O_EXCL if tmp is true.  This
 		 * is copied from joe, because wiggy says so *shrug*. */
 		fd = open(realname, O_WRONLY | O_CREAT | ((append == APPEND) ? O_APPEND : (tmp ? O_EXCL : O_TRUNC)), S_IRUSR |S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
@@ -1951,7 +1951,7 @@ skip_backup:
 		titlebar(NULL);
 	}
 
-	retval = TRUE;
+	retval = true;
 
 cleanup_and_exit:
 	free(realname);
@@ -1962,7 +1962,7 @@ cleanup_and_exit:
 	return retval;
 }
 
-/* Write a marked selection from a file out to disk.  Return TRUE on
+/* Write a marked selection from a file out to disk.  Return true on
  * success or false on error. */
 bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type append)
 {
@@ -1988,7 +1988,7 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
 		new_magicline();
 	}
 
-	retval = write_file(name, f_open, tmp, append, TRUE);
+	retval = write_file(name, f_open, tmp, append, true);
 
 	/* If the NO_NEWLINES flag isn't set, and we added a magicline,
 	 * remove it now. */
@@ -2007,9 +2007,9 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
 }
 
 /* Write the current file to disk.  If the mark is on, write the current
- * marked selection to disk.  If exiting is TRUE, write the file to disk
+ * marked selection to disk.  If exiting is true, write the file to disk
  * regardless of whether the mark is on, and without prompting if the
- * TEMP_FILE flag is set.  Return TRUE on success or false on error. */
+ * TEMP_FILE flag is set.  Return true on success or false on error. */
 bool do_writeout(bool exiting)
 {
 	append_type append = OVERWRITE;
@@ -2031,7 +2031,7 @@ bool do_writeout(bool exiting)
 
 	ans = mallocstrcpy(NULL, (!exiting && openfile->mark_set) ? "" : openfile->filename);
 
-	while (TRUE) {
+	while (true) {
 		const char *msg;
 		const char *formatstr, *backupstr;
 
@@ -2051,8 +2051,8 @@ bool do_writeout(bool exiting)
 		}
 
 		std::shared_ptr<Key> key;
-		PromptResult i = do_prompt(TRUE,
-		              TRUE,
+		PromptResult i = do_prompt(true,
+		              true,
 		              MWRITEFILE, key, ans,
 		              NULL,
 		              edit_refresh, "%s%s%s", msg,
@@ -2392,7 +2392,7 @@ std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, s
 			/* ...unless the match isn't a directory and allow_files
 			 * isn't set, in which case just go to the next match. */
 			if (!allow_files && !is_dir(tmp)) {
-				skip_match = TRUE;
+				skip_match = true;
 			}
 
 			free(tmp);
@@ -2452,7 +2452,7 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 		char *match2_mb = charalloc(mb_cur_max() + 1);
 		int match1_mb_len, match2_mb_len;
 
-		while (TRUE) {
+		while (true) {
 			size_t match;
 			for (match = 1; match < matches.size(); match++) {
 				/* Get the number of single-byte characters that all the
@@ -2507,7 +2507,7 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			strncpy(buf, mzero, common_len);
 			*place = common_len;
 		} else if (!*lastwastab || matches.size() < 2) {
-			*lastwastab = TRUE;
+			*lastwastab = true;
 		} else {
 			int longest_name = 0, ncols, editline = 0;
 
@@ -2564,7 +2564,7 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			}
 
 			wnoutrefresh(edit);
-			*list = TRUE;
+			*list = true;
 		}
 
 		free(mzero);
@@ -2710,7 +2710,7 @@ void load_history(void)
 }
 
 /* Write the lines of a history list, starting with the line at h, to
- * the open file at hist.  Return TRUE if the write succeeded, and false
+ * the open file at hist.  Return true if the write succeeded, and false
  * otherwise. */
 bool writehist(FILE *hist, filestruct *h)
 {
@@ -2728,7 +2728,7 @@ bool writehist(FILE *hist, filestruct *h)
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 /* Save histories to ~/.pinot/search_history. */
