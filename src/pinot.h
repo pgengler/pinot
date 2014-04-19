@@ -422,7 +422,7 @@ enum {
   that will necessitate. */
 
 #define VIEW TRUE
-#define NOVIEW FALSE
+#define NOVIEW false
 
 /* The maximum number of entries displayed in the main shortcut list. */
 #define MAIN_VISIBLE (((COLS + 40) / 20) * 2)

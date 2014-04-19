@@ -64,7 +64,7 @@ void get_homedir(void)
 }
 
 /* Read a ssize_t from str, and store it in *val (if val is not NULL).
- * On error, we return FALSE and don't change *val.  Otherwise, we
+ * On error, we return false and don't change *val.  Otherwise, we
  * return TRUE. */
 bool parse_num(const char *str, ssize_t *val)
 {
@@ -80,7 +80,7 @@ bool parse_num(const char *str, ssize_t *val)
 	j = (ssize_t)strtol(str, &first_error, 10);
 
 	if (errno == ERANGE || *str == '\0' || *first_error != '\0') {
-		return FALSE;
+		return false;
 	}
 
 	if (val != NULL) {
@@ -91,7 +91,7 @@ bool parse_num(const char *str, ssize_t *val)
 }
 
 /* Read two ssize_t's, separated by a comma, from str, and store them in
- * *line and *column (if they're not both NULL).  Return FALSE on error,
+ * *line and *column (if they're not both NULL).  Return false on error,
  * or TRUE otherwise. */
 bool parse_line_column(const char *str, ssize_t *line, ssize_t *column)
 {
@@ -104,7 +104,7 @@ bool parse_line_column(const char *str, ssize_t *line, ssize_t *column)
 
 	if (comma != NULL && column != NULL) {
 		if (!parse_num(comma + 1, column)) {
-			retval = FALSE;
+			retval = false;
 		}
 	}
 
@@ -114,12 +114,12 @@ bool parse_line_column(const char *str, ssize_t *line, ssize_t *column)
 			str_line[comma - str] = '\0';
 
 			if (str_line[0] != '\0' && !parse_num(str_line, line)) {
-				retval = FALSE;
+				retval = false;
 			}
 
 			free(str_line);
 		} else if (!parse_num(str, line)) {
-			retval = FALSE;
+			retval = false;
 		}
 	}
 
@@ -336,7 +336,7 @@ bool is_whole_word(size_t pos, const char *buf, const char *word)
 	 * word isn't a non-punctuation "word" character, and if we're at
 	 * the end of the line or the character after the word isn't a
 	 * non-punctuation "word" character, we have a whole word. */
-	retval = (pos == 0 || !is_word_mbchar(p, FALSE)) && (word_end == strlen(buf) || !is_word_mbchar(r, FALSE));
+	retval = (pos == 0 || !is_word_mbchar(p, false)) && (word_end == strlen(buf) || !is_word_mbchar(r, false));
 
 	free(p);
 	free(r);
@@ -585,7 +585,7 @@ void remove_magicline(void)
  * respectively, based on the locations of top and bot.  If
  * right_side_up isn't NULL, set it to TRUE if the mark begins with
  * (mark_begin, mark_begin_x) and ends with (current, current_x), or
- * FALSE otherwise. */
+ * false otherwise. */
 void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, size_t *bot_x, bool *right_side_up)
 {
 	assert(top != NULL && top_x != NULL && bot != NULL && bot_x != NULL);
@@ -604,7 +604,7 @@ void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, s
 		*top = openfile->current;
 		*top_x = openfile->current_x;
 		if (right_side_up != NULL) {
-			*right_side_up = FALSE;
+			*right_side_up = false;
 		}
 	}
 }

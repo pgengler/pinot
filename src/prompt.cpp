@@ -36,7 +36,7 @@ static size_t old_statusbar_x = (size_t)-1;
 /* The old cursor position in answer, if any. */
 static size_t old_pww = (size_t)-1;
 /* The old place we want in answer, if any. */
-static bool reset_statusbar_x = FALSE;
+static bool reset_statusbar_x = false;
 /* Should we reset the cursor position at the statusbar prompt? */
 
 /* Read in a character, interpret it as a shortcut or toggle if
@@ -44,7 +44,7 @@ static bool reset_statusbar_x = FALSE;
  * is a shortcut key, set ran_func to TRUE if we ran a function associated
  * with a shortcut key, and set finished to TRUE if we're done after running
  * or trying to run a function associated with a shortcut key.  If
- * allow_funcs is FALSE, don't actually run any functions associated
+ * allow_funcs is false, don't actually run any functions associated
  * with shortcut keys.  refresh_func is the function we will call to
  * refresh the edit window. */
 Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
@@ -52,9 +52,9 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 	const sc *s;
 	const subnfunc *f;
 
-	*have_shortcut = FALSE;
-	*ran_func = FALSE;
-	*finished = FALSE;
+	*have_shortcut = false;
+	*ran_func = false;
+	*finished = false;
 
 	/* Read in a character. */
 	Key input = get_kbinput(bottomwin);
@@ -84,9 +84,9 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 		} else if (s->scfunc == do_left) {
 			do_statusbar_left();
 		} else if (s->scfunc == do_next_word_void) {
-			do_statusbar_next_word(FALSE);
+			do_statusbar_next_word(false);
 		} else if (s->scfunc == do_prev_word_void) {
-			do_statusbar_prev_word(FALSE);
+			do_statusbar_prev_word(false);
 		} else if (s->scfunc == do_home) {
 			do_statusbar_home();
 		} else if (s->scfunc == do_end) {
@@ -116,7 +116,7 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 			*finished = TRUE;
 		}
 	} else {
-		do_statusbar_output(std::string(input),  FALSE);
+		do_statusbar_output(std::string(input),  false);
 	}
 
 	return input;
@@ -156,7 +156,7 @@ void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
 
 		i += char_buf_len;
 
-		/* If allow_cntrls is FALSE, filter out an ASCII control character. */
+		/* If allow_cntrls is false, filter out an ASCII control character. */
 		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
 			continue;
 		}
@@ -297,13 +297,13 @@ void do_statusbar_cut_text(void)
 
 /* Move to the next word in the prompt text.  If allow_punct is TRUE,
  * treat punctuation as part of a word.  Return TRUE if we started on a
- * word, and FALSE otherwise. */
+ * word, and false otherwise. */
 bool do_statusbar_next_word(bool allow_punct)
 {
 	size_t pww_save = statusbar_pww;
 	char *char_mb;
 	int char_mb_len;
-	bool end_line = FALSE, started_on_word = FALSE;
+	bool end_line = false, started_on_word = false;
 
 	assert(answer != NULL);
 
@@ -366,13 +366,13 @@ bool do_statusbar_next_word(bool allow_punct)
 
 /* Move to the previous word in the prompt text.  If allow_punct is
  * TRUE, treat punctuation as part of a word.  Return TRUE if we started
- * on a word, and FALSE otherwise. */
+ * on a word, and false otherwise. */
 bool do_statusbar_prev_word(bool allow_punct)
 {
 	size_t pww_save = statusbar_pww;
 	char *char_mb;
 	int char_mb_len;
-	bool begin_line = FALSE, started_on_word = FALSE;
+	bool begin_line = false, started_on_word = false;
 
 	assert(answer != NULL);
 
@@ -478,7 +478,7 @@ void do_statusbar_verbatim_input(void)
 /* Search for a match to one of the two characters in bracket_set.  If
  * reverse is TRUE, search backwards for the leftmost bracket.
  * Otherwise, search forwards for the rightmost bracket.  Return TRUE if
- * we found a match, and FALSE otherwise. */
+ * we found a match, and false otherwise. */
 bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 {
 	const char *rev_start = NULL, *found = NULL;
@@ -506,7 +506,7 @@ bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 		}
 
 		/* We've reached the start or end of the statusbar text, so get out. */
-		return FALSE;
+		return false;
 	}
 
 	/* We've definitely found something. */
@@ -682,7 +682,7 @@ void update_statusbar_line(const char *curranswer, size_t index)
 	waddch(bottomwin, ':');
 	waddch(bottomwin, (page_start == 0) ? ' ' : '$');
 
-	expanded = display_string(curranswer, page_start, COLS - start_col - 1, FALSE);
+	expanded = display_string(curranswer, page_start, COLS - start_col - 1, false);
 	waddstr(bottomwin, expanded);
 	free(expanded);
 
@@ -692,7 +692,7 @@ void update_statusbar_line(const char *curranswer, size_t index)
 	wnoutrefresh(bottomwin);
 }
 
-/* Return TRUE if we need an update after moving horizontally, and FALSE
+/* Return TRUE if we need an update after moving horizontally, and false
  * otherwise.  We need one if pww_save and statusbar_pww are on
  * different pages. */
 bool need_statusbar_horizontal_update(size_t pww_save)
@@ -717,7 +717,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	bool have_shortcut, ran_func, finished;
 	size_t curranswer_len;
 	const sc *s;
-	bool tabbed = FALSE;
+	bool tabbed = false;
 	/* Whether we've pressed Tab. */
 	char *history = NULL;
 	/* The current history string. */
@@ -774,7 +774,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 		}
 
 		if (s && s->scfunc != do_tab) {
-			tabbed = FALSE;
+			tabbed = false;
 		}
 
 		if (s && s->scfunc == do_tab) {
@@ -815,9 +815,9 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 					/* This key has a shortcut list entry when it's used
 					 * to move to an older search, which means that
 					 * finished has been set to TRUE.  Set it back to
-					 * FALSE here, so that we aren't kicked out of the
+					 * false here, so that we aren't kicked out of the
 					 * statusbar prompt. */
-					finished = FALSE;
+					finished = false;
 				}
 			} else if (s && s->scfunc == get_history_newer_void) {
 				if (history_list != NULL) {
@@ -843,9 +843,9 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 					/* This key has a shortcut list entry when it's used
 					 * to move to a newer search, which means that
 					 * finished has been set to TRUE.  Set it back to
-					 * FALSE here, so that we aren't kicked out of the
+					 * false here, so that we aren't kicked out of the
 					 * statusbar prompt. */
-					finished = FALSE;
+					finished = false;
 				}
 			} else if (s && s->scfunc == do_help_void) {
 				update_statusbar_line(answer, statusbar_x);
@@ -853,10 +853,10 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 				/* This key has a shortcut list entry when it's used to
 				 * go to the help browser or display a message
 				 * indicating that help is disabled, which means that
-				 * finished has been set to TRUE.  Set it back to FALSE
+				 * finished has been set to TRUE.  Set it back to false
 				 * here, so that we aren't kicked out of the statusbar
 				 * prompt. */
-				finished = FALSE;
+				finished = false;
 			}
 		}
 
@@ -899,7 +899,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 			 * an associated function, so leave the statusbar cursor position
 			 * alone. */
 		} else {
-			reset_statusbar_x = FALSE;
+			reset_statusbar_x = false;
 		}
 	}
 
@@ -924,7 +924,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	va_list ap;
 	PromptResult retval;
 	const sc *s;
-	bool list = FALSE;
+	bool list = false;
 
 	/* prompt has been freed and set to NULL unless the user resized
 	 * while at the statusbar prompt. */

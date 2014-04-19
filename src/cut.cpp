@@ -25,7 +25,7 @@
 #include <string.h>
 #include <stdio.h>
 
-static bool keep_cutbuffer = FALSE;
+static bool keep_cutbuffer = false;
 /* Should we keep the contents of the cutbuffer? */
 /* Pointer to the end of the cutbuffer. */
 
@@ -33,7 +33,7 @@ static bool keep_cutbuffer = FALSE;
  * cutbuffer. */
 void cutbuffer_reset(void)
 {
-	keep_cutbuffer = FALSE;
+	keep_cutbuffer = false;
 }
 
 /* If we aren't on the last line of the file, move all the text of the
@@ -113,7 +113,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 
 	assert(openfile->current != NULL && openfile->current->data != NULL);
 
-	/* If keep_cutbuffer is FALSE and the cutbuffer isn't empty, blow
+	/* If keep_cutbuffer is false and the cutbuffer isn't empty, blow
 	 * away the text in the cutbuffer. */
 	if (!keep_cutbuffer && cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
@@ -147,7 +147,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 		/* If the mark is on, move the marked text to the cutbuffer, and
 		 * turn the mark off. */
 		cut_marked();
-		openfile->mark_set = FALSE;
+		openfile->mark_set = false;
 	} else if (ISSET(CUT_TO_END)) {
 		/* If the CUT_TO_END flag is set, move all text up to the end of
 		 * the line into the cutbuffer. */
@@ -194,7 +194,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 	/* Update the screen. */
 	edit_refresh_needed = TRUE;
 
-	reset_multis(openfile->current, FALSE);
+	reset_multis(openfile->current, false);
 
 #ifdef DEBUG
 	dump_filestruct(cutbuffer);
@@ -205,21 +205,21 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 void do_cut_text_void(void)
 {
 	add_undo(CUT);
-	do_cut_text(FALSE, FALSE, FALSE);
+	do_cut_text(false, false, false);
 }
 
 /* Move text from the current filestruct into the cutbuffer, and copy it
  * back into the filestruct afterward. */
 void do_copy_text(void)
 {
-	do_cut_text(TRUE, FALSE, FALSE);
+	do_cut_text(TRUE, false, false);
 }
 
 /* Cut from the current cursor position to the end of the file. */
 void do_cut_till_end(void)
 {
 	add_undo(CUT);
-	do_cut_text(FALSE, TRUE, FALSE);
+	do_cut_text(false, TRUE, false);
 }
 
 /* Copy text from the cutbuffer into the current filestruct. */
@@ -248,7 +248,7 @@ void do_uncut_text(void)
 	/* Update the screen. */
 	edit_refresh_needed = TRUE;
 
-	reset_multis(openfile->current, FALSE);
+	reset_multis(openfile->current, false);
 
 #ifdef DEBUG
 	dump_filestruct_reverse();

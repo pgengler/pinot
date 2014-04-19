@@ -116,7 +116,7 @@ void do_page_down(void)
 
 /* Move to the next word in the file.  If allow_punct is TRUE, treat
  * punctuation as part of a word.  If allow_update is TRUE, update the
- * screen afterwards.  Return TRUE if we started on a word, and FALSE
+ * screen afterwards.  Return TRUE if we started on a word, and false
  * otherwise. */
 bool do_next_word(bool allow_punct, bool allow_update)
 {
@@ -124,7 +124,7 @@ bool do_next_word(bool allow_punct, bool allow_update)
 	filestruct *current_save = openfile->current;
 	char *char_mb;
 	int char_mb_len;
-	bool end_line = FALSE, started_on_word = FALSE;
+	bool end_line = false, started_on_word = false;
 
 	assert(openfile->current != NULL && openfile->current->data != NULL);
 
@@ -183,7 +183,7 @@ bool do_next_word(bool allow_punct, bool allow_update)
 		}
 
 		if (openfile->current != openfile->filebot) {
-			end_line = FALSE;
+			end_line = false;
 			openfile->current_x = 0;
 		}
 	}
@@ -216,7 +216,7 @@ void do_next_word_void(void)
 
 /* Move to the previous word in the file.  If allow_punct is TRUE, treat
  * punctuation as part of a word.  If allow_update is TRUE, update the
- * screen afterwards.  Return TRUE if we started on a word, and FALSE
+ * screen afterwards.  Return TRUE if we started on a word, and false
  * otherwise. */
 bool do_prev_word(bool allow_punct, bool allow_update)
 {
@@ -224,7 +224,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	filestruct *current_save = openfile->current;
 	char *char_mb;
 	int char_mb_len;
-	bool begin_line = FALSE, started_on_word = FALSE;
+	bool begin_line = false, started_on_word = false;
 
 	assert(openfile->current != NULL && openfile->current->data != NULL);
 
@@ -279,7 +279,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 		}
 
 		if (openfile->current != openfile->fileage) {
-			begin_line = FALSE;
+			begin_line = false;
 			openfile->current_x = strlen(openfile->current->prev->data);
 		}
 	}
@@ -381,7 +381,7 @@ void do_end(void)
 	}
 }
 
-/* If scroll_only is FALSE, move up one line.  If scroll_only is TRUE,
+/* If scroll_only is false, move up one line.  If scroll_only is TRUE,
  * scroll up one line without scrolling the cursor. */
 void do_up(bool scroll_only)
 {
@@ -397,7 +397,7 @@ void do_up(bool scroll_only)
 	openfile->current = openfile->current->prev;
 	openfile->current_x = actual_x(openfile->current->data, openfile->placewewant);
 
-	/* If scroll_only is FALSE and if we're on the first line of the
+	/* If scroll_only is false and if we're on the first line of the
 	 * edit window, scroll the edit window up one line if we're in
 	 * smooth scrolling mode, or up half a page if we're not.  If
 	 * scroll_only is TRUE, scroll the edit window up one line
@@ -421,7 +421,7 @@ void do_up(bool scroll_only)
 /* Move up one line. */
 void do_up_void(void)
 {
-	do_up(FALSE);
+	do_up(false);
 }
 
 /* Scroll up one line without scrolling the cursor. */
@@ -430,7 +430,7 @@ void do_scroll_up(void)
 	do_up(TRUE);
 }
 
-/* If scroll_only is FALSE, move down one line.  If scroll_only is TRUE,
+/* If scroll_only is false, move down one line.  If scroll_only is TRUE,
  * scroll down one line without scrolling the cursor. */
 void do_down(bool scroll_only)
 {
@@ -464,7 +464,7 @@ void do_down(bool scroll_only)
 		}
 	}
 
-	/* If scroll_only is FALSE and if we're on the last line of the
+	/* If scroll_only is false and if we're on the last line of the
 	 * edit window, scroll the edit window down one line if we're in
 	 * smooth scrolling mode, or down half a page if we're not.  If
 	 * scroll_only is TRUE, scroll the edit window down one line
@@ -492,7 +492,7 @@ void do_down(bool scroll_only)
 /* Move down one line. */
 void do_down_void(void)
 {
-	do_down(FALSE);
+	do_down(false);
 }
 
 /* Scroll down one line without scrolling the cursor. */

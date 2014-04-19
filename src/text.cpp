@@ -33,7 +33,7 @@
 static pid_t pid = -1;
 /* The PID of the forked process in execute_command(), for use
  * with the cancel_command() signal handler. */
-static bool prepend_wrap = FALSE;
+static bool prepend_wrap = false;
 /* Should we prepend wrapped text to the next line? */
 
 /* Toggle the mark. */
@@ -116,14 +116,14 @@ void do_delete(void)
 		return;
 	}
 
-	if (ISSET(SOFTWRAP) && edit_refresh_needed == FALSE)
+	if (ISSET(SOFTWRAP) && edit_refresh_needed == false)
 		if (strlenpt(openfile->current->data) / COLS != orig_lenpt / COLS) {
 			edit_refresh_needed  = TRUE;
 		}
 
 	set_modified();
 
-	if (edit_refresh_needed  == FALSE) {
+	if (edit_refresh_needed  == false) {
 		update_line(openfile->current, openfile->current_x);
 	}
 }
@@ -171,9 +171,9 @@ void do_tab(void)
  * tabsize) tabs and (len % tabsize) spaces. */
 void do_indent(ssize_t cols)
 {
-	bool indent_changed = FALSE;
+	bool indent_changed = false;
 	/* Whether any indenting or unindenting was done. */
-	bool unindent = FALSE;
+	bool unindent = false;
 	/* Whether we're unindenting text. */
 	char *line_indent = NULL;
 	/* The text added to each line in order to indent it. */
@@ -350,9 +350,9 @@ void undo_cut(undo *u)
 
 	/* Get to where we need to uncut from */
 	if (u->mark_set && u->mark_begin_lineno < u->lineno) {
-		do_gotolinecolumn(u->mark_begin_lineno, u->mark_begin_x+1, FALSE, FALSE, FALSE, FALSE);
+		do_gotolinecolumn(u->mark_begin_lineno, u->mark_begin_x+1, false, false, false, false);
 	} else {
-		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
+		do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
 	}
 
 	copy_from_filestruct(cutbuffer);
@@ -372,7 +372,7 @@ void redo_cut(undo *u)
 		return;
 	}
 
-	do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
+	do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
 	openfile->mark_set = u->mark_set;
 	if (cutbuffer) {
 		free(cutbuffer);
@@ -401,8 +401,8 @@ void redo_cut(undo *u)
 	}
 
 	openfile->mark_begin_x = u->mark_begin_x;
-	do_cut_text(FALSE, u->to_end, TRUE);
-	openfile->mark_set = FALSE;
+	do_cut_text(false, u->to_end, TRUE);
+	openfile->mark_set = false;
 	openfile->mark_begin = NULL;
 	openfile->mark_begin_x = 0;
 	edit_refresh_needed = TRUE;
@@ -515,13 +515,13 @@ void do_undo(void)
 		openfile->mark_begin = fsfromline(u->lineno + u->mark_begin_lineno - 1);
 		openfile->mark_begin_x = 0;
 		openfile->mark_set = TRUE;
-		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
+		do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
 		cut_marked();
 		u->cutbuffer = cutbuffer;
 		u->cutbottom = cutbottom;
 		cutbuffer = oldcutbuffer;
 		cutbottom = oldcutbottom;
-		openfile->mark_set = FALSE;
+		openfile->mark_set = false;
 		break;
 	case REPLACE:
 		undidmsg = _("text replace");
@@ -536,7 +536,7 @@ void do_undo(void)
 
 	}
 	renumber(f);
-	do_gotolinecolumn(u->lineno, u->begin, FALSE, FALSE, FALSE, TRUE);
+	do_gotolinecolumn(u->lineno, u->begin, false, false, false, TRUE);
 	statusbar(_("Undid action (%s)"), undidmsg);
 	openfile->current_undo = openfile->current_undo->next;
 	openfile->last_action = OTHER;
@@ -598,7 +598,7 @@ void do_redo(void)
 		break;
 	case ENTER:
 		undidmsg = _("line break");
-		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
+		do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
 		do_enter(TRUE);
 		break;
 	case SPLIT:
@@ -640,7 +640,7 @@ void do_redo(void)
 		break;
 	case INSERT:
 		undidmsg = _("text insert");
-		do_gotolinecolumn(u->lineno, u->begin+1, FALSE, FALSE, FALSE, FALSE);
+		do_gotolinecolumn(u->lineno, u->begin+1, false, false, false, false);
 		copy_from_filestruct(u->cutbuffer);
 		openfile->placewewant = xplustabs();
 		break;
@@ -649,7 +649,7 @@ void do_redo(void)
 		break;
 
 	}
-	do_gotolinecolumn(u->lineno, u->begin, FALSE, FALSE, FALSE, TRUE);
+	do_gotolinecolumn(u->lineno, u->begin, false, false, false, TRUE);
 	statusbar(_("Redid action (%s)"), undidmsg);
 
 	openfile->current_undo = u;
@@ -716,7 +716,7 @@ void do_enter(bool undoing)
 /* Need this again... */
 void do_enter_void(void)
 {
-	do_enter(FALSE);
+	do_enter(false);
 }
 
 /* Send a SIGKILL (unconditional kill) to the forked process in
@@ -737,13 +737,13 @@ bool execute_command(const char *command)
 	char *shellenv;
 	struct sigaction oldaction, newaction;
 	/* Original and temporary handlers for SIGINT. */
-	bool sig_failed = FALSE;
+	bool sig_failed = false;
 	/* Did sigaction() fail without changing the signal handlers? */
 
 	/* Make our pipes. */
 	if (pipe(fd) == -1) {
 		statusbar(_("Could not create pipe"));
-		return FALSE;
+		return false;
 	}
 
 	/* Check $SHELL for the shell to use.  If it isn't set, use /bin/sh.
@@ -770,7 +770,7 @@ bool execute_command(const char *command)
 	if (pid == -1) {
 		close(fd[0]);
 		statusbar(_("Could not fork"));
-		return FALSE;
+		return false;
 	}
 
 	/* Before we start reading the forked command's output, we set
@@ -799,7 +799,7 @@ bool execute_command(const char *command)
 		nperror("fdopen");
 	}
 
-	read_file(f, 0, "stdin", TRUE, FALSE);
+	read_file(f, 0, "stdin", TRUE, false);
 
 	if (wait(NULL) == -1) {
 		nperror("wait");
@@ -825,14 +825,14 @@ int execute_command_silently(const char *command)
 	char *shellenv;
 	struct sigaction oldaction, newaction;
 	/* Original and temporary handlers for SIGINT. */
-	bool sig_failed = FALSE;
+	bool sig_failed = false;
 	/* Did sigaction() fail without changing the signal handlers? */
 	int status;
 
 	/* Make our pipes. */
 	if (pipe(fd) == -1) {
 		statusbar(_("Could not pipe"));
-		return FALSE;
+		return false;
 	}
 
 	/* Check $SHELL for the shell to use.  If it isn't set, use /bin/sh.
@@ -947,7 +947,7 @@ void add_undo(undo_type current_action)
 	u->mark_begin_lineno = 0;
 	u->mark_begin_x = 0;
 	u->xflags = 0;
-	u->to_end = FALSE;
+	u->to_end = false;
 
 	switch (u->type) {
 		/* We need to start copying data into the undo buffer or we wont be able
@@ -974,7 +974,7 @@ void add_undo(undo_type current_action)
 		}
 		break;
 	case SPLIT:
-		wrap_loc = break_line(openfile->current->data, fill, FALSE);
+		wrap_loc = break_line(openfile->current->data, fill, false);
 		u->strdata = mallocstrcpy(NULL, &openfile->current->data[wrap_loc]);
 		/* Don't both saving the next line if we're not prepending as a new line
 		   will be created */
@@ -994,7 +994,7 @@ void add_undo(undo_type current_action)
 			u->mark_begin_lineno = openfile->mark_begin->lineno;
 			u->mark_begin_x = openfile->mark_begin_x;
 		}
-		u->to_end = (ISSET(CUT_TO_END)) ? TRUE : FALSE;
+		u->to_end = (ISSET(CUT_TO_END)) ? TRUE : false;
 		last_cutu = u;
 		break;
 	case UNCUT:
@@ -1140,12 +1140,12 @@ void update_undo(undo_type action)
  * something other than type text. */
 void wrap_reset(void)
 {
-	prepend_wrap = FALSE;
+	prepend_wrap = false;
 }
 
 /* We wrap the given line.  Precondition: we assume the cursor has been
  * moved forward since the last typed character.  Return TRUE if we
- * wrapped, and FALSE otherwise. */
+ * wrapped, and false otherwise. */
 bool do_wrap(filestruct *line, bool undoing)
 {
 	size_t line_len;
@@ -1160,7 +1160,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	/* The text after the wrap point. */
 	size_t after_break_len;
 	/* The length of after_break. */
-	bool prepending = FALSE;
+	bool prepending = false;
 	/* Do we prepend to the next line? */
 	const char *next_line = NULL;
 	/* The next line, minus indentation. */
@@ -1190,12 +1190,12 @@ bool do_wrap(filestruct *line, bool undoing)
 	line_len = strlen(line->data);
 
 	/* Find the last blank where we can break the line. */
-	wrap_loc = break_line(line->data, fill, FALSE);
+	wrap_loc = break_line(line->data, fill, false);
 
 	/* If we couldn't break the line, or we've reached the end of it, we
 	 * don't wrap. */
 	if (wrap_loc == -1 || line->data[wrap_loc] == '\0') {
-		return FALSE;
+		return false;
 	}
 
 	/* Otherwise, move forward to the character just after the blank. */
@@ -1203,7 +1203,7 @@ bool do_wrap(filestruct *line, bool undoing)
 
 	/* If we've reached the end of the line, we don't wrap. */
 	if (line->data[wrap_loc] == '\0') {
-		return FALSE;
+		return false;
 	}
 
 	if (!undoing) {
@@ -1218,7 +1218,7 @@ bool do_wrap(filestruct *line, bool undoing)
 		indent_len = indent_length(indent_string);
 
 		if (wrap_loc == indent_len) {
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -1345,7 +1345,7 @@ bool do_wrap(filestruct *line, bool undoing)
 	/* If the cursor was after the break point, we must move it.  We
 	 * also clear the prepend_wrap flag in this case. */
 	if (openfile->current_x > wrap_loc) {
-		prepend_wrap = FALSE;
+		prepend_wrap = false;
 
 		openfile->current = openfile->current->next;
 		openfile->current_x -= wrap_loc - indent_len;
@@ -1414,7 +1414,7 @@ ssize_t break_line(const char *line, ssize_t goal, bool newln)
 
 	if (blank_loc == -1) {
 		/* No blank was found that was short enough. */
-		bool found_blank = FALSE;
+		bool found_blank = false;
 		ssize_t found_blank_loc = 0;
 
 		while (*line != '\0') {
@@ -1486,7 +1486,7 @@ size_t indent_length(const char *line)
 
 #ifdef ENABLE_SPELLER
 /* A word is misspelled in the file.  Let the user replace it.  We
- * return FALSE if the user cancels. */
+ * return false if the user cancels. */
 bool do_int_spell_fix(const char *word)
 {
 	char *save_search, *save_replace;
@@ -1495,17 +1495,17 @@ bool do_int_spell_fix(const char *word)
 	filestruct *edittop_save = openfile->edittop;
 	filestruct *current_save = openfile->current;
 	/* Save where we are. */
-	bool canceled = FALSE;
+	bool canceled = false;
 	/* The return value. */
 	bool case_sens_set = ISSET(CASE_SENSITIVE);
 	bool backwards_search_set = ISSET(BACKWARDS_SEARCH);
 	bool regexp_set = ISSET(USE_REGEXP);
 	bool old_mark_set = openfile->mark_set;
-	bool added_magicline = FALSE;
+	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
-	bool right_side_up = FALSE;
+	bool right_side_up = false;
 	/* TRUE if (mark_begin, mark_begin_x) is the top of the mark,
-	 * FALSE if (current, current_x) is. */
+	 * false if (current, current_x) is. */
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
 
@@ -1537,7 +1537,7 @@ bool do_int_spell_fix(const char *word)
 		if (!ISSET(NO_NEWLINES)) {
 			added_magicline = (openfile->filebot->data[0] != '\0');
 		}
-		openfile->mark_set = FALSE;
+		openfile->mark_set = false;
 	}
 
 	/* Start from the top of the file. */
@@ -1548,10 +1548,10 @@ bool do_int_spell_fix(const char *word)
 
 	/* Find the first whole occurrence of word. */
 	findnextstr_wrap_reset();
-	while (findnextstr(TRUE, FALSE, openfile->fileage, 0, word, &match_len)) {
+	while (findnextstr(TRUE, false, openfile->fileage, 0, word, &match_len)) {
 		if (is_whole_word(openfile->current_x, openfile->current->data, word)) {
 			size_t xpt = xplustabs();
-			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, FALSE);
+			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, false);
 
 			edit_refresh();
 
@@ -1559,9 +1559,9 @@ bool do_int_spell_fix(const char *word)
 
 			/* Allow all instances of the word to be corrected. */
 			std::shared_ptr<Key> key;
-			canceled = (do_prompt(FALSE, TRUE, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == PROMPT_ABORTED);
+			canceled = (do_prompt(false, TRUE, MSPELL, key, word, NULL, edit_refresh, _("Edit a replacement")) == PROMPT_ABORTED);
 
-			do_replace_highlight(FALSE, exp_word);
+			do_replace_highlight(false, exp_word);
 
 			free(exp_word);
 
@@ -1834,11 +1834,11 @@ const char *do_alt_speller(char *tempfile_name)
 	static int arglen = 3;
 	static char **spellargs = NULL;
 	bool old_mark_set = openfile->mark_set;
-	bool added_magicline = FALSE;
+	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
-	bool right_side_up = FALSE;
+	bool right_side_up = false;
 	/* TRUE if (mark_begin, mark_begin_x) is the top of the mark,
-	 * FALSE if (current, current_x) is. */
+	 * false if (current, current_x) is. */
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
 	ssize_t mb_lineno_save = 0;
@@ -1853,7 +1853,7 @@ const char *do_alt_speller(char *tempfile_name)
 		/* If the mark is on, save the number of the line it starts on,
 		 * and then turn the mark off. */
 		mb_lineno_save = openfile->mark_begin->lineno;
-		openfile->mark_set = FALSE;
+		openfile->mark_set = false;
 	}
 
 	if (openfile->totsize == 0) {
@@ -1893,7 +1893,7 @@ const char *do_alt_speller(char *tempfile_name)
 
 	/* Don't handle a pending SIGWINCH until the alternate spell checker
 	 * is finished and we've loaded the spell-checked file back in. */
-	allow_pending_sigwinch(FALSE);
+	allow_pending_sigwinch(false);
 
 	/* Wait for the alternate spell checker to finish. */
 	wait(&alt_spell_status);
@@ -2017,7 +2017,7 @@ void do_spell(void)
 		return;
 	}
 
-	status = openfile->mark_set ? write_marked_file(temp, temp_file, TRUE, OVERWRITE) : write_file(temp, temp_file, TRUE, OVERWRITE, FALSE);
+	status = openfile->mark_set ? write_marked_file(temp, temp_file, TRUE, OVERWRITE) : write_file(temp, temp_file, TRUE, OVERWRITE, false);
 
 	if (!status) {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
@@ -2071,10 +2071,10 @@ void do_linter(void)
 	}
 
 	if (openfile->modified) {
-		int i = do_yesno_prompt(FALSE, _("Save modified buffer before linting?"));
+		int i = do_yesno_prompt(false, _("Save modified buffer before linting?"));
 
 		if (i == 1) {
-			if (do_writeout(FALSE) != TRUE) {
+			if (do_writeout(false) != TRUE) {
 				return;
 			}
 		}
@@ -2261,11 +2261,11 @@ void do_linter(void)
 						int i;
 
 						sprintf(msg, _("This message is for unopened file %s, open it in a new buffer?"), curr_lint->filename.c_str());
-						i = do_yesno_prompt(FALSE, msg);
+						i = do_yesno_prompt(false, msg);
 						free(msg);
 						if (i == 1) {
 							SET(MULTIBUFFER);
-							open_buffer(curr_lint->filename.c_str(), FALSE);
+							open_buffer(curr_lint->filename.c_str(), false);
 						} else {
 							auto dontwantfile = curr_lint->filename;
 
@@ -2284,7 +2284,7 @@ void do_linter(void)
 					}
 				}
 			}
-			do_gotolinecolumn(curr_lint->lineno, tmpcol, FALSE, FALSE, FALSE, FALSE);
+			do_gotolinecolumn(curr_lint->lineno, tmpcol, false, false, false, false);
 			titlebar(NULL);
 			edit_refresh();
 			statusbar(curr_lint->text.c_str());
@@ -2342,7 +2342,7 @@ void do_wordlinechar_count(void)
 		 * contains only the marked text, and turn the mark off. */
 		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, NULL);
 		filepart = partition_filestruct(top, top_x, bot, bot_x);
-		openfile->mark_set = FALSE;
+		openfile->mark_set = false;
 	}
 
 	/* Start at the top of the file. */
@@ -2355,7 +2355,7 @@ void do_wordlinechar_count(void)
 	 * until we reach the end of the file, incrementing the total word
 	 * count whenever we're on a word just before moving. */
 	while (openfile->current != openfile->filebot || openfile->current->data[openfile->current_x] != '\0') {
-		if (do_next_word(TRUE, FALSE)) {
+		if (do_next_word(TRUE, false)) {
 			words++;
 		}
 	}

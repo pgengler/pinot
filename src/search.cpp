@@ -29,15 +29,15 @@
 #include <errno.h>
 #include <time.h>
 
-static bool search_last_line = FALSE;
+static bool search_last_line = false;
 /* Have we gone past the last line while searching? */
-static bool history_changed = FALSE;
+static bool history_changed = false;
 /* Have any of the history lists changed? */
-static bool regexp_compiled = FALSE;
+static bool regexp_compiled = false;
 /* Have we compiled any regular expressions? */
 
 /* Compile the regular expression regexp to see if it's valid.  Return
- * TRUE if it is, or FALSE otherwise. */
+ * TRUE if it is, or false otherwise. */
 bool regexp_init(const char *regexp)
 {
 	int rc;
@@ -54,7 +54,7 @@ bool regexp_init(const char *regexp)
 		statusbar(_("Bad regex \"%s\": %s"), regexp, str);
 		free(str);
 
-		return FALSE;
+		return false;
 	}
 
 	regexp_compiled = TRUE;
@@ -67,7 +67,7 @@ bool regexp_init(const char *regexp)
 void regexp_cleanup(void)
 {
 	if (regexp_compiled) {
-		regexp_compiled = FALSE;
+		regexp_compiled = false;
 		regfree(&search_regexp);
 	}
 }
@@ -81,7 +81,7 @@ void not_found_msg(const char *str)
 
 	assert(str != NULL);
 
-	disp = display_string(str, 0, (COLS / 2) + 1, FALSE);
+	disp = display_string(str, 0, (COLS / 2) + 1, false);
 	numchars = actual_x(disp, mbstrnlen(disp, COLS / 2));
 
 	statusbar(_("\"%.*s%s\" not found"), numchars, disp, (disp[numchars] == '\0') ? "" : "...");
@@ -120,7 +120,7 @@ void search_init_globals(void)
  * Go to Line, or a failed regcomp()), return 0 on success, and return 1
  * on rerun calling program.
  *
- * replacing is TRUE if we call from do_replace(), and FALSE if called
+ * replacing is TRUE if we call from do_replace(), and false if called
  * from do_search(). */
 int search_init(bool replacing, bool use_answer)
 {
@@ -148,7 +148,7 @@ int search_init(bool replacing, bool use_answer)
 	search_init_globals();
 
 	if (last_search[0] != '\0') {
-		char *disp = display_string(last_search, 0, COLS / 3, FALSE);
+		char *disp = display_string(last_search, 0, COLS / 3, false);
 
 		buf = charalloc(strlen(disp) + 7);
 		/* We use (COLS / 3) here because we need to see more on the line. */
@@ -159,7 +159,7 @@ int search_init(bool replacing, bool use_answer)
 	}
 
 	/* This is now one simple call.  It just does a lot. */
-	PromptResult i = do_prompt(FALSE,
+	PromptResult i = do_prompt(false,
 	              TRUE,
 	              replacing ? MREPLACE : MWHEREIS, key, backupstring,
 	              &search_history,
@@ -209,7 +209,7 @@ int search_init(bool replacing, bool use_answer)
 			backupstring = mallocstrcpy(backupstring, answer);
 			return -2;	/* Call the opposite search function. */
 		} else if (func == do_gotolinecolumn_void) {
-			do_gotolinecolumn(openfile->current->lineno, openfile->placewewant + 1, TRUE, TRUE, FALSE, TRUE);
+			do_gotolinecolumn(openfile->current->lineno, openfile->placewewant + 1, TRUE, TRUE, false, TRUE);
 			/* Put answer up on the statusbar and fall through. */
 			return 3;
 		} else {
@@ -257,7 +257,7 @@ bool findnextstr(
 			f = getfuncfromkey(edit);
 			if (f && f->scfunc == do_cancel) {
 				statusbar(_("Cancelled"));
-				return FALSE;
+				return false;
 			}
 		}
 
@@ -266,7 +266,7 @@ bool findnextstr(
 		/* We've found a potential match. */
 		if (found != NULL) {
 #ifdef ENABLE_SPELLER
-			bool found_whole = FALSE;
+			bool found_whole = false;
 			/* Is this potential match a whole word? */
 #endif
 
@@ -305,7 +305,7 @@ bool findnextstr(
 		if (search_last_line) {
 			not_found_msg(needle);
 			disable_nodelay();
-			return FALSE;
+			return false;
 		}
 
 		/* Move to the previous or next line in the file. */
@@ -350,7 +350,7 @@ bool findnextstr(
 	   ) {
 		not_found_msg(needle);
 		disable_nodelay();
-		return FALSE;
+		return false;
 	}
 
 	disable_nodelay();
@@ -372,7 +372,7 @@ bool findnextstr(
  * file.  We need to do this just before a new search. */
 void findnextstr_wrap_reset(void)
 {
-	search_last_line = FALSE;
+	search_last_line = false;
 }
 
 /* Search for a string. */
@@ -384,7 +384,7 @@ void do_search(void)
 	int i;
 	bool didfind;
 
-	i = search_init(FALSE, FALSE);
+	i = search_init(false, false);
 
 	if (i == -1) {
 		/* Cancel, Go to Line, blank search string, or regcomp() failed. */
@@ -416,9 +416,9 @@ void do_search(void)
 	findnextstr_wrap_reset();
 	didfind = findnextstr(
 #ifdef ENABLE_SPELLER
-	              FALSE,
+	              false,
 #endif
-	              FALSE, openfile->current, openfile->current_x, answer, NULL);
+	              false, openfile->current, openfile->current_x, answer, NULL);
 
 	/* Check to see if there's only one occurrence of the string and
 	 * we're on it now. */
@@ -431,7 +431,7 @@ void do_search(void)
 		if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search)) {
 			didfind = findnextstr(
 #ifdef ENABLE_SPELLER
-			              FALSE,
+			              false,
 #endif
 			              TRUE, openfile->current,
 			              openfile->current_x, answer, NULL);
@@ -467,9 +467,9 @@ void do_research(void)
 		findnextstr_wrap_reset();
 		didfind = findnextstr(
 #ifdef ENABLE_SPELLER
-		              FALSE,
+		              false,
 #endif
-		              FALSE, openfile->current, openfile->current_x,
+		              false, openfile->current, openfile->current_x,
 		              last_search, NULL);
 
 		/* Check to see if there's only one occurrence of the string and
@@ -483,7 +483,7 @@ void do_research(void)
 			if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search)) {
 				didfind = findnextstr(
 #ifdef ENABLE_SPELLER
-				              FALSE,
+				              false,
 #endif
 				              TRUE, openfile->current, openfile->current_x,
 				              answer, NULL);
@@ -505,7 +505,7 @@ void do_research(void)
 
 int replace_regexp(char *string, bool create)
 {
-	/* We have a split personality here.  If create is FALSE, just
+	/* We have a split personality here.  If create is false, just
 	 * calculate the size of the replacement line (necessary because of
 	 * subexpressions \1 to \9 in the replaced text). */
 
@@ -557,7 +557,7 @@ char *replace_line(const char *needle)
 	/* Calculate the size of the new line. */
 	if (ISSET(USE_REGEXP)) {
 		search_match_count = regmatches[0].rm_eo - regmatches[0].rm_so;
-		new_line_size = replace_regexp(NULL, FALSE);
+		new_line_size = replace_regexp(NULL, false);
 	} else {
 		search_match_count = strlen(needle);
 		new_line_size = strlen(openfile->current->data) - search_match_count + strlen(answer) + 1;
@@ -600,15 +600,15 @@ ssize_t do_replace_loop(
 {
 	ssize_t numreplaced = -1;
 	size_t match_len;
-	bool replaceall = FALSE;
+	bool replaceall = false;
 	/* The starting-line match and bol/eol regex flags. */
-	bool begin_line = FALSE, bol_or_eol = FALSE;
+	bool begin_line = false, bol_or_eol = false;
 	bool old_mark_set = openfile->mark_set;
 	filestruct *edittop_save = openfile->edittop, *top, *bot;
 	size_t top_x, bot_x;
-	bool right_side_up = FALSE;
+	bool right_side_up = false;
 	/* TRUE if (mark_begin, mark_begin_x) is the top of the mark,
-	 * FALSE if (current, current_x) is. */
+	 * false if (current, current_x) is. */
 
 	if (old_mark_set) {
 		/* If the mark is on, partition the filestruct so that it
@@ -617,13 +617,13 @@ ssize_t do_replace_loop(
 		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
 		filepart = partition_filestruct(top, top_x, bot, bot_x);
 		openfile->edittop = openfile->fileage;
-		openfile->mark_set = FALSE;
+		openfile->mark_set = false;
 		reset_multis(openfile->current, TRUE);
 		edit_refresh();
 	}
 
 	if (canceled != NULL) {
-		*canceled = FALSE;
+		*canceled = false;
 	}
 
 	findnextstr_wrap_reset();
@@ -653,7 +653,7 @@ ssize_t do_replace_loop(
 			if (openfile->current == real_current) {
 				begin_line = TRUE;
 			}
-			bol_or_eol = FALSE;
+			bol_or_eol = false;
 		}
 
 		if (!replaceall) {
@@ -667,7 +667,7 @@ ssize_t do_replace_loop(
 
 		if (!replaceall) {
 			size_t xpt = xplustabs();
-			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, FALSE);
+			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, false);
 
 			curs_set(0);
 
@@ -675,7 +675,7 @@ ssize_t do_replace_loop(
 
 			i = do_yesno_prompt(TRUE, _("Replace this instance?"));
 
-			do_replace_highlight(FALSE, exp_word);
+			do_replace_highlight(false, exp_word);
 
 			free(exp_word);
 
@@ -796,7 +796,7 @@ void do_replace(void)
 		return;
 	}
 
-	int search_i = search_init(TRUE, FALSE);
+	int search_i = search_init(TRUE, false);
 	if (search_i == -1) {
 		/* Cancel, Go to Line, blank search string, or regcomp() failed. */
 		search_replace_abort();
@@ -824,7 +824,7 @@ void do_replace(void)
 	last_replace = mallocstrcpy(last_replace, "");
 
 	std::shared_ptr<Key> key;
-	PromptResult i = do_prompt(FALSE,
+	PromptResult i = do_prompt(false,
 	              TRUE,
 	              MREPLACEWITH, key, last_replace,
 	              &replace_history,
@@ -857,7 +857,7 @@ void do_replace(void)
 
 	numreplaced = do_replace_loop(
 #ifdef ENABLE_SPELLER
-	                  FALSE,
+	                  false,
 #endif
 	                  NULL, begin, &begin_x, last_search);
 
@@ -889,7 +889,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 
 		/* Ask for the line and column. */
 		std::shared_ptr<Key> key;
-		PromptResult i = do_prompt(FALSE,
+		PromptResult i = do_prompt(false,
 		                  TRUE,
 		                  MGOTOLINE, key, use_answer ? ans : "",
 		                  NULL,
@@ -969,7 +969,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 /* Go to the specified line and column, asking for them beforehand. */
 void do_gotolinecolumn_void(void)
 {
-	do_gotolinecolumn(openfile->current->lineno, openfile->placewewant + 1, FALSE, TRUE, FALSE, TRUE);
+	do_gotolinecolumn(openfile->current->lineno, openfile->placewewant + 1, false, TRUE, false, TRUE);
 }
 
 #ifdef ENABLE_SPELLER
@@ -981,7 +981,7 @@ void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t pos_pww)
 	/* Since do_gotolinecolumn() resets the x-coordinate but not the
 	 * y-coordinate, set the coordinates up this way. */
 	openfile->current_y = pos_y;
-	do_gotolinecolumn(pos_line, pos_x + 1, FALSE, FALSE, TRUE, TRUE);
+	do_gotolinecolumn(pos_line, pos_x + 1, false, false, TRUE, TRUE);
 
 	/* Set the rest of the coordinates up. */
 	openfile->placewewant = pos_pww;
@@ -992,7 +992,7 @@ void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t pos_pww)
 /* Search for a match to one of the two characters in bracket_set.  If
  * reverse is TRUE, search backwards for the leftmost bracket.
  * Otherwise, search forwards for the rightmost bracket.  Return TRUE if
- * we found a match, and FALSE otherwise. */
+ * we found a match, and false otherwise. */
 bool find_bracket_match(bool reverse, const char *bracket_set)
 {
 	filestruct *fileptr = openfile->current;
@@ -1031,7 +1031,7 @@ bool find_bracket_match(bool reverse, const char *bracket_set)
 
 		/* We've reached the start or end of the buffer, so get out. */
 		if (fileptr == NULL) {
-			return FALSE;
+			return false;
 		}
 
 		rev_start = fileptr->data;

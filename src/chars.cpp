@@ -33,7 +33,7 @@
 #include <wctype.h>
 #endif
 
-static bool use_utf8 = FALSE;
+static bool use_utf8 = false;
 /* Whether we've enabled UTF-8 support. */
 static const wchar_t bad_wchar = 0xFFFD;
 /* If we get an invalid multibyte sequence, we treat it as
@@ -71,7 +71,7 @@ bool niswblank(wchar_t wc)
 }
 #endif
 
-/* Return TRUE if the value of c is in byte range, and FALSE
+/* Return TRUE if the value of c is in byte range, and false
  * otherwise. */
 bool is_byte(int c)
 {
@@ -197,12 +197,12 @@ bool is_punct_mbchar(const char *c)
 
 /* Return TRUE for a multibyte character found in a word (currently only
  * an alphanumeric or punctuation character, and only the latter if
- * allow_punct is TRUE) and FALSE otherwise. */
+ * allow_punct is TRUE) and false otherwise. */
 bool is_word_mbchar(const char *c, bool allow_punct)
 {
 	assert(c != NULL);
 
-	return is_alnum_mbchar(c) || (allow_punct ? is_punct_mbchar(c) : FALSE);
+	return is_alnum_mbchar(c) || (allow_punct ? is_punct_mbchar(c) : false);
 }
 
 /* c is a control character.  It displays as ^@, ^?, or ^[ch], where ch
@@ -553,7 +553,7 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 		s2_mb = charalloc(MB_CUR_MAX);
 
 		for (; *s1 != '\0' && *s2 != '\0' && n > 0; s1 += move_mbright(s1, 0), s2 += move_mbright(s2, 0), n--) {
-			bool bad_s1_mb = FALSE, bad_s2_mb = FALSE;
+			bool bad_s1_mb = false, bad_s2_mb = false;
 			int s1_mb_len, s2_mb_len;
 
 			s1_mb_len = parse_mbchar(s1, s1_mb, NULL);
@@ -703,7 +703,7 @@ char *mbrevstrcasestr(const char *haystack, const char *needle, const char *rev_
 {
 #ifdef ENABLE_UTF8
 	if (use_utf8) {
-		bool begin_line = FALSE;
+		bool begin_line = false;
 		size_t rev_start_len, needle_len;
 
 		assert(haystack != NULL && needle != NULL && rev_start != NULL);
@@ -787,7 +787,7 @@ char *mbstrchr(const char *s, const char *c)
 
 #ifdef ENABLE_UTF8
 	if (use_utf8) {
-		bool bad_s_mb = FALSE, bad_c_mb = FALSE;
+		bool bad_s_mb = false, bad_c_mb = false;
 		char *s_mb = charalloc(MB_CUR_MAX);
 		const char *q = s;
 		wchar_t ws, wc;
@@ -873,7 +873,7 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 
 #ifdef ENABLE_UTF8
 	if (use_utf8) {
-		bool begin_line = FALSE;
+		bool begin_line = false;
 
 		while (!begin_line) {
 			const char *q = (*rev_start == '\0') ? NULL : mbstrchr(accept, rev_start);
@@ -896,7 +896,7 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 }
 
 /* Return TRUE if the string s contains one or more blank characters,
- * and FALSE otherwise. */
+ * and false otherwise. */
 bool has_blank_chars(const char *s)
 {
 	assert(s != NULL);
@@ -907,18 +907,18 @@ bool has_blank_chars(const char *s)
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 /* Return TRUE if the multibyte string s contains one or more blank
- * multibyte characters, and FALSE otherwise. */
+ * multibyte characters, and false otherwise. */
 bool has_blank_mbchars(const char *s)
 {
 	assert(s != NULL);
 
 #ifdef ENABLE_UTF8
 	if (use_utf8) {
-		bool retval = FALSE;
+		bool retval = false;
 		char *chr_mb = charalloc(MB_CUR_MAX);
 
 		for (; *s != '\0'; s += move_mbright(s, 0)) {
@@ -939,7 +939,7 @@ bool has_blank_mbchars(const char *s)
 }
 
 #ifdef ENABLE_UTF8
-/* Return TRUE if wc is valid Unicode, and FALSE otherwise. */
+/* Return TRUE if wc is valid Unicode, and false otherwise. */
 bool is_valid_unicode(wchar_t wc)
 {
 	return (
@@ -951,7 +951,7 @@ bool is_valid_unicode(wchar_t wc)
 #endif
 
 /* Check if the string s is a valid multibyte string.  Return TRUE if it
- * is, and FALSE otherwise. */
+ * is, and false otherwise. */
 bool is_valid_mbstring(const char *s)
 {
 	assert(s != NULL);

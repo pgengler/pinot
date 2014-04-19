@@ -33,7 +33,7 @@
 static int statusblank = 0;
 /* The number of keystrokes left after we call statusbar(),
  * before we actually blank the statusbar. */
-static bool disable_cursorpos = FALSE;
+static bool disable_cursorpos = false;
 /* Should we temporarily disable constant cursor position display? */
 
 Key get_kbinput(WINDOW *win)
@@ -395,9 +395,9 @@ void titlebar(const char *path)
 	 * browser. */
 	char *exppath = NULL;
 	/* The filename, expanded for display. */
-	bool newfie = FALSE;
+	bool newfie = false;
 	/* Do we say "New Buffer"? */
-	bool dots = FALSE;
+	bool dots = false;
 	/* Do we put an ellipsis before the path? */
 
 	assert(path != NULL || openfile->filename != NULL);
@@ -459,7 +459,7 @@ void titlebar(const char *path)
 
 	prefixlen = strnlenpt(prefix, space - statelen) + 1;
 
-	/* If newfie is FALSE, add a space after prefix. */
+	/* If newfie is false, add a space after prefix. */
 	if (!newfie && prefixlen + statelen < space) {
 		prefixlen++;
 	}
@@ -493,7 +493,7 @@ void titlebar(const char *path)
 			start_col = 0;
 		}
 
-		exppath = display_string(path, start_col, space, FALSE);
+		exppath = display_string(path, start_col, space, false);
 	}
 
 	/* If dots is TRUE, we will display something like "File:
@@ -589,7 +589,7 @@ void statusbar(const char *msg, ...)
 	bar = charalloc(mb_cur_max() * (COLS - 3));
 	vsnprintf(bar, mb_cur_max() * (COLS - 3), msg, ap);
 	va_end(ap);
-	foo = display_string(bar, 0, COLS - 4, FALSE);
+	foo = display_string(bar, 0, COLS - 4, false);
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
@@ -1179,7 +1179,7 @@ int update_line(filestruct *fileptr, size_t index)
 	return extralinesused;
 }
 
-/* Return TRUE if we need an update after moving horizontally, and FALSE
+/* Return TRUE if we need an update after moving horizontally, and false
  * otherwise.  We need one if the mark is on or if pww_save and
  * placewewant are on different pages. */
 bool need_horizontal_update(size_t pww_save)
@@ -1187,7 +1187,7 @@ bool need_horizontal_update(size_t pww_save)
 	return openfile->mark_set || get_page_start(pww_save) != get_page_start(openfile->placewewant);
 }
 
-/* Return TRUE if we need an update after moving vertically, and FALSE
+/* Return TRUE if we need an update after moving vertically, and false
  * otherwise.  We need one if the mark is on or if pww_save and
  * placewewant are on different pages. */
 bool need_vertical_update(size_t pww_save)
@@ -1227,12 +1227,12 @@ void compute_maxrows(void)
  * scrolling.  direction is the direction to scroll, either UP_DIR or
  * DOWN_DIR, and nlines is the number of lines to scroll.  We change
  * edittop, and assume that current and current_x are up to date.  We
- * also assume that scrollok(edit) is FALSE. */
+ * also assume that scrollok(edit) is false. */
 void edit_scroll(scroll_dir direction, ssize_t nlines)
 {
 	filestruct *foo;
 	ssize_t i;
-	bool do_redraw = FALSE;
+	bool do_redraw = false;
 
 	/* Don't bother scrolling less than one line. */
 	if (nlines < 1) {
@@ -1288,7 +1288,7 @@ void edit_scroll(scroll_dir direction, ssize_t nlines)
 	 * depending on the value of direction. */
 	scrollok(edit, TRUE);
 	wscrl(edit, (direction == UP_DIR) ? -nlines : nlines);
-	scrollok(edit, FALSE);
+	scrollok(edit, false);
 
 	/* Part 2: nlines is the number of lines in the scrolled region of
 	 * the edit window that we need to draw. */
@@ -1535,10 +1535,10 @@ void display_main_list(void)
 }
 
 /* If constant is TRUE, we display the current cursor position only if
- * disable_cursorpos is FALSE.  Otherwise, we display it
- * unconditionally and set disable_cursorpos to FALSE.  If constant is
+ * disable_cursorpos is false.  Otherwise, we display it
+ * unconditionally and set disable_cursorpos to false.  If constant is
  * TRUE and disable_cursorpos is TRUE, we also set disable_cursorpos to
- * FALSE, so that we leave the current statusbar alone this time, and
+ * false, so that we leave the current statusbar alone this time, and
  * display the current cursor position next time. */
 void do_cursorpos(bool constant)
 {
@@ -1562,12 +1562,12 @@ void do_cursorpos(bool constant)
 	openfile->current->next = f;
 
 	if (constant && disable_cursorpos) {
-		disable_cursorpos = FALSE;
+		disable_cursorpos = false;
 		return;
 	}
 
 	/* Display the current cursor position on the statusbar, and set
-	 * disable_cursorpos to FALSE. */
+	 * disable_cursorpos to false. */
 	linepct = 100 * openfile->current->lineno / openfile->filebot->lineno;
 	colpct = 100 * cur_xpt / cur_lenpt;
 	charpct = (openfile->totsize == 0) ? 0 : 100 * i / openfile->totsize;
@@ -1579,13 +1579,13 @@ void do_cursorpos(bool constant)
 	    (unsigned long)cur_xpt, (unsigned long)cur_lenpt, colpct,
 	    (unsigned long)i, (unsigned long)openfile->totsize, charpct);
 
-	disable_cursorpos = FALSE;
+	disable_cursorpos = false;
 }
 
 /* Unconditionally display the current cursor position. */
 void do_cursorpos_void(void)
 {
-	do_cursorpos(FALSE);
+	do_cursorpos(false);
 }
 
 void enable_nodelay(void)
@@ -1596,8 +1596,8 @@ void enable_nodelay(void)
 
 void disable_nodelay(void)
 {
-	nodelay_mode = FALSE;
-	nodelay(edit, FALSE);
+	nodelay_mode = false;
+	nodelay(edit, false);
 }
 
 

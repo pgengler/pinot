@@ -38,7 +38,7 @@ static int longest = 0;
 static size_t selected = 0;
 /* The currently selected filename in the list.  This variable
  * is zero-based. */
-static bool search_last_file = FALSE;
+static bool search_last_file = false;
 /* Have we gone past the last file while searching? */
 
 /* Our main file browser function.  path is the tilde-expanded path we
@@ -47,7 +47,7 @@ char *do_browser(char *path, DIR *dir)
 {
 	char *retval = NULL;
 	bool old_const_update = ISSET(CONST_UPDATE);
-	bool abort = FALSE;
+	bool abort = false;
 	/* Whether we should abort the file browser. */
 	char *prev_dir = NULL;
 	/* The directory we were in, if any, before backing up via
@@ -173,7 +173,7 @@ change_browser_directory:
 
 			std::shared_ptr<Key> key;
 			PromptResult i = do_prompt(TRUE,
-			              FALSE,
+			              false,
 			              MGOTODIR, key, ans,
 			              NULL,
 			              browser_refresh, N_("Go To Directory"));
@@ -499,7 +499,7 @@ void browser_refresh(void)
 		 * this to TRUE if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
 		 * filename other than ".."). */
-		char *disp = display_string(filetail, dots ? filetaillen - longest + foomaxlen + 4 : 0, longest, FALSE);
+		char *disp = display_string(filetail, dots ? filetaillen - longest + foomaxlen + 4 : 0, longest, false);
 		/* If we put an ellipsis before the filename, reserve
 		 * one column for padding, plus seven columns for "--",
 		 * "(dir)", or the file size, plus three columns for the
@@ -612,7 +612,7 @@ void browser_refresh(void)
 bool browser_select_filename(const char *needle)
 {
 	size_t currselected;
-	bool found = FALSE;
+	bool found = false;
 
 	for (currselected = 0; currselected < filelist.size(); currselected++) {
 		if (filelist[currselected] == needle) {
@@ -652,7 +652,7 @@ int filesearch_init(void)
 	search_init_globals();
 
 	if (last_search[0] != '\0') {
-		char *disp = display_string(last_search, 0, COLS / 3, FALSE);
+		char *disp = display_string(last_search, 0, COLS / 3, false);
 
 		buf = charalloc(strlen(disp) + 7);
 		/* We use (COLS / 3) here because we need to see more on the
@@ -665,7 +665,7 @@ int filesearch_init(void)
 
 	/* This is now one simple call.  It just does a lot. */
 	std::shared_ptr<Key> key;
-	PromptResult i = do_prompt(FALSE,
+	PromptResult i = do_prompt(false,
 	              TRUE,
 	              MWHEREISFILE, key, backupstring,
 	              &search_history,
@@ -752,7 +752,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 		/* We've finished processing the filenames, so get out. */
 		if (search_last_file) {
 			not_found_msg(needle);
-			return FALSE;
+			return false;
 		}
 
 		/* Move to the previous or next filename in the list.  If we've
@@ -796,7 +796,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
  * list.  We need to do this just before a new search. */
 void findnextfile_wrap_reset(void)
 {
-	search_last_file = FALSE;
+	search_last_file = false;
 }
 
 /* Abort the current filename search.  Clean up by setting the current
@@ -843,7 +843,7 @@ void do_filesearch(void)
 	}
 
 	findnextfile_wrap_reset();
-	didfind = findnextfile(FALSE, begin, answer);
+	didfind = findnextfile(false, begin, answer);
 
 	/* Check to see if there's only one occurrence of the string and we're on it now. */
 	if (selected == begin && didfind) {
@@ -874,7 +874,7 @@ void do_fileresearch(void)
 		}
 
 		findnextfile_wrap_reset();
-		didfind = findnextfile(FALSE, begin, answer);
+		didfind = findnextfile(false, begin, answer);
 
 		/* Check to see if there's only one occurrence of the string and
 		 * we're on it now. */

@@ -41,7 +41,7 @@
 #endif
 #include <sys/ioctl.h>
 
-static bool no_rcfiles = FALSE;
+static bool no_rcfiles = false;
 /* Should we ignore all rcfiles? */
 static struct termios oldterm;
 /* The user's original terminal settings. */
@@ -398,7 +398,7 @@ void copy_from_filestruct(filestruct *some_buffer)
 	filestruct *top_save;
 	size_t current_x_save = openfile->current_x;
 	bool edittop_inside;
-	bool right_side_up = FALSE, single_line = FALSE;
+	bool right_side_up = false, single_line = false;
 
 	assert(some_buffer != NULL);
 
@@ -886,7 +886,7 @@ void do_exit(void)
 		i = 1;
 	} else {
 		/* Otherwise, ask the user whether or not to save. */
-		i = do_yesno_prompt(FALSE, _("Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "));
+		i = do_yesno_prompt(false, _("Save modified buffer (ANSWERING \"No\" WILL DESTROY CHANGES) ? "));
 	}
 
 #ifdef DEBUG
@@ -919,8 +919,8 @@ void do_cancel(void)
 }
 
 static struct sigaction pager_oldaction, pager_newaction;  /* Original and temporary handlers for SIGINT. */
-static bool pager_sig_failed = FALSE; /* Did sigaction() fail without changing the signal handlers? */
-static bool pager_input_aborted = FALSE; /* Did someone invoke the pager and abort it via ^C? */
+static bool pager_sig_failed = false; /* Did sigaction() fail without changing the signal handlers? */
+static bool pager_input_aborted = false; /* Did someone invoke the pager and abort it via ^C? */
 
 
 /* Things which need to be run regardless of whether
@@ -936,7 +936,7 @@ void finish_stdin_pager(void)
 		nperror("fopen");
 	}
 
-	read_file(f, 0, "stdin", TRUE, FALSE);
+	read_file(f, 0, "stdin", TRUE, false);
 	ttystdin = open("/dev/tty", O_RDONLY);
 	if (!ttystdin) {
 		die(_("Couldn't reopen stdin from keyboard, sorry\n"));
@@ -988,7 +988,7 @@ void stdin_pager(void)
 		}
 	}
 
-	open_buffer("", FALSE);
+	open_buffer("", false);
 	finish_stdin_pager();
 }
 
@@ -1012,7 +1012,7 @@ void signal_init(void)
 	/* Trap SIGWINCH because we want to handle window resizes. */
 	act.sa_handler = handle_sigwinch;
 	sigaction(SIGWINCH, &act, NULL);
-	allow_pending_sigwinch(FALSE);
+	allow_pending_sigwinch(false);
 
 	/* Trap normal suspend (^Z) so we can handle it ourselves. */
 	if (!ISSET(SUSPEND)) {
@@ -1152,7 +1152,7 @@ void handle_sigwinch(int signal)
 }
 
 /* If allow is TRUE, block any SIGWINCH signals that we get, so that we
- * can deal with them later.  If allow is FALSE, unblock any SIGWINCH
+ * can deal with them later.  If allow is false, unblock any SIGWINCH
  * signals that we have, so that we can deal with them now. */
 void allow_pending_sigwinch(bool allow)
 {
@@ -1281,7 +1281,7 @@ void terminal_init(void)
 	 * control characters using termios, save the terminal state after
 	 * the first call, and restore it on subsequent calls. */
 	static struct termios newterm;
-	static bool newterm_set = FALSE;
+	static bool newterm_set = false;
 
 	if (!newterm_set) {
 #endif
@@ -1314,7 +1314,7 @@ void terminal_init(void)
  * key, set ran_func to TRUE if we ran a function associated with a
  * shortcut key, and set finished to TRUE if we're done after running
  * or trying to run a function associated with a shortcut key.  If
- * allow_funcs is FALSE, don't actually run any functions associated
+ * allow_funcs is false, don't actually run any functions associated
  * with shortcut keys. */
 void do_input(void)
 {
@@ -1350,7 +1350,7 @@ void do_input(void)
 	}
 
 	if (!have_shortcut) {
-		do_output(input, FALSE);
+		do_output(input, false);
 	} else {
 		/* If the function associated with this shortcut is
 		* cutting or copying text, indicate this. */
@@ -1368,12 +1368,12 @@ void do_input(void)
 				} else {
 					s->scfunc();
 					if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
-						reset_multis(openfile->current, FALSE);
+						reset_multis(openfile->current, false);
 					}
 					if (edit_refresh_needed) {
 						DEBUG_LOG("running edit_refresh() as edit_refresh_needed is true");
 						edit_refresh();
-						edit_refresh_needed = FALSE;
+						edit_refresh_needed = false;
 					}
 
 				}
@@ -1539,7 +1539,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 			}
 			/* Newline to Enter, if needed. */
 			else if (output[i] == '\n') {
-				do_enter(FALSE);
+				do_enter(false);
 				i++;
 				continue;
 			}
@@ -1550,7 +1550,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 		i += char_buf_len;
 
-		/* If allow_cntrls is FALSE, filter out an ASCII control
+		/* If allow_cntrls is false, filter out an ASCII control
 		 * character. */
 		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
 			continue;
@@ -1587,7 +1587,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 		/* If we're wrapping text, we need to call edit_refresh(). */
 		if (!ISSET(NO_WRAP))
-			if (do_wrap(openfile->current, FALSE)) {
+			if (do_wrap(openfile->current, false)) {
 				edit_refresh_needed = TRUE;
 			}
 
@@ -1600,7 +1600,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 	/* Well we might also need a full refresh if we've changed the
 	   line length to be a new multiple of COLS */
-	if (ISSET(SOFTWRAP) && edit_refresh_needed == FALSE) {
+	if (ISSET(SOFTWRAP) && edit_refresh_needed == false) {
 		if (strlenpt(openfile->current->data) / COLS != orig_lenpt / COLS) {
 			edit_refresh_needed = TRUE;
 		}
@@ -1611,10 +1611,10 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	openfile->placewewant = xplustabs();
 
 
-	reset_multis(openfile->current, FALSE);
+	reset_multis(openfile->current, false);
 	if (edit_refresh_needed == TRUE) {
 		edit_refresh();
-		edit_refresh_needed = FALSE;
+		edit_refresh_needed = false;
 	} else {
 		update_line(openfile->current, openfile->current_x);
 	}
@@ -1627,7 +1627,7 @@ int main(int argc, char **argv)
 	/* Line to try and start at. */
 	ssize_t startcol = 1;
 	/* Column to try and start at. */
-	bool fill_used = FALSE;
+	bool fill_used = false;
 	/* Was the fill option used? */
 	bool old_multibuffer;
 	/* The old value of the multibuffer option, restored after we
@@ -1820,7 +1820,7 @@ int main(int argc, char **argv)
 
 			/* If both --fill and --nowrap are given on the command line,
 			   the last option wins, */
-			fill_used = FALSE;
+			fill_used = false;
 
 			break;
 		case 'x':
@@ -2024,17 +2024,17 @@ int main(int argc, char **argv)
 			if (i < argc - 1 && argv[i][0] == '+' && iline == 1 && icol == 1) {
 				parse_line_column(&argv[i][1], &iline, &icol);
 			} else {
-				open_buffer(argv[i], FALSE);
+				open_buffer(argv[i], false);
 
 				if (iline > 1 || icol > 1) {
-					do_gotolinecolumn(iline, icol, FALSE, FALSE, FALSE, FALSE);
+					do_gotolinecolumn(iline, icol, false, false, false, false);
 					iline = 1;
 					icol = 1;
 				} else {
 					/* See if we have a POS history to use if we haven't overridden it */
 					ssize_t savedposline, savedposcol;
 					if (check_poshistory(argv[i], &savedposline, &savedposcol)) {
-						do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
+						do_gotolinecolumn(savedposline, savedposcol, false, false, false, false);
 					}
 				}
 			}
@@ -2045,7 +2045,7 @@ int main(int argc, char **argv)
 	 * buffer or a new buffer, depending on whether multibuffer mode is
 	 * enabled. */
 	if (optind < argc) {
-		open_buffer(argv[optind], FALSE);
+		open_buffer(argv[optind], false);
 	}
 
 	/* We didn't open any files if all the command line arguments were
@@ -2053,7 +2053,7 @@ int main(int argc, char **argv)
 	 * arguments given.  In this case, we have to load a blank buffer.
 	 * Also, we unset view mode to allow editing. */
 	if (openfile == NULL) {
-		open_buffer("", FALSE);
+		open_buffer("", false);
 		UNSET(VIEW_MODE);
 	}
 
@@ -2068,12 +2068,12 @@ int main(int argc, char **argv)
 	}
 
 	if (startline > 1 || startcol > 1)
-		do_gotolinecolumn(startline, startcol, FALSE, FALSE, FALSE, FALSE);
+		do_gotolinecolumn(startline, startcol, false, false, false, false);
 	else {
 		/* See if we have a POS history to use if we haven't overridden it */
 		ssize_t savedposline, savedposcol;
 		if (check_poshistory(argv[optind], &savedposline, &savedposcol)) {
-			do_gotolinecolumn(savedposline, savedposcol, FALSE, FALSE, FALSE, FALSE);
+			do_gotolinecolumn(savedposline, savedposcol, false, false, false, false);
 		}
 	}
 
@@ -2111,5 +2111,5 @@ int main(int argc, char **argv)
 	}
 
 	/* We should never get here. */
-	assert(FALSE);
+	assert(false);
 }
