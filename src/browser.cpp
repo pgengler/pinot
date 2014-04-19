@@ -22,15 +22,15 @@
 
 #include "proto.h"
 
+#include <algorithm>
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
 
-static char **filelist = NULL;
+std::vector<std::string> filelist;
 /* The list of files to display in the file browser. */
-static size_t filelist_len = 0;
-/* The number of files in the list. */
 static int width = 0;
 /* The number of files that we can display per line. */
 static int longest = 0;
@@ -78,10 +78,8 @@ change_browser_directory:
 	/* Get the file list, and set longest and width in the process. */
 	browser_init(path, dir);
 
-	assert(filelist != NULL);
-
 	/* Sort the file list. */
-	qsort(filelist, filelist_len, sizeof(char *), diralphasort);
+	std::sort(filelist.begin(), filelist.end(), sort_directories);
 
 	/* If prev_dir isn't NULL, select the directory saved in it, and
 	 * then blow it away. */
@@ -158,8 +156,8 @@ change_browser_directory:
 			}
 		} else if (func == do_page_down) {
 			selected += (editwinrows - fileline % editwinrows) * width;
-			if (selected > filelist_len - 1) {
-				selected = filelist_len - 1;
+			if (selected > filelist.size() - 1) {
+				selected = filelist.size() - 1;
 			}
 		} else if (func == do_first_file) {
 			if (kbinput->has_meta_key()) {
@@ -167,7 +165,7 @@ change_browser_directory:
 			}
 		} else if (func == do_last_file) {
 			if (kbinput->has_meta_key()) {
-				selected = filelist_len - 1;
+				selected = filelist.size() - 1;
 			}
 			/* Go to a specific directory. */
 		} else if (func == goto_dir_void) {
@@ -239,25 +237,25 @@ change_browser_directory:
 				selected--;
 			}
 		} else if (func == do_down_void) {
-			if (selected + width <= filelist_len - 1) {
+			if (selected + width <= filelist.size() - 1) {
 				selected += width;
 			}
 		} else if (func == do_right) {
-			if (selected < filelist_len - 1) {
+			if (selected < filelist.size() - 1) {
 				selected++;
 			}
 		} else if (func == do_enter_void) {
 			/* We can't move up from "/". */
-			if (strcmp(filelist[selected], "/..") == 0) {
+			if (filelist[selected] == "/..") {
 				statusbar(_("Can't move up a directory"));
 				beep();
 				func = nullptr;
 				continue;
 			}
 
-			if (stat(filelist[selected], &st) == -1) {
+			if (stat(filelist[selected].c_str(), &st) == -1) {
 				/* We can't open this file for some reason. Complain. */
-				statusbar(_("Error reading %s: %s"), filelist[selected], strerror(errno));
+				statusbar(_("Error reading %s: %s"), filelist[selected].c_str(), strerror(errno));
 				beep();
 				func = nullptr;
 				continue;
@@ -265,27 +263,27 @@ change_browser_directory:
 
 			/* If we've successfully opened a file, we're done, so get out. */
 			if (!S_ISDIR(st.st_mode)) {
-				retval = mallocstrcpy(NULL, filelist[selected]);
+				retval = mallocstrcpy(NULL, filelist[selected].c_str());
 				abort = TRUE;
 				func = nullptr;
 				continue;
 				/* If we've successfully opened a directory, and it's
 				 * "..", save the current directory in prev_dir, so that
 				 * we can select it later. */
-			} else if (strcmp(tail(filelist[selected]), "..") == 0) {
-				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected]));
+			} else if (strcmp(tail(filelist[selected].c_str()), "..") == 0) {
+				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected].c_str()));
 			}
 
-			dir = opendir(filelist[selected]);
+			dir = opendir(filelist[selected].c_str());
 			if (dir == NULL) {
 				/* We can't open this directory for some reason. Complain. */
-				statusbar(_("Error reading %s: %s"), filelist[selected], strerror(errno));
+				statusbar(_("Error reading %s: %s"), filelist[selected].c_str(), strerror(errno));
 				beep();
 				func = nullptr;
 				continue;
 			}
 
-			path = mallocstrcpy(path, filelist[selected]);
+			path = mallocstrcpy(path, filelist[selected].c_str());
 
 			/* Start over again with the new path value. */
 			goto change_browser_directory;
@@ -308,9 +306,7 @@ change_browser_directory:
 	free(path);
 	free(ans);
 
-	free_chararray(filelist, filelist_len);
-	filelist = NULL;
-	filelist_len = 0;
+	filelist.clear();
 
 	return retval;
 }
@@ -367,16 +363,14 @@ char *do_browse_from(const char *inpath)
 }
 
 /* Set filelist to the list of files contained in the directory path,
- * set filelist_len to the number of files in that list, set longest to
- * the width in columns of the longest filename in that list (between 15
- * and COLS), and set width to the number of files that we can display
- * per line.  longest needs to be at least 15 columns in order to
- * display ".. (parent dir)", as Pico does.  Assume path exists and is a
- * directory. */
+ * set longest to the width in columns of the longest filename in that
+ * list (between 15 and COLS), and set width to the number of files that
+ * we can display per line.  longest needs to be at least 15 columns in
+ * order to display ".. (parent dir)", as Pico does.  Assume path exists
+ * and is a directory. */
 void browser_init(const char *path, DIR *dir)
 {
 	const struct dirent *nextdir;
-	size_t i = 0, path_len = strlen(path);
 	int col = 0;
 	/* The maximum number of columns that the filenames will take
 	 * up. */
@@ -403,8 +397,6 @@ void browser_init(const char *path, DIR *dir)
 		if (d_len > longest) {
 			longest = (d_len > COLS) ? COLS : d_len;
 		}
-
-		i++;
 	}
 
 	rewinddir(dir);
@@ -413,32 +405,16 @@ void browser_init(const char *path, DIR *dir)
 	 * in the list whenever possible, as Pico does. */
 	longest += 10;
 
-	if (filelist != NULL) {
-		free_chararray(filelist, filelist_len);
-	}
+	filelist.clear();
 
-	filelist_len = i;
-
-	filelist = (char **)nmalloc(filelist_len * sizeof(char *));
-
-	i = 0;
-
-	while ((nextdir = readdir(dir)) != NULL && i < filelist_len) {
+	while ((nextdir = readdir(dir)) != NULL) {
 		/* Don't show the "." entry. */
 		if (strcmp(nextdir->d_name, ".") == 0) {
 			continue;
 		}
 
-		filelist[i] = charalloc(path_len + strlen(nextdir->d_name) + 1);
-		sprintf(filelist[i], "%s%s", path, nextdir->d_name);
-
-		i++;
+		filelist.push_back(std::string(path) + std::string(nextdir->d_name));
 	}
-
-	/* Maybe the number of files in the directory changed between the
-	 * first time we scanned and the second.  i is the actual length of
-	 * filelist, so record it. */
-	filelist_len = i;
 
 	closedir(dir);
 
@@ -453,7 +429,7 @@ void browser_init(const char *path, DIR *dir)
 	/* Set width to zero, just before we initialize it. */
 	width = 0;
 
-	for (i = 0; i < filelist_len && line < editwinrows; i++) {
+	for (size_t i = 0; i < filelist.size() && line < editwinrows; i++) {
 		/* Calculate the number of columns one filename will take up. */
 		col += longest;
 		filesperline++;
@@ -506,9 +482,9 @@ void browser_refresh(void)
 
 	i = width * editwinrows * ((selected / width) / editwinrows);
 
-	for (; i < filelist_len && line < editwinrows; i++) {
+	for (; i < filelist.size() && line < editwinrows; i++) {
 		struct stat st;
-		const char *filetail = tail(filelist[i]);
+		const char *filetail = tail(filelist[i].c_str());
 		/* The filename we display, minus the path. */
 		size_t filetaillen = strlenpt(filetail);
 		/* The length of the filename in columns. */
@@ -549,11 +525,11 @@ void browser_refresh(void)
 
 		/* Show information about the file.  We don't want to report
 		 * file sizes for links, so we use lstat(). */
-		if (lstat(filelist[i], &st) == -1 || S_ISLNK(st.st_mode)) {
+		if (lstat(filelist[i].c_str(), &st) == -1 || S_ISLNK(st.st_mode)) {
 			/* If the file doesn't exist (i.e. it's been deleted while
 			 * the file browser is open), or it's a symlink that doesn't
 			 * point to a directory, display "--". */
-			if (stat(filelist[i], &st) == -1 || !S_ISDIR(st.st_mode)) {
+			if (stat(filelist[i].c_str(), &st) == -1 || !S_ISDIR(st.st_mode)) {
 				foo = mallocstrcpy(NULL, "--");
 			} else {
 			/* If the file is a symlink that points to a directory,
@@ -638,8 +614,8 @@ bool browser_select_filename(const char *needle)
 	size_t currselected;
 	bool found = FALSE;
 
-	for (currselected = 0; currselected < filelist_len; currselected++) {
-		if (strcmp(filelist[currselected], needle) == 0) {
+	for (currselected = 0; currselected < filelist.size(); currselected++) {
+		if (filelist[currselected] == needle) {
 			found = TRUE;
 			break;
 		}
@@ -754,7 +730,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 	size_t currselected = selected;
 	/* The location in the current file list of the match we
 	 * find. */
-	const char *filetail = tail(filelist[currselected]);
+	const char *filetail = tail(filelist[currselected].c_str());
 	/* The filename we display, minus the path. */
 	const char *rev_start = filetail, *found = NULL;
 
@@ -785,11 +761,11 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 			if (currselected > 0) {
 				currselected--;
 			} else {
-				currselected = filelist_len - 1;
+				currselected = filelist.size() - 1;
 				statusbar(_("Search Wrapped"));
 			}
 		} else {
-			if (currselected < filelist_len - 1) {
+			if (currselected < filelist.size() - 1) {
 				currselected++;
 			} else {
 				currselected = 0;
@@ -802,7 +778,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 			search_last_file = TRUE;
 		}
 
-		filetail = tail(filelist[currselected]);
+		filetail = tail(filelist[currselected].c_str());
 
 		rev_start = filetail;
 		if (ISSET(BACKWARDS_SEARCH)) {
@@ -928,7 +904,7 @@ void do_first_file(void)
 /* Select the last file in the list. */
 void do_last_file(void)
 {
-	selected = filelist_len - 1;
+	selected = filelist.size() - 1;
 }
 
 /* Strip one directory from the end of path, and return the stripped
