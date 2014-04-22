@@ -408,35 +408,8 @@ void print_sclist(void)
 #endif
 
 
-/* Stuff we need to make at least static here so we can access it below */
-/* TRANSLATORS: Try to keep the next five strings at most 10 characters. */
-const char *cancel_msg = N_("Cancel");
-const char *replace_msg = N_("Replace");
-const char *no_replace_msg = N_("No Replace");
-
-const char *case_sens_msg = N_("Case Sens");
-const char *backwards_msg = N_("Backwards");
-
-const char *regexp_msg = N_("Regexp");
-
-/* TRANSLATORS: Try to keep the next five strings at most 10 characters. */
-const char *prev_history_msg = N_("PrevHstory");
-const char *next_history_msg = N_("NextHstory");
-const char *gototext_msg = N_("Go To Text");
-/* TRANSLATORS: Try to keep the next three strings at most 12 characters. */
+/* TRANSLATORS: Try to keep this to at most 12 characters. */
 const char *whereis_next_msg = N_("WhereIs Next");
-const char *first_file_msg = N_("First File");
-const char *last_file_msg = N_("Last File");
-/* TRANSLATORS: Try to keep the next nine strings at most 16 characters. */
-const char *to_files_msg = N_("To Files");
-const char *dos_format_msg = N_("DOS Format");
-const char *mac_format_msg = N_("Mac Format");
-const char *append_msg = N_("Append");
-const char *prepend_msg = N_("Prepend");
-const char *backup_file_msg = N_("Backup File");
-const char *ext_cmd_msg = N_("Execute Command");
-const char *new_buffer_msg = N_("New Buffer");
-const char *goto_dir_msg = N_("Go To Dir");
 
 /* Initialize all shortcut lists. */
 void shortcut_init(void)
@@ -545,7 +518,7 @@ void shortcut_init(void)
 
 	add_to_funcs(do_cancel,
 	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
-	              cancel_msg, IFSCHELP(pinot_cancel_msg), false, VIEW);
+	              N_("Cancel"), IFSCHELP(pinot_cancel_msg), false, VIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_exit, MMAIN, openfile != NULL && openfile != openfile->next ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
@@ -589,7 +562,7 @@ void shortcut_init(void)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), false, VIEW);
 
-	add_to_funcs(do_replace, (MMAIN|MWHEREIS), replace_msg, IFSCHELP(pinot_replace_msg), false, NOVIEW);
+	add_to_funcs(do_replace, (MMAIN|MWHEREIS), _("Replace"), IFSCHELP(pinot_replace_msg), false, NOVIEW);
 
 	add_to_funcs(do_mark, MMAIN, N_("Mark Text"), IFSCHELP(pinot_mark_msg), false, VIEW);
 
@@ -665,45 +638,43 @@ void shortcut_init(void)
 
 	add_to_funcs(do_suspend_void, MMAIN, suspend_msg, IFSCHELP(pinot_suspend_msg), true, VIEW);
 
-	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE|MWHEREISFILE), case_sens_msg, IFSCHELP(pinot_case_msg), false, VIEW);
+	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Case Sens"), IFSCHELP(pinot_case_msg), false, VIEW);
 
-	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE|MWHEREISFILE), backwards_msg, IFSCHELP(pinot_reverse_msg), false, VIEW);
+	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Backwards"), IFSCHELP(pinot_reverse_msg), false, VIEW);
 
-	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE|MWHEREISFILE), regexp_msg, IFSCHELP(pinot_regexp_msg), false, VIEW);
+	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Regexp"), IFSCHELP(pinot_regexp_msg), false, VIEW);
 
-	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), prev_history_msg, IFSCHELP(pinot_prev_history_msg), false, VIEW);
+	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("PrevHist"), IFSCHELP(pinot_prev_history_msg), false, VIEW);
 
-	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), next_history_msg, IFSCHELP(pinot_next_history_msg), false, VIEW);
+	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("NextHist"), IFSCHELP(pinot_next_history_msg), false, VIEW);
 
-	add_to_funcs(no_replace_void, MREPLACE, no_replace_msg, IFSCHELP(pinot_whereis_msg), false, VIEW);
+	add_to_funcs(no_replace_void, MREPLACE, N_("No Replace"), IFSCHELP(pinot_whereis_msg), false, VIEW);
 
-	add_to_funcs(gototext_void, MGOTOLINE, gototext_msg, IFSCHELP(pinot_whereis_msg), true, VIEW);
+	add_to_funcs(gototext_void, MGOTOLINE, N_("Go To Text"), IFSCHELP(pinot_whereis_msg), true, VIEW);
 
-	add_to_funcs(to_files_void, MINSERTFILE, to_files_msg, IFSCHELP(pinot_tofiles_msg), false, VIEW);
+	add_to_funcs(to_files_void, MINSERTFILE, N_("To Files"), IFSCHELP(pinot_tofiles_msg), false, VIEW);
 
-	add_to_funcs(dos_format_void, MWRITEFILE, dos_format_msg, IFSCHELP(pinot_dos_msg), false, NOVIEW);
-	add_to_funcs(mac_format_void, MWRITEFILE, mac_format_msg, IFSCHELP(pinot_mac_msg), false, NOVIEW);
-	add_to_funcs(append_void, MWRITEFILE, append_msg, IFSCHELP(pinot_append_msg), false, NOVIEW);
-	add_to_funcs(prepend_void, MWRITEFILE, prepend_msg, IFSCHELP(pinot_prepend_msg), false, NOVIEW);
-	add_to_funcs( backup_file_void, MWRITEFILE, backup_file_msg, IFSCHELP(pinot_backup_msg), false, NOVIEW);
+	add_to_funcs(dos_format_void, MWRITEFILE, N_("DOS Format"), IFSCHELP(pinot_dos_msg), false, NOVIEW);
+	add_to_funcs(mac_format_void, MWRITEFILE, N_("Mac Format"), IFSCHELP(pinot_mac_msg), false, NOVIEW);
+	add_to_funcs(append_void, MWRITEFILE, N_("Append"), IFSCHELP(pinot_append_msg), false, NOVIEW);
+	add_to_funcs(prepend_void, MWRITEFILE, N_("Prepend"), IFSCHELP(pinot_prepend_msg), false, NOVIEW);
+	add_to_funcs( backup_file_void, MWRITEFILE, N_("Backup File"), IFSCHELP(pinot_backup_msg), false, NOVIEW);
 
-	add_to_funcs(ext_cmd_void, MINSERTFILE, ext_cmd_msg, IFSCHELP(pinot_execute_msg), false, NOVIEW);
+	add_to_funcs(ext_cmd_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
 
-	add_to_funcs(new_buffer_void, MINSERTFILE, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), false, NOVIEW);
+	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), IFSCHELP(pinot_multibuffer_msg), false, NOVIEW);
 
 	add_to_funcs(do_insertfile_void, MEXTCMD, insert_file_msg, IFSCHELP(pinot_insert_msg), false, VIEW);
-
-	add_to_funcs(new_buffer_void, MEXTCMD, new_buffer_msg, IFSCHELP(pinot_multibuffer_msg), false, NOVIEW);
 
 	add_to_funcs(edit_refresh, MHELP, refresh_msg, pinot_refresh_msg, false, VIEW);
 
 	add_to_funcs(do_exit, MHELP, exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
 
-	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), first_file_msg, IFSCHELP(pinot_firstfile_msg), false, VIEW);
+	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), N_("First File"), IFSCHELP(pinot_firstfile_msg), false, VIEW);
 
-	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), last_file_msg, IFSCHELP(pinot_lastfile_msg), false, VIEW);
+	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), N_("Last File"), IFSCHELP(pinot_lastfile_msg), false, VIEW);
 
-	add_to_funcs(goto_dir_void, MBROWSER, goto_dir_msg, IFSCHELP(pinot_gotodir_msg), false, VIEW);
+	add_to_funcs(goto_dir_void, MBROWSER, N_("Go To Dir"), IFSCHELP(pinot_gotodir_msg), false, VIEW);
 
 	empty_sclist();
 
