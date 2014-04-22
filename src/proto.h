@@ -240,8 +240,6 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column);
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);
-void toggle_init_one(int val, const char *desc, bool blank_after, long flag);
-void toggle_init(void);
 void shortcut_init(void);
 void set_lint_shortcuts(void);
 void set_spell_shortcuts(void);
