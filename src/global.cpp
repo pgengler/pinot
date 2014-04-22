@@ -574,13 +574,9 @@ void shortcut_init(void)
 
 	add_to_funcs(do_right, MBROWSER, N_("Forward"), IFSCHELP(pinot_forwardfile_msg), false, VIEW);
 
-	add_to_funcs(do_right, MMOST, "", "", false, VIEW);
-
 	add_to_funcs(do_left, MMAIN, N_("Back"), IFSCHELP(pinot_back_msg), false, VIEW);
 
 	add_to_funcs(do_left, MBROWSER, N_("Back"), IFSCHELP(pinot_backfile_msg), false, VIEW);
-
-	add_to_funcs(do_left, MMOST, "", "", false, VIEW);
 
 	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), IFSCHELP(pinot_prevword_msg), false, VIEW);
 
@@ -604,22 +600,13 @@ void shortcut_init(void)
 	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), IFSCHELP(pinot_nextfile_msg), true, VIEW);
 
 	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim Input"), IFSCHELP(pinot_verbatim_msg), false, NOVIEW);
-	add_to_funcs(do_verbatim_input, MWHEREIS|MREPLACE|MREPLACEWITH|MEXTCMD|MSPELL, "", "", false, NOVIEW);
 
 	add_to_funcs(do_tab, MMAIN, N_("Tab"), IFSCHELP(pinot_tab_msg), false, NOVIEW);
-	add_to_funcs(do_tab, MMOST, "", "", false, NOVIEW);
 	add_to_funcs(do_enter_void, MMAIN, N_("Enter"), IFSCHELP(pinot_enter_msg), false, NOVIEW);
-	add_to_funcs(do_enter_void, MMOST, "", "", false, NOVIEW);
 	add_to_funcs(do_delete, MMAIN, N_("Delete"), IFSCHELP(pinot_delete_msg), false, NOVIEW);
-	add_to_funcs(do_delete, MMOST, "", "", false, NOVIEW);
 	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg), false, NOVIEW);
 
-	add_to_funcs(do_backspace, MMOST, "", "", false, NOVIEW);
-
 	add_to_funcs(do_cut_till_end, MMAIN, N_("CutTillEnd"), IFSCHELP(pinot_cut_till_end_msg), true, NOVIEW);
-
-	add_to_funcs(xon_complaint, MMAIN, "", "", false, VIEW);
-	add_to_funcs(xoff_complaint, MMAIN, "", "", false, VIEW);
 
 	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), false, VIEW);
 
