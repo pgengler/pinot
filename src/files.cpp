@@ -440,7 +440,7 @@ void switch_to_next_buffer_void(void)
  * file buffers. */
 bool close_buffer(void)
 {
-	assert(openfile != openfiles.end());
+	assert(openfiles.size() > 0);
 
 	/* If only one file buffer is open, get out. */
 	if (openfiles.size() == 1) {
