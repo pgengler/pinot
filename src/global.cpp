@@ -415,22 +415,16 @@ const char *whereis_next_msg = N_("WhereIs Next");
 void shortcut_init(void)
 {
 	/* TRANSLATORS: Try to keep the following strings at most 10 characters. */
-	const char *get_help_msg = N_("Get Help");
 	const char *exit_msg = N_("Exit");
 	const char *whereis_msg = N_("Where Is");
-	const char *prev_page_msg = N_("Prev Page");
-	const char *next_page_msg = N_("Next Page");
-	const char *first_line_msg = N_("First Line");
-	const char *last_line_msg = N_("Last Line");
-	const char *suspend_msg = N_("Suspend");
 	const char *refresh_msg = N_("Refresh");
 	const char *insert_file_msg =  N_("Insert File");
-	const char *go_to_line_msg = N_("Go To Line");
 #ifdef ENABLE_SPELLER
 	const char *spell_msg = N_("To Spell");
 #endif
 	const char *lint_msg = N_("To Linter");
 	const char *pinot_lint_msg = N_("Invoke the linter, if available");
+	/* TRANSLATORS: Try to keep the next two strings to at most 14 characters. */
 	const char *prev_lint_msg = N_("Prev Lint Msg");
 	const char *next_lint_msg = N_("Next Lint Msg");
 
@@ -514,38 +508,33 @@ void shortcut_init(void)
 		delete f;
 	}
 
-	add_to_funcs(do_help_void, MMOST, get_help_msg, IFSCHELP(pinot_help_msg), false, VIEW);
+	/* TRANSLATORS: Try to keep the "Get Help" string to at most 10 characters. */
+	add_to_funcs(do_help_void, MMOST, N_("Get Help"), IFSCHELP(pinot_help_msg), false, VIEW);
 
 	add_to_funcs(do_cancel,
 	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
 	              N_("Cancel"), IFSCHELP(pinot_cancel_msg), false, VIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_exit, MMAIN, openfile != NULL && openfile != openfile->next ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
 
 	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), false, VIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), false, NOVIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), false, VIEW);
 
 	add_to_funcs(do_search, MMAIN|MBROWSER, whereis_msg, IFSCHELP(pinot_whereis_msg), false, VIEW);
 
-	add_to_funcs(do_page_up, MMAIN|MHELP|MBROWSER, prev_page_msg, IFSCHELP(pinot_prevpage_msg), false, VIEW);
-	add_to_funcs(do_page_down, MMAIN|MHELP|MBROWSER, next_page_msg, IFSCHELP(pinot_nextpage_msg), true, VIEW);
+	add_to_funcs(do_page_up, MMAIN|MHELP|MBROWSER, N_("Prev Page"), IFSCHELP(pinot_prevpage_msg), false, VIEW);
+	add_to_funcs(do_page_down, MMAIN|MHELP|MBROWSER, N_("Next Page"), IFSCHELP(pinot_nextpage_msg), true, VIEW);
 
 	add_to_funcs(do_page_up, MLINTER, prev_lint_msg, IFSCHELP(pinot_prevlint_msg), false, VIEW);
 	add_to_funcs(do_page_down, MLINTER, next_lint_msg, IFSCHELP(pinot_nextlint_msg), false, VIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), false, NOVIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), false, NOVIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), false, VIEW);
 
 #ifdef ENABLE_SPELLER
@@ -554,10 +543,10 @@ void shortcut_init(void)
 #endif
 	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), true, NOVIEW);
 
-	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), first_line_msg, IFSCHELP(pinot_firstline_msg), false, VIEW);
-	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), last_line_msg, IFSCHELP(pinot_lastline_msg), true, VIEW);
+	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("First Line"), IFSCHELP(pinot_firstline_msg), false, VIEW);
+	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("Last Line"), IFSCHELP(pinot_lastline_msg), true, VIEW);
 
-	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), go_to_line_msg, IFSCHELP(pinot_gotoline_msg), false, VIEW);
+	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), N_("Go To Line"), IFSCHELP(pinot_gotoline_msg), false, VIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), false, VIEW);
@@ -636,7 +625,7 @@ void shortcut_init(void)
 
 	add_to_funcs(total_refresh, (MMAIN|MHELP), refresh_msg, IFSCHELP(pinot_refresh_msg), false, VIEW);
 
-	add_to_funcs(do_suspend_void, MMAIN, suspend_msg, IFSCHELP(pinot_suspend_msg), true, VIEW);
+	add_to_funcs(do_suspend_void, MMAIN, N_("Suspend"), IFSCHELP(pinot_suspend_msg), true, VIEW);
 
 	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Case Sens"), IFSCHELP(pinot_case_msg), false, VIEW);
 
@@ -851,6 +840,8 @@ const subnfunc *sctofunc(sc *s)
    function to get a string for each flag */
 const char *flagtostr(int flag)
 {
+	/* TRANSLATORS: The next seventeen strings are toggle descriptions;
+	 * they are best kept shorter than 40 characters, but may be longer. */
 	switch (flag) {
 	case NO_HELP:
 		return N_("Help mode");
