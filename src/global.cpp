@@ -356,38 +356,39 @@ void assign_keyinfo(sc *s)
 		s->seq = 0;
 	} else if (s->type == META && (!strcasecmp(s->keystr, "Space"))) {
 		s->seq = (int) ' ';
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Up"))) {
-		s->seq = KEY_UP;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Down"))) {
-		s->seq = KEY_DOWN;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Left"))) {
-		s->seq = KEY_LEFT;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Right"))) {
-		s->seq = KEY_RIGHT;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Insert"))) {
-		s->seq = KEY_IC;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Delete"))) {
-		s->seq = KEY_DC;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Backspace"))) {
-		s->seq = KEY_BACKSPACE;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Enter"))) {
-		s->seq = KEY_ENTER;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "PageUp"))) {
-		s->seq = KEY_PPAGE;
-	} else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "PageDown"))) {
-		s->seq = KEY_NPAGE;
-	}
+	} else if (s->type == RAWINPUT) {
+		if (!strcasecmp(s->keystr, "Up")) {
+			s->seq = KEY_UP;
+		} else if (!strcasecmp(s->keystr, "Down")) {
+			s->seq = KEY_DOWN;
+		} else if (!strcasecmp(s->keystr, "Left")) {
+			s->seq = KEY_LEFT;
+		} else if (!strcasecmp(s->keystr, "Right")) {
+			s->seq = KEY_RIGHT;
+		} else if (!strcasecmp(s->keystr, "Insert")) {
+			s->seq = KEY_IC;
+		} else if (!strcasecmp(s->keystr, "Delete")) {
+			s->seq = KEY_DC;
+		} else if (!strcasecmp(s->keystr, "Backspace")) {
+			s->seq = KEY_BACKSPACE;
+		} else if (!strcasecmp(s->keystr, "Enter")) {
+			s->seq = KEY_ENTER;
+		} else if (!strcasecmp(s->keystr, "PageUp")) {
+			s->seq = KEY_PPAGE;
+		} else if (!strcasecmp(s->keystr, "PageDown")) {
+			s->seq = KEY_NPAGE;
+		}
 #ifdef KEY_HOME
-	else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "Home"))) {
-		s->seq = KEY_HOME;
-	}
+		else if (!strcasecmp(s->keystr, "Home")) {
+			s->seq = KEY_HOME;
+		}
 #endif
 #ifdef KEY_END
-	else if (s->type == RAWINPUT && (!strcasecmp(s->keystr, "End"))) {
-		s->seq = KEY_END;
-	}
+		else if (!strcasecmp(s->keystr, "End")) {
+			s->seq = KEY_END;
+		}
 #endif
-
+	}
 }
 
 #ifdef DEBUG
