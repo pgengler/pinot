@@ -49,7 +49,7 @@ void set_colorpairs(void)
 /* Initialize the color information. */
 void color_init(void)
 {
-	assert(openfile != NULL);
+	assert(openfile != openfiles.end());
 
 	if (has_colors()) {
 #ifdef HAVE_USE_DEFAULT_COLORS
@@ -102,7 +102,7 @@ void color_update(void)
 #endif /* HAVE_LIBMAGIC */
 
 
-	assert(openfile != NULL);
+	assert(openfile != openfiles.end());
 
 	openfile->syntax = NULL;
 	openfile->colorstrings.clear();

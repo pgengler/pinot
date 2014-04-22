@@ -716,7 +716,7 @@ void reset_cursor(void)
 	size_t xpt;
 	/* If we haven't opened any files yet, put the cursor in the top
 	 * left corner of the edit window and get out. */
-	if (openfile == NULL) {
+	if (openfiles.size() == 0) {
 		wmove(edit, 0, 0);
 		return;
 	}
@@ -771,7 +771,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 	 * Note that endpos might be beyond the null terminator of the
 	 * string. */
 
-	assert(openfile != NULL && fileptr != NULL && converted != NULL);
+	assert(openfile != openfiles.end() && fileptr != NULL && converted != NULL);
 	assert(strlenpt(converted) <= COLS);
 
 	/* Just paint the string in any case (we'll add color or reverse on

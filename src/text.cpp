@@ -903,7 +903,7 @@ void add_undo(undo_type current_action)
 {
 	undo *u;
 	char *data;
-	openfilestruct *fs = openfile;
+	std::list<OpenFile>::iterator fs = openfile;
 	static undo *last_cutu = NULL; /* Last thing we cut to set up the undo for uncut */
 	ssize_t wrap_loc;	/* For calculating split beginning */
 
@@ -1027,7 +1027,7 @@ void update_undo(undo_type action)
 	undo *u;
 	char *data;
 	int len = 0;
-	openfilestruct *fs = openfile;
+	std::list<OpenFile>::iterator fs = openfile;
 
 	if (!ISSET(UNDOABLE)) {
 		return;
@@ -2249,12 +2249,12 @@ void do_linter(void)
 			new_lint_loop:
 			if (stat(curr_lint->filename.c_str(), &lintfileinfo) != -1) {
 				if (openfile->current_stat->st_ino != lintfileinfo.st_ino) {
-					openfilestruct *tmpof = openfile;
-					while (tmpof != openfile->next) {
+					std::list<OpenFile>::iterator tmpof = openfile;
+					while (tmpof != std::next(openfile, 1)) {
 						if (tmpof->current_stat->st_ino == lintfileinfo.st_ino) {
 							break;
 						}
-						tmpof = tmpof->next;
+						++tmpof;
 					}
 					if (tmpof->current_stat->st_ino != lintfileinfo.st_ino) {
 						char *msg = charalloc(1024 + curr_lint->filename.length());

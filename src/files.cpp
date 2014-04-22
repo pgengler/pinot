@@ -34,30 +34,28 @@
 #include <pwd.h>
 #include <libgen.h>
 
-/* Add an entry to the openfile openfilestruct.  This should only be
- * called from open_buffer(). */
+/* Add an entry to the list of open files. This should only be called from open_buffer(). */
 void make_new_buffer(void)
 {
-	/* If there are no entries in openfile, make the first one and
-	 * move to it. */
-	if (openfile == NULL) {
-		openfile = make_new_opennode();
-		splice_opennode(openfile, openfile, openfile);
-		/* Otherwise, make a new entry for openfile, splice it in after
-		 * the current entry, and move to it. */
+	OpenFile newfile;
+	if (openfiles.size() == 0) {
+		/* If there are no entries in openfile, make the first one and move to it. */
+		openfiles.push_back(newfile);
+		openfile = openfiles.begin();
 	} else {
-		splice_opennode(openfile, make_new_opennode(), openfile->next);
-		openfile = openfile->next;
+		/* Otherwise, make a new entry for openfile, splice it in after the current entry, and move to it. */
+		openfiles.insert(std::next(openfile, 1), newfile);
+		++openfile;
 	}
 
 	/* Initialize the new buffer. */
 	initialize_buffer();
 }
 
-/* Initialize the current entry of the openfile openfilestruct. */
+/* Initialize the current entry of the openfiles list */
 void initialize_buffer(void)
 {
-	assert(openfile != NULL);
+	assert(openfile != openfiles.end());
 
 	openfile->filename = mallocstrcpy(NULL, "");
 
@@ -75,17 +73,16 @@ void initialize_buffer(void)
 
 	openfile->fmt = NIX_FILE;
 
-	openfile->current_stat = NULL;
+	openfile->current_stat = nullptr;
 	openfile->undotop = NULL;
 	openfile->current_undo = NULL;
 	openfile->lock_filename = NULL;
 }
 
-/* Initialize the text of the current entry of the openfile
- * openfilestruct. */
+/* Initialize the text of the current entry of the openfiles list */
 void initialize_buffer_text(void)
 {
-	assert(openfile != NULL);
+	assert(openfile != openfiles.end());
 
 	openfile->fileage = make_new_node(NULL);
 	openfile->fileage->data = mallocstrcpy(NULL, "");
@@ -122,8 +119,7 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 	ssize_t lockdatalen = 1024;
 	ssize_t wroteamt;
 
-	/* Run things which might fail first before we try and blow away
-	   the old state */
+	/* Run things which might fail first before we try and blow away the old state */
 	myuid = geteuid();
 	if ((mypwuid = getpwuid(myuid)) == NULL) {
 		statusbar(_("Couldn't determine my identity for lock file (getpwuid() failed)"));
@@ -285,7 +281,7 @@ int do_lockfile(const char *filename)
  * necessary, and then open and read the file, if applicable. */
 void open_buffer(const char *filename, bool undoable)
 {
-	bool new_buffer = (openfile == NULL || ISSET(MULTIBUFFER));
+	bool new_buffer = (openfiles.size() == 0 || ISSET(MULTIBUFFER));
 	/* Whether we load into this buffer or a new one. */
 	FILE *f;
 	int rc;
@@ -313,7 +309,7 @@ void open_buffer(const char *filename, bool undoable)
 	 * no stat, update the stat, if applicable. */
 	if (rc > 0) {
 		read_file(f, rc, filename, undoable, new_buffer);
-		if (openfile->current_stat == NULL) {
+		if (openfile->current_stat == nullptr) {
 			openfile->current_stat = new struct stat;
 			stat(filename, openfile->current_stat);
 		}
@@ -384,20 +380,31 @@ void display_buffer(void)
 
 /* Switch to the next file buffer if next_buf is true.  Otherwise,
  * switch to the previous file buffer. */
-void switch_to_prevnext_buffer(bool next_buf)
+std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next_buf)
 {
-	assert(openfile != NULL);
+	assert(openfiles.size() > 0);
 
-	/* If only one file buffer is open, indicate it on the statusbar and
-	 * get out. */
-	if (openfile == openfile->next) {
+	/* If only one file buffer is open, indicate it on the statusbar and get out. */
+	if (openfiles.size() == 1) {
 		statusbar(_("No more open file buffers"));
-		return;
+		return openfile;
 	}
 
 	/* Switch to the next or previous file buffer, depending on the
 	 * value of next_buf. */
-	openfile = next_buf ? openfile->next : openfile->prev;
+	auto oldfile = openfile;
+	if (next_buf) {
+		if (++openfile == openfiles.end()) {
+			DEBUG_LOG("Reached end of list; looping to the beginning");
+			openfile = openfiles.begin();
+		}
+	} else {
+		if (openfile == openfiles.begin()) {
+			DEBUG_LOG("Reached beginning of list; looping to the end");
+			openfile = openfiles.end();
+		}
+		--openfile;
+	}
 
 	DEBUG_LOG("filename is " << openfile->filename);
 
@@ -412,6 +419,8 @@ void switch_to_prevnext_buffer(bool next_buf)
 #endif
 
 	display_main_list();
+
+	return oldfile;
 }
 
 /* Switch to the previous entry in the openfile filebuffer. */
@@ -431,20 +440,21 @@ void switch_to_next_buffer_void(void)
  * file buffers. */
 bool close_buffer(void)
 {
-	assert(openfile != NULL);
+	assert(openfile != openfiles.end());
 
 	/* If only one file buffer is open, get out. */
-	if (openfile == openfile->next) {
+	if (openfiles.size() == 1) {
 		return false;
 	}
+
+	DEBUG_LOG("openfile == " << static_cast<void*>(&(*openfile)) << "; openfile->current_stat == " << static_cast<void*>(openfile->current_stat));
 
 	update_poshistory(openfile->filename, openfile->current->lineno, xplustabs() + 1);
 
 	/* Switch to the next file buffer. */
-	switch_to_next_buffer_void();
+	auto oldfile = switch_to_prevnext_buffer(true);
 
-	/* Close the file buffer we had open before. */
-	unlink_opennode(openfile->prev);
+	openfile = openfiles.erase(oldfile);
 
 	display_main_list();
 
@@ -1581,8 +1591,8 @@ bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bo
 	 * specified it interactively), stat and save the value
 	 * or else we will chase null pointers when we do
 	 * modtime checks, preserve file times, etc. during backup */
-	if (openfile->current_stat == NULL && !tmp && realexists) {
-		openfile->current_stat = (struct stat *)nmalloc(sizeof(struct stat));
+	if (openfile->current_stat == nullptr && !tmp && realexists) {
+		openfile->current_stat = new struct stat;
 		stat(realname, openfile->current_stat);
 	}
 
@@ -1939,7 +1949,7 @@ skip_backup:
 		}
 
 		/* Update current_stat to reference the file as it is now. */
-		if (openfile->current_stat == NULL) {
+		if (openfile->current_stat == nullptr) {
 			openfile->current_stat = new struct stat;
 		}
 		if (!openfile->mark_set) {

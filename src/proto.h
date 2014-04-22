@@ -47,7 +47,8 @@ extern int maxrows;
 extern filestruct *cutbuffer;
 extern filestruct *cutbottom;
 extern partition *filepart;
-extern openfilestruct *openfile;
+extern std::list<OpenFile> openfiles;
+extern std::list<OpenFile>::iterator openfile;
 
 extern char *matchbrackets;
 
@@ -199,7 +200,7 @@ void open_buffer(const char *filename, bool undoable);
 void replace_buffer(const char *filename);
 #endif
 void display_buffer(void);
-void switch_to_prevnext_buffer(bool next);
+std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next);
 void switch_to_prev_buffer_void(void);
 void switch_to_next_buffer_void(void);
 bool close_buffer(void);
@@ -286,13 +287,6 @@ partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, 
 void unpartition_filestruct(partition **p);
 void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct *top, size_t top_x, filestruct *bot, size_t bot_x);
 void copy_from_filestruct(filestruct *some_buffer);
-openfilestruct *make_new_opennode(void);
-void splice_opennode(openfilestruct *begin, openfilestruct *newnode, openfilestruct *end);
-void unlink_opennode(openfilestruct *fileptr);
-void delete_opennode(openfilestruct *fileptr);
-#ifdef DEBUG
-void free_openfilestruct(openfilestruct *src);
-#endif
 void print_view_warning(void);
 void finish(void);
 void die(const char *msg, ...);

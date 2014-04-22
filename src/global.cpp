@@ -68,10 +68,10 @@ filestruct *cutbuffer = NULL;
 /* The buffer where we store cut text. */
 filestruct *cutbottom = NULL;
 partition *filepart = NULL;
-/* The partition where we store a portion of the current
- * file. */
-openfilestruct *openfile = NULL;
+/* The partition where we store a portion of the current file. */
+std::list<OpenFile> openfiles;
 /* The list of all open file buffers. */
+std::list<OpenFile>::iterator openfile; // the current open file
 
 char *matchbrackets = NULL;
 /* The opening and closing brackets that can be found by bracket
@@ -514,7 +514,7 @@ void shortcut_init(void)
 	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
 	              N_("Cancel"), IFSCHELP(pinot_cancel_msg), false, VIEW);
 
-	add_to_funcs(do_exit, MMAIN, openfile != NULL && openfile != openfile->next ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
+	add_to_funcs(do_exit, MMAIN, openfiles.size() > 0 ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
 
 	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), false, VIEW);
 
@@ -1160,12 +1160,6 @@ void thanks_for_all_the_fish(void)
 	if (cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
 	}
-#ifdef DEBUG
-	/* Free the memory associated with each open file buffer. */
-	if (openfile != NULL) {
-		free_openfilestruct(openfile);
-	}
-#endif
 	if (syntaxstr != NULL) {
 		free(syntaxstr);
 	}

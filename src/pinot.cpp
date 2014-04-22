@@ -488,78 +488,6 @@ void copy_from_filestruct(filestruct *some_buffer)
 	}
 }
 
-/* Create a new openfilestruct node. */
-openfilestruct *make_new_opennode(void)
-{
-	openfilestruct *newnode = new openfilestruct;
-
-	newnode->filename = NULL;
-	newnode->fileage = NULL;
-	newnode->filebot = NULL;
-	newnode->edittop = NULL;
-	newnode->current = NULL;
-	newnode->current_stat = NULL;
-	newnode->last_action = OTHER;
-	newnode->lock_filename = NULL;
-
-	return newnode;
-}
-
-/* Splice a node into an existing openfilestruct. */
-void splice_opennode(openfilestruct *begin, openfilestruct *newnode, openfilestruct *end)
-{
-	assert(newnode != NULL && begin != NULL);
-
-	newnode->next = end;
-	newnode->prev = begin;
-	begin->next = newnode;
-
-	if (end != NULL) {
-		end->prev = newnode;
-	}
-}
-
-/* Unlink a node from the rest of the openfilestruct, and delete it. */
-void unlink_opennode(openfilestruct *fileptr)
-{
-	assert(fileptr != NULL && fileptr->prev != NULL && fileptr->next != NULL && fileptr != fileptr->prev && fileptr != fileptr->next);
-
-	fileptr->prev->next = fileptr->next;
-	fileptr->next->prev = fileptr->prev;
-
-	delete_opennode(fileptr);
-}
-
-/* Delete a node from the openfilestruct. */
-void delete_opennode(openfilestruct *fileptr)
-{
-	assert(fileptr != NULL && fileptr->filename != NULL && fileptr->fileage != NULL);
-
-	free(fileptr->filename);
-	free_filestruct(fileptr->fileage);
-	if (fileptr->current_stat != NULL) {
-		delete fileptr->current_stat;
-	}
-
-	delete fileptr;
-}
-
-#ifdef DEBUG
-/* Deallocate all memory associated with this and later files, including
- * the lines of text. */
-void free_openfilestruct(openfilestruct *src)
-{
-	assert(src != NULL);
-
-	while (src != src->next) {
-		src = src->next;
-		delete_opennode(src->prev);
-	}
-
-	delete_opennode(src);
-}
-#endif
-
 /* Display a warning about a key disabled in view mode. */
 void print_view_warning(void)
 {
@@ -613,7 +541,7 @@ void die(const char *msg, ...)
 	va_end(ap);
 
 	/* Save the current file buffer if it's been modified. */
-	if (openfile && openfile->modified) {
+	if (openfile->modified) {
 		/* If we've partitioned the filestruct, unpartition it now. */
 		if (filepart != NULL) {
 			unpartition_filestruct(&filepart);
@@ -623,15 +551,11 @@ void die(const char *msg, ...)
 	}
 
 	/* Save all of the other modified file buffers, if any. */
-	if (openfile != NULL) {
-		openfilestruct *tmp = openfile;
-
-		while (tmp != openfile->next) {
-			openfile = openfile->next;
-
+	if (openfile != openfiles.end()) {
+		for (auto file : openfiles) {
 			/* Save the current file buffer if it's been modified. */
-			if (openfile->modified) {
-				die_save_file(openfile->filename, openfile->current_stat);
+			if (file.modified) {
+				die_save_file(file.filename, file.current_stat);
 			}
 		}
 	}
@@ -2052,7 +1976,7 @@ int main(int argc, char **argv)
 	 * invalid files like directories or if there were no command line
 	 * arguments given.  In this case, we have to load a blank buffer.
 	 * Also, we unset view mode to allow editing. */
-	if (openfile == NULL) {
+	if (openfiles.size() == 0) {
 		open_buffer("", false);
 		UNSET(VIEW_MODE);
 	}
