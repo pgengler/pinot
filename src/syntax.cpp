@@ -20,6 +20,11 @@ void SyntaxMatch::compile()
 	regcomp(ext, ext_regex.c_str(), REG_EXTENDED);
 }
 
+bool SyntaxMatch::matches(const std::string& str) const
+{
+	return matches(str.c_str());
+}
+
 bool SyntaxMatch::matches(const char *str) const
 {
 	DEBUG_LOG("Matching regex \"" << ext_regex << "\" against \"" << str << '"');

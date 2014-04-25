@@ -101,7 +101,7 @@ typedef struct undo {
 
 
 typedef struct poshiststruct {
-	char *filename;
+	std::string filename;
 	/* The file. */
 	ssize_t lineno;
 	/* Line number we left off on */

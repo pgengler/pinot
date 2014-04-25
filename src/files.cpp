@@ -76,7 +76,6 @@ void initialize_buffer(void)
 	openfile->current_stat = nullptr;
 	openfile->undotop = NULL;
 	openfile->current_undo = NULL;
-	openfile->lock_filename = NULL;
 }
 
 /* Initialize the text of the current entry of the openfiles list */
@@ -107,7 +106,7 @@ void initialize_buffer_text(void)
 
    Returns: 1 on success, 0 on failure (but continue loading), -1 on failure and abort
  */
-int write_lockfile(const char *lockfilename, const char *origfilename, bool modified)
+int write_lockfile(const std::string& lockfilename, const std::string& origfilename, bool modified)
 {
 	int cflags, fd;
 	FILE *filestream;
@@ -142,7 +141,7 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 		cflags = O_WRONLY | O_CREAT | O_EXCL | O_APPEND;
 	}
 
-	fd = open(lockfilename, cflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+	fd = open(lockfilename.c_str(), cflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
 	/* Maybe we just don't have write access, don't stop us from
 	   opening the file at all, just don't set the lock_filename
@@ -156,7 +155,7 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 	filestream = fdopen(fd, "wb");
 
 	if (fd < 0 || filestream == NULL) {
-		statusbar(_("Error writing lock file %s: %s"), lockfilename, strerror(errno));
+		statusbar(_("Error writing lock file %s: %s"), lockfilename.c_str(), strerror(errno));
 		return -1;
 	}
 
@@ -187,21 +186,21 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 	snprintf(&lockdata[2], 10, "pinot%s", VERSION);
 	strncpy(&lockdata[28], mypwuid->pw_name, 16);
 	strncpy(&lockdata[68], myhostname, 31);
-	strncpy(&lockdata[108], origfilename, 768);
+	strncpy(&lockdata[108], origfilename.c_str(), 768);
 	if (modified == true) {
 		lockdata[1007] = 0x55;
 	}
 
 	wroteamt = fwrite(lockdata, sizeof(char), lockdatalen, filestream);
 	if (wroteamt < lockdatalen) {
-		statusbar(_("Error writing lock file %s: %s"), lockfilename, ferror(filestream));
+		statusbar(_("Error writing lock file %s: %s"), lockfilename.c_str(), ferror(filestream));
 		return -1;
 	}
 
 	DEBUG_LOG("In write_lockfile(), write successful (wrote " << wroteamt << " bytes)");
 
 	if (fclose(filestream) == EOF) {
-		statusbar(_("Error writing lock file %s: %s"), lockfilename, strerror(errno));
+		statusbar(_("Error writing lock file %s: %s"), lockfilename.c_str(), strerror(errno));
 		return -1;
 	}
 
@@ -214,10 +213,10 @@ int write_lockfile(const char *lockfilename, const char *origfilename, bool modi
 /* Less exciting, delete the lock file.
    Return -1 if successful and complain on the statusbar, 1 otherwite
  */
-int delete_lockfile(const char *lockfilename)
+int delete_lockfile(const std::string& lockfilename)
 {
-	if (unlink(lockfilename) < 0 && errno != ENOENT) {
-		statusbar(_("Error deleting lock file %s: %s"), lockfilename, strerror(errno));
+	if (unlink(lockfilename.c_str()) < 0 && errno != ENOENT) {
+		statusbar(_("Error deleting lock file %s: %s"), lockfilename.c_str(), strerror(errno));
 		return -1;
 	}
 	return 1;
@@ -302,7 +301,7 @@ void open_buffer(const char *filename, bool undoable)
 	/* If we have a file, and we're loading into a new buffer, update
 	 * the filename. */
 	if (rc != -1 && new_buffer) {
-		openfile->filename = mallocstrcpy(openfile->filename, filename);
+		openfile->filename = filename;
 	}
 
 	/* If we have a non-new file, read it in.  Then, if the buffer has
@@ -412,7 +411,7 @@ std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next_buf)
 	display_buffer();
 
 	/* Indicate the switch on the statusbar. */
-	statusbar(_("Switched to %s"), ((openfile->filename[0] == '\0') ? _("New Buffer") : openfile->filename));
+	statusbar(_("Switched to %s"), ((openfile->filename[0] == '\0') ? _("New Buffer") : openfile->filename.c_str()));
 
 #ifdef DEBUG
 	dump_filestruct(openfile->current);
@@ -1231,6 +1230,19 @@ void do_insertfile_void(void)
  * path does, since the file could exist in memory but not yet on disk).
  * Don't do this if the relative path doesn't exist, since we won't be
  * able to go there. */
+std::string get_full_path(const std::string& origpath)
+{
+	if (origpath == "") {
+		return "";
+	}
+
+	char *path = get_full_path(origpath.c_str());
+	std::string fullpath(path);
+	free(path);
+
+	return fullpath;
+}
+
 char *get_full_path(const char *origpath)
 {
 	struct stat fileinfo;
@@ -1935,7 +1947,7 @@ skip_backup:
 
 	if (!tmp && append == OVERWRITE) {
 		if (!nonamechange) {
-			openfile->filename = mallocstrcpy(openfile->filename, realname);
+			openfile->filename = realname;
 			/* We might have changed the filename, so update the colors
 			 * to account for it, and then make sure we're using them. */
 			color_update();
@@ -2031,7 +2043,7 @@ bool do_writeout(bool exiting)
 	currmenu = MWRITEFILE;
 
 	if (exiting && openfile->filename[0] != '\0' && ISSET(TEMP_FILE)) {
-		retval = write_file(openfile->filename, NULL, false, OVERWRITE, false);
+		retval = write_file(openfile->filename.c_str(), NULL, false, OVERWRITE, false);
 
 		/* Write succeeded. */
 		if (retval) {
@@ -2039,7 +2051,7 @@ bool do_writeout(bool exiting)
 		}
 	}
 
-	ans = mallocstrcpy(NULL, (!exiting && openfile->mark_set) ? "" : openfile->filename);
+	ans = mallocstrcpy(NULL, (!exiting && openfile->mark_set) ? "" : openfile->filename.c_str());
 
 	while (true) {
 		const char *msg;
@@ -2115,30 +2127,27 @@ bool do_writeout(bool exiting)
 			if (append == OVERWRITE) {
 				size_t answer_len = strlen(answer);
 				bool name_exists, do_warning;
-				char *full_answer, *full_filename;
+				char *full_answer;
 				struct stat st;
 
 				/* Convert newlines to nulls, just before we get the full path. */
 				sunder(answer);
 
 				full_answer = get_full_path(answer);
-				full_filename = get_full_path(openfile->filename);
+				std::string full_filename = get_full_path(openfile->filename);
 				name_exists = (stat((full_answer == NULL) ? answer : full_answer, &st) != -1);
 				if (openfile->filename[0] == '\0') {
 					do_warning = name_exists;
 				} else {
 					do_warning = (strcmp((full_answer == NULL) ?
-					                     answer : full_answer, (full_filename == NULL) ?
-					                     openfile->filename : full_filename) != 0);
+					                     answer : full_answer, (full_filename == "") ?
+					                     openfile->filename.c_str() : full_filename.c_str()) != 0);
 				}
 
 				/* Convert nulls to newlines.  answer_len is the
 				 * string's real length. */
 				unsunder(answer, answer_len);
 
-				if (full_filename != NULL) {
-					free(full_filename);
-				}
 				if (full_answer != NULL) {
 					free(full_answer);
 				}
@@ -2793,8 +2802,8 @@ void save_poshistory(void)
 			chmod(poshist, S_IRUSR | S_IWUSR);
 
 			for (auto pos : poshistory) {
-				statusstr = charalloc(strlen(pos->filename) + 2 * sizeof(ssize_t) + 4);
-				sprintf(statusstr, "%s %d %d\n", pos->filename, (int) pos->lineno, (int) pos->xno);
+				statusstr = charalloc(pos->filename.length() + 2 * sizeof(ssize_t) + 4);
+				sprintf(statusstr, "%s %d %d\n", pos->filename.c_str(), (int) pos->lineno, (int) pos->xno);
 				if (fwrite(statusstr, sizeof(char), strlen(statusstr), hist) < strlen(statusstr)) {
 					history_error(N_("Error writing %s: %s"), poshist, strerror(errno));
 				}
@@ -2809,16 +2818,12 @@ void save_poshistory(void)
 /* Update the POS history, given a filename line and column.
  * If no entry is found, add a new entry on the end
  */
-void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos)
+void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos)
 {
-	char *fullpath = get_full_path(filename);
-
-	if (fullpath == NULL) {
-		return;
-	}
+	std::string fullpath = get_full_path(filename);
 
 	for (auto pos : poshistory) {
-		if (!strcmp(pos->filename, fullpath)) {
+		if (pos->filename == fullpath) {
 			pos->lineno = lineno;
 			pos->xno    = xpos;
 			return;
@@ -2828,12 +2833,10 @@ void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos)
 	/* Didn't find it, make a new node yo! */
 
 	auto pos = new poshiststruct;
-	pos->filename = mallocstrcpy(NULL, fullpath);
+	pos->filename = fullpath;
 	pos->lineno   = lineno;
 	pos->xno      = xpos;
 	poshistory.push_back(pos);
-
-	free(fullpath);
 }
 
 
@@ -2850,7 +2853,7 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
 	}
 
 	for (auto pos : poshistory) {
-		if (!strcmp(pos->filename, fullpath)) {
+		if (pos->filename == fullpath) {
 			*line = pos->lineno;
 			*column = pos->xno;
 			free(fullpath);

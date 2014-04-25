@@ -62,6 +62,7 @@ class SyntaxMatch {
 		SyntaxMatch(const char*);
 		virtual ~SyntaxMatch();
 
+		bool matches(const std::string& str) const;
 		bool matches(const char*) const;
 	private:
 		void compile();

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+using std::string;
+
 #include "types.h"
 
 class OpenFile
@@ -9,7 +12,7 @@ class OpenFile
 		virtual ~OpenFile();
 
 		/* The current file's name. */
-		char *filename;
+		string filename;
 
 		/* The current file's first line. */
 		filestruct *fileage;
@@ -62,7 +65,7 @@ class OpenFile
 		undo_type last_action;
 
 		/* The path of the lockfile, if we created one */
-		const char *lock_filename;
+		string lock_filename;
 
 		/* The syntax class for this file, if any */
 		Syntax *syntax;

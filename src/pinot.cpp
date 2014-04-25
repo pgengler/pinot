@@ -566,18 +566,17 @@ void die(const char *msg, ...)
 
 /* Save the current file under the name spacified in die_filename, which
  * is modified to be unique if necessary. */
-void die_save_file(const char *die_filename, struct stat *die_stat)
+void die_save_file(std::string die_filename, struct stat *die_stat)
 {
 	char *retval;
 	bool failed = true;
 
-	/* If we can't save, we have really bad problems, but we might as
-	 * well try. */
-	if (*die_filename == '\0') {
+	/* If we can't save, we have really bad problems, but we might as well try. */
+	if (die_filename == "") {
 		die_filename = "pinot";
 	}
 
-	retval = get_next_filename(die_filename, ".save");
+	retval = get_next_filename(die_filename.c_str(), ".save");
 	if (retval[0] != '\0') {
 		failed = !write_file(retval, NULL, true, OVERWRITE, true);
 	}
@@ -820,7 +819,7 @@ void do_exit(void)
 	/* If the user chose not to save, or if the user chose to save and
 	 * the save succeeded, we're ready to exit. */
 	if (i == 0 || (i == 1 && do_writeout(true))) {
-		if (ISSET(LOCKING) && openfile->lock_filename) {
+		if (ISSET(LOCKING) && openfile->lock_filename != "") {
 			delete_lockfile(openfile->lock_filename);
 		}
 		/* Exit only if there are no more open file buffers. */

@@ -400,8 +400,6 @@ void titlebar(const char *path)
 	bool dots = false;
 	/* Do we put an ellipsis before the path? */
 
-	assert(path != NULL || openfile->filename != NULL);
-
 	wattron(topwin, reverse_attr);
 
 	blank_titlebar();
@@ -467,7 +465,7 @@ void titlebar(const char *path)
 	/* If we're not in the file browser, set path to the current
 	 * filename. */
 	if (path == NULL) {
-		path = openfile->filename;
+		path = openfile->filename.c_str();
 	}
 
 	/* Account for the full lengths of the prefix and the state. */
@@ -549,10 +547,10 @@ void set_modified(void)
 		openfile->modified = true;
 		titlebar(NULL);
 		if (ISSET(LOCKING)) {
-			if (strcmp(openfile->filename, "") != 0) {
+			if (openfile->filename == "") {
 				/* Don't bother with a lockfile if there isn't an actual file open */
 				return;
-			} else if (openfile->lock_filename == NULL) {
+			} else if (openfile->lock_filename == "") {
 				/* Translators: Try to keep this at most 80 characters. */
 				statusbar(_("Warning: Modifying a file which is not locked, check directory permission?"));
 			} else {

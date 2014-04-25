@@ -2101,7 +2101,7 @@ void do_linter(void)
 		}
 		lintargs[arglen - 1] = NULL;
 	}
-	lintargs[arglen - 2] = openfile->filename;
+	lintargs[arglen - 2] = mallocstrcpy(NULL, openfile->filename.c_str());
 
 	/* A new process to run linter. */
 	if ((pid_lint = fork()) == 0) {
@@ -2121,6 +2121,9 @@ void do_linter(void)
 
 		/* Start the linter program; we are using $PATH. */
 		execvp(lintargs[0], lintargs);
+
+		free(lintargs[arglen - 2]);
+		free(lintargs);
 
 		/* This should not be reached if linter is found. */
 		exit(1);

@@ -84,7 +84,7 @@ extern filestruct *replace_history;
 extern filestruct *replaceage;
 extern filestruct *replacebot;
 extern std::list<poshiststruct *> poshistory;
-void update_poshistory(char *filename, ssize_t lineno, ssize_t xpos);
+void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos);
 
 extern regex_t search_regexp;
 extern regmatch_t regmatches[10];
@@ -211,12 +211,13 @@ char *get_next_filename(const char *name, const char *suffix);
 void do_insertfile(bool execute);
 void do_insertfile_void(void);
 void do_execute_command();
+std::string get_full_path(const std::string& origpath);
 char *get_full_path(const char *origpath);
 char *check_writable_directory(const char *path);
 char *safe_tempfile(FILE **f);
 void init_backup_dir(void);
-int delete_lockfile(const char *lockfilename);
-int write_lockfile(const char *lockfilename, const char *origfilename, bool modified);
+int delete_lockfile(const std::string& lockfilename);
+int write_lockfile(const std::string& lockfilename, const std::string& origfilename, bool modified);
 int copy_file(FILE *inn, FILE *out);
 bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bool nonamechange);
 bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type append);
@@ -290,7 +291,7 @@ void copy_from_filestruct(filestruct *some_buffer);
 void print_view_warning(void);
 void finish(void);
 void die(const char *msg, ...);
-void die_save_file(const char *die_filename, struct stat *die_stat);
+void die_save_file(std::string die_filename, struct stat *die_stat);
 void window_init(void);
 void print_opt_full(const char *shortflag
 #ifdef HAVE_GETOPT_LONG
