@@ -23,6 +23,7 @@
 #include "proto.h"
 
 #include <algorithm>
+#include <fstream>
 
 #include <stdio.h>
 #include <string.h>
@@ -2688,9 +2689,9 @@ void load_history(void)
 
 	/* Assume do_rcfile() has reported a missing home directory. */
 	if (pinothist != "") {
-		FILE *hist = fopen(pinothist.c_str(), "rb");
+		std::ifstream hist(pinothist, std::ifstream::binary);
 
-		if (hist == NULL) {
+		if (!hist) {
 			if (errno != ENOENT) {
 				/* Don't save history when we quit. */
 				UNSET(HISTORYLOG);
@@ -2718,7 +2719,6 @@ void load_history(void)
 				}
 			}
 
-			fclose(hist);
 			free(line);
 			if (search_history->prev != NULL) {
 				last_search = mallocstrcpy(NULL, search_history->prev->data);
