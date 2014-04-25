@@ -2786,7 +2786,7 @@ void save_poshistory(void)
 	std::string poshist = poshistfilename();
 
 	if (poshist != "") {
-		FILE *hist = fopen(poshist.c_str(), "wb");
+		std::ofstream hist(poshist, std::ofstream::binary);
 
 		if (hist == NULL) {
 			history_error(N_("Error writing %s: %s"), poshist.c_str(), strerror(errno));
@@ -2796,14 +2796,12 @@ void save_poshistory(void)
 			chmod(poshist.c_str(), S_IRUSR | S_IWUSR);
 
 			for (auto pos : poshistory) {
-				statusstr = charalloc(pos->filename.length() + 2 * sizeof(ssize_t) + 4);
-				sprintf(statusstr, "%s %d %d\n", pos->filename.c_str(), (int) pos->lineno, (int) pos->xno);
-				if (fwrite(statusstr, sizeof(char), strlen(statusstr), hist) < strlen(statusstr)) {
+				hist << pos->filename << " " << pos->lineno << " " << pos->xno << std::endl;
+				if (!hist) {
 					history_error(N_("Error writing %s: %s"), poshist.c_str(), strerror(errno));
 				}
 				free(statusstr);
 			}
-			fclose(hist);
 		}
 	}
 }
@@ -2865,9 +2863,9 @@ void load_poshistory(void)
 
 	/* Assume do_rcfile() has reported a missing home directory. */
 	if (pinothist != "") {
-		FILE *hist = fopen(pinothist.c_str(), "rb");
+		std::ifstream hist(pinothist, std::ifstream::binary);
 
-		if (hist == NULL) {
+		if (!hist) {
 			if (errno != ENOENT) {
 				/* Don't save history when we quit. */
 				UNSET(POS_HISTORY);
@@ -2899,7 +2897,6 @@ void load_poshistory(void)
 				poshistory.push_back(pos);
 			}
 
-			fclose(hist);
 			free(line);
 		}
 	}
