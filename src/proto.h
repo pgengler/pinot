@@ -231,7 +231,7 @@ std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len
 std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 const char *tail(const char *foo);
-char *histfilename(void);
+std::string histfilename(void);
 void load_history(void);
 bool writehist(FILE *hist, filestruct *histhead);
 void save_history(void);

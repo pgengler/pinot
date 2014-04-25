@@ -2615,30 +2615,25 @@ const char *tail(const char *foo)
 	return tmp;
 }
 
-/* Return the constructed dorfile path, or NULL if we can't find the home
- * directory.  The string is dynamically allocated, and should be freed. */
-char *construct_filename(const char *str)
+/* Return the constructed dotfile path, or empty if we can't find the home directory. */
+std::string construct_filename(const std::string& str)
 {
-	char *newstr = NULL;
+	std::string newstr;
 
 	if (homedir != NULL) {
-		size_t homelen = strlen(homedir);
-
-		newstr = charalloc(homelen + strlen(str) + 1);
-		strcpy(newstr, homedir);
-		strcpy(newstr + homelen, str);
+		newstr = std::string(homedir);
+		newstr += str;
 	}
 
 	return newstr;
-
 }
 
-char *histfilename(void)
+std::string histfilename(void)
 {
 	return construct_filename("/.pinot/search_history");
 }
 
-char *poshistfilename(void)
+std::string poshistfilename(void)
 {
 	return construct_filename("/.pinot/filepos_history");
 }
@@ -2667,11 +2662,11 @@ void history_error(const char *msg, ...)
 int check_dotpinot(void)
 {
 	struct stat dirstat;
-	char *pinotdir = construct_filename("/.pinot");
+	std::string pinotdir = construct_filename("/.pinot");
 
-	if (stat(pinotdir, &dirstat) == -1) {
-		if (mkdir(pinotdir, S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
-			history_error(N_("Unable to create directory %s: %s\nIt is required for saving/loading search history or cursor position\n"), pinotdir, strerror(errno));
+	if (stat(pinotdir.c_str(), &dirstat) == -1) {
+		if (mkdir(pinotdir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+			history_error(N_("Unable to create directory %s: %s\nIt is required for saving/loading search history or cursor position\n"), pinotdir.c_str(), strerror(errno));
 			return 0;
 		}
 	} else if (!S_ISDIR(dirstat.st_mode)) {
@@ -2684,17 +2679,17 @@ int check_dotpinot(void)
 /* Load histories from ~/.pinot_history. */
 void load_history(void)
 {
-	char *pinothist = histfilename();
+	std::string pinothist = histfilename();
 
 	/* Assume do_rcfile() has reported a missing home directory. */
-	if (pinothist != NULL) {
-		FILE *hist = fopen(pinothist, "rb");
+	if (pinothist != "") {
+		FILE *hist = fopen(pinothist.c_str(), "rb");
 
 		if (hist == NULL) {
 			if (errno != ENOENT) {
 				/* Don't save history when we quit. */
 				UNSET(HISTORYLOG);
-				history_error(N_("Error reading %s: %s"), pinothist, strerror(errno));
+				history_error(N_("Error reading %s: %s"), pinothist.c_str(), strerror(errno));
 			}
 		} else {
 			/* Load a history list (first the search history, then the
@@ -2724,7 +2719,6 @@ void load_history(void)
 				last_search = mallocstrcpy(NULL, search_history->prev->data);
 			}
 		}
-		free(pinothist);
 	}
 }
 
@@ -2753,32 +2747,28 @@ bool writehist(FILE *hist, filestruct *h)
 /* Save histories to ~/.pinot/search_history. */
 void save_history(void)
 {
-	char *pinothist;
-
 	/* Don't save unchanged or empty histories. */
 	if (!history_has_changed() || (searchbot->lineno == 1 && replacebot->lineno == 1)) {
 		return;
 	}
 
-	pinothist = histfilename();
+	std::string pinothist = histfilename();
 
-	if (pinothist != NULL) {
-		FILE *hist = fopen(pinothist, "wb");
+	if (pinothist != "") {
+		FILE *hist = fopen(pinothist.c_str(), "wb");
 
 		if (hist == NULL)
-			history_error(N_("Error writing %s: %s"), pinothist, strerror(errno));
+			history_error(N_("Error writing %s: %s"), pinothist.c_str(), strerror(errno));
 		else {
 			/* Make sure no one else can read from or write to the history file. */
-			chmod(pinothist, S_IRUSR | S_IWUSR);
+			chmod(pinothist.c_str(), S_IRUSR | S_IWUSR);
 
 			if (!writehist(hist, searchage) || !writehist(hist, replaceage)) {
-				history_error(N_("Error writing %s: %s"), pinothist, strerror(errno));
+				history_error(N_("Error writing %s: %s"), pinothist.c_str(), strerror(errno));
 			}
 
 			fclose(hist);
 		}
-
-		free(pinothist);
 	}
 }
 
@@ -2786,32 +2776,30 @@ void save_history(void)
 /* Analogs for the POS history */
 void save_poshistory(void)
 {
-	char *poshist;
 	char *statusstr = NULL;
 
-	poshist = poshistfilename();
+	std::string poshist = poshistfilename();
 
-	if (poshist != NULL) {
-		FILE *hist = fopen(poshist, "wb");
+	if (poshist != "") {
+		FILE *hist = fopen(poshist.c_str(), "wb");
 
 		if (hist == NULL) {
-			history_error(N_("Error writing %s: %s"), poshist, strerror(errno));
+			history_error(N_("Error writing %s: %s"), poshist.c_str(), strerror(errno));
 		} else {
 			/* Make sure no one else can read from or write to the
 			 * history file. */
-			chmod(poshist, S_IRUSR | S_IWUSR);
+			chmod(poshist.c_str(), S_IRUSR | S_IWUSR);
 
 			for (auto pos : poshistory) {
 				statusstr = charalloc(pos->filename.length() + 2 * sizeof(ssize_t) + 4);
 				sprintf(statusstr, "%s %d %d\n", pos->filename.c_str(), (int) pos->lineno, (int) pos->xno);
 				if (fwrite(statusstr, sizeof(char), strlen(statusstr), hist) < strlen(statusstr)) {
-					history_error(N_("Error writing %s: %s"), poshist, strerror(errno));
+					history_error(N_("Error writing %s: %s"), poshist.c_str(), strerror(errno));
 				}
 				free(statusstr);
 			}
 			fclose(hist);
 		}
-		free(poshist);
 	}
 }
 
@@ -2868,17 +2856,17 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
 /* Load histories from ~/.pinot_history. */
 void load_poshistory(void)
 {
-	char *pinothist = poshistfilename();
+	std::string pinothist = poshistfilename();
 
 	/* Assume do_rcfile() has reported a missing home directory. */
-	if (pinothist != NULL) {
-		FILE *hist = fopen(pinothist, "rb");
+	if (pinothist != "") {
+		FILE *hist = fopen(pinothist.c_str(), "rb");
 
 		if (hist == NULL) {
 			if (errno != ENOENT) {
 				/* Don't save history when we quit. */
 				UNSET(POS_HISTORY);
-				history_error(N_("Error reading %s: %s"), pinothist, strerror(errno));
+				history_error(N_("Error reading %s: %s"), pinothist.c_str(), strerror(errno));
 			}
 		} else {
 			char *line = NULL, *lineptr, *xptr;
@@ -2909,6 +2897,5 @@ void load_poshistory(void)
 			fclose(hist);
 			free(line);
 		}
-		free(pinothist);
 	}
 }
