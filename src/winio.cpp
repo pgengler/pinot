@@ -657,7 +657,7 @@ void bottombars(int menu)
 			continue;
 		}
 
-		if (!f->desc || strlen(f->desc) == 0) {
+		if (f->desc == "") {
 			continue;
 		}
 
@@ -669,7 +669,7 @@ void bottombars(int menu)
 		}
 		wmove(bottomwin, 1 + i % 2, (i / 2) * colwidth);
 		DEBUG_LOG("Calling onekey with keystr \"" << s->keystr << "\" and desc \"" << f->desc << '"');
-		onekey(s->keystr, _(f->desc), colwidth + (COLS % colwidth));
+		onekey(s->keystr, _(f->desc.c_str()), colwidth + (COLS % colwidth));
 		if (++i >= slen) {
 			break;
 		}

@@ -156,7 +156,7 @@ size_t length_of_list(int menu)
 	size_t i = 0;
 
 	for (auto f : allfuncs) {
-		if ((f->menus & menu) != 0 && strlen(f->help) > 0) {
+		if ((f->menus & menu) != 0 && f->help.length() > 0) {
 			i++;
 		}
 	}

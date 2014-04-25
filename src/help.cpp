@@ -355,7 +355,7 @@ void help_init(void)
 	 * \n's. */
 	for (auto f : allfuncs) {
 		if (f->menus & currmenu) {
-			allocsize += (24 * mb_cur_max()) + strlen(f->help) + 2;
+			allocsize += (24 * mb_cur_max()) + f->help.length() + 2;
 		}
 	}
 
@@ -399,7 +399,7 @@ void help_init(void)
 			continue;
 		}
 
-		if (!f->desc || !strcmp(f->desc, "")) {
+		if (f->desc == "") {
 			continue;
 		}
 
@@ -436,7 +436,7 @@ void help_init(void)
 		}
 
 		/* The shortcut's help text. */
-		ptr += sprintf(ptr, "%s\n", _(f->help));
+		ptr += sprintf(ptr, "%s\n", _(f->help.c_str()));
 
 		if (f->blank_after) {
 			ptr += sprintf(ptr, "\n");

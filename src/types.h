@@ -140,10 +140,10 @@ typedef struct subnfunc {
 	void (*scfunc)(void);
 	/* What function is this */
 	int menus;
-	/* In what menus does this function applu */
-	const char *desc;
+	/* In what menus does this function apply */
+	std::string desc;
 	/* The function's description, e.g. "Page Up". */
-	const char *help;
+	std::string help;
 	/* The help file entry text for this function. */
 	bool blank_after;
 	/* Whether there should be a blank line after the help entry
