@@ -2602,6 +2602,11 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 }
 
 /* Only print the last part of a path.  Isn't there a shell command for this? */
+std::string tail(const std::string& foo)
+{
+	return std::string(tail(foo.c_str()));
+}
+
 const char *tail(const char *foo)
 {
 	const char *tmp = strrchr(foo, '/');

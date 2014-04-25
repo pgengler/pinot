@@ -270,7 +270,7 @@ change_browser_directory:
 				/* If we've successfully opened a directory, and it's
 				 * "..", save the current directory in prev_dir, so that
 				 * we can select it later. */
-			} else if (strcmp(tail(filelist[selected].c_str()), "..") == 0) {
+			} else if (tail(filelist[selected]) == "..") {
 				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected].c_str()));
 			}
 
@@ -484,22 +484,20 @@ void browser_refresh(void)
 
 	for (; i < filelist.size() && line < editwinrows; i++) {
 		struct stat st;
-		const char *filetail = tail(filelist[i].c_str());
+		std::string filetail = tail(filelist[i]);
 		/* The filename we display, minus the path. */
-		size_t filetaillen = strlenpt(filetail);
-		/* The length of the filename in columns. */
 		size_t foolen;
 		/* The length of the file information in columns. */
 		int foomaxlen = 7;
 		/* The maximum length of the file information in
 		 * columns: seven for "--", "(dir)", or the file size,
 		 * and 12 for "(parent dir)". */
-		bool dots = (COLS >= 15 && filetaillen >= longest - foomaxlen - 1);
+		bool dots = (COLS >= 15 && filetail.length() >= longest - foomaxlen - 1);
 		/* Do we put an ellipsis before the filename?  Don't set
 		 * this to true if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
 		 * filename other than ".."). */
-		char *disp = display_string(filetail, dots ? filetaillen - longest + foomaxlen + 4 : 0, longest, false);
+		char *disp = display_string(filetail.c_str(), dots ? filetail.length() - longest + foomaxlen + 4 : 0, longest, false);
 		/* If we put an ellipsis before the filename, reserve
 		 * one column for padding, plus seven columns for "--",
 		 * "(dir)", or the file size, plus three columns for the
@@ -540,7 +538,7 @@ void browser_refresh(void)
 			}
 		} else if (S_ISDIR(st.st_mode)) {
 			/* If the file is a directory, display it as such. */
-			if (strcmp(filetail, "..") == 0) {
+			if (filetail == "..") {
 				/* TRANSLATORS: Try to keep this at most 12 characters. */
 				foo = mallocstrcpy(NULL, _("(parent dir)"));
 				foomaxlen = 12;
@@ -728,11 +726,10 @@ int filesearch_init(void)
 bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 {
 	size_t currselected = selected;
-	/* The location in the current file list of the match we
-	 * find. */
-	const char *filetail = tail(filelist[currselected].c_str());
+	/* The location in the current file list of the match we find. */
+	std::string filetail = tail(filelist[currselected]);
 	/* The filename we display, minus the path. */
-	const char *rev_start = filetail, *found = NULL;
+	const char *rev_start = filetail.c_str(), *found = NULL;
 
 	if (ISSET(BACKWARDS_SEARCH)) {
 		rev_start += strlen(rev_start);
@@ -740,7 +737,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 
 	/* Look for needle in the current filename we're searching. */
 	while (true) {
-		found = strstrwrapper(filetail, needle, rev_start);
+		found = strstrwrapper(filetail.c_str(), needle, rev_start);
 
 		/* We've found a potential match.  If we're not allowed to find
 		 * a match on the same filename we started on and this potential
@@ -778,9 +775,9 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 			search_last_file = true;
 		}
 
-		filetail = tail(filelist[currselected].c_str());
+		filetail = tail(filelist[currselected]);
 
-		rev_start = filetail;
+		rev_start = filetail.c_str();
 		if (ISSET(BACKWARDS_SEARCH)) {
 			rev_start += strlen(rev_start);
 		}

@@ -230,6 +230,7 @@ bool is_dir(const char *buf);
 std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len);
 std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
+std::string tail(const std::string& foo);
 const char *tail(const char *foo);
 std::string histfilename(void);
 void load_history(void);
