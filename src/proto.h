@@ -234,7 +234,7 @@ std::string tail(const std::string& foo);
 const char *tail(const char *foo);
 std::string histfilename(void);
 void load_history(void);
-bool writehist(FILE *hist, filestruct *histhead);
+bool writehist(std::ostream& hist, filestruct *histhead);
 void save_history(void);
 int check_dotpinot(void);
 void load_poshistory(void);

@@ -2730,7 +2730,7 @@ void load_history(void)
 /* Write the lines of a history list, starting with the line at h, to
  * the open file at hist.  Return true if the write succeeded, and false
  * otherwise. */
-bool writehist(FILE *hist, filestruct *h)
+bool writehist(std::ostream& hist, filestruct *h)
 {
 	filestruct *p;
 
@@ -2741,7 +2741,9 @@ bool writehist(FILE *hist, filestruct *h)
 
 		sunder(p->data);
 
-		if (fwrite(p->data, sizeof(char), p_len, hist) < p_len || putc('\n', hist) == EOF) {
+		hist.write(p->data, p_len);
+		hist << "\n";
+		if (!hist) {
 			return false;
 		}
 	}
@@ -2760,19 +2762,17 @@ void save_history(void)
 	std::string pinothist = histfilename();
 
 	if (pinothist != "") {
-		FILE *hist = fopen(pinothist.c_str(), "wb");
+		std::ofstream hist(pinothist, std::ofstream::binary);
 
-		if (hist == NULL)
+		if (!hist) {
 			history_error(N_("Error writing %s: %s"), pinothist.c_str(), strerror(errno));
-		else {
+		} else {
 			/* Make sure no one else can read from or write to the history file. */
 			chmod(pinothist.c_str(), S_IRUSR | S_IWUSR);
 
 			if (!writehist(hist, searchage) || !writehist(hist, replaceage)) {
 				history_error(N_("Error writing %s: %s"), pinothist.c_str(), strerror(errno));
 			}
-
-			fclose(hist);
 		}
 	}
 }
