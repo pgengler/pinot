@@ -92,16 +92,6 @@ void color_update(void)
 	Syntax *defsyntax = NULL;
 	ColorList default_colors;
 
-	/* libmagic structures */
-	/* magicstring will be NULL if we fail to get magic result */
-#ifdef HAVE_LIBMAGIC
-	const char *magicstring = NULL;
-	const char *magicerr = NULL;
-	magic_t m;
-	struct stat fileinfo;
-#endif /* HAVE_LIBMAGIC */
-
-
 	assert(openfile != openfiles.end());
 
 	openfile->syntax = NULL;
@@ -126,9 +116,11 @@ void color_update(void)
 	}
 
 #ifdef HAVE_LIBMAGIC
+	struct stat fileinfo;
+	const char *magicstring = NULL;
 
 	if (stat(openfile->filename.c_str(), &fileinfo) == 0) {
-		m = magic_open(MAGIC_SYMLINK |
+		magic_t m = magic_open(MAGIC_SYMLINK |
 #ifdef DEBUG
 		               MAGIC_DEBUG | MAGIC_CHECK |
 #endif /* DEBUG */
@@ -138,7 +130,7 @@ void color_update(void)
 		} else {
 			magicstring = magic_file(m, openfile->filename.c_str());
 			if (magicstring == NULL) {
-				magicerr = magic_error(m);
+				const char *magicerr = magic_error(m);
 				fprintf(stderr, "magic_file(%s) failed: %s\n", openfile->filename.c_str(), magicerr);
 			}
 			DEBUG_LOG("magic string returned: " << magicstring);
