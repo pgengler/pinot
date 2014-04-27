@@ -9,27 +9,27 @@
 /* Enumeration types. */
 typedef enum {
 	NIX_FILE, DOS_FILE, MAC_FILE
-} file_format;
+} FileFormat;
 
 typedef enum {
 	OVERWRITE, APPEND, PREPEND
-} append_type;
+} AppendType;
 
 typedef enum {
 	UP_DIR, DOWN_DIR
-} scroll_dir;
+} ScrollDir;
 
 typedef enum {
 	CENTER, NONE
-} update_type;
+} UpdateType;
 
 typedef enum {
 	CONTROL, META, FKEY, RAWINPUT
-}  function_type;
+} FunctionType;
 
 typedef enum {
 	ADD, DEL, REPLACE, SPLIT, UNSPLIT, CUT, UNCUT, ENTER, INSERT, OTHER
-} undo_type;
+} UndoType;
 
 typedef enum {
 	PROMPT_BLANK_STRING = -2, PROMPT_ABORTED, PROMPT_ENTER_PRESSED, PROMPT_OTHER_KEY
@@ -72,7 +72,7 @@ typedef struct partition {
 
 typedef struct undo {
 	ssize_t lineno;
-	undo_type type;
+	UndoType type;
 	/* What type of undo was this */
 	int begin;
 	/* Where did this  action begin or end */
@@ -121,7 +121,7 @@ typedef struct rcoption {
 typedef struct sc {
 	char *keystr;
 	/* The shortcut key for a function, ASCII version */
-	function_type type;
+	FunctionType type;
 	/* What kind of function key is it for convenience later */
 	int seq;
 	/* The actual sequence to check on the the type is determined */

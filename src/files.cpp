@@ -1537,7 +1537,7 @@ int copy_file(FILE *inn, FILE *out)
  * or we're prepending.
  *
  * Return true on success or false on error. */
-bool write_file(const char *name, FILE *f_open, bool tmp, append_type append, bool nonamechange)
+bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, bool nonamechange)
 {
 	bool retval = false;
 	/* Instead of returning in this function, you should always
@@ -1987,7 +1987,7 @@ cleanup_and_exit:
 
 /* Write a marked selection from a file out to disk.  Return true on
  * success or false on error. */
-bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type append)
+bool write_marked_file(const char *name, FILE *f_open, bool tmp, AppendType append)
 {
 	bool retval;
 	bool old_modified = openfile->modified;
@@ -2035,7 +2035,7 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, append_type app
  * TEMP_FILE flag is set.  Return true on success or false on error. */
 bool do_writeout(bool exiting)
 {
-	append_type append = OVERWRITE;
+	AppendType append = OVERWRITE;
 	char *ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	bool retval = false;

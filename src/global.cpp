@@ -208,7 +208,7 @@ void ext_cmd_void(void)
 }
 
 /* Set type of function based on the string */
-function_type strtokeytype(const char *str)
+FunctionType strtokeytype(const char *str)
 {
 	if (str[0] ==  'M' || str[0] == 'm') {
 		return META;

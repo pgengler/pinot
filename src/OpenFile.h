@@ -51,7 +51,7 @@ class OpenFile
 		size_t mark_begin_x;
 
 		/* The current file's format. */
-		file_format fmt;
+		FileFormat fmt;
 
 		/* The current file's stat. */
 		struct stat *current_stat;
@@ -62,7 +62,7 @@ class OpenFile
 		/* The current (i.e. n ext) level of undo */
 		undo *current_undo;
 
-		undo_type last_action;
+		UndoType last_action;
 
 		/* The path of the lockfile, if we created one */
 		string lock_filename;

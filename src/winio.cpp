@@ -1226,7 +1226,7 @@ void compute_maxrows(void)
  * DOWN_DIR, and nlines is the number of lines to scroll.  We change
  * edittop, and assume that current and current_x are up to date.  We
  * also assume that scrollok(edit) is false. */
-void edit_scroll(scroll_dir direction, ssize_t nlines)
+void edit_scroll(ScrollDir direction, ssize_t nlines)
 {
 	filestruct *foo;
 	ssize_t i;
@@ -1461,7 +1461,7 @@ void edit_refresh(void)
  * same place.  location determines how we move it: if it's CENTER, we
  * center current, and if it's NONE, we put current current_y lines
  * below edittop. */
-void edit_update(update_type location)
+void edit_update(UpdateType location)
 {
 	filestruct *foo = openfile->current;
 	int goal;

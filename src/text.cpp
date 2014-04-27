@@ -899,7 +899,7 @@ int execute_command_silently(const char *command)
 }
 
 /* Add a new undo struct to the top of the current pile */
-void add_undo(undo_type current_action)
+void add_undo(UndoType current_action)
 {
 	undo *u;
 	char *data;
@@ -1022,7 +1022,7 @@ void add_undo(undo_type current_action)
    instead.  The latter functionality just feels
    gimmicky and may just be more hassle than
    it's worth, so it should be axed if needed. */
-void update_undo(undo_type action)
+void update_undo(UndoType action)
 {
 	undo *u;
 	char *data;
