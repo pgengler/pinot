@@ -94,9 +94,9 @@ extern int reverse_attr;
 extern char *homedir;
 
 /* All functions in browser.c. */
-char *do_browser(char *path, DIR *dir);
-char *do_browse_from(const char *inpath);
-void browser_init(const char *path, DIR *dir);
+std::string do_browser(std::string path, DIR *dir);
+std::string do_browse_from(const std::string& inpath);
+void browser_init(const std::string& path, DIR *dir);
 void browser_refresh(void);
 bool browser_select_filename(const char *needle);
 int filesearch_init(void);
@@ -107,6 +107,7 @@ void do_filesearch(void);
 void do_fileresearch(void);
 void do_first_file(void);
 void do_last_file(void);
+std::string striponedir(const std::string& path);
 char *striponedir(const char *path);
 
 /* All functions in chars.c. */
@@ -223,6 +224,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 bool write_marked_file(const char *name, FILE *f_open, bool tmp, AppendType append);
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
+std::string real_dir_from_tilde(const std::string& buf);
 char *real_dir_from_tilde(const char *buf);
 bool sort_directories(const std::string& a, const std::string& b);
 int diralphasort(const void *va, const void *vb);
@@ -499,6 +501,7 @@ void blank_statusbar(void);
 void blank_bottombars(void);
 void check_statusblank(void);
 char *display_string(const char *buf, size_t start_col, size_t len, bool dollars);
+void titlebar(const std::string& path);
 void titlebar(const char *path);
 void set_modified(void);
 void statusbar(const char *msg, ...);

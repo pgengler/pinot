@@ -9,6 +9,7 @@ pinot_SOURCES =	\
 	browser.cpp \
 	chars.cpp \
 	color.cpp \
+	cpputil.cpp \
 	cut.cpp \
 	files.cpp \
 	global.cpp \

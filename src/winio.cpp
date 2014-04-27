@@ -375,6 +375,11 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
  * file browser, and path contains the directory to start the file
  * browser in, so display the current version of pinot and the contents
  * of path on the titlebar. */
+void titlebar(const std::string& path)
+{
+	titlebar(path.c_str());
+}
+
 void titlebar(const char *path)
 {
 	int space = COLS;

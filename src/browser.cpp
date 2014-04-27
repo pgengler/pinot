@@ -21,6 +21,7 @@
  **************************************************************************/
 
 #include "proto.h"
+#include "cpputil.h"
 
 #include <algorithm>
 
@@ -43,7 +44,7 @@ static bool search_last_file = false;
 
 /* Our main file browser function.  path is the tilde-expanded path we
  * start browsing from. */
-char *do_browser(char *path, DIR *dir)
+std::string do_browser(std::string path, DIR *dir)
 {
 	char *retval = NULL;
 	bool old_const_update = ISSET(CONST_UPDATE);
@@ -71,9 +72,9 @@ char *do_browser(char *path, DIR *dir)
 change_browser_directory:
 	/* We go here after we select a new directory. */
 
-	path = mallocstrassn(path, get_full_path(path));
+	path = get_full_path(path);
 
-	assert(path != NULL && path[strlen(path) - 1] == '/');
+	assert(path.length() > 0 && path[path.length() - 1] == '/');
 
 	/* Get the file list, and set longest and width in the process. */
 	browser_init(path, dir);
@@ -210,8 +211,8 @@ change_browser_directory:
 			new_path = real_dir_from_tilde(answer);
 
 			if (new_path[0] != '/') {
-				new_path = charealloc(new_path, strlen(path) + strlen(answer) + 1);
-				sprintf(new_path, "%s%s", path, answer);
+				new_path = charealloc(new_path, path.length() + strlen(answer) + 1);
+				sprintf(new_path, "%s%s", path.c_str(), answer);
 			}
 
 			dir = opendir(new_path);
@@ -225,7 +226,6 @@ change_browser_directory:
 			}
 
 			/* Start over again with the new path value. */
-			free(path);
 			path = new_path;
 			goto change_browser_directory;
 		} else if (func == do_up_void) {
@@ -283,7 +283,7 @@ change_browser_directory:
 				continue;
 			}
 
-			path = mallocstrcpy(path, filelist[selected].c_str());
+			path = filelist[selected];
 
 			/* Start over again with the new path value. */
 			goto change_browser_directory;
@@ -303,7 +303,6 @@ change_browser_directory:
 		SET(CONST_UPDATE);
 	}
 
-	free(path);
 	free(ans);
 
 	filelist.clear();
@@ -314,16 +313,14 @@ change_browser_directory:
 /* The file browser front end.  We check to see if inpath has a
  * directory in it.  If it does, we start do_browser() from there.
  * Otherwise, we start do_browser() from the current directory. */
-char *do_browse_from(const char *inpath)
+std::string do_browse_from(const std::string& inpath)
 {
 	struct stat st;
-	char *path;
-	/* This holds the tilde-expanded version of inpath. */
 	DIR *dir = NULL;
 
-	assert(inpath != NULL);
+	assert(inpath.length() > 0);
 
-	path = real_dir_from_tilde(inpath);
+	std::string path = real_dir_from_tilde(inpath);
 
 	/* Perhaps path is a directory.  If so, we'll pass it to
 	 * do_browser().  Or perhaps path is a directory / a file.  If so,
@@ -331,30 +328,20 @@ char *do_browse_from(const char *inpath)
 	 * do_browser().  Or perhaps path doesn't have a directory portion
 	 * at all.  If so, we'll just pass the current directory to
 	 * do_browser(). */
-	if (stat(path, &st) == -1 || !S_ISDIR(st.st_mode)) {
-		path = mallocstrassn(path, striponedir(path));
+	if (stat(path.c_str(), &st) == -1 || !S_ISDIR(st.st_mode)) {
+		path = striponedir(path);
 
-		if (stat(path, &st) == -1 || !S_ISDIR(st.st_mode)) {
-			free(path);
-
-			path = charalloc(PATH_MAX + 1);
-			path = getcwd(path, PATH_MAX + 1);
-
-			if (path != NULL) {
-				align(&path);
-			}
+		if (stat(path.c_str(), &st) == -1 || !S_ISDIR(st.st_mode)) {
+			path = getcwd();
 		}
 	}
 
-	if (path != NULL) {
-		dir = opendir(path);
+	if (path != "") {
+		dir = opendir(path.c_str());
 	}
 
 	/* If we can't open the path, get out. */
 	if (dir == NULL) {
-		if (path != NULL) {
-			free(path);
-		}
 		beep();
 		return NULL;
 	}
@@ -368,7 +355,7 @@ char *do_browse_from(const char *inpath)
  * we can display per line.  longest needs to be at least 15 columns in
  * order to display ".. (parent dir)", as Pico does.  Assume path exists
  * and is a directory. */
-void browser_init(const char *path, DIR *dir)
+void browser_init(const std::string& path, DIR *dir)
 {
 	const struct dirent *nextdir;
 	int col = 0;
@@ -380,7 +367,7 @@ void browser_init(const char *path, DIR *dir)
 	int filesperline = 0;
 	/* The number of files that we can display per line. */
 
-	assert(path != NULL && path[strlen(path) - 1] == '/' && dir != NULL);
+	assert(path.length() > 0 && path[path.length() - 1] == '/' && dir != NULL);
 
 	/* Set longest to zero, just before we initialize it. */
 	longest = 0;
@@ -907,6 +894,15 @@ void do_last_file(void)
 /* Strip one directory from the end of path, and return the stripped
  * path.  The returned string is dynamically allocated, and should be
  * freed. */
+std::string striponedir(const std::string& path)
+{
+	char *ret = striponedir(path.c_str());
+	std::string result(ret);
+	free(ret);
+
+	return result;
+}
+
 char *striponedir(const char *path)
 {
 	char *retval, *tmp;

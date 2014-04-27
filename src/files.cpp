@@ -965,15 +965,15 @@ void do_execute_command()
 			s = get_shortcut(currmenu, *key);
 
 			if (s && s->scfunc == to_files_void) {
-				char *tmp = do_browse_from(answer);
+				std::string tmp = do_browse_from(answer);
 
-				if (tmp == NULL) {
+				if (tmp == "") {
 					continue;
 				}
 
 				/* User selected a file */
 				free(answer);
-				answer = tmp;
+				answer = mallocstrcpy(NULL, tmp.c_str());
 			} else {
 				/* If we don't have a file yet, go back to the prompt. */
 				continue;
@@ -1064,15 +1064,15 @@ void do_insertfile(bool execute)
 					execute = !execute;
 					continue;
 				} else if (s && s->scfunc == to_files_void) {
-					char *tmp = do_browse_from(answer);
+					std::string tmp = do_browse_from(answer);
 
-					if (tmp == NULL) {
+					if (tmp == "") {
 						continue;
 					}
 
 					/* We have a file now.  Indicate this. */
 					free(answer);
-					answer = tmp;
+					answer = mallocstrcpy(NULL, tmp.c_str());
 
 					i = PROMPT_ENTER_PRESSED;
 				}
@@ -2093,15 +2093,15 @@ bool do_writeout(bool exiting)
 			s = get_shortcut(currmenu, *key);
 
 			if (s && s->scfunc == to_files_void) {
-				char *tmp = do_browse_from(answer);
+				std::string tmp = do_browse_from(answer);
 
-				if (tmp == NULL) {
+				if (tmp == "") {
 					continue;
 				}
 
 				/* We have a file now.  Indicate this. */
 				free(answer);
-				answer = tmp;
+				answer = mallocstrcpy(NULL, tmp.c_str());
 			} else {
 				if (s && s->scfunc == dos_format_void) {
 					openfile->fmt = (openfile->fmt == DOS_FILE) ? NIX_FILE : DOS_FILE;
@@ -2207,6 +2207,15 @@ void do_writeout_void(void)
 
 /* Return a malloc()ed string containing the actual directory, used to
  * convert ~user/ and ~/ notation. */
+std::string real_dir_from_tilde(const std::string& buf)
+{
+	char *dir = real_dir_from_tilde(buf.c_str());
+	std::string result(dir);
+	free(dir);
+
+	return result;
+}
+
 char *real_dir_from_tilde(const char *buf)
 {
 	char *retval;
