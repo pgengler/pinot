@@ -100,7 +100,7 @@ void browser_init(const std::string& path, DIR *dir);
 void browser_refresh(void);
 bool browser_select_filename(const std::string& needle);
 int filesearch_init(void);
-bool findnextfile(bool no_sameline, size_t begin, const char *needle);
+bool findnextfile(bool no_sameline, size_t begin, const std::string& needle);
 void findnextfile_wrap_reset(void);
 void filesearch_abort(void);
 void do_filesearch(void);
@@ -373,6 +373,7 @@ void do_rcfile(void);
 /* All functions in search.c. */
 bool regexp_init(const char *regexp);
 void regexp_cleanup(void);
+void not_found_msg(const std::string& str);
 void not_found_msg(const char *str);
 void search_replace_abort(void);
 void search_init_globals(void);

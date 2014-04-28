@@ -74,6 +74,11 @@ void regexp_cleanup(void)
 
 /* Indicate on the statusbar that the string at str was not found by the
  * last search. */
+void not_found_msg(const std::string& str)
+{
+	not_found_msg(str.c_str());
+}
+
 void not_found_msg(const char *str)
 {
 	char *disp;

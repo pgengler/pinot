@@ -679,7 +679,7 @@ int filesearch_init(void)
  * looking for needle.  begin is the location of the filename where we
  * first started searching.  The return value specifies whether we found
  * anything. */
-bool findnextfile(bool no_sameline, size_t begin, const char *needle)
+bool findnextfile(bool no_sameline, size_t begin, const std::string& needle)
 {
 	size_t currselected = selected;
 	/* The location in the current file list of the match we find. */
@@ -693,7 +693,7 @@ bool findnextfile(bool no_sameline, size_t begin, const char *needle)
 
 	/* Look for needle in the current filename we're searching. */
 	while (true) {
-		found = strstrwrapper(filetail.c_str(), needle, rev_start);
+		found = strstrwrapper(filetail.c_str(), needle.c_str(), rev_start);
 
 		/* We've found a potential match.  If we're not allowed to find
 		 * a match on the same filename we started on and this potential
