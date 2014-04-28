@@ -271,7 +271,7 @@ change_browser_directory:
 				 * "..", save the current directory in prev_dir, so that
 				 * we can select it later. */
 			} else if (tail(filelist[selected]) == "..") {
-				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected].c_str()));
+				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected]).c_str());
 			}
 
 			dir = opendir(filelist[selected].c_str());
@@ -891,31 +891,12 @@ void do_last_file(void)
 	selected = filelist.size() - 1;
 }
 
-/* Strip one directory from the end of path, and return the stripped
- * path.  The returned string is dynamically allocated, and should be
- * freed. */
+/* Strip one directory from the end of path, and return the stripped path. */
 std::string striponedir(const std::string& path)
 {
-	char *ret = striponedir(path.c_str());
-	std::string result(ret);
-	free(ret);
-
-	return result;
-}
-
-char *striponedir(const char *path)
-{
-	char *retval, *tmp;
-
-	assert(path != NULL);
-
-	retval = mallocstrcpy(NULL, path);
-
-	tmp = strrchr(retval, '/');
-
-	if (tmp != NULL) {
-		null_at(&retval, tmp - retval);
+	auto pos = path.rfind("/");
+	if (pos == std::string::npos) {
+		return path;
 	}
-
-	return retval;
+	return path.substr(0, pos);
 }

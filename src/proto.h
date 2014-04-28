@@ -108,7 +108,6 @@ void do_fileresearch(void);
 void do_first_file(void);
 void do_last_file(void);
 std::string striponedir(const std::string& path);
-char *striponedir(const char *path);
 
 /* All functions in chars.c. */
 #ifdef ENABLE_UTF8
