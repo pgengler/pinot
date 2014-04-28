@@ -24,7 +24,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <sstream>
 
 #include <stdio.h>
 #include <string.h>
@@ -919,9 +918,7 @@ std::string get_next_filename(const std::string& name, const std::string& suffix
 			break;
 		}
 
-		std::stringstream stream;
-		stream << name << suffix << ++i;
-		buf = stream.str();
+		buf = name + suffix + "." + std::to_string(++i);
 	}
 
 	/* We get here only if there is no possible save file. */
