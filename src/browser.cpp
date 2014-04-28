@@ -51,9 +51,8 @@ std::string do_browser(std::string path, DIR *dir)
 	bool abort = false;
 	/* Whether we should abort the file browser. */
 	std::string prev_dir;
-	/* The directory we were in, if any, before backing up via
-	 * browsing to "..". */
-	char *ans = NULL;
+	/* The directory we were in, if any, before backing up via browsing to "..". */
+	std::string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	size_t old_selected;
 	/* The selected file we had before the current selected file. */
@@ -66,8 +65,6 @@ std::string do_browser(std::string path, DIR *dir)
 	wnoutrefresh(bottomwin);
 
 	UNSET(CONST_UPDATE);
-
-	ans = mallocstrcpy(NULL, "");
 
 change_browser_directory:
 	/* We go here after we select a new directory. */
@@ -173,7 +170,7 @@ change_browser_directory:
 			std::shared_ptr<Key> key;
 			PromptResult i = do_prompt(true,
 			              false,
-			              MGOTODIR, key, ans,
+			              MGOTODIR, key, ans.c_str(),
 			              NULL,
 			              browser_refresh, N_("Go To Directory"));
 
@@ -186,7 +183,7 @@ change_browser_directory:
 				/* We canceled.  Indicate that on the statusbar, and
 				 * blank out ans, since we're done with it. */
 				statusbar(_("Cancelled"));
-				ans = mallocstrcpy(ans, "");
+				ans = "";
 				func = nullptr;
 				continue;
 			} else if (i != PROMPT_ENTER_PRESSED) {
@@ -194,13 +191,13 @@ change_browser_directory:
 				 * answer in ans, so that the file list is displayed
 				 * again, the prompt is displayed again, and what we
 				 * typed before at the prompt is displayed again. */
-				ans = mallocstrcpy(ans, answer);
+				ans = answer;
 				func = goto_dir_void;
 				continue;
 			}
 
 			/* We have a directory.  Blank out ans, since we're done with it. */
-			ans = mallocstrcpy(ans, "");
+			ans = "";
 
 			/* Convert newlines to nulls, just before we go to the directory. */
 			sunder(answer);
@@ -300,8 +297,6 @@ change_browser_directory:
 	if (old_const_update) {
 		SET(CONST_UPDATE);
 	}
-
-	free(ans);
 
 	filelist.clear();
 
