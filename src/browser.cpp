@@ -100,7 +100,7 @@ change_browser_directory:
 		struct stat st;
 		size_t fileline = selected / width;
 		/* The line number the selected file is on. */
-		char *new_path;
+		std::string new_path;
 		/* The path we switch to at the "Go to Directory" prompt. */
 
 		if (kbinput) {
@@ -205,9 +205,8 @@ change_browser_directory:
 
 			new_path = real_dir_from_tilde(answer);
 
-			if (new_path[0] != '/') {
-				new_path = charealloc(new_path, path.length() + strlen(answer) + 1);
-				sprintf(new_path, "%s%s", path.c_str(), answer);
+			if (new_path == "") {
+				new_path = path + answer;
 			}
 
 			dir = opendir(new_path);
@@ -215,7 +214,6 @@ change_browser_directory:
 				/* We can't open this directory for some reason. Complain. */
 				statusbar(_("Error reading %s: %s"), answer, strerror(errno));
 				beep();
-				free(new_path);
 				func = nullptr;
 				continue;
 			}

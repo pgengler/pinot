@@ -29,6 +29,11 @@ int lstat(const std::string& path, struct stat *buf)
 	return lstat(path.c_str(), buf);
 }
 
+DIR *opendir(const std::string& name)
+{
+	return opendir(name.c_str());
+}
+
 int stat(const std::string& path, struct stat *buf)
 {
 	return stat(path.c_str(), buf);
