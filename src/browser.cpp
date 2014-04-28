@@ -46,7 +46,7 @@ static bool search_last_file = false;
  * start browsing from. */
 std::string do_browser(std::string path, DIR *dir)
 {
-	char *retval = NULL;
+	std::string retval;
 	bool old_const_update = ISSET(CONST_UPDATE);
 	bool abort = false;
 	/* Whether we should abort the file browser. */
@@ -263,7 +263,7 @@ change_browser_directory:
 
 			/* If we've successfully opened a file, we're done, so get out. */
 			if (!S_ISDIR(st.st_mode)) {
-				retval = mallocstrcpy(NULL, filelist[selected].c_str());
+				retval = filelist[selected];
 				abort = true;
 				func = nullptr;
 				continue;
