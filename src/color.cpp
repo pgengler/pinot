@@ -126,12 +126,11 @@ void color_update(void)
 #endif /* DEBUG */
 		               MAGIC_ERROR);
 		if (m == NULL || magic_load(m, NULL) < 0) {
-			fprintf(stderr, "magic_load() failed: %s\n", strerror(errno));
+			std::cerr << "magic_load() failed: " << strerror(errno) << std::endl;
 		} else {
 			magicstring = magic_file(m, openfile->filename.c_str());
 			if (magicstring == NULL) {
-				const char *magicerr = magic_error(m);
-				fprintf(stderr, "magic_file(%s) failed: %s\n", openfile->filename.c_str(), magicerr);
+				std::cerr << "magic_file(" << openfile->filename << ") failed: " << magic_error(m) << std::endl;
 			}
 			DEBUG_LOG("magic string returned: " << magicstring);
 		}
