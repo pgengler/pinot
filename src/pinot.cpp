@@ -1436,7 +1436,9 @@ void precalc_multicolorinfo(void)
  * true. */
 void do_output(const std::string& output, bool allow_cntrls)
 {
-	do_output((char *)output.c_str(), output.length(), allow_cntrls);
+	char *str = mallocstrcpy(NULL, output.c_str());
+	do_output(str, output.length(), allow_cntrls);
+	free(str);
 }
 
 void do_output(char *output, size_t output_len, bool allow_cntrls)
