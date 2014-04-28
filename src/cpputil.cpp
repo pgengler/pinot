@@ -3,6 +3,16 @@
 
 #include <unistd.h>
 
+int chmod(const std::string& path, mode_t mode)
+{
+	return chmod(path.c_str(), mode);
+}
+
+int chown(const std::string& path, uid_t owner, gid_t group)
+{
+	return chown(path.c_str(), owner, group);
+}
+
 std::string getcwd()
 {
 	char *buf = (char *)malloc((PATH_MAX + 1) * sizeof(char));

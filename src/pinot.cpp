@@ -568,7 +568,6 @@ void die(const char *msg, ...)
  * is modified to be unique if necessary. */
 void die_save_file(std::string die_filename, struct stat *die_stat)
 {
-	char *retval;
 	bool failed = true;
 
 	/* If we can't save, we have really bad problems, but we might as well try. */
@@ -576,15 +575,15 @@ void die_save_file(std::string die_filename, struct stat *die_stat)
 		die_filename = "pinot";
 	}
 
-	retval = get_next_filename(die_filename.c_str(), ".save");
-	if (retval[0] != '\0') {
-		failed = !write_file(retval, NULL, true, OVERWRITE, true);
+	std::string retval = get_next_filename(die_filename, ".save");
+	if (retval != "") {
+		failed = !write_file(retval.c_str(), NULL, true, OVERWRITE, true);
 	}
 
 	if (!failed) {
-		fprintf(stderr, _("\nBuffer written to %s\n"), retval);
+		fprintf(stderr, _("\nBuffer written to %s\n"), retval.c_str());
 	} else if (retval[0] != '\0')
-		fprintf(stderr, _("\nBuffer not written to %s: %s\n"), retval, strerror(errno));
+		fprintf(stderr, _("\nBuffer not written to %s: %s\n"), retval.c_str(), strerror(errno));
 	else
 		fprintf(stderr, _("\nBuffer not written: %s\n"), _("Too many backup files?"));
 
@@ -597,8 +596,6 @@ void die_save_file(std::string die_filename, struct stat *die_stat)
 		shush = chown(retval, die_stat->st_uid, die_stat->st_gid);
 		UNUSED_VAR(shush);
 	}
-
-	free(retval);
 }
 
 void keyboard_init(void)

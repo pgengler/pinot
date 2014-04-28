@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 #include <stdio.h>
 #include <string.h>
@@ -897,24 +898,16 @@ int open_file(const char *filename, bool newfie, FILE **f)
  * of a filename (starting with [name][suffix], then [name][suffix].1,
  * etc.).  Memory is allocated for the return value.  If no writable
  * extension exists, we return "". */
-char *get_next_filename(const char *name, const char *suffix)
+std::string get_next_filename(const std::string& name, const std::string& suffix)
 {
 	static int ulmax_digits = -1;
 	unsigned long i = 0;
-	char *buf;
-	size_t namelen, suffixlen;
-
-	assert(name != NULL && suffix != NULL);
 
 	if (ulmax_digits == -1) {
 		ulmax_digits = digits(ULONG_MAX);
 	}
 
-	namelen = strlen(name);
-	suffixlen = strlen(suffix);
-
-	buf = charalloc(namelen + suffixlen + ulmax_digits + 2);
-	sprintf(buf, "%s%s", name, suffix);
+	std::string buf = name + suffix;
 
 	while (true) {
 		struct stat fs;
@@ -926,15 +919,13 @@ char *get_next_filename(const char *name, const char *suffix)
 			break;
 		}
 
-		i++;
-		sprintf(buf + namelen + suffixlen, ".%lu", i);
+		std::stringstream stream;
+		stream << name << suffix << ++i;
+		buf = stream.str();
 	}
 
-	/* We get here only if there is no possible save file.  Blank out
-	 * the filename to indicate this. */
-	null_at(&buf, 0);
-
-	return buf;
+	/* We get here only if there is no possible save file. */
+	return "";
 }
 
 /* Execute a command without inserting any output. The statusbar will show
@@ -1670,7 +1661,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 			backupname = charalloc(strlen(backup_dir) + strlen(backuptemp) + 1);
 			sprintf(backupname, "%s%s", backup_dir, backuptemp);
 			free(backuptemp);
-			backuptemp = get_next_filename(backupname, "~");
+			backuptemp = mallocstrcpy(NULL, get_next_filename(backupname, "~").c_str());
 			if (*backuptemp == '\0') {
 				statusbar(_("Error writing backup file %s: %s"), backupname, _("Too many backup files?"));
 				free(backuptemp);
