@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
-INCLUDES = -I$(top_builddir)/libtermkey-0.17
+AM_CPPFLAGS = -I$(top_builddir)/libtermkey-0.17
 
 SUBDIRS = doc m4 po libtermkey-0.17 src
 
