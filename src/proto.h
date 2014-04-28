@@ -98,7 +98,7 @@ std::string do_browser(std::string path, DIR *dir);
 std::string do_browse_from(const std::string& inpath);
 void browser_init(const std::string& path, DIR *dir);
 void browser_refresh(void);
-bool browser_select_filename(const char *needle);
+bool browser_select_filename(const std::string& needle);
 int filesearch_init(void);
 bool findnextfile(bool no_sameline, size_t begin, const char *needle);
 void findnextfile_wrap_reset(void);

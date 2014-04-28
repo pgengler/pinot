@@ -50,7 +50,7 @@ std::string do_browser(std::string path, DIR *dir)
 	bool old_const_update = ISSET(CONST_UPDATE);
 	bool abort = false;
 	/* Whether we should abort the file browser. */
-	char *prev_dir = NULL;
+	std::string prev_dir;
 	/* The directory we were in, if any, before backing up via
 	 * browsing to "..". */
 	char *ans = NULL;
@@ -82,13 +82,11 @@ change_browser_directory:
 	/* Sort the file list. */
 	std::sort(filelist.begin(), filelist.end(), sort_directories);
 
-	/* If prev_dir isn't NULL, select the directory saved in it, and
-	 * then blow it away. */
-	if (prev_dir != NULL) {
+	/* If prev_dir isn't empty, select the directory saved in it, and then blow it away. */
+	if (prev_dir != "") {
 		browser_select_filename(prev_dir);
 
-		free(prev_dir);
-		prev_dir = NULL;
+		prev_dir = "";
 		/* Otherwise, select the first file or directory in the list. */
 	} else {
 		selected = 0;
@@ -271,7 +269,7 @@ change_browser_directory:
 				 * "..", save the current directory in prev_dir, so that
 				 * we can select it later. */
 			} else if (tail(filelist[selected]) == "..") {
-				prev_dir = mallocstrcpy(NULL, striponedir(filelist[selected]).c_str());
+				prev_dir = striponedir(filelist[selected]);
 			}
 
 			dir = opendir(filelist[selected].c_str());
@@ -594,7 +592,7 @@ void browser_refresh(void)
 /* Look for needle.  If we find it, set selected to its location.  Note
  * that needle must be an exact match for a file in the list.  The
  * return value specifies whether we found anything. */
-bool browser_select_filename(const char *needle)
+bool browser_select_filename(const std::string& needle)
 {
 	size_t currselected;
 	bool found = false;
