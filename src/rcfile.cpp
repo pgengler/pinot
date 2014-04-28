@@ -83,7 +83,7 @@ static bool errors = false;
 /* Whether we got any errors while parsing an rcfile. */
 static size_t lineno = 0;
 /* If we did, the line number where the last error occurred. */
-static char *pinotrc = NULL;
+static std::string pinotrc;
 /* The path to the rcfile we're parsing. */
 static Syntax *new_syntax = NULL;
 /* current syntax being processed */
@@ -101,7 +101,7 @@ void rcfile_error(const char *msg, ...)
 	fprintf(stderr, "\n");
 	if (lineno > 0) {
 		errors = true;
-		fprintf(stderr, _("Error in %s on line %lu: "), pinotrc, (unsigned long)lineno);
+		fprintf(stderr, _("Error in %s on line %lu: "), pinotrc.c_str(), (unsigned long)lineno);
 	}
 
 	va_start(ap, msg);
@@ -572,7 +572,8 @@ void parse_include_file(char *filename)
 
 void parse_include(char *ptr)
 {
-	char *option, *pinotrc_save = pinotrc, *expanded;
+	char *option, *expanded;
+	std::string pinotrc_save = pinotrc;
 	size_t lineno_save = lineno;
 	glob_t files;
 
@@ -1102,12 +1103,12 @@ void do_rcfile(void)
 {
 	struct stat rcinfo;
 
-	pinotrc = mallocstrcpy(pinotrc, SYSCONFDIR "/pinotrc");
+	pinotrc = std::string(SYSCONFDIR) + "/pinotrc";
 
 	/* Don't open directories, character files, or block files. */
 	if (stat(pinotrc, &rcinfo) != -1) {
 		if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
-			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc);
+			rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc.c_str());
 		}
 	}
 
@@ -1136,13 +1137,12 @@ void do_rcfile(void)
 #ifndef RCFILE_NAME
 #define RCFILE_NAME ".pinotrc"
 #endif
-		pinotrc = charealloc(pinotrc, homedir.length() + strlen(RCFILE_NAME) + 2);
-		sprintf(pinotrc, "%s/%s", homedir.c_str(), RCFILE_NAME);
+		pinotrc = homedir + "/" + RCFILE_NAME;
 
 		/* Don't open directories, character files, or block files. */
 		if (stat(pinotrc, &rcinfo) != -1) {
 			if (S_ISDIR(rcinfo.st_mode) || S_ISCHR(rcinfo.st_mode) || S_ISBLK(rcinfo.st_mode)) {
-				rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc);
+				rcfile_error(S_ISDIR(rcinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), pinotrc.c_str());
 			}
 		}
 
@@ -1151,15 +1151,14 @@ void do_rcfile(void)
 		if (!rcstream.is_open()) {
 			/* Don't complain about the file's not existing. */
 			if (errno != ENOENT) {
-				rcfile_error(N_("Error reading %s: %s"), pinotrc, strerror(errno));
+				rcfile_error(N_("Error reading %s: %s"), pinotrc.c_str(), strerror(errno));
 			}
 		} else {
 			parse_rcfile(rcstream, false);
 		}
 	}
 
-	free(pinotrc);
-	pinotrc = NULL;
+	pinotrc = "";
 
 	if (errors && !ISSET(QUIET)) {
 		errors = false;
