@@ -91,7 +91,7 @@ extern regmatch_t regmatches[10];
 
 extern int reverse_attr;
 
-extern char *homedir;
+extern std::string homedir;
 
 /* All functions in browser.c. */
 std::string do_browser(std::string path, DIR *dir);

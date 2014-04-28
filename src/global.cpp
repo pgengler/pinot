@@ -147,7 +147,7 @@ regmatch_t regmatches[10];
 int reverse_attr = A_REVERSE;
 /* The curses attribute we use for reverse video. */
 
-char *homedir = NULL;
+std::string homedir = "";
 /* The user's home directory, from $HOME or /etc/passwd. */
 
 /* Return the number of entries in the shortcut list s for a given menu. */
@@ -1169,9 +1169,6 @@ void thanks_for_all_the_fish(void)
 	}
 	if (replaceage != NULL) {
 		free_filestruct(replaceage);
-	}
-	if (homedir != NULL) {
-		free(homedir);
 	}
 }
 

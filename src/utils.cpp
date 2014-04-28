@@ -49,7 +49,7 @@ int digits(size_t n)
  * we fall back on the home directory of the effective user ID. */
 void get_homedir(void)
 {
-	if (homedir == NULL) {
+	if (homedir == "") {
 		const char *homenv = getenv("HOME");
 
 		if (homenv == NULL) {
@@ -59,7 +59,7 @@ void get_homedir(void)
 				homenv = userage->pw_dir;
 			}
 		}
-		homedir = mallocstrcpy(NULL, homenv);
+		homedir = std::string(homenv);
 	}
 }
 

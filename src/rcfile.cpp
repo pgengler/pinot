@@ -1130,14 +1130,14 @@ void do_rcfile(void)
 
 	get_homedir();
 
-	if (homedir == NULL) {
+	if (homedir == "") {
 		rcfile_error(N_("I can't find my home directory!  Wah!"));
 	} else {
 #ifndef RCFILE_NAME
 #define RCFILE_NAME ".pinotrc"
 #endif
-		pinotrc = charealloc(pinotrc, strlen(homedir) + strlen(RCFILE_NAME) + 2);
-		sprintf(pinotrc, "%s/%s", homedir, RCFILE_NAME);
+		pinotrc = charealloc(pinotrc, homedir.length() + strlen(RCFILE_NAME) + 2);
+		sprintf(pinotrc, "%s/%s", homedir.c_str(), RCFILE_NAME);
 
 		/* Don't open directories, character files, or block files. */
 		if (stat(pinotrc, &rcinfo) != -1) {

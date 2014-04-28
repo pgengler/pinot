@@ -2234,7 +2234,7 @@ char *real_dir_from_tilde(const char *buf)
 		/* Get the home directory. */
 		if (i == 1) {
 			get_homedir();
-			tilde_dir = mallocstrcpy(NULL, homedir);
+			tilde_dir = mallocstrcpy(NULL, homedir.c_str());
 		} else {
 			const struct passwd *userdata;
 
@@ -2635,9 +2635,8 @@ std::string construct_filename(const std::string& str)
 {
 	std::string newstr;
 
-	if (homedir != NULL) {
-		newstr = std::string(homedir);
-		newstr += str;
+	if (homedir != "") {
+		newstr = homedir + str;
 	}
 
 	return newstr;
