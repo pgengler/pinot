@@ -253,7 +253,7 @@ change_browser_directory:
 				continue;
 			}
 
-			if (stat(filelist[selected].c_str(), &st) == -1) {
+			if (stat(filelist[selected], &st) == -1) {
 				/* We can't open this file for some reason. Complain. */
 				statusbar(_("Error reading %s: %s"), filelist[selected].c_str(), strerror(errno));
 				beep();
@@ -328,10 +328,10 @@ std::string do_browse_from(const std::string& inpath)
 	 * do_browser().  Or perhaps path doesn't have a directory portion
 	 * at all.  If so, we'll just pass the current directory to
 	 * do_browser(). */
-	if (stat(path.c_str(), &st) == -1 || !S_ISDIR(st.st_mode)) {
+	if (stat(path, &st) == -1 || !S_ISDIR(st.st_mode)) {
 		path = striponedir(path);
 
-		if (stat(path.c_str(), &st) == -1 || !S_ISDIR(st.st_mode)) {
+		if (stat(path, &st) == -1 || !S_ISDIR(st.st_mode)) {
 			path = getcwd();
 		}
 	}
@@ -510,11 +510,11 @@ void browser_refresh(void)
 
 		/* Show information about the file.  We don't want to report
 		 * file sizes for links, so we use lstat(). */
-		if (lstat(filelist[i].c_str(), &st) == -1 || S_ISLNK(st.st_mode)) {
+		if (lstat(filelist[i], &st) == -1 || S_ISLNK(st.st_mode)) {
 			/* If the file doesn't exist (i.e. it's been deleted while
 			 * the file browser is open), or it's a symlink that doesn't
 			 * point to a directory, display "--". */
-			if (stat(filelist[i].c_str(), &st) == -1 || !S_ISDIR(st.st_mode)) {
+			if (stat(filelist[i], &st) == -1 || !S_ISDIR(st.st_mode)) {
 				foo = mallocstrcpy(NULL, "--");
 			} else {
 			/* If the file is a symlink that points to a directory,

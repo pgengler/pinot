@@ -2266,8 +2266,8 @@ char *real_dir_from_tilde(const char *buf)
 bool sort_directories(const std::string& a, const std::string& b)
 {
 	struct stat fileinfo;
-	bool a_is_dir = (stat(a.c_str(), &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
-	bool b_is_dir = (stat(b.c_str(), &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
+	bool a_is_dir = (stat(a, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
+	bool b_is_dir = (stat(b, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
 
 	if (a_is_dir && !b_is_dir) {
 		return true;
@@ -2679,7 +2679,7 @@ int check_dotpinot(void)
 	struct stat dirstat;
 	std::string pinotdir = construct_filename("/.pinot");
 
-	if (stat(pinotdir.c_str(), &dirstat) == -1) {
+	if (stat(pinotdir, &dirstat) == -1) {
 		if (mkdir(pinotdir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
 			history_error(N_("Unable to create directory %s: %s\nIt is required for saving/loading search history or cursor position\n"), pinotdir.c_str(), strerror(errno));
 			return 0;

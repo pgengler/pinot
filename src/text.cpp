@@ -2250,7 +2250,7 @@ void do_linter(void)
 			struct stat lintfileinfo;
 
 			new_lint_loop:
-			if (stat(curr_lint->filename.c_str(), &lintfileinfo) != -1) {
+			if (stat(curr_lint->filename, &lintfileinfo) != -1) {
 				if (openfile->current_stat->st_ino != lintfileinfo.st_ino) {
 					std::list<OpenFile>::iterator tmpof = openfile;
 					while (tmpof != std::next(openfile, 1)) {

@@ -33,6 +33,7 @@
 
 #include "Keyboard.h"
 #include "OpenFile.h"
+#include "cpputil.h"
 
 #ifdef NEED_XOPEN_SOURCE_EXTENDED
 #ifndef _XOPEN_SOURCE_EXTENDED

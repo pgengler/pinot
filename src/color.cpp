@@ -119,7 +119,7 @@ void color_update(void)
 	struct stat fileinfo;
 	const char *magicstring = NULL;
 
-	if (stat(openfile->filename.c_str(), &fileinfo) == 0) {
+	if (stat(openfile->filename, &fileinfo) == 0) {
 		magic_t m = magic_open(MAGIC_SYMLINK |
 #ifdef DEBUG
 		               MAGIC_DEBUG | MAGIC_CHECK |
