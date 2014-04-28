@@ -599,15 +599,10 @@ bool browser_select_filename(const std::string& needle)
  * program. */
 int filesearch_init(void)
 {
-	char *buf;
+	std::string buf;
 	const sc *s;
-	static char *backupstring = NULL;
+	static std::string backupstring = "";
 	/* The search string we'll be using. */
-
-	/* If backupstring doesn't exist, initialize it to "". */
-	if (backupstring == NULL) {
-		backupstring = mallocstrcpy(NULL, "");
-	}
 
 	/* We display the search prompt below.  If the user types a partial
 	 * search string and then Replace or a toggle, we will return to
@@ -617,22 +612,19 @@ int filesearch_init(void)
 	search_init_globals();
 
 	if (last_search[0] != '\0') {
-		char *disp = display_string(last_search, 0, COLS / 3, false);
+		std::string disp = display_string(last_search, 0, COLS / 3, false);
 
-		buf = charalloc(strlen(disp) + 7);
-		/* We use (COLS / 3) here because we need to see more on the
-		 * line. */
-		sprintf(buf, " [%s%s]", disp, (strlenpt(last_search) > COLS / 3) ? "..." : "");
-		free(disp);
+		buf = " [" + disp + ((strlenpt(last_search) > COLS / 3) ? "..." : "") + "]";
+		/* We use (COLS / 3) here because we need to see more on the line. */
 	} else {
-		buf = mallocstrcpy(NULL, "");
+		buf = "";
 	}
 
 	/* This is now one simple call.  It just does a lot. */
 	std::shared_ptr<Key> key;
 	PromptResult i = do_prompt(false,
 	              true,
-	              MWHEREISFILE, key, backupstring,
+	              MWHEREISFILE, key, backupstring.c_str(),
 	              &search_history,
 	              browser_refresh, "%s%s%s%s%s%s", _("Search"),
 	              /* This string is just a modifier for the search prompt; no
@@ -644,13 +636,10 @@ int filesearch_init(void)
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
 	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "",
-								"", buf);
+								"", buf.c_str());
 
-	/* Release buf now that we don't need it anymore. */
-	free(buf);
 
-	free(backupstring);
-	backupstring = NULL;
+	backupstring = "";
 
 	/* Cancel any search, or just return with no previous search. */
 	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && *last_search == '\0') || (i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
@@ -666,16 +655,16 @@ int filesearch_init(void)
 			}
 		} else if (s && s->scfunc == case_sens_void) {
 			TOGGLE(CASE_SENSITIVE);
-			backupstring = mallocstrcpy(backupstring, answer);
+			backupstring = answer;
 			return 1;
 		} else if (s && s->scfunc ==  backwards_void) {
 			TOGGLE(BACKWARDS_SEARCH);
-			backupstring = mallocstrcpy(backupstring, answer);
+			backupstring = answer;
 			return 1;
 		} else {
 			if (s && s->scfunc == regexp_void) {
 				TOGGLE(USE_REGEXP);
-				backupstring = mallocstrcpy(backupstring, answer);
+				backupstring = answer;
 				return 1;
 			} else {
 				return -1;
