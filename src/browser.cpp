@@ -309,8 +309,6 @@ std::string do_browse_from(const std::string& inpath)
 	struct stat st;
 	DIR *dir = NULL;
 
-	assert(inpath.length() > 0);
-
 	std::string path = real_dir_from_tilde(inpath);
 
 	/* Perhaps path is a directory.  If so, we'll pass it to
@@ -447,7 +445,7 @@ void browser_refresh(void)
 	/* The maximum number of columns that the filenames will take up. */
 	int line = 0;
 	/* The maximum number of lines that the filenames will take up. */
-	char *foo;
+	std::string foo;
 	/* The file information that we'll display. */
 
 	if (uimax_digits == -1) {
@@ -464,8 +462,6 @@ void browser_refresh(void)
 		struct stat st;
 		std::string filetail = tail(filelist[i]);
 		/* The filename we display, minus the path. */
-		size_t foolen;
-		/* The length of the file information in columns. */
 		int foomaxlen = 7;
 		/* The maximum length of the file information in
 		 * columns: seven for "--", "(dir)", or the file size,
@@ -506,28 +502,26 @@ void browser_refresh(void)
 			 * the file browser is open), or it's a symlink that doesn't
 			 * point to a directory, display "--". */
 			if (stat(filelist[i], &st) == -1 || !S_ISDIR(st.st_mode)) {
-				foo = mallocstrcpy(NULL, "--");
+				foo = "--";
 			} else {
 			/* If the file is a symlink that points to a directory,
 			 * display it as a directory. */
 			/* TRANSLATORS: Try to keep this at most 7
 			 * characters. */
-				foo = mallocstrcpy(NULL, _("(dir)"));
+				foo = _("(dir)");
 			}
 		} else if (S_ISDIR(st.st_mode)) {
 			/* If the file is a directory, display it as such. */
 			if (filetail == "..") {
 				/* TRANSLATORS: Try to keep this at most 12 characters. */
-				foo = mallocstrcpy(NULL, _("(parent dir)"));
+				foo = _("(parent dir)");
 				foomaxlen = 12;
 			} else {
-				foo = mallocstrcpy(NULL, _("(dir)"));
+				foo = _("(dir)");
 			}
 		} else {
 			unsigned long result = st.st_size;
 			char modifier;
-
-			foo = charalloc(uimax_digits + 4);
 
 			/* Bytes. */
 			if (st.st_size < (1 << 10)) {
@@ -547,24 +541,22 @@ void browser_refresh(void)
 				modifier = 'G';
 			}
 
-			sprintf(foo, "%4lu %cB", result, modifier);
+			char disp[8];
+			snprintf(disp, 8, "%4lu %cB", result, modifier);
+			foo = disp;
 		}
 
 		/* Make sure foo takes up no more than foomaxlen columns. */
-		foolen = strlenpt(foo);
-		if (foolen > foomaxlen) {
-			null_at(&foo, actual_x(foo, foomaxlen));
-			foolen = foomaxlen;
+		if (foo.length() > foomaxlen) {
+			foo = foo.substr(0, foomaxlen);
 		}
 
-		mvwaddstr(edit, line, col - foolen, foo);
+		mvwaddstr(edit, line, col - foo.length(), foo.c_str());
 
 		/* Finish highlighting the currently selected file or directory. */
 		if (i == selected) {
 			wattroff(edit, reverse_attr);
 		}
-
-		free(foo);
 
 		/* Add some space between the columns. */
 		col += 2;
