@@ -471,11 +471,10 @@ void browser_refresh(void)
 		 * this to true if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
 		 * filename other than ".."). */
-		char *disp = display_string(filetail.c_str(), dots ? filetail.length() - longest + foomaxlen + 4 : 0, longest, false);
-		/* If we put an ellipsis before the filename, reserve
-		 * one column for padding, plus seven columns for "--",
-		 * "(dir)", or the file size, plus three columns for the
-		 * ellipsis. */
+		std::string disp = display_string(filetail, dots ? filetail.length() - longest + foomaxlen + 4 : 0, longest, false);
+		/* If we put an ellipsis before the filename, reserve one column
+		 * for padding, plus seven columns for "--", "(dir)", or the file
+		 * size, plus three columns for the ellipsis. */
 
 		/* Start highlighting the currently selected file or
 		 * directory. */
@@ -489,9 +488,7 @@ void browser_refresh(void)
 		if (dots) {
 			mvwaddstr(edit, line, col, "...");
 		}
-		mvwaddstr(edit, line, dots ? col + 3 : col, disp);
-
-		free(disp);
+		mvwaddstr(edit, line, dots ? col + 3 : col, disp.c_str());
 
 		col += longest;
 

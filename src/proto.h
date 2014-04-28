@@ -499,6 +499,7 @@ void blank_edit(void);
 void blank_statusbar(void);
 void blank_bottombars(void);
 void check_statusblank(void);
+std::string display_string(const std::string& buf, size_t start_col, size_t len, bool dollars);
 char *display_string(const char *buf, size_t start_col, size_t len, bool dollars);
 void titlebar(const std::string& path);
 void titlebar(const char *path);

@@ -188,6 +188,15 @@ void check_statusblank(void)
  * string is dynamically allocated, and should be freed.  If dollars is
  * true, the caller might put "$" at the beginning or end of the line if
  * it's too long. */
+std::string display_string(const std::string& buf, size_t start_col, size_t len, bool dollars)
+{
+	char *foo = display_string(buf.c_str(), start_col, len, dollars);
+	std::string result(foo);
+	free(foo);
+
+	return result;
+}
+
 char *display_string(const char *buf, size_t start_col, size_t len, bool dollars)
 {
 	size_t start_index;
