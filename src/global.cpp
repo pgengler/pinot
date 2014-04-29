@@ -1044,6 +1044,10 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "lastfile")) {
 			s->scfunc = do_last_file;
 			s->execute = false;
+#ifdef ENABLE_SPELLER
+		} else if (!strcasecmp(input, "tospell") || !strcasecmp(input, "speller")) {
+			s->scfunc = do_spell;
+#endif
 		} else {
 			delete s;
 			return NULL;
