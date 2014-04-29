@@ -593,6 +593,8 @@ void parse_include(char *ptr)
 	} else {
 		rcfile_error(_("Error expanding %s: %s"), option, strerror(errno));
 	}
+	globfree(&files);
+	free(expanded);
 
 	/* We're done with the new syntax file.  Restore the original
 	 * filename and line number position. */
