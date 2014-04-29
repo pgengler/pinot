@@ -731,8 +731,6 @@ void usage(void)
 	print_opt("-x", "--nohelp", N_("Don't show the two help lines"));
 	print_opt("-z", "--suspend", N_("Enable suspension"));
 	print_opt("-$", "--softwrap", N_("Enable soft line wrapping"));
-
-	exit(0);
 }
 
 /* Display the current version of pinot, the date and time it was
@@ -1623,10 +1621,10 @@ int main(int argc, char **argv)
 
 	while ((optchr =
 #ifdef HAVE_GETOPT_LONG
-	            getopt_long(argc, argv, "h?ABC:DEFGHIKLNOPQ:RST:UVWY:cdiklmo:pqr:s:tuvwxz$", long_options, NULL)
+	            getopt_long(argc, argv, "ABC:DEFGHIKLNOPQ:RST:UVWY:cdhiklmo:pqr:s:tuvwxz$", long_options, NULL)
 #else
 	            getopt(argc, argv,
-	                   "h?ABC:DEFGHIKLNOPQ:RST:UVWY:cdiklmo:pqr:s:tuvwxz$")
+	                   "ABC:DEFGHIKLNOPQ:RST:UVWY:cdhiklmo:pqr:s:tuvwxz$")
 #endif
 	       ) != -1) {
 		switch (optchr) {
@@ -1700,6 +1698,9 @@ int main(int argc, char **argv)
 		case 'd':
 			SET(REBIND_DELETE);
 			break;
+		case 'h':
+			usage();
+			exit(0);
 		case 'i':
 			SET(AUTOINDENT);
 			break;
@@ -1755,7 +1756,8 @@ int main(int argc, char **argv)
 			SET(SOFTWRAP);
 			break;
 		default:
-			usage();
+			printf(_("Type '%s -h' for a list of available options.\n"), argv[0]);
+			exit(1);
 		}
 	}
 
