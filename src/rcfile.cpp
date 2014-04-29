@@ -421,7 +421,7 @@ void parse_keybinding(char *ptr)
 		keycopy[i] = toupper(keycopy[i]);
 	}
 
-	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
+	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F') {
 		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
 		return;
 	}
