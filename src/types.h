@@ -123,8 +123,6 @@ typedef struct sc {
 	/* The shortcut key for a function, ASCII version */
 	FunctionType type;
 	/* What kind of function key is it for convenience later */
-	int seq;
-	/* The actual sequence to check on the the type is determined */
 	int menu;
 	/* What list does this apply to */
 	void (*scfunc)(void);

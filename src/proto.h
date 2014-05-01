@@ -531,7 +531,6 @@ void print_sclist(void);
 sc *strtosc(char *input);
 FunctionType strtokeytype(const char *str);
 int strtomenu(char *input);
-void assign_keyinfo(sc *s);
 void xon_complaint(void);
 void xoff_complaint(void);
 void do_suspend_void(void);

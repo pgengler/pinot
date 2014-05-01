@@ -262,10 +262,8 @@ void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggl
 	shortcut->keystr = (char *) scstring;
 	shortcut->scfunc = func;
 	shortcut->execute = execute;
-	assign_keyinfo(shortcut);
 
 	DEBUG_LOG("list val = " << shortcut->menu);
-	DEBUG_LOG("Setting sequence to " << shortcut->seq << " for shortcut \"" << scstring << '"');
 
 	// First look if we already have a shortcut for this menu and key string
 	for (auto s : sclist) {
@@ -296,63 +294,6 @@ void empty_sclist(void)
 		auto s = sclist.front();
 		sclist.pop_front();
 		delete s;
-	}
-}
-
-/* Assign the info to the shortcut struct
-   Assumes keystr is already assigned, naturally */
-void assign_keyinfo(sc *s)
-{
-	if (s->type == CONTROL) {
-		assert(strlen(s->keystr) > 1);
-		s->seq = s->keystr[1] - 64;
-	} else if (s->type == META) {
-		assert(strlen(s->keystr) > 2);
-		s->seq = tolower((int) s->keystr[2]);
-	} else if (s->type == FKEY) {
-		assert(strlen(s->keystr) > 1);
-		s->seq = KEY_F0 + atoi(&s->keystr[1]);
-	} else { /* RAWINPUT */
-		s->seq = (int) s->keystr[0];
-	}
-
-	/* Override some keys which don't bind as nicely as we'd like */
-	if (s->type == CONTROL && (!strcasecmp(s->keystr, "Space"))) {
-		s->seq = 0;
-	} else if (s->type == META && (!strcasecmp(s->keystr, "Space"))) {
-		s->seq = (int) ' ';
-	} else if (s->type == RAWINPUT) {
-		if (!strcasecmp(s->keystr, "Up")) {
-			s->seq = KEY_UP;
-		} else if (!strcasecmp(s->keystr, "Down")) {
-			s->seq = KEY_DOWN;
-		} else if (!strcasecmp(s->keystr, "Left")) {
-			s->seq = KEY_LEFT;
-		} else if (!strcasecmp(s->keystr, "Right")) {
-			s->seq = KEY_RIGHT;
-		} else if (!strcasecmp(s->keystr, "Insert")) {
-			s->seq = KEY_IC;
-		} else if (!strcasecmp(s->keystr, "Delete")) {
-			s->seq = KEY_DC;
-		} else if (!strcasecmp(s->keystr, "Backspace")) {
-			s->seq = KEY_BACKSPACE;
-		} else if (!strcasecmp(s->keystr, "Enter")) {
-			s->seq = KEY_ENTER;
-		} else if (!strcasecmp(s->keystr, "PageUp")) {
-			s->seq = KEY_PPAGE;
-		} else if (!strcasecmp(s->keystr, "PageDown")) {
-			s->seq = KEY_NPAGE;
-		}
-#ifdef KEY_HOME
-		else if (!strcasecmp(s->keystr, "Home")) {
-			s->seq = KEY_HOME;
-		}
-#endif
-#ifdef KEY_END
-		else if (!strcasecmp(s->keystr, "End")) {
-			s->seq = KEY_END;
-		}
-#endif
 	}
 }
 

@@ -386,21 +386,6 @@ void parse_magictype(char *ptr)
 #endif /* HAVE_LIBMAGIC */
 }
 
-int check_bad_binding(sc *s)
-{
-#define BADLISTLEN 1
-	int badtypes[BADLISTLEN] = {META};
-	int badseqs[BADLISTLEN] = { 91 };
-	int i;
-
-	for (i = 0; i < BADLISTLEN; i++)
-		if (s->type == badtypes[i] && s->seq == badseqs[i]) {
-			return 1;
-		}
-
-	return 0;
-}
-
 void parse_keybinding(char *ptr)
 {
 	char *keyptr = NULL, *keycopy = NULL, *funcptr = NULL, *menuptr = NULL;
@@ -462,20 +447,11 @@ void parse_keybinding(char *ptr)
 	newsc->keystr = keycopy;
 	newsc->menu = menu;
 	newsc->type = strtokeytype(newsc->keystr);
-	assign_keyinfo(newsc);
 	DEBUG_LOG("s->keystr = \"" << newsc->keystr << '"');
-	DEBUG_LOG("s->seq = " << newsc->seq);
 
-	if (check_bad_binding(newsc)) {
-		rcfile_error(N_("Sorry, keystr \"%s\" is an illegal binding"), newsc->keystr);
-		return;
-	}
-
-	/* now let's have some fun.  Try and delete the other entries
-	   we found for the same menu, then make this new new
-	   beginning */
+	/* Remove previous bindings for this key/menu combination */
 	for (auto s : sclist) {
-		if (((s->menu & newsc->menu)) && s->seq == newsc->seq) {
+		if (((s->menu & newsc->menu)) && s->keystr == newsc->keystr) {
 			s->menu &= ~newsc->menu;
 			DEBUG_LOG("replaced menu entry " << s->menu);
 		}
