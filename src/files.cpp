@@ -33,7 +33,6 @@
 #include <errno.h>
 #include <ctype.h>
 #include <pwd.h>
-#include <libgen.h>
 
 /* Add an entry to the list of open files. This should only be called from open_buffer(). */
 void make_new_buffer(void)
@@ -229,17 +228,15 @@ int delete_lockfile(const std::string& lockfilename)
    we were not successful on creating the lockfile but we should
    continue to load the file and complain to the user.
  */
-int do_lockfile(const char *filename)
+int do_lockfile(const std::string& filename)
 {
-	char *lockdir = dirname((char *) mallocstrcpy(NULL, filename));
-	char *lockbase = basename((char *) mallocstrcpy(NULL, filename));
-	ssize_t lockfilesize = (sizeof (char *) * (strlen(filename) + strlen(locking_prefix) + strlen(locking_suffix) + 3));
-	char *lockfilename = (char *)nmalloc(lockfilesize);
+	std::string lockdir = dirname(filename);
+	std::string lockbase = basename(filename.c_str());
 	char lockprog[12], lockuser[16];
 	struct stat fileinfo;
 	int lockfd, lockpid;
 
-	snprintf(lockfilename, lockfilesize, "%s/%s%s%s", lockdir, locking_prefix, lockbase, locking_suffix);
+	std::string lockfilename = lockdir + "/" + locking_prefix + lockbase + locking_suffix;
 	DEBUG_LOG("lock file name is " << lockfilename);
 	if (stat(lockfilename, &fileinfo) != -1) {
 		ssize_t readtot = 0;
@@ -247,8 +244,8 @@ int do_lockfile(const char *filename)
 		char *lockbuf = (char *)nmalloc(8192);
 		char *promptstr = (char *)nmalloc(128);
 		int ans;
-		if ((lockfd = open(lockfilename, O_RDONLY)) < 0) {
-			statusbar(_("Error opening lockfile %s: %s"), lockfilename, strerror(errno));
+		if ((lockfd = open(lockfilename.c_str(), O_RDONLY)) < 0) {
+			statusbar(_("Error opening lockfile %s: %s"), lockfilename.c_str(), strerror(errno));
 			return -1;
 		}
 		do {
@@ -257,7 +254,7 @@ int do_lockfile(const char *filename)
 		} while (readtot < 8192 && readamt > 0);
 
 		if (readtot < 48) {
-			statusbar(_("Error reading lockfile %s: Not enough data read"), lockfilename);
+			statusbar(_("Error reading lockfile %s: Not enough data read"), lockfilename.c_str());
 			return -1;
 		}
 		strncpy(lockprog, &lockbuf[2], 10);
@@ -279,7 +276,7 @@ int do_lockfile(const char *filename)
 
 /* If it's not "", filename is a file to open.  We make a new buffer, if
  * necessary, and then open and read the file, if applicable. */
-void open_buffer(const char *filename, bool undoable)
+void open_buffer(const std::string& filename, bool undoable)
 {
 	bool new_buffer = (openfiles.size() == 0 || ISSET(MULTIBUFFER));
 	/* Whether we load into this buffer or a new one. */
@@ -288,8 +285,6 @@ void open_buffer(const char *filename, bool undoable)
 	/* rc == -2 means that we have a new file.  -1 means that the
 	 * open() failed.  0 means that the open() succeeded. */
 
-	assert(filename != NULL);
-
 	/* If we're loading into a new buffer, add a new entry to openfile. */
 	if (new_buffer) {
 		make_new_buffer();
@@ -297,7 +292,7 @@ void open_buffer(const char *filename, bool undoable)
 
 	/* If the filename isn't blank, open the file.  Otherwise, treat it
 	 * as a new file. */
-	rc = (filename[0] != '\0') ? open_file(filename, new_buffer, &f) : -2;
+	rc = (filename != "") ? open_file(filename, new_buffer, &f) : -2;
 
 	/* If we have a file, and we're loading into a new buffer, update
 	 * the filename. */
@@ -335,18 +330,16 @@ void open_buffer(const char *filename, bool undoable)
  * the current buffer, and then open and read the file, if
  * applicable.  Note that we skip the operating directory test when
  * doing this. */
-void replace_buffer(const char *filename)
+void replace_buffer(const std::string& filename)
 {
 	FILE *f;
 	int rc;
 	/* rc == -2 means that we have a new file.  -1 means that the
 	 * open() failed.  0 means that the open() succeeded. */
 
-	assert(filename != NULL);
-
 	/* If the filename isn't blank, open the file.  Otherwise, treat it
 	 * as a new file. */
-	rc = (filename[0] != '\0') ? open_file(filename, true, &f) : -2;
+	rc = (filename != "") ? open_file(filename, true, &f) : -2;
 
 	/* Reinitialize the text of the current buffer. */
 	free_filestruct(openfile->fileage);
@@ -467,12 +460,11 @@ bool close_buffer(void)
  * (reporting true when it might be wrong) to not fluster users
  * editing on odd filesystems by printing incorrect warnings.
  */
-int is_file_writable(const char *filename)
+int is_file_writable(const std::string& filename)
 {
 	struct stat fileinfo, fileinfo2;
 	int fd;
 	FILE *f;
-	char *full_filename;
 	bool ans = true;
 
 
@@ -480,25 +472,22 @@ int is_file_writable(const char *filename)
 		return true;
 	}
 
-	assert(filename != NULL);
-
 	/* Get the specified file's full path. */
-	full_filename = get_full_path(filename);
+	auto full_filename = get_full_path(filename);
 
 	/* Okay, if we can't stat the path due to a component's
 	   permissions, just try the relative one */
-	if (full_filename == NULL || (stat(full_filename, &fileinfo) == -1 && stat(filename, &fileinfo2) != -1)) {
-		full_filename = mallocstrcpy(NULL, filename);
+	if (full_filename == "" || (stat(full_filename, &fileinfo) == -1 && stat(filename, &fileinfo2) != -1)) {
+		full_filename = filename;
 	}
 
-	if ((fd = open(full_filename, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)) == -1 || (f = fdopen(fd, "a")) == NULL) {
+	if ((fd = open(full_filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)) == -1 || (f = fdopen(fd, "a")) == NULL) {
 		ans = false;
 	} else {
 		fclose(f);
 	}
 	close(fd);
 
-	free(full_filename);
 	return ans;
 }
 
@@ -557,7 +546,7 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, siz
  * undoable  means do we want to create undo records to try and undo this.
  * Will also attempt to check file writability if fd > 0 and checkwritable == true
  */
-void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkwritable)
+void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool checkwritable)
 {
 	size_t num_lines = 0;
 	/* The number of lines in the file. */
@@ -671,7 +660,7 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
 
 	/* Perhaps this could use some better handling. */
 	if (ferror(f)) {
-		nperror(filename);
+		nperror(filename.c_str());
 	}
 	fclose(f);
 	if (fd > 0 && checkwritable) {
@@ -829,21 +818,21 @@ void read_file(FILE *f, int fd, const char *filename, bool undoable, bool checkw
  * Return -2 if we say "New File", -1 if the file isn't opened, and the
  * fd opened otherwise.  The file might still have an error while reading
  * with a 0 return value.  *f is set to the opened file. */
-int open_file(const char *filename, bool newfie, FILE **f)
+int open_file(const std::string& filename, bool newfie, FILE **f)
 {
 	struct stat fileinfo, fileinfo2;
 	int fd;
-	char *full_filename;
+	std::string full_filename;
 
-	assert(filename != NULL && f != NULL);
+	assert(f != NULL);
 
 	/* Get the specified file's full path. */
 	full_filename = get_full_path(filename);
 
 	/* Okay, if we can't stat the path due to a component's
 	   permissions, just try the relative one */
-	if (full_filename == NULL || (stat(full_filename, &fileinfo) == -1 && stat(filename, &fileinfo2) != -1)) {
-		full_filename = mallocstrcpy(NULL, filename);
+	if (full_filename == "" || (stat(full_filename, &fileinfo) == -1 && stat(filename, &fileinfo2) != -1)) {
+		full_filename = filename;
 	}
 
 	if (ISSET(LOCKING))
@@ -853,9 +842,8 @@ int open_file(const char *filename, bool newfie, FILE **f)
 
 	if (stat(full_filename, &fileinfo) == -1) {
 		/* Well, maybe we can open the file even if the OS says its not there */
-		if ((fd = open(filename, O_RDONLY)) != -1) {
+		if ((fd = open(filename.c_str(), O_RDONLY)) != -1) {
 			statusbar(_("Reading File"));
-			free(full_filename);
 			return 0;
 		}
 
@@ -863,16 +851,16 @@ int open_file(const char *filename, bool newfie, FILE **f)
 			statusbar(_("New File"));
 			return -2;
 		}
-		statusbar(_("\"%s\" not found"), filename);
+		statusbar(_("\"%s\" not found"), filename.c_str());
 		beep();
 		return -1;
 	} else if (S_ISDIR(fileinfo.st_mode) || S_ISCHR(fileinfo.st_mode) || S_ISBLK(fileinfo.st_mode)) {
 		/* Don't open directories, character files, or block files. Sorry, /dev/sndstat! */
-		statusbar(S_ISDIR(fileinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), filename);
+		statusbar(S_ISDIR(fileinfo.st_mode) ? _("\"%s\" is a directory") : _("\"%s\" is a device file"), filename.c_str());
 		beep();
 		return -1;
-	} else if ((fd = open(full_filename, O_RDONLY)) == -1) {
-		statusbar(_("Error reading %s: %s"), filename, strerror(errno));
+	} else if ((fd = open(full_filename.c_str(), O_RDONLY)) == -1) {
+		statusbar(_("Error reading %s: %s"), filename.c_str(), strerror(errno));
 		beep();
 		return -1;
 	} else {
@@ -880,15 +868,13 @@ int open_file(const char *filename, bool newfie, FILE **f)
 		*f = fdopen(fd, "rb");
 
 		if (*f == NULL) {
-			statusbar(_("Error reading %s: %s"), filename, strerror(errno));
+			statusbar(_("Error reading %s: %s"), filename.c_str(), strerror(errno));
 			beep();
 			close(fd);
 		} else {
 			statusbar(_("Reading File"));
 		}
 	}
-
-	free(full_filename);
 
 	return fd;
 }

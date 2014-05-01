@@ -3,6 +3,11 @@
 
 #include <unistd.h>
 
+std::string basename(const std::string& path)
+{
+	return std::string(::basename(path.c_str()));
+}
+
 int chmod(const std::string& path, mode_t mode)
 {
 	return chmod(path.c_str(), mode);
@@ -11,6 +16,11 @@ int chmod(const std::string& path, mode_t mode)
 int chown(const std::string& path, uid_t owner, gid_t group)
 {
 	return chown(path.c_str(), owner, group);
+}
+
+std::string dirname(const std::string& path)
+{
+	return std::string(::dirname(path.c_str()));
 }
 
 std::string getcwd()

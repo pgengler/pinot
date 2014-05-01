@@ -2264,7 +2264,7 @@ void do_linter(void)
 						free(msg);
 						if (i == 1) {
 							SET(MULTIBUFFER);
-							open_buffer(curr_lint->filename.c_str(), false);
+							open_buffer(curr_lint->filename, false);
 						} else {
 							auto dontwantfile = curr_lint->filename;
 
