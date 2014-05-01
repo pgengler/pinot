@@ -119,7 +119,7 @@ typedef struct rcoption {
 } rcoption;
 
 typedef struct sc {
-	char *keystr;
+	std::string keystr;
 	/* The shortcut key for a function, ASCII version */
 	FunctionType type;
 	/* What kind of function key is it for convenience later */

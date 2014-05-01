@@ -208,7 +208,7 @@ void ext_cmd_void(void)
 }
 
 /* Set type of function based on the string */
-FunctionType strtokeytype(const char *str)
+FunctionType strtokeytype(const std::string& str)
 {
 	if (str[0] ==  'M' || str[0] == 'm') {
 		return META;
@@ -253,13 +253,13 @@ const sc *first_sc_for(int menu, void (*func)(void))
 
 /* Add a string to the new shortcut list implementation
    Allows updates to existing entries in the list */
-void add_to_sclist(int menu, const char *scstring, void (*func)(void), int toggle, int execute)
+void add_to_sclist(int menu, const std::string& scstring, void (*func)(void), int toggle, int execute)
 {
 	auto shortcut = new sc;
 	shortcut->type = strtokeytype(scstring);
 	shortcut->menu = menu;
 	shortcut->toggle = toggle;
-	shortcut->keystr = (char *) scstring;
+	shortcut->keystr = scstring;
 	shortcut->scfunc = func;
 	shortcut->execute = execute;
 

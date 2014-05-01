@@ -506,7 +506,7 @@ void parse_unbinding(char *ptr)
 
 	/* Now find the apropriate entries in the menu to delete */
 	for (auto s : sclist) {
-		if (((s->menu & menu)) && !strcmp(s->keystr,keycopy)) {
+		if (((s->menu & menu)) && s->keystr == keycopy) {
 			s->menu &= ~menu;
 			DEBUG_LOG("deleted menu entry " << s->menu);
 		}

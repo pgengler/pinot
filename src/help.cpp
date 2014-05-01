@@ -423,9 +423,9 @@ void help_init(void)
 				scsfound++;
 
 				if (scsfound == 1) {
-					ptr += sprintf(ptr, "%s", s->keystr);
+					ptr += sprintf(ptr, "%s", s->keystr.c_str());
 				} else {
-					ptr += sprintf(ptr, "(%s)", s->keystr);
+					ptr += sprintf(ptr, "(%s)", s->keystr.c_str());
 				}
 				*(ptr++) = '\t';
 			}
@@ -447,7 +447,7 @@ void help_init(void)
 	if (currmenu == MMAIN) {
 		for (auto s : sclist) {
 			if (s->scfunc == do_toggle_void) {
-				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n", s->keystr, _(flagtostr(s->toggle)), _("enable/disable"));
+				ptr += sprintf(ptr, "(%s)\t\t\t%s %s\n", s->keystr.c_str(), _(flagtostr(s->toggle)), _("enable/disable"));
 			}
 		}
 	}
