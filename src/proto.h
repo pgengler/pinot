@@ -62,8 +62,8 @@ extern char *answer;
 extern ssize_t tabsize;
 
 extern char *backup_dir;
-extern const char *locking_prefix;
-extern const char *locking_suffix;
+extern const std::string locking_prefix;
+extern const std::string locking_suffix;
 
 #ifdef ENABLE_SPELLER
 extern char *alt_speller;
