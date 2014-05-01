@@ -699,19 +699,17 @@ void bottombars(int menu)
  * to write at most len characters, even if len is very small and
  * keystroke and desc are long.  Note that waddnstr(,,(size_t)-1) adds
  * the whole string!  We do not bother padding the entry with blanks. */
-void onekey(const std::string& keystroke, const std::string& desc, size_t len)
-{
-	onekey(keystroke.c_str(), desc.c_str(), len);
-}
-
 void onekey(const char *keystroke, const char *desc, size_t len)
 {
-	size_t keystroke_len = strlenpt(keystroke) + 1;
+	onekey(std::string(keystroke), std::string(desc), len);
+}
 
-	assert(keystroke != NULL && desc != NULL);
+void onekey(const std::string& keystroke, const std::string& desc, size_t len)
+{
+	size_t keystroke_len = keystroke.length() + 1;
 
 	wattron(bottomwin, reverse_attr);
-	waddnstr(bottomwin, keystroke, actual_x(keystroke, len));
+	waddnstr(bottomwin, keystroke.c_str(), actual_x(keystroke.c_str(), len));
 	wattroff(bottomwin, reverse_attr);
 
 	if (len > keystroke_len) {
@@ -722,7 +720,7 @@ void onekey(const char *keystroke, const char *desc, size_t len)
 
 	if (len > 0) {
 		waddch(bottomwin, ' ');
-		waddnstr(bottomwin, desc, actual_x(desc, len));
+		waddnstr(bottomwin, desc.c_str(), actual_x(desc.c_str(), len));
 	}
 }
 
