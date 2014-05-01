@@ -107,11 +107,6 @@ void search_replace_abort(void)
 	regexp_cleanup();
 }
 
-/* Initialize the global search and replace strings. */
-void search_init_globals(void)
-{
-}
-
 /* Set up the system variables for a search or replace.  If use_answer
  * is true, only set backupstring to answer.  Return -2 to run the
  * opposite program (search -> replace, replace -> search), return -1 if
@@ -143,8 +138,6 @@ int search_init(bool replacing, bool use_answer)
 	 * search string and then Replace or a toggle, we will return to
 	 * do_search() or do_replace() and be called again.  In that case,
 	 * we should put the same search string back up. */
-
-	search_init_globals();
 
 	if (last_search != "") {
 		auto disp = display_string(last_search, 0, COLS / 3, false);
@@ -452,8 +445,6 @@ void do_research(void)
 	size_t fileptr_x = openfile->current_x;
 	size_t pww_save = openfile->placewewant;
 	bool didfind;
-
-	search_init_globals();
 
 	if (last_search != "") {
 		/* Since answer is "", use last_search! */

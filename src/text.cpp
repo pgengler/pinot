@@ -1517,7 +1517,6 @@ bool do_int_spell_fix(const char *word)
 	UNSET(USE_REGEXP);
 
 	/* Save the current search/replace strings. */
-	search_init_globals();
 	auto save_search = last_search;
 	auto save_replace = last_replace;
 

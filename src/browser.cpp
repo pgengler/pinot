@@ -609,8 +609,6 @@ int filesearch_init(void)
 	 * do_search() or do_replace() and be called again.  In that case,
 	 * we should put the same search string back up. */
 
-	search_init_globals();
-
 	if (last_search != "") {
 		std::string disp = display_string(last_search, 0, COLS / 3, false);
 
@@ -816,8 +814,6 @@ void do_fileresearch(void)
 {
 	size_t begin = selected;
 	bool didfind;
-
-	search_init_globals();
 
 	if (last_search != "") {
 		/* Since answer is "", use last_search! */
