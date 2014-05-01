@@ -34,7 +34,7 @@ extern Keyboard *keyboard;
 extern ssize_t fill;
 extern ssize_t wrap_at;
 
-extern char *last_search;
+extern std::string last_search;
 extern char *last_replace;
 
 extern unsigned flags[4];

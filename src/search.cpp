@@ -110,9 +110,6 @@ void search_replace_abort(void)
 /* Initialize the global search and replace strings. */
 void search_init_globals(void)
 {
-	if (last_search == NULL) {
-		last_search = mallocstrcpy(NULL, "");
-	}
 	if (last_replace == NULL) {
 		last_replace = mallocstrcpy(NULL, "");
 	}
@@ -152,13 +149,12 @@ int search_init(bool replacing, bool use_answer)
 
 	search_init_globals();
 
-	if (last_search[0] != '\0') {
-		char *disp = display_string(last_search, 0, COLS / 3, false);
+	if (last_search != "") {
+		auto disp = display_string(last_search, 0, COLS / 3, false);
 
-		buf = charalloc(strlen(disp) + 7);
+		buf = charalloc(disp.length() + 7);
 		/* We use (COLS / 3) here because we need to see more on the line. */
-		sprintf(buf, " [%s%s]", disp, (strlenpt(last_search) > COLS / 3) ? "..." : "");
-		free(disp);
+		sprintf(buf, " [%s%s]", disp.c_str(), (last_search.length() > COLS / 3) ? "..." : "");
 	} else {
 		buf = mallocstrcpy(NULL, "");
 	}
@@ -185,7 +181,7 @@ int search_init(bool replacing, bool use_answer)
 	backupstring = NULL;
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && *last_search == '\0') || (!replacing && i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
+	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (!replacing && i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
@@ -193,9 +189,8 @@ int search_init(bool replacing, bool use_answer)
 		auto func = s ? s->scfunc : nullptr;
 
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
-			/* Use last_search if answer is an empty string, or
-			 * answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search : answer)) {
+			/* Use last_search if answer is an empty string, or answer if it isn't. */
+			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer)) {
 				return -1;
 			}
 		} else if (func == case_sens_void) {
@@ -408,9 +403,9 @@ void do_search(void)
 
 	/* If answer is now "", copy last_search into answer. */
 	if (*answer == '\0') {
-		answer = mallocstrcpy(answer, last_search);
+		answer = mallocstrcpy(answer, last_search.c_str());
 	} else {
-		last_search = mallocstrcpy(last_search, answer);
+		last_search = answer;
 	}
 
 	/* If answer is not "", add this search string to the search history list. */
@@ -433,7 +428,7 @@ void do_search(void)
 		 * that we find one only once per line.  We should only end up
 		 * back at the same position if the string isn't found again, in
 		 * which case it's the only occurrence. */
-		if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search)) {
+		if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search.c_str())) {
 			didfind = findnextstr(
 #ifdef ENABLE_SPELLER
 			              false,
@@ -463,9 +458,9 @@ void do_research(void)
 
 	search_init_globals();
 
-	if (last_search[0] != '\0') {
+	if (last_search != "") {
 		/* Since answer is "", use last_search! */
-		if (ISSET(USE_REGEXP) && !regexp_init(last_search)) {
+		if (ISSET(USE_REGEXP) && !regexp_init(last_search.c_str())) {
 			return;
 		}
 
@@ -475,7 +470,7 @@ void do_research(void)
 		              false,
 #endif
 		              false, openfile->current, openfile->current_x,
-		              last_search, NULL);
+		              last_search.c_str(), NULL);
 
 		/* Check to see if there's only one occurrence of the string and
 		 * we're on it now. */
@@ -485,7 +480,7 @@ void do_research(void)
 			 * "^$"), so that we find one only once per line.  We should
 			 * only end up back at the same position if the string isn't
 			 * found again, in which case it's the only occurrence. */
-			if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search)) {
+			if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search.c_str())) {
 				didfind = findnextstr(
 #ifdef ENABLE_SPELLER
 				              false,
@@ -823,7 +818,7 @@ void do_replace(void)
 	 * copy answer into last_search. */
 	if (answer[0] != '\0') {
 		update_history(&search_history, answer);
-		last_search = mallocstrcpy(last_search, answer);
+		last_search = answer;
 	}
 
 	last_replace = mallocstrcpy(last_replace, "");
@@ -864,7 +859,7 @@ void do_replace(void)
 #ifdef ENABLE_SPELLER
 	                  false,
 #endif
-	                  NULL, begin, &begin_x, last_search);
+	                  NULL, begin, &begin_x, last_search.c_str());
 
 	/* Restore where we were. */
 	openfile->edittop = edittop_save;

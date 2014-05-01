@@ -611,10 +611,10 @@ int filesearch_init(void)
 
 	search_init_globals();
 
-	if (last_search[0] != '\0') {
+	if (last_search != "") {
 		std::string disp = display_string(last_search, 0, COLS / 3, false);
 
-		buf = " [" + disp + ((strlenpt(last_search) > COLS / 3) ? "..." : "") + "]";
+		buf = " [" + disp + ((last_search.length() > COLS / 3) ? "..." : "") + "]";
 		/* We use (COLS / 3) here because we need to see more on the line. */
 	} else {
 		buf = "";
@@ -642,15 +642,14 @@ int filesearch_init(void)
 	backupstring = "";
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && *last_search == '\0') || (i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
+	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
 		s = get_shortcut(MBROWSER, *key);
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
-			/* Use last_search if answer is an empty string, or
-			 * answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search : answer)) {
+			/* Use last_search if answer is an empty string, or answer if it isn't. */
+			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer)) {
 				return -1;
 			}
 		} else if (s && s->scfunc == case_sens_void) {
@@ -785,9 +784,9 @@ void do_filesearch(void)
 
 	/* If answer is now "", copy last_search into answer. */
 	if (*answer == '\0') {
-		answer = mallocstrcpy(answer, last_search);
+		answer = mallocstrcpy(answer, last_search.c_str());
 	} else {
-		last_search = mallocstrcpy(last_search, answer);
+		last_search = answer;
 	}
 
 	/* If answer is not "", add this search string to the search history list. */
@@ -820,9 +819,9 @@ void do_fileresearch(void)
 
 	search_init_globals();
 
-	if (last_search[0] != '\0') {
+	if (last_search != "") {
 		/* Since answer is "", use last_search! */
-		if (ISSET(USE_REGEXP) && !regexp_init(last_search)) {
+		if (ISSET(USE_REGEXP) && !regexp_init(last_search.c_str())) {
 			return;
 		}
 

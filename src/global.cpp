@@ -42,7 +42,7 @@ ssize_t wrap_at = -CHARS_FROM_EOL;
  * if it's greater than zero, and equal to (COLS + this) if it
  * isn't. */
 
-char *last_search = NULL;
+std::string last_search = "";
 /* The last string we searched for. */
 char *last_replace = NULL;
 /* The last replacement string we searched for. */
@@ -1052,9 +1052,6 @@ void thanks_for_all_the_fish(void)
 
 	if (backup_dir != NULL) {
 		free(backup_dir);
-	}
-	if (last_search != NULL) {
-		free(last_search);
 	}
 	if (last_replace != NULL) {
 		free(last_replace);
