@@ -44,7 +44,7 @@ ssize_t wrap_at = -CHARS_FROM_EOL;
 
 std::string last_search = "";
 /* The last string we searched for. */
-char *last_replace = NULL;
+std::string last_replace = "";
 /* The last replacement string we searched for. */
 
 unsigned flags[4] = {0, 0, 0, 0};
@@ -1052,9 +1052,6 @@ void thanks_for_all_the_fish(void)
 
 	if (backup_dir != NULL) {
 		free(backup_dir);
-	}
-	if (last_replace != NULL) {
-		free(last_replace);
 	}
 #ifdef ENABLE_SPELLER
 	if (alt_speller != NULL) {

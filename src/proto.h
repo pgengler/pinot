@@ -35,7 +35,7 @@ extern ssize_t fill;
 extern ssize_t wrap_at;
 
 extern std::string last_search;
-extern char *last_replace;
+extern std::string last_replace;
 
 extern unsigned flags[4];
 extern WINDOW *topwin;

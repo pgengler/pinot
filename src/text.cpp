@@ -1489,7 +1489,6 @@ size_t indent_length(const char *line)
  * return false if the user cancels. */
 bool do_int_spell_fix(const char *word)
 {
-	char *save_replace;
 	size_t match_len, current_x_save = openfile->current_x;
 	size_t pww_save = openfile->placewewant;
 	filestruct *edittop_save = openfile->edittop;
@@ -1520,11 +1519,11 @@ bool do_int_spell_fix(const char *word)
 	/* Save the current search/replace strings. */
 	search_init_globals();
 	auto save_search = last_search;
-	save_replace = last_replace;
+	auto save_replace = last_replace;
 
 	/* Set the search/replace strings to the misspelled word. */
 	last_search = word;
-	last_replace = mallocstrcpy(NULL, word);
+	last_replace = word;
 
 	if (old_mark_set) {
 		/* If the mark is on, partition the filestruct so that it
@@ -1602,7 +1601,6 @@ bool do_int_spell_fix(const char *word)
 
 	/* Restore the search/replace strings. */
 	last_search = save_search;
-	free(last_replace);
 	last_replace = save_replace;
 
 	/* Restore where we were. */

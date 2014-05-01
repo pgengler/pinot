@@ -110,9 +110,6 @@ void search_replace_abort(void)
 /* Initialize the global search and replace strings. */
 void search_init_globals(void)
 {
-	if (last_replace == NULL) {
-		last_replace = mallocstrcpy(NULL, "");
-	}
 }
 
 /* Set up the system variables for a search or replace.  If use_answer
@@ -509,7 +506,7 @@ int replace_regexp(char *string, bool create)
 	 * calculate the size of the replacement line (necessary because of
 	 * subexpressions \1 to \9 in the replaced text). */
 
-	const char *c = last_replace;
+	const char *c = last_replace.c_str();
 	size_t search_match_count = regmatches[0].rm_eo - regmatches[0].rm_so;
 	size_t new_line_size = strlen(openfile->current->data) + 1 - search_match_count;
 
@@ -821,12 +818,12 @@ void do_replace(void)
 		last_search = answer;
 	}
 
-	last_replace = mallocstrcpy(last_replace, "");
+	last_replace = "";
 
 	std::shared_ptr<Key> key;
 	PromptResult i = do_prompt(false,
 	              true,
-	              MREPLACEWITH, key, last_replace,
+	              MREPLACEWITH, key, last_replace.c_str(),
 	              &replace_history,
 	              edit_refresh, _("Replace with"));
 
@@ -838,8 +835,8 @@ void do_replace(void)
 
 	if (i != PROMPT_ENTER_PRESSED && i != PROMPT_BLANK_STRING) {
 		if (i == PROMPT_ABORTED) {  /* Cancel. */
-			if (last_replace[0] != '\0') {
-				answer = mallocstrcpy(answer, last_replace);
+			if (last_replace != "") {
+				answer = mallocstrcpy(answer, last_replace.c_str());
 			}
 			statusbar(_("Cancelled"));
 		}
@@ -847,7 +844,7 @@ void do_replace(void)
 		return;
 	}
 
-	last_replace = mallocstrcpy(last_replace, answer);
+	last_replace = answer;
 
 	/* Save where we are. */
 	edittop_save = openfile->edittop;
