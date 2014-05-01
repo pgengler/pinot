@@ -508,7 +508,6 @@ void set_modified(void);
 void statusbar(const char *msg, ...);
 void bottombars(int menu);
 void onekey(const std::string& keystroke, const std::string& desc, size_t len);
-void onekey(const char *keystroke, const char *desc, size_t len);
 void reset_cursor(void);
 void edit_draw(filestruct *fileptr, const char *converted, int line, size_t start);
 int update_line(filestruct *fileptr, size_t index);
