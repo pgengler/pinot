@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <sys/types.h>
 #include <dirent.h>
 
 int chmod(const std::string& path, mode_t mode);
