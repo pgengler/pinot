@@ -2784,7 +2784,7 @@ void save_poshistory(void)
 	if (poshist != "") {
 		std::ofstream hist(poshist, std::ofstream::binary);
 
-		if (hist == NULL) {
+		if (!hist) {
 			history_error(N_("Error writing %s: %s"), poshist.c_str(), strerror(errno));
 		} else {
 			/* Make sure no one else can read from or write to the
