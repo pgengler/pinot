@@ -1349,20 +1349,18 @@ char *get_full_path(const char *origpath)
 /* Return the full version of path, as returned by get_full_path().  On
  * error, if path doesn't reference a directory, or if the directory
  * isn't writable, return NULL. */
-char *check_writable_directory(const char *path)
+std::string check_writable_directory(const std::string& path)
 {
-	char *full_path = get_full_path(path);
+	std::string full_path = get_full_path(path);
 
-	/* If get_full_path() fails, return NULL. */
-	if (full_path == NULL) {
-		return NULL;
+	/* If get_full_path() fails, return "". */
+	if (full_path == "") {
+		return "";
 	}
 
-	/* If we can't write to path or path isn't a directory, return
-	 * NULL. */
-	if (access(full_path, W_OK) != 0 || full_path[strlen(full_path) - 1] != '/') {
-		free(full_path);
-		return NULL;
+	/* If we can't write to path or path isn't a directory, return "". */
+	if (access(full_path, W_OK) != 0 || full_path.back() != '/') {
+		return "";
 	}
 
 	/* Otherwise, return the full path. */
@@ -1371,11 +1369,11 @@ char *check_writable_directory(const char *path)
 
 /* This function calls mkstemp(($TMPDIR|P_tmpdir|/tmp/)"pinot.XXXXXX").
  * On success, it returns the malloc()ed filename and corresponding FILE
- * stream, opened in "r+b" mode.  On error, it returns NULL for the
+ * stream, opened in "r+b" mode.  On error, it returns "" for the
  * filename and leaves the FILE stream unchanged. */
-char *safe_tempfile(FILE **f)
+std::string safe_tempfile(FILE **f)
 {
-	char *full_tempdir = NULL;
+	std::string full_tempdir;
 	const char *tmpdir_env;
 	int fd;
 	mode_t original_umask = 0;
@@ -1391,18 +1389,17 @@ char *safe_tempfile(FILE **f)
 	}
 
 	/* If $TMPDIR is unset, empty, or not a writable directory, and
-	 * full_tempdir is NULL, try P_tmpdir instead. */
-	if (full_tempdir == NULL) {
+	 * full_tempdir is "", try P_tmpdir instead. */
+	if (full_tempdir == "") {
 		full_tempdir = check_writable_directory(P_tmpdir);
 	}
 
-	/* if P_tmpdir is NULL, use /tmp. */
-	if (full_tempdir == NULL) {
-		full_tempdir = mallocstrcpy(NULL, "/tmp/");
+	/* if P_tmpdir is "", use /tmp. */
+	if (full_tempdir == "") {
+		full_tempdir = "/tmp/";
 	}
 
-	full_tempdir = charealloc(full_tempdir, strlen(full_tempdir) + 12);
-	strcat(full_tempdir, "pinot.XXXXXX");
+	full_tempdir += "pinot.XXXXXX";
 
 	original_umask = umask(0);
 	umask(S_IRWXG | S_IRWXO);
@@ -1412,8 +1409,7 @@ char *safe_tempfile(FILE **f)
 	if (fd != -1) {
 		*f = fdopen(fd, "r+b");
 	} else {
-		free(full_tempdir);
-		full_tempdir = NULL;
+		full_tempdir = "";
 	}
 
 	umask(original_umask);
@@ -1533,7 +1529,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 	/* name after tilde expansion. */
 	FILE *f = NULL;
 	/* The actual file, realname, we are writing to. */
-	char *tempname = NULL;
+	std::string tempname;
 	/* The temp file name we write to on prepend. */
 
 	assert(name != NULL);
@@ -1780,7 +1776,7 @@ skip_backup:
 
 		tempname = safe_tempfile(&f);
 
-		if (tempname == NULL) {
+		if (tempname == "") {
 			statusbar(_("Error writing temp file: %s"), strerror(errno));
 			goto cleanup_and_exit;
 		}
@@ -1802,7 +1798,7 @@ skip_backup:
 		}
 
 		if (copy_file(f_source, f) != 0) {
-			statusbar(_("Error writing %s: %s"), tempname, strerror(errno));
+			statusbar(_("Error writing %s: %s"), tempname.c_str(), strerror(errno));
 			unlink(tempname);
 			goto cleanup_and_exit;
 		}
@@ -1821,7 +1817,7 @@ skip_backup:
 			statusbar(_("Error writing %s: %s"), realname, strerror(errno));
 
 			/* tempname has been set only if we're prepending. */
-			if (tempname != NULL) {
+			if (tempname != "") {
 				unlink(tempname);
 			}
 			goto cleanup_and_exit;
@@ -1891,7 +1887,7 @@ skip_backup:
 		int fd_source;
 		FILE *f_source = NULL;
 
-		fd_source = open(tempname, O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+		fd_source = open(tempname.c_str(), O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
 
 		if (fd_source != -1) {
 			f_source = fdopen(fd_source, "rb");
@@ -1901,7 +1897,7 @@ skip_backup:
 		}
 
 		if (f_source == NULL) {
-			statusbar(_("Error reading %s: %s"), tempname, strerror(errno));
+			statusbar(_("Error reading %s: %s"), tempname.c_str(), strerror(errno));
 			beep();
 			fclose(f);
 			goto cleanup_and_exit;
@@ -1948,9 +1944,6 @@ skip_backup:
 
 cleanup_and_exit:
 	free(realname);
-	if (tempname != NULL) {
-		free(tempname);
-	}
 
 	return retval;
 }

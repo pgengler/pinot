@@ -3,6 +3,11 @@
 
 #include <unistd.h>
 
+int access(const std::string& path, int amode)
+{
+	return access(path.c_str(), amode);
+}
+
 std::string basename(const std::string& path)
 {
 	return std::string(::basename(path.c_str()));
@@ -39,6 +44,14 @@ int lstat(const std::string& path, struct stat *buf)
 	return lstat(path.c_str(), buf);
 }
 
+int mkstemp(std::string& name_template)
+{
+	char *buffer = (char *)malloc(name_template.length() * sizeof(char));
+	int fd = mkstemp(buffer);
+	name_template = buffer;
+	return fd;
+}
+
 DIR *opendir(const std::string& name)
 {
 	return opendir(name.c_str());
@@ -47,4 +60,9 @@ DIR *opendir(const std::string& name)
 int stat(const std::string& path, struct stat *buf)
 {
 	return stat(path.c_str(), buf);
+}
+
+int unlink(const std::string& path)
+{
+	return unlink(path.c_str());
 }
