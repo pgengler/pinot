@@ -1207,53 +1207,32 @@ std::string get_full_path(const std::string& origpath)
 		return "";
 	}
 
-	char *path = get_full_path(origpath.c_str());
-	std::string fullpath(path);
-	free(path);
-
-	return fullpath;
-}
-
-char *get_full_path(const char *origpath)
-{
 	struct stat fileinfo;
-	char *d_here, *d_there, *d_there_file = NULL;
-	const char *last_slash;
 	bool path_only;
-
-	if (origpath == NULL) {
-		return NULL;
-	}
+	std::string d_there_file;
 
 	/* Get the current directory.  If it doesn't exist, back up and try
 	 * again until we get a directory that does, and use that as the
 	 * current directory. */
-	d_here = charalloc(PATH_MAX + 1);
-	d_here = getcwd(d_here, PATH_MAX + 1);
+	auto d_here = getcwd();
 
-	while (d_here == NULL) {
+	while (d_here == "") {
 		if (chdir("..") == -1) {
 			break;
 		}
 
-		d_here = getcwd(d_here, PATH_MAX + 1);
+		d_here = getcwd();
 	}
 
 	/* If we succeeded, canonicalize it in d_here. */
-	if (d_here != NULL) {
-		align(&d_here);
-
+	if (d_here != "") {
 		/* If the current directory isn't "/", tack a slash onto the end of it. */
-		if (strcmp(d_here, "/") != 0) {
-			d_here = charealloc(d_here, strlen(d_here) + 2);
-			strcat(d_here, "/");
+		if (d_here != "/") {
+			d_here += "/";
 		}
-		/* Otherwise, set d_here to "". */
-	} else {
-		d_here = mallocstrcpy(NULL, "");
 	}
 
-	d_there = real_dir_from_tilde(origpath);
+	auto d_there = real_dir_from_tilde(origpath);
 
 	/* If stat()ing d_there fails, assume that d_there refers to a new
 	 * file that hasn't been saved to disk yet.  Set path_only to true
@@ -1262,19 +1241,16 @@ char *get_full_path(const char *origpath)
 
 	/* If path_only is true, make sure d_there ends in a slash. */
 	if (path_only) {
-		size_t d_there_len = strlen(d_there);
-
-		if (d_there[d_there_len - 1] != '/') {
-			d_there = charealloc(d_there, d_there_len + 2);
-			strcat(d_there, "/");
+		if (d_there[d_there.length() - 1] != '/') {
+			d_there += "/";
 		}
 	}
 
 	/* Search for the last slash in d_there. */
-	last_slash = strrchr(d_there, '/');
+	auto last_slash = d_there.rfind('/');
 
 	/* If we didn't find one, then make sure the answer is in the format "d_here/d_there". */
-	if (last_slash == NULL) {
+	if (last_slash == std::string::npos) {
 		assert(!path_only);
 
 		d_there_file = d_there;
@@ -1283,38 +1259,28 @@ char *get_full_path(const char *origpath)
 		/* If path_only is false, then save the filename portion of the
 		 * answer (everything after the last slash) in d_there_file. */
 		if (!path_only) {
-			d_there_file = mallocstrcpy(NULL, last_slash + 1);
+			d_there_file = d_there.substr(last_slash + 1);
 		}
 
 		/* Remove the filename portion of the answer from d_there. */
-		null_at(&d_there, last_slash - d_there + 1);
+		d_there = d_there.substr(0, last_slash);
 
 		/* Go to the path specified in d_there. */
 		if (chdir(d_there) == -1) {
-			free(d_there);
-			d_there = NULL;
+			d_there = "";
 		} else {
-			free(d_there);
-
 			/* Get the full path. */
-			d_there = charalloc(PATH_MAX + 1);
-			d_there = getcwd(d_there, PATH_MAX + 1);
+			d_there = getcwd();
 
 			/* If we succeeded, canonicalize it in d_there. */
-			if (d_there != NULL) {
-				align(&d_there);
-
-				/* If the current directory isn't "/", tack a slash onto
-				 * the end of it. */
-				if (strcmp(d_there, "/") != 0) {
-					d_there = charealloc(d_there, strlen(d_there) + 2);
-					strcat(d_there, "/");
+			if (d_there != "") {
+				/* If the current directory isn't "/", tack a slash onto the end of it. */
+				if (d_there != "/") {
+					d_there += "/";
 				}
-			} else
+			} else {
 				/* Otherwise, set path_only to true, so that we clean up
-				 * correctly, free all allocated memory, and return
-				 * NULL. */
-			{
+				 * correctly, free all allocated memory, and return "". */
 				path_only = true;
 			}
 
@@ -1322,25 +1288,16 @@ char *get_full_path(const char *origpath)
 			 * where we were before.  We don't check for a chdir()
 			 * error, since we can do nothing if we get one. */
 			IGNORE_CALL_RESULT(chdir(d_here));
-
-			/* Free d_here, since we're done using it. */
-			free(d_here);
 		}
 	}
 
-	/* At this point, if path_only is false and d_there isn't NULL,
+	/* At this point, if path_only is false and d_there isn't "",
 	 * d_there contains the path portion of the answer and d_there_file
 	 * contains the filename portion of the answer.  If this is the
 	 * case, tack the latter onto the end of the former.  d_there will
 	 * then contain the complete answer. */
-	if (!path_only && d_there != NULL) {
-		d_there = charealloc(d_there, strlen(d_there) + strlen(d_there_file) + 1);
-		strcat(d_there, d_there_file);
-	}
-
-	/* Free d_there_file, since we're done using it. */
-	if (d_there_file != NULL) {
-		free(d_there_file);
+	if (!path_only && d_there != "") {
+		d_there += d_there_file;
 	}
 
 	return d_there;
@@ -1348,7 +1305,7 @@ char *get_full_path(const char *origpath)
 
 /* Return the full version of path, as returned by get_full_path().  On
  * error, if path doesn't reference a directory, or if the directory
- * isn't writable, return NULL. */
+ * isn't writable, return "". */
 std::string check_writable_directory(const std::string& path)
 {
 	std::string full_path = get_full_path(path);
@@ -1421,36 +1378,30 @@ std::string safe_tempfile(FILE **f)
  * and I'm blanket allowing insecure file writing operations.
  */
 
-int prompt_failed_backupwrite(const char *filename)
+int prompt_failed_backupwrite(const std::string& filename)
 {
 	static int i;
-	static char *prevfile = NULL; /* What was the laast file we were paased so we don't keep asking this?
-                                     though maybe we should.... */
-	if (prevfile == NULL || strcmp(filename, prevfile)) {
+	static std::string prevfile;; /* What was the last file we were paased so we don't keep asking this? though maybe we should.... */
+	if (prevfile == "" || filename != prevfile) {
 		i = do_yesno_prompt(false, _("Failed to write backup file, continue saving? (Say N if unsure) "));
-		prevfile = mallocstrcpy(prevfile, filename);
+		prevfile = filename;
 	}
 	return i;
 }
 
 void init_backup_dir(void)
 {
-	char *full_backup_dir;
-
-	if (backup_dir == NULL) {
+	if (backup_dir == "") {
 		return;
 	}
 
-	full_backup_dir = get_full_path(backup_dir);
+	auto full_backup_dir = get_full_path(backup_dir);
 
 	/* If get_full_path() failed or the backup directory is
 	 * inaccessible, unset backup_dir. */
-	if (full_backup_dir == NULL || full_backup_dir[strlen(full_backup_dir) - 1] != '/') {
-		free(full_backup_dir);
-		free(backup_dir);
-		backup_dir = NULL;
+	if (full_backup_dir == "" || full_backup_dir[full_backup_dir.length() - 1] != '/') {
+		backup_dir = "";
 	} else {
-		free(backup_dir);
 		backup_dir = full_backup_dir;
 	}
 }
@@ -1525,7 +1476,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 	 * is a link. */
 	struct stat lst;
 	/* The status fields filled in by lstat(). */
-	char *realname;
+	std::string realname;
 	/* name after tilde expansion. */
 	FILE *f = NULL;
 	/* The actual file, realname, we are writing to. */
@@ -1583,7 +1534,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 	if (ISSET(BACKUP_FILE) && !tmp && realexists && ((append != OVERWRITE || openfile->mark_set) || (openfile->current_stat && openfile->current_stat->st_mtime == st.st_mtime))) {
 		int backup_fd;
 		FILE *backup_file;
-		char *backupname;
+		std::string backupname;
 		struct utimbuf filetime;
 		int copy_status;
 		int backup_cflags;
@@ -1597,7 +1548,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 			f = fopen(realname, "rb");
 
 			if (f == NULL) {
-				statusbar(_("Error reading %s: %s"), realname, strerror(errno));
+				statusbar(_("Error reading %s: %s"), realname.c_str(), strerror(errno));
 				beep();
 				/* If we can't read from the original file, go on, since
 				 * only saving the original file is better than saving
@@ -1611,48 +1562,39 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 		 * canonicalized absolute pathname of realname with every '/'
 		 * replaced with a '!'.  This means that /home/foo/file is
 		 * backed up in backup_dir/!home!foo!file~[.number]. */
-		if (backup_dir != NULL) {
-			char *backuptemp = get_full_path(realname);
+		if (backup_dir != "") {
+			auto backuptemp = get_full_path(realname);
 
-			if (backuptemp == NULL)
+			if (backuptemp == "") {
 				/* If get_full_path() failed, we don't have a
 				 * canonicalized absolute pathname, so just use the
 				 * filename portion of the pathname.  We use tail() so
 				 * that e.g. ../backupname will be backed up in
 				 * backupdir/backupname~ instead of
 				 * backupdir/../backupname~. */
-			{
-				backuptemp = mallocstrcpy(NULL, tail(realname));
+				backuptemp = tail(realname);
 			} else {
-				size_t i = 0;
-
-				for (; backuptemp[i] != '\0'; i++) {
+				for (size_t i = 0; backuptemp[i] != '\0'; i++) {
 					if (backuptemp[i] == '/') {
 						backuptemp[i] = '!';
 					}
 				}
 			}
 
-			backupname = charalloc(strlen(backup_dir) + strlen(backuptemp) + 1);
-			sprintf(backupname, "%s%s", backup_dir, backuptemp);
-			free(backuptemp);
-			backuptemp = mallocstrcpy(NULL, get_next_filename(backupname, "~").c_str());
-			if (*backuptemp == '\0') {
-				statusbar(_("Error writing backup file %s: %s"), backupname, _("Too many backup files?"));
-				free(backuptemp);
-				free(backupname);
+			backupname = backup_dir + backuptemp;
+			backuptemp = get_next_filename(backupname, "~");
+			if (backuptemp == "") {
+				statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), _("Too many backup files?"));
 				/* If we can't write to the backup, DONT go on, since
 				   whatever caused the backup file to fail (e.g. disk
 				   full may well cause the real file write to fail, which
 				   means we could lose both the backup and the original! */
 				goto cleanup_and_exit;
 			} else {
-				free(backupname);
 				backupname = backuptemp;
 			}
 		} else {
-			backupname = charalloc(strlen(realname) + 2);
-			sprintf(backupname, "%s~", realname);
+			backupname = realname + "~";
 		}
 
 		/* First, unlink any existing backups.  Next, open the backup
@@ -1662,8 +1604,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 			if (prompt_failed_backupwrite(backupname)) {
 				goto skip_backup;
 			}
-			statusbar(_("Error writing backup file %s: %s"), backupname, strerror(errno));
-			free(backupname);
+			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			goto cleanup_and_exit;
 		}
 
@@ -1673,14 +1614,13 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 			backup_cflags = O_WRONLY | O_CREAT | O_EXCL | O_APPEND;
 		}
 
-		backup_fd = open(backupname, backup_cflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+		backup_fd = open(backupname.c_str(), backup_cflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		/* Now we've got a safe file stream.  If the previous open()
 		   call failed, this will return NULL. */
 		backup_file = fdopen(backup_fd, "wb");
 
 		if (backup_fd < 0 || backup_file == NULL) {
-			statusbar(_("Error writing backup file %s: %s"), backupname, strerror(errno));
-			free(backupname);
+			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			goto cleanup_and_exit;
 		}
 
@@ -1690,8 +1630,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 			if (prompt_failed_backupwrite(backupname)) {
 				goto skip_backup;
 			}
-			statusbar(_("Error writing backup file %s: %s"), backupname, strerror(errno));
-			free(backupname);
+			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			fclose(backup_file);
 			goto cleanup_and_exit;
 		}
@@ -1700,8 +1639,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 			if (prompt_failed_backupwrite(backupname)) {
 				goto skip_backup;
 			}
-			statusbar(_("Error writing backup file %s: %s"), backupname, strerror(errno));
-			free(backupname);
+			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			fclose(backup_file);
 			/* If we can't write to the backup, DONT go on, since
 			   whatever caused the backup file to fail (e.g. disk
@@ -1716,25 +1654,23 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 		copy_status = copy_file(f, backup_file);
 
 		if (copy_status != 0) {
-			statusbar(_("Error reading %s: %s"), realname, strerror(errno));
+			statusbar(_("Error reading %s: %s"), realname.c_str(), strerror(errno));
 			beep();
 			goto cleanup_and_exit;
 		}
 
 		/* And set its metadata. */
-		if (utime(backupname, &filetime) == -1 && !ISSET(INSECURE_BACKUP)) {
+		if (utime(backupname.c_str(), &filetime) == -1 && !ISSET(INSECURE_BACKUP)) {
 			if (prompt_failed_backupwrite(backupname)) {
 				goto skip_backup;
 			}
-			statusbar(_("Error writing backup file %s: %s"), backupname, strerror(errno));
+			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			/* If we can't write to the backup, DONT go on, since
 			   whatever caused the backup file to fail (e.g. disk
 			   full may well cause the real file write to fail, which
 			   means we could lose both the backup and the original! */
 			goto cleanup_and_exit;
 		}
-
-		free(backupname);
 	}
 
 skip_backup:
@@ -1743,7 +1679,7 @@ skip_backup:
 	 * doing prepend or append.  So we delete the link first, and just
 	 * overwrite. */
 	if (ISSET(NOFOLLOW_SYMLINKS) && anyexists && S_ISLNK(lst.st_mode) && unlink(realname) == -1) {
-		statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+		statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 		goto cleanup_and_exit;
 	}
 
@@ -1768,7 +1704,7 @@ skip_backup:
 			f = fopen(realname, "rb");
 
 			if (f == NULL) {
-				statusbar(_("Error reading %s: %s"), realname, strerror(errno));
+				statusbar(_("Error reading %s: %s"), realname.c_str(), strerror(errno));
 				beep();
 				goto cleanup_and_exit;
 			}
@@ -1782,12 +1718,12 @@ skip_backup:
 		}
 
 		if (f_open == NULL) {
-			fd_source = open(realname, O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+			fd_source = open(realname.c_str(), O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
 
 			if (fd_source != -1) {
 				f_source = fdopen(fd_source, "rb");
 				if (f_source == NULL) {
-					statusbar(_("Error reading %s: %s"), realname, strerror(errno));
+					statusbar(_("Error reading %s: %s"), realname.c_str(), strerror(errno));
 					beep();
 					close(fd_source);
 					fclose(f);
@@ -1807,14 +1743,14 @@ skip_backup:
 	if (f_open == NULL) {
 		/* Now open the file in place.  Use O_EXCL if tmp is true.  This
 		 * is copied from joe, because wiggy says so *shrug*. */
-		fd = open(realname, O_WRONLY | O_CREAT | ((append == APPEND) ? O_APPEND : (tmp ? O_EXCL : O_TRUNC)), S_IRUSR |S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+		fd = open(realname.c_str(), O_WRONLY | O_CREAT | ((append == APPEND) ? O_APPEND : (tmp ? O_EXCL : O_TRUNC)), S_IRUSR |S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
 		/* Set the umask back to the user's original value. */
 		umask(original_umask);
 
 		/* If we couldn't open the file, give up. */
 		if (fd == -1) {
-			statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+			statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 
 			/* tempname has been set only if we're prepending. */
 			if (tempname != "") {
@@ -1826,7 +1762,7 @@ skip_backup:
 		f = fdopen(fd, (append == APPEND) ? "ab" : "wb");
 
 		if (f == NULL) {
-			statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+			statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 			close(fd);
 			goto cleanup_and_exit;
 		}
@@ -1847,7 +1783,7 @@ skip_backup:
 		unsunder(fileptr->data, data_len);
 
 		if (size < data_len) {
-			statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+			statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 			fclose(f);
 			goto cleanup_and_exit;
 		}
@@ -1863,7 +1799,7 @@ skip_backup:
 		} else {
 			if (openfile->fmt == DOS_FILE || openfile->fmt == MAC_FILE) {
 				if (putc('\r', f) == EOF) {
-					statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+					statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 					fclose(f);
 					goto cleanup_and_exit;
 				}
@@ -1871,7 +1807,7 @@ skip_backup:
 
 			if (openfile->fmt != MAC_FILE) {
 				if (putc('\n', f) == EOF) {
-					statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+					statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 					fclose(f);
 					goto cleanup_and_exit;
 				}
@@ -1904,11 +1840,11 @@ skip_backup:
 		}
 
 		if (copy_file(f_source, f) == -1 || unlink(tempname) == -1) {
-			statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+			statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 			goto cleanup_and_exit;
 		}
 	} else if (fclose(f) != 0) {
-		statusbar(_("Error writing %s: %s"), realname, strerror(errno));
+		statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 		goto cleanup_and_exit;
 	}
 
@@ -1943,8 +1879,6 @@ skip_backup:
 	retval = true;
 
 cleanup_and_exit:
-	free(realname);
-
 	return retval;
 }
 
@@ -2091,7 +2025,7 @@ bool do_writeout(bool exiting)
 			if (append == OVERWRITE) {
 				size_t answer_len = strlen(answer);
 				bool name_exists, do_warning;
-				char *full_answer;
+				std::string full_answer;
 				struct stat st;
 
 				/* Convert newlines to nulls, just before we get the full path. */
@@ -2099,22 +2033,16 @@ bool do_writeout(bool exiting)
 
 				full_answer = get_full_path(answer);
 				std::string full_filename = get_full_path(openfile->filename);
-				name_exists = (stat((full_answer == NULL) ? answer : full_answer, &st) != -1);
-				if (openfile->filename[0] == '\0') {
+				name_exists = (stat((full_answer == "") ? answer : full_answer, &st) != -1);
+				if (openfile->filename.front() == '\0') {
 					do_warning = name_exists;
 				} else {
-					do_warning = (strcmp((full_answer == NULL) ?
-					                     answer : full_answer, (full_filename == "") ?
-					                     openfile->filename.c_str() : full_filename.c_str()) != 0);
+					do_warning = ((full_answer == "") ? answer : full_answer) != ((full_filename == "") ? openfile->filename : full_filename);
 				}
 
 				/* Convert nulls to newlines.  answer_len is the
 				 * string's real length. */
 				unsunder(answer, answer_len);
-
-				if (full_answer != NULL) {
-					free(full_answer);
-				}
 
 				if (do_warning) {
 					if (name_exists) {
@@ -2806,11 +2734,11 @@ void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos
  * an existing entry.  If so return 1 and set line and column
  * to the right values  Otherwise return 0
  */
-int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
+int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column)
 {
-	char *fullpath = get_full_path(file);
+	auto fullpath = get_full_path(file);
 
-	if (fullpath == NULL) {
+	if (fullpath == "") {
 		return 0;
 	}
 
@@ -2818,11 +2746,9 @@ int check_poshistory(const char *file, ssize_t *line, ssize_t *column)
 		if (pos->filename == fullpath) {
 			*line = pos->lineno;
 			*column = pos->xno;
-			free(fullpath);
 			return 1;
 		}
 	}
-	free(fullpath);
 	return 0;
 }
 

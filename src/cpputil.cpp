@@ -3,14 +3,19 @@
 
 #include <unistd.h>
 
-int access(const std::string& path, int amode)
+int access(const std::string& pathname, int mode)
 {
-	return access(path.c_str(), amode);
+	return ::access(pathname.c_str(), mode);
 }
 
 std::string basename(const std::string& path)
 {
 	return std::string(::basename(path.c_str()));
+}
+
+int chdir(const std::string& path)
+{
+	return ::chdir(path.c_str());
 }
 
 int chmod(const std::string& path, mode_t mode)
@@ -26,6 +31,11 @@ int chown(const std::string& path, uid_t owner, gid_t group)
 std::string dirname(const std::string& path)
 {
 	return std::string(::dirname(path.c_str()));
+}
+
+FILE* fopen(const std::string& path, const std::string& mode)
+{
+	return ::fopen(path.c_str(), mode.c_str());
 }
 
 std::string getcwd()
@@ -62,7 +72,7 @@ int stat(const std::string& path, struct stat *buf)
 	return stat(path.c_str(), buf);
 }
 
-int unlink(const std::string& path)
+int unlink(const std::string& pathname)
 {
-	return unlink(path.c_str());
+	return ::unlink(pathname.c_str());
 }

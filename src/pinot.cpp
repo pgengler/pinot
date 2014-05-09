@@ -1633,7 +1633,7 @@ int main(int argc, char **argv)
 			SET(BACKUP_FILE);
 			break;
 		case 'C':
-			backup_dir = mallocstrcpy(backup_dir, optarg);
+			backup_dir = optarg;
 			break;
 		case 'D':
 			SET(BOLD_TEXT);
@@ -1765,7 +1765,6 @@ int main(int argc, char **argv)
 	 * haven't changed afterward, restore the backed-up values. */
 	if (!no_rcfiles) {
 		ssize_t wrap_at_cpy = wrap_at;
-		char *backup_dir_cpy = backup_dir;
 #ifdef ENABLE_SPELLER
 		char *alt_speller_cpy = alt_speller;
 #endif
@@ -1775,7 +1774,6 @@ int main(int argc, char **argv)
 
 		memcpy(flags_cpy, flags, sizeof(flags_cpy));
 
-		backup_dir = NULL;
 #ifdef ENABLE_SPELLER
 		alt_speller = NULL;
 #endif
@@ -1789,10 +1787,6 @@ int main(int argc, char **argv)
 
 		if (fill_used) {
 			wrap_at = wrap_at_cpy;
-		}
-		if (backup_dir_cpy != NULL) {
-			free(backup_dir);
-			backup_dir = backup_dir_cpy;
 		}
 #ifdef ENABLE_SPELLER
 		if (alt_speller_cpy != NULL) {

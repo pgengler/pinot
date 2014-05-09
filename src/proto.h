@@ -61,7 +61,7 @@ extern char *answer;
 
 extern ssize_t tabsize;
 
-extern char *backup_dir;
+extern std::string backup_dir;
 extern const std::string locking_prefix;
 extern const std::string locking_suffix;
 
@@ -212,7 +212,6 @@ void do_insertfile(bool execute);
 void do_insertfile_void(void);
 void do_execute_command();
 std::string get_full_path(const std::string& origpath);
-char *get_full_path(const char *origpath);
 std::string check_writable_directory(const std::string& path);
 std::string safe_tempfile(FILE **f);
 void init_backup_dir(void);
@@ -240,7 +239,7 @@ void save_history(void);
 int check_dotpinot(void);
 void load_poshistory(void);
 void save_poshistory(void);
-int check_poshistory(const char *file, ssize_t *line, ssize_t *column);
+int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column);
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);

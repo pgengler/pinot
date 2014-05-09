@@ -1030,7 +1030,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 								whitespace_len[1] = parse_mbchar(whitespace + whitespace_len[0], NULL, NULL);
 							}
 						} else if (rcopt.name == "backupdir") {
-							backup_dir = mallocstrcpy(backup_dir, argument.c_str());
+							backup_dir = argument;
 						} else
 #ifdef ENABLE_SPELLER
 						if (rcopt.name == "speller") {

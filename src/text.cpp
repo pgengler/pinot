@@ -2005,7 +2005,7 @@ void do_spell(void)
 {
 	bool status;
 	FILE *temp_file;
-	char *temp = safe_tempfile(&temp_file);
+	char *temp = mallocstrcpy(NULL, safe_tempfile(&temp_file).c_str());
 	const char *spell_msg;
 
 	if (temp == NULL) {

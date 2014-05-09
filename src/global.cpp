@@ -93,7 +93,7 @@ ssize_t tabsize = -1;
 /* The width of a tab in spaces.  The default value is set in
  * main(). */
 
-char *backup_dir = NULL;
+std::string backup_dir = "";
 /* The directory where we store backup files. */
 const std::string locking_prefix = ".";
 /* Prefix of how to store the vim-style lock file */
@@ -1050,9 +1050,6 @@ void thanks_for_all_the_fish(void)
 	delwin(edit);
 	delwin(bottomwin);
 
-	if (backup_dir != NULL) {
-		free(backup_dir);
-	}
 #ifdef ENABLE_SPELLER
 	if (alt_speller != NULL) {
 		free(alt_speller);
