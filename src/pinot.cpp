@@ -713,7 +713,6 @@ void usage(void)
 	print_opt("-W", "--wordbounds", N_("Detect word boundaries more accurately"));
 	print_opt(_("-Y <str>"), _("--syntax=<str>"), N_("Syntax definition to use for coloring"));
 	print_opt("-c", "--const", N_("Constantly show cursor position"));
-	print_opt("-d", "--rebinddelete", N_("Fix Backspace/Delete confusion problem"));
 	print_opt("-i", "--autoindent", N_("Automatically indent new lines"));
 	print_opt("-k", "--cut", N_("Cut from cursor to end of line"));
 	print_opt("-l", "--nofollow", N_("Don't follow symbolic links, overwrite"));
@@ -1565,7 +1564,6 @@ int main(int argc, char **argv)
 		{"version", 0, NULL, 'V'},
 		{"syntax", 1, NULL, 'Y'},
 		{"const", 0, NULL, 'c'},
-		{"rebinddelete", 0, NULL, 'd'},
 		{"nofollow", 0, NULL, 'l'},
 		{"preserve", 0, NULL, 'p'},
 		{"quiet", 0, NULL, 'q'},
@@ -1621,10 +1619,10 @@ int main(int argc, char **argv)
 
 	while ((optchr =
 #ifdef HAVE_GETOPT_LONG
-	            getopt_long(argc, argv, "ABC:DEFGHIKLNOPQ:RST:UVWY:cdhiklmo:pqr:s:tuvwxz$", long_options, NULL)
+	            getopt_long(argc, argv, "ABC:DEFGHIKLNOPQ:RST:UVWY:chiklmo:pqr:s:tuvwxz$", long_options, NULL)
 #else
 	            getopt(argc, argv,
-	                   "ABC:DEFGHIKLNOPQ:RST:UVWY:cdhiklmo:pqr:s:tuvwxz$")
+	                   "ABC:DEFGHIKLNOPQ:RST:UVWY:chiklmo:pqr:s:tuvwxz$")
 #endif
 	       ) != -1) {
 		switch (optchr) {
@@ -1694,9 +1692,6 @@ int main(int argc, char **argv)
 			break;
 		case 'c':
 			SET(CONST_UPDATE);
-			break;
-		case 'd':
-			SET(REBIND_DELETE);
 			break;
 		case 'h':
 			usage();

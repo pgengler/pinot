@@ -47,7 +47,6 @@ std::vector<rcoption> rcopts = {
 	{"nonewlines", NO_NEWLINES, false},
 	{"nowrap", NO_WRAP, false},
 	{"preserve", PRESERVE, false},
-	{"rebinddelete", REBIND_DELETE, false},
 	{"rebindkeypad", REBIND_KEYPAD, false},
 	{"regexp", USE_REGEXP, false},
 #ifdef ENABLE_SPELLER

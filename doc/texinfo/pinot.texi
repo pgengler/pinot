@@ -206,11 +206,6 @@ available.  See @xref{Pinotrc Files}, for more info.
 Constantly display the cursor position and line number on the statusbar.
 Note that this overrides -U.
 
-@item -d, --rebinddelete
-Interpret the Delete key differently so that both Backspace and Delete
-work properly.  You should only need to use this option if Backspace
-acts like Delete on your system.
-
 @item -h, --help
 Show a summary of command line options and exit.
 
@@ -596,11 +591,6 @@ otherwise a literal string.  The default value is
 
 if you have extended regular expression support, or "> " otherwise.
 Note that '\\t' stands for a literal Tab character.
-
-@item set/unset rebinddelete
-Interpret the Delete key differently so that both Backspace and Delete
-work properly.  You should only need to use this option if Backspace
-acts like Delete on your system.
 
 @item set/unset rebindkeypad
 Interpret the numeric keypad keys so that they all work properly.  You
