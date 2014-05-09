@@ -71,7 +71,7 @@ change_browser_directory:
 
 	path = get_full_path(path);
 
-	assert(path.length() > 0 && path[path.length() - 1] == '/');
+	assert(path.length() > 0 && path.back() == '/');
 
 	/* Get the file list, and set longest and width in the process. */
 	browser_init(path, dir);
@@ -356,7 +356,7 @@ void browser_init(const std::string& path, DIR *dir)
 	int filesperline = 0;
 	/* The number of files that we can display per line. */
 
-	assert(path.length() > 0 && path[path.length() - 1] == '/' && dir != NULL);
+	assert(path.length() > 0 && path.back() == '/' && dir != NULL);
 
 	/* Set longest to zero, just before we initialize it. */
 	longest = 0;
