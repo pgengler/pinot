@@ -920,7 +920,7 @@ void do_execute_command()
 	std::shared_ptr<Key> key;
 	char statusbartext[50];
 	const char *msg;
-	char *ans = mallocstrcpy(NULL, "");
+	std::string ans;
 	const sc *s;
 	currmenu = MEXTCMD;
 
@@ -934,7 +934,7 @@ void do_execute_command()
 			statusbar(_("Cancelled"));
 			break;
 		} else {
-			ans = mallocstrcpy(ans, answer);
+			ans = answer;
 
 			s = get_shortcut(currmenu, *key);
 
@@ -980,8 +980,6 @@ void do_execute_command()
 		}
 	}
 	shortcut_init();
-
-	free(ans);
 
 	display_main_list();
 }
