@@ -990,7 +990,7 @@ void do_execute_command()
 void do_insertfile(bool execute)
 {
 	const char *msg;
-	char *ans = mallocstrcpy(NULL, "");
+	std::string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	filestruct *edittop_save = openfile->edittop;
 	size_t current_x_save = openfile->current_x;
@@ -1021,7 +1021,7 @@ void do_insertfile(bool execute)
 		} else {
 			size_t pww_save = openfile->placewewant;
 
-			ans = mallocstrcpy(ans, answer);
+			ans = answer;
 
 			s = get_shortcut(currmenu, *key);
 
@@ -1179,8 +1179,6 @@ void do_insertfile(bool execute)
 		}
 	}
 	shortcut_init();
-
-	free(ans);
 }
 
 /* Insert a file into a new buffer or the current buffer, depending on
