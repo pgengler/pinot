@@ -711,11 +711,10 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
+const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
 	std::shared_ptr<Key> kbinput, last_kbinput;
 	bool have_shortcut, ran_func, finished;
-	size_t curranswer_len;
 	const sc *s;
 	bool tabbed = false;
 	/* Whether we've pressed Tab. */
@@ -728,8 +727,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	/* The length of the original string that we're trying to
 	 * tab complete, if any. */
 
-	answer = mallocstrcpy(answer, curranswer);
-	curranswer_len = strlen(answer);
+	answer = mallocstrcpy(answer, curranswer.c_str());
 
 	/* If reset_statusbar_x is true, restore statusbar_x and
 	 * statusbar_pww to what they were before this prompt.  Then, if
@@ -744,8 +742,8 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 		statusbar_pww = old_pww;
 	}
 
-	if (statusbar_x == (size_t)-1 || statusbar_x > curranswer_len) {
-		statusbar_x = curranswer_len;
+	if (statusbar_x == (size_t)-1 || statusbar_x > curranswer.length()) {
+		statusbar_x = curranswer.length();
 		statusbar_pww = statusbar_xplustabs();
 	}
 
@@ -919,7 +917,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const char *curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
 	PromptResult retval;
