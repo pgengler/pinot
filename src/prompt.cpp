@@ -133,13 +133,9 @@ void do_statusbar_output(std::string output, bool allow_cntrls)
 
 void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
 {
-	size_t answer_len, i = 0;
+	size_t i = 0;
 	char *char_buf = charalloc(mb_cur_max());
 	int char_buf_len;
-
-	assert(answer != NULL);
-
-	answer_len = strlen(answer);
 
 	while (i < output_len) {
 		/* If allow_cntrls is true, convert nulls and newlines
@@ -161,14 +157,7 @@ void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
 			continue;
 		}
 
-		/* More dangerousness fun =) */
-		answer = charealloc(answer, answer_len + (char_buf_len * 2));
-
-		assert(statusbar_x <= answer_len);
-
-		charmove(answer + statusbar_x + char_buf_len, answer + statusbar_x, answer_len - statusbar_x + char_buf_len);
-		strncpy(answer + statusbar_x, char_buf, char_buf_len);
-		answer_len += char_buf_len;
+		answer += char_buf;
 
 		statusbar_x += char_buf_len;
 	}
@@ -193,7 +182,7 @@ void do_statusbar_home(void)
 
 		statusbar_x = indent_length(answer);
 
-		if (statusbar_x == statusbar_x_save || statusbar_x == strlen(answer)) {
+		if (statusbar_x == statusbar_x_save || statusbar_x == answer.length()) {
 			statusbar_x = 0;
 		}
 
@@ -213,7 +202,7 @@ void do_statusbar_end(void)
 {
 	size_t pww_save = statusbar_pww;
 
-	statusbar_x = strlen(answer);
+	statusbar_x = answer.length();
 	statusbar_pww = statusbar_xplustabs();
 
 	if (need_statusbar_horizontal_update(pww_save)) {
@@ -239,7 +228,7 @@ void do_statusbar_left(void)
 /* Move right one character. */
 void do_statusbar_right(void)
 {
-	if (statusbar_x < strlen(answer)) {
+	if (statusbar_x < answer.length()) {
 		size_t pww_save = statusbar_pww;
 
 		statusbar_x = move_mbright(answer, statusbar_x);
@@ -266,14 +255,8 @@ void do_statusbar_delete(void)
 	statusbar_pww = statusbar_xplustabs();
 
 	if (answer[statusbar_x] != '\0') {
-		int char_buf_len = parse_mbchar(answer + statusbar_x, NULL, NULL);
-		size_t line_len = strlen(answer + statusbar_x);
-
-		assert(statusbar_x < strlen(answer));
-
-		charmove(answer + statusbar_x, answer + statusbar_x + char_buf_len, strlen(answer) - statusbar_x - char_buf_len + 1);
-
-		null_at(&answer, statusbar_x + line_len - char_buf_len);
+		int char_buf_len = parse_mbchar(answer.c_str() + statusbar_x, NULL, NULL);
+		answer = answer.substr(0, statusbar_x) + answer.substr(statusbar_x + char_buf_len);
 
 		update_statusbar_line(answer, statusbar_x);
 	}
@@ -282,12 +265,10 @@ void do_statusbar_delete(void)
 /* Move text from the prompt into oblivion. */
 void do_statusbar_cut_text(void)
 {
-	assert(answer != NULL);
-
 	if (ISSET(CUT_TO_END)) {
-		null_at(&answer, statusbar_x);
+		answer = answer.substr(0, statusbar_x);
 	} else {
-		null_at(&answer, 0);
+		answer = "";
 		statusbar_x = 0;
 		statusbar_pww = statusbar_xplustabs();
 	}
@@ -305,14 +286,12 @@ bool do_statusbar_next_word(bool allow_punct)
 	int char_mb_len;
 	bool end_line = false, started_on_word = false;
 
-	assert(answer != NULL);
-
 	char_mb = charalloc(mb_cur_max());
 
 	/* Move forward until we find the character after the last letter of
 	 * the current word. */
 	while (!end_line) {
-		char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(answer.c_str() + statusbar_x, char_mb, NULL);
 
 		/* If we've found it, stop moving forward through the current line. */
 		if (!is_word_mbchar(char_mb, allow_punct)) {
@@ -338,7 +317,7 @@ bool do_statusbar_next_word(bool allow_punct)
 	}
 
 	while (!end_line) {
-		char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(answer.c_str() + statusbar_x, char_mb, NULL);
 
 		/* If we've found it, stop moving forward through the current line. */
 		if (is_word_mbchar(char_mb, allow_punct)) {
@@ -374,14 +353,12 @@ bool do_statusbar_prev_word(bool allow_punct)
 	int char_mb_len;
 	bool begin_line = false, started_on_word = false;
 
-	assert(answer != NULL);
-
 	char_mb = charalloc(mb_cur_max());
 
 	/* Move backward until we find the character before the first letter
 	 * of the current word. */
 	while (!begin_line) {
-		char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(answer.c_str() + statusbar_x, char_mb, NULL);
 
 		/* If we've found it, stop moving backward through the current
 		 * line. */
@@ -409,7 +386,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 	}
 
 	while (!begin_line) {
-		char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(answer.c_str() + statusbar_x, char_mb, NULL);
 
 		/* If we've found it, stop moving backward through the current
 		 * line. */
@@ -434,7 +411,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 		}
 
 		while (!begin_line) {
-			char_mb_len = parse_mbchar(answer + statusbar_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(answer.c_str() + statusbar_x, char_mb, NULL);
 
 			/* If we've found it, stop moving backward through the
 			 * current line. */
@@ -481,6 +458,7 @@ void do_statusbar_verbatim_input(void)
  * we found a match, and false otherwise. */
 bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 {
+	const char *ans = answer.c_str();
 	const char *rev_start = NULL, *found = NULL;
 
 	assert(mbstrlen(bracket_set) == 2);
@@ -488,16 +466,16 @@ bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 	/* rev_start might end up 1 character before the start or after the
 	 * end of the line.  This won't be a problem because we'll skip over
 	 * it below in that case. */
-	rev_start = reverse ? answer + (statusbar_x - 1) : answer + (statusbar_x + 1);
+	rev_start = reverse ? ans + (statusbar_x - 1) : ans + (statusbar_x + 1);
 
 	while (true) {
 		/* Look for either of the two characters in bracket_set.
 		 * rev_start can be 1 character before the start or after the
 		 * end of the line.  In either case, just act as though no match
 		 * is found. */
-		found = ((rev_start > answer && *(rev_start - 1) == '\0') ||
-		         rev_start < answer) ? NULL : (reverse ?
-		                                       mbrevstrpbrk(answer, bracket_set, rev_start) :
+		found = ((rev_start > ans && *(rev_start - 1) == '\0') ||
+		         rev_start < ans) ? NULL : (reverse ?
+		                                       mbrevstrpbrk(ans, bracket_set, rev_start) :
 		                                       mbstrpbrk(rev_start, bracket_set));
 
 		/* We've found a potential match. */
@@ -510,7 +488,7 @@ bool find_statusbar_bracket_match(bool reverse, const char *bracket_set)
 	}
 
 	/* We've definitely found something. */
-	statusbar_x = found - answer;
+	statusbar_x = found - ans;
 	statusbar_pww = statusbar_xplustabs();
 
 	return true;
@@ -550,7 +528,7 @@ void do_statusbar_find_bracket(void)
 
 	assert(mbstrlen(matchbrackets) % 2 == 0);
 
-	ch = answer + statusbar_x;
+	ch = answer.c_str() + statusbar_x;
 
 	if (*ch == '\0' || (ch = mbstrchr(matchbrackets, ch)) == NULL) {
 		return;
@@ -604,7 +582,7 @@ void do_statusbar_find_bracket(void)
 		if (find_statusbar_bracket_match(reverse, bracket_set)) {
 			/* If we found an identical bracket, increment count.  If we
 			 * found a complementary bracket, decrement it. */
-			parse_mbchar(answer + statusbar_x, found_ch, NULL);
+			parse_mbchar(answer.c_str() + statusbar_x, found_ch, NULL);
 			count += (strncmp(found_ch, ch, ch_len) == 0) ? 1 : -1;
 
 			/* If count is zero, we've found a matching bracket.  Update
@@ -634,7 +612,7 @@ void do_statusbar_find_bracket(void)
  * smaller than statusbar_x. */
 size_t statusbar_xplustabs(void)
 {
-	return strnlenpt(answer, statusbar_x);
+	return strnlenpt(answer.c_str(), statusbar_x);
 }
 
 /* pinot scrolls horizontally within a line in chunks.  This function
@@ -663,15 +641,14 @@ void reset_statusbar_cursor(void)
 /* Repaint the statusbar when getting a character in
  * get_prompt_string().  The statusbar text line will be displayed
  * starting with curranswer[index]. */
-void update_statusbar_line(const char *curranswer, size_t index)
+void update_statusbar_line(const std::string& curranswer, size_t index)
 {
 	size_t start_col, page_start;
-	char *expanded;
 
-	assert(prompt != NULL && index <= strlen(curranswer));
+	assert(prompt != NULL && index <= curranswer.length());
 
 	start_col = strlenpt(prompt) + 2;
-	index = strnlenpt(curranswer, index);
+	index = strnlenpt(curranswer.c_str(), index);
 	page_start = get_statusbar_page_start(start_col, start_col + index);
 
 	wattron(bottomwin, reverse_attr);
@@ -682,9 +659,8 @@ void update_statusbar_line(const char *curranswer, size_t index)
 	waddch(bottomwin, ':');
 	waddch(bottomwin, (page_start == 0) ? ' ' : '$');
 
-	expanded = display_string(curranswer, page_start, COLS - start_col - 1, false);
-	waddstr(bottomwin, expanded);
-	free(expanded);
+	std::string expanded = display_string(curranswer, page_start, COLS - start_col - 1, false);
+	waddstr(bottomwin, expanded.c_str());
 
 	wattroff(bottomwin, reverse_attr);
 	statusbar_pww = statusbar_xplustabs();
@@ -727,7 +703,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	/* The length of the original string that we're trying to
 	 * tab complete, if any. */
 
-	answer = mallocstrcpy(answer, curranswer.c_str());
+	answer = curranswer;
 
 	/* If reset_statusbar_x is true, restore statusbar_x and
 	 * statusbar_pww to what they were before this prompt.  Then, if
@@ -760,7 +736,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 
 	while (1) {
 		kbinput = std::make_shared<Key>(do_statusbar_input(&have_shortcut, &ran_func, &finished, true, refresh_func));
-		assert(statusbar_x <= strlen(answer));
+		assert(statusbar_x <= answer.length());
 
 DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 		s = get_shortcut(currmenu, *kbinput);
@@ -778,12 +754,12 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 		if (s && s->scfunc == do_tab) {
 			if (history_list != NULL) {
 				if (last_kbinput->format() != "Tab") {
-					complete_len = strlen(answer);
+					complete_len = answer.length();
 				}
 
 				if (complete_len > 0) {
-					answer = mallocstrcpy(answer, get_history_completion(history_list, answer, complete_len));
-					statusbar_x = strlen(answer);
+					answer = get_history_completion(history_list, answer, complete_len);
+					statusbar_x = answer.length();
 				}
 			} else if (allow_tabs) {
 				answer = input_tab(answer, allow_files, &statusbar_x, &tabbed, refresh_func, list);
@@ -797,15 +773,15 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 					 * history list and answer isn't blank, save answer
 					 * in magichistory. */
 					if ((*history_list)->next == NULL && answer[0] != '\0') {
-						magichistory = mallocstrcpy(magichistory, answer);
+						magichistory = mallocstrcpy(magichistory, answer.c_str());
 					}
 
 					/* Get the older search from the history list and
 					 * save it in answer.  If there is no older search,
 					 * don't do anything. */
 					if ((history = get_history_older(history_list)) != NULL) {
-						answer = mallocstrcpy(answer, history);
-						statusbar_x = strlen(answer);
+						answer = history;
+						statusbar_x = answer.length();
 					}
 
 					update_statusbar_line(answer, statusbar_x);
@@ -823,17 +799,17 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 					 * save it in answer.  If there is no newer search,
 					 * don't do anything. */
 					if ((history = get_history_newer(history_list)) != NULL) {
-						answer = mallocstrcpy(answer, history);
-						statusbar_x = strlen(answer);
+						answer = history;
+						statusbar_x = answer.length();
 					}
 
 					/* If, after scrolling down, we're at the bottom of
 					 * the history list, answer is blank, and
 					 * magichistory is set, save magichistory in
 					 * answer. */
-					if ((*history_list)->next == NULL && *answer == '\0' && magichistory != NULL) {
-						answer = mallocstrcpy(answer, magichistory);
-						statusbar_x = strlen(answer);
+					if ((*history_list)->next == NULL && answer != "" && magichistory != NULL) {
+						answer = magichistory;
+						statusbar_x = answer.length();
 					}
 
 					update_statusbar_line(answer, statusbar_x);
@@ -952,7 +928,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	if (s && s->scfunc ==  do_cancel) {
 		retval = PROMPT_ABORTED;
 	} else if (s && s->scfunc == do_enter_void) {
-		retval = (*answer == '\0') ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
+		retval = (answer.front() == '\0') ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
 	} else {
 		retval = PROMPT_OTHER_KEY;
 	}

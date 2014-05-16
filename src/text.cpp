@@ -730,7 +730,7 @@ void cancel_command(int signal)
 }
 
 /* Execute command in a shell.  Return true on success. */
-bool execute_command(const char *command)
+bool execute_command(const std::string& command)
 {
 	int fd[2];
 	FILE *f;
@@ -760,7 +760,7 @@ bool execute_command(const char *command)
 		dup2(fd[1], fileno(stderr));
 
 		/* If execl() returns at all, there was an error. */
-		execl(shellenv, tail(shellenv), "-c", command, NULL);
+		execl(shellenv, tail(shellenv), "-c", command.c_str(), NULL);
 		exit(0);
 	}
 
@@ -819,7 +819,7 @@ bool execute_command(const char *command)
 
 /* Execute command in a shell without saving its output. Returns -1 if an
  * an error prevented execution, and the command's exit code if it was run. */
-int execute_command_silently(const char *command)
+int execute_command_silently(const std::string& command)
 {
 	int fd[2];
 	char *shellenv;
@@ -849,7 +849,7 @@ int execute_command_silently(const char *command)
 		close(fileno(stderr));
 
 		/* If execl() returns at all, there was an error. */
-		execl(shellenv, tail(shellenv), "-c", command, NULL);
+		execl(shellenv, tail(shellenv), "-c", command.c_str(), NULL);
 		exit(0);
 	}
 
@@ -1458,24 +1458,23 @@ ssize_t break_line(const char *line, ssize_t goal, bool newln)
 
 /* The "indentation" of a line is the whitespace between the quote part
  * and the non-whitespace of the line. */
-size_t indent_length(const char *line)
+size_t indent_length(const std::string& line)
 {
 	size_t len = 0;
 	char *blank_mb;
 	int blank_mb_len;
 
-	assert(line != NULL);
-
 	blank_mb = charalloc(mb_cur_max());
 
-	while (*line != '\0') {
-		blank_mb_len = parse_mbchar(line, blank_mb, NULL);
+	size_t i = 0;
+	while (i < line.length()) {
+		blank_mb_len = parse_mbchar(line.c_str() + i, blank_mb, NULL);
 
 		if (!is_blank_mbchar(blank_mb)) {
 			break;
 		}
 
-		line += blank_mb_len;
+		i += blank_mb_len;
 		len += blank_mb_len;
 	}
 

@@ -930,7 +930,7 @@ void do_execute_command()
 		PromptResult i = do_prompt(true, true, MEXTCMD, key, ans, NULL, edit_refresh, msg, "./");
 
 		/* Cancel if the command was empty or the user cancelled */
-		if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING || *answer == '\n')) {
+		if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING || answer.front() == '\n')) {
 			statusbar(_("Cancelled"));
 			break;
 		} else {
@@ -946,8 +946,7 @@ void do_execute_command()
 				}
 
 				/* User selected a file */
-				free(answer);
-				answer = mallocstrcpy(NULL, tmp.c_str());
+				answer = tmp;
 			} else {
 				/* If we don't have a file yet, go back to the prompt. */
 				continue;
@@ -955,7 +954,6 @@ void do_execute_command()
 
 			/* Convert newlines to nulls before executing the command. */
 			sunder(answer);
-			align(&answer);
 
 			/* Execute the command without savings its output. */
 			status = execute_command_silently(answer);
@@ -1015,7 +1013,7 @@ void do_insertfile(bool execute)
 		 * blank, open a new buffer instead of canceling.  If the
 		 * filename or command begins with a newline (i.e. an encoded
 		 * null), treat it as though it's blank. */
-		if (i == PROMPT_ABORTED || ((i == PROMPT_BLANK_STRING || *answer == '\n') && !ISSET(MULTIBUFFER))) {
+		if (i == PROMPT_ABORTED || ((i == PROMPT_BLANK_STRING || answer.front() == '\n') && !ISSET(MULTIBUFFER))) {
 			statusbar(_("Cancelled"));
 			break;
 		} else {
@@ -1043,8 +1041,7 @@ void do_insertfile(bool execute)
 					}
 
 					/* We have a file now.  Indicate this. */
-					free(answer);
-					answer = mallocstrcpy(NULL, tmp.c_str());
+					answer = tmp;
 
 					i = PROMPT_ENTER_PRESSED;
 				}
@@ -1079,7 +1076,6 @@ void do_insertfile(bool execute)
 			/* Convert newlines to nulls, just before we insert the file
 			 * or execute the command. */
 			sunder(answer);
-			align(&answer);
 
 			if (execute) {
 				if (ISSET(MULTIBUFFER)) {
@@ -1098,9 +1094,8 @@ void do_insertfile(bool execute)
 					openfile->placewewant = 0;
 				}
 			} else {
-				/* Make sure the path to the file specified in answer is
-				 * tilde-expanded. */
-				answer = mallocstrassn(answer, real_dir_from_tilde(answer));
+				/* Make sure the path to the file specified in answer is tilde-expanded. */
+				answer = real_dir_from_tilde(answer);
 
 				/* Save the file specified in answer in the current buffer. */
 				open_buffer(answer, true);
@@ -1454,7 +1449,7 @@ int copy_file(FILE *inn, FILE *out)
  * or we're prepending.
  *
  * Return true on success or false on error. */
-bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, bool nonamechange)
+bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType append, bool nonamechange)
 {
 	bool retval = false;
 	/* Instead of returning in this function, you should always
@@ -1483,9 +1478,7 @@ bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, boo
 	std::string tempname;
 	/* The temp file name we write to on prepend. */
 
-	assert(name != NULL);
-
-	if (*name == '\0') {
+	if (name == "") {
 		return -1;
 	}
 
@@ -1884,7 +1877,7 @@ cleanup_and_exit:
 
 /* Write a marked selection from a file out to disk.  Return true on
  * success or false on error. */
-bool write_marked_file(const char *name, FILE *f_open, bool tmp, AppendType append)
+bool write_marked_file(const std::string& name, FILE *f_open, bool tmp, AppendType append)
 {
 	bool retval;
 	bool old_modified = openfile->modified;
@@ -1910,8 +1903,7 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, AppendType appe
 
 	retval = write_file(name, f_open, tmp, append, true);
 
-	/* If the NO_NEWLINES flag isn't set, and we added a magicline,
-	 * remove it now. */
+	/* If the NO_NEWLINES flag isn't set, and we added a magicline, remove it now. */
 	if (!ISSET(NO_NEWLINES) && added_magicline) {
 		remove_magicline();
 	}
@@ -1933,15 +1925,15 @@ bool write_marked_file(const char *name, FILE *f_open, bool tmp, AppendType appe
 bool do_writeout(bool exiting)
 {
 	AppendType append = OVERWRITE;
-	char *ans;
+	std::string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	bool retval = false;
 	const sc *s;
 
 	currmenu = MWRITEFILE;
 
-	if (exiting && openfile->filename[0] != '\0' && ISSET(TEMP_FILE)) {
-		retval = write_file(openfile->filename.c_str(), NULL, false, OVERWRITE, false);
+	if (exiting && openfile->filename != "" && ISSET(TEMP_FILE)) {
+		retval = write_file(openfile->filename, NULL, false, OVERWRITE, false);
 
 		/* Write succeeded. */
 		if (retval) {
@@ -1949,7 +1941,7 @@ bool do_writeout(bool exiting)
 		}
 	}
 
-	ans = mallocstrcpy(NULL, (!exiting && openfile->mark_set) ? "" : openfile->filename.c_str());
+	ans = (!exiting && openfile->mark_set) ? "" : openfile->filename;
 
 	while (true) {
 		const char *msg;
@@ -1981,12 +1973,12 @@ bool do_writeout(bool exiting)
 
 		/* If the filename or command begins with a newline (i.e. an
 		 * encoded null), treat it as though it's blank. */
-		if (i == PROMPT_ABORTED || i == PROMPT_BLANK_STRING || *answer == '\n') {
+		if (i == PROMPT_ABORTED || i == PROMPT_BLANK_STRING || answer.front() == '\n') {
 			statusbar(_("Cancelled"));
 			retval = false;
 			break;
 		} else {
-			ans = mallocstrcpy(ans, answer);
+			ans = answer;
 			s = get_shortcut(currmenu, *key);
 
 			if (s && s->scfunc == to_files_void) {
@@ -1997,8 +1989,7 @@ bool do_writeout(bool exiting)
 				}
 
 				/* We have a file now.  Indicate this. */
-				free(answer);
-				answer = mallocstrcpy(NULL, tmp.c_str());
+				answer = tmp;
 			} else {
 				if (s && s->scfunc == dos_format_void) {
 					openfile->fmt = (openfile->fmt == DOS_FILE) ? NIX_FILE : DOS_FILE;
@@ -2023,7 +2014,6 @@ bool do_writeout(bool exiting)
 			DEBUG_LOG("filename is " << answer);
 
 			if (append == OVERWRITE) {
-				size_t answer_len = strlen(answer);
 				bool name_exists, do_warning;
 				std::string full_answer;
 				struct stat st;
@@ -2040,9 +2030,8 @@ bool do_writeout(bool exiting)
 					do_warning = ((full_answer == "") ? answer : full_answer) != ((full_filename == "") ? openfile->filename : full_filename);
 				}
 
-				/* Convert nulls to newlines.  answer_len is the
-				 * string's real length. */
-				unsunder(answer, answer_len);
+				/* Convert nulls to newlines. */
+				unsunder(answer);
 
 				if (do_warning) {
 					if (name_exists) {
@@ -2071,7 +2060,6 @@ bool do_writeout(bool exiting)
 
 			/* Convert newlines to nulls, just before we save the file. */
 			sunder(answer);
-			align(&answer);
 
 			/* Here's where we allow the selected text to be written to a separate file. */
 			retval =
@@ -2082,8 +2070,6 @@ bool do_writeout(bool exiting)
 			break;
 		}
 	}
-
-	free(ans);
 
 	return retval;
 }
@@ -2335,6 +2321,15 @@ std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, s
 /* Do tab completion.  place refers to how much the statusbar cursor
  * position should be advanced.  refresh_func is the function we will
  * call to refresh the edit window. */
+std::string input_tab(const std::string& buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
+{
+	char *str = mallocstrcpy(NULL, buf.c_str());
+	std::string result = input_tab(str, allow_files, place, lastwastab, refresh_func, list);
+	free(str);
+
+	return result;
+}
+
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
 {
 	size_t buf_len;

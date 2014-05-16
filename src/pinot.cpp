@@ -1985,7 +1985,7 @@ int main(int argc, char **argv)
 	else {
 		/* See if we have a POS history to use if we haven't overridden it */
 		ssize_t savedposline, savedposcol;
-		if (check_poshistory(argv[optind], &savedposline, &savedposcol)) {
+		if (argv[optind] && check_poshistory(argv[optind], &savedposline, &savedposcol)) {
 			do_gotolinecolumn(savedposline, savedposcol, false, false, false, false);
 		}
 	}

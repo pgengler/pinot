@@ -93,6 +93,11 @@ bool parse_num(const char *str, ssize_t *val)
 /* Read two ssize_t's, separated by a comma, from str, and store them in
  * *line and *column (if they're not both NULL).  Return false on error,
  * or true otherwise. */
+bool parse_line_column(const std::string& str, ssize_t *line, ssize_t *column)
+{
+	return parse_line_column(str.c_str(), line, column);
+}
+
 bool parse_line_column(const char *str, ssize_t *line, ssize_t *column)
 {
 	bool retval = true;
@@ -147,6 +152,11 @@ void null_at(char **data, size_t index)
 
 /* For non-null-terminated lines.  A line, by definition, shouldn't
  * normally have newlines in it, so encode its nulls as newlines. */
+void unsunder(std::string& str)
+{
+	std::replace(str.begin(), str.end(), '\0', '\n');
+}
+
 void unsunder(char *str, size_t true_len)
 {
 	assert(str != NULL);
@@ -160,6 +170,11 @@ void unsunder(char *str, size_t true_len)
 
 /* For non-null-terminated lines.  A line, by definition, shouldn't
  * normally have newlines in it, so decode its newlines as nulls. */
+void sunder(std::string& str)
+{
+	std::replace(str.begin(), str.end(), '\n', '\0');
+}
+
 void sunder(char *str)
 {
 	assert(str != NULL);
@@ -457,15 +472,6 @@ char *mallocstrncpy(char *dest, const char *src, size_t n)
 char *mallocstrcpy(char *dest, const char *src)
 {
 	return mallocstrncpy(dest, src, (src == NULL) ? 1 : strlen(src) + 1);
-}
-
-/* Free the malloc()ed string at dest and return the malloc()ed string
- * at src.  Should be used as: "answer = mallocstrassn(answer,
- * real_dir_from_tilde(answer));". */
-char *mallocstrassn(char *dest, char *src)
-{
-	free(dest);
-	return src;
 }
 
 /* pinot scrolls horizontally within a line in chunks.  Return the column

@@ -86,7 +86,7 @@ int whitespace_len[2];
 bool nodelay_mode = false;
 /* Are we in nodelay mode (checking for a cancel wile doing something */
 
-char *answer = NULL;
+std::string answer;
 /* The answer string used by the statusbar prompt. */
 
 ssize_t tabsize = -1;
@@ -1055,9 +1055,6 @@ void thanks_for_all_the_fish(void)
 		free(alt_speller);
 	}
 #endif
-	if (answer != NULL) {
-		free(answer);
-	}
 	if (cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
 	}

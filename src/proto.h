@@ -57,7 +57,7 @@ extern int whitespace_len[2];
 extern UndoType last_action;
 
 extern bool nodelay_mode;
-extern char *answer;
+extern std::string answer;
 
 extern ssize_t tabsize;
 
@@ -141,7 +141,9 @@ int mbwidth(const char *c);
 int mb_cur_max(void);
 char *make_mbchar(long chr, int *chr_mb_len);
 int parse_mbchar(const char *buf, char *chr, size_t *col);
+size_t move_mbleft(const std::string& str, size_t pos);
 size_t move_mbleft(const char *buf, size_t pos);
+size_t move_mbright(const std::string& str, size_t pos);
 size_t move_mbright(const char *buf, size_t pos);
 #ifndef HAVE_STRCASECMP
 int nstrcasecmp(const char *s1, const char *s2);
@@ -218,8 +220,8 @@ void init_backup_dir(void);
 int delete_lockfile(const std::string& lockfilename);
 int write_lockfile(const std::string& lockfilename, const std::string& origfilename, bool modified);
 int copy_file(FILE *inn, FILE *out);
-bool write_file(const char *name, FILE *f_open, bool tmp, AppendType append, bool nonamechange);
-bool write_marked_file(const char *name, FILE *f_open, bool tmp, AppendType append);
+bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType append, bool nonamechange);
+bool write_marked_file(const std::string& name, FILE *f_open, bool tmp, AppendType append);
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 std::string real_dir_from_tilde(const std::string& buf);
@@ -229,6 +231,7 @@ int diralphasort(const void *va, const void *vb);
 bool is_dir(const char *buf);
 std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len);
 std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
+std::string input_tab(const std::string& buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 std::string tail(const std::string& foo);
 const char *tail(const char *foo);
@@ -344,7 +347,7 @@ void do_statusbar_find_bracket(void);
 size_t statusbar_xplustabs(void);
 size_t get_statusbar_page_start(size_t start_col, size_t column);
 void reset_statusbar_cursor(void);
-void update_statusbar_line(const char *curranswer, size_t index);
+void update_statusbar_line(const std::string& curranswer, size_t index);
 bool need_statusbar_horizontal_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
 const sc *get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list);
@@ -378,10 +381,14 @@ void search_replace_abort(void);
 int search_init(bool replacing, bool use_answer);
 bool findnextstr(
 #ifdef ENABLE_SPELLER
+	bool whole_word,
+#endif
+	bool no_sameline, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len);
+bool findnextstr(
+#ifdef ENABLE_SPELLER
     bool whole_word,
 #endif
-    bool no_sameline, const filestruct *begin, size_t begin_x, const
-    char *needle, size_t *needle_len);
+    bool no_sameline, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len);
 void findnextstr_wrap_reset(void);
 void do_search(void);
 void do_research(void);
@@ -405,11 +412,13 @@ bool history_has_changed(void);
 void history_init(void);
 void history_reset(const filestruct *h);
 filestruct *find_history(const filestruct *h_start, const filestruct *h_end, const char *s, size_t len);
+void update_history(filestruct **h, const std::string& s);
 void update_history(filestruct **h, const char *s);
 char *get_history_older(filestruct **h);
 char *get_history_newer(filestruct **h);
 void get_history_older_void(void);
 void get_history_newer_void(void);
+std::string get_history_completion(filestruct **h, const std::string& s, size_t len);
 char *get_history_completion(filestruct **h, const char *s, size_t len);
 
 /* All functions in text.c. */
@@ -425,12 +434,12 @@ void do_redo(void);
 void do_enter(bool undoing);
 void do_enter_void(void);
 void cancel_command(int signal);
-bool execute_command(const char *command);
-int execute_command_silently(const char *command);
+bool execute_command(const std::string& command);
+int execute_command_silently(const std::string& command);
 void wrap_reset(void);
 bool do_wrap(filestruct *line, bool undoing);
 ssize_t break_line(const char *line, ssize_t goal, bool newln);
-size_t indent_length(const char *line);
+size_t indent_length(const std::string& line);
 #ifdef ENABLE_SPELLER
 bool do_int_spell_fix(const char *word);
 const char *do_int_speller(const char *tempfile_name);
@@ -445,10 +454,13 @@ void do_verbatim_input(void);
 int digits(size_t n);
 void get_homedir(void);
 bool parse_num(const char *str, ssize_t *val);
+bool parse_line_column(const std::string& str, ssize_t *line, ssize_t *column);
 bool parse_line_column(const char *str, ssize_t *line, ssize_t *column);
 void align(char **str);
 void null_at(char **data, size_t index);
+void unsunder(std::string& str);
 void unsunder(char *str, size_t true_len);
+void sunder(std::string& str);
 void sunder(char *str);
 #ifndef HAVE_GETLINE
 ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
@@ -468,7 +480,6 @@ void *nmalloc(size_t howmuch);
 void *nrealloc(void *ptr, size_t howmuch);
 char *mallocstrncpy(char *dest, const char *src, size_t n);
 char *mallocstrcpy(char *dest, const char *src);
-char *mallocstrassn(char *dest, char *src);
 size_t get_page_start(size_t column);
 size_t xplustabs(void);
 size_t actual_x(const char *s, size_t column);

@@ -120,17 +120,12 @@ int search_init(bool replacing, bool use_answer)
 {
 	std::shared_ptr<Key> key;
 	char *buf;
-	static char *backupstring = NULL;
+	static std::string backupstring;
 	/* The search string we'll be using. */
-
-	/* If backupstring doesn't exist, initialize it to "". */
-	if (backupstring == NULL) {
-		backupstring = mallocstrcpy(NULL, "");
-	}
 
 	/* If use_answer is true, set backupstring to answer and get out. */
 	if (use_answer) {
-		backupstring = mallocstrcpy(backupstring, answer);
+		backupstring = answer;
 		return 0;
 	}
 
@@ -167,11 +162,10 @@ int search_init(bool replacing, bool use_answer)
 	/* Release buf now that we don't need it anymore. */
 	free(buf);
 
-	free(backupstring);
-	backupstring = NULL;
+	backupstring = "";
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (!replacing && i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
+	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (!replacing && i == PROMPT_ENTER_PRESSED && answer == "")) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
@@ -180,23 +174,23 @@ int search_init(bool replacing, bool use_answer)
 
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
 			/* Use last_search if answer is an empty string, or answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer)) {
+			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer.c_str())) {
 				return -1;
 			}
 		} else if (func == case_sens_void) {
 			TOGGLE(CASE_SENSITIVE);
-			backupstring = mallocstrcpy(backupstring, answer);
+			backupstring = answer;
 			return 1;
 		} else if (func == backwards_void) {
 			TOGGLE(BACKWARDS_SEARCH);
-			backupstring = mallocstrcpy(backupstring, answer);
+			backupstring = answer;
 			return 1;
 		} else if (func == regexp_void) {
 			TOGGLE(USE_REGEXP);
-			backupstring = mallocstrcpy(backupstring, answer);
+			backupstring = answer;
 			return 1;
 		} else if (func == do_replace || func == no_replace_void) {
-			backupstring = mallocstrcpy(backupstring, answer);
+			backupstring = answer;
 			return -2;	/* Call the opposite search function. */
 		} else if (func == do_gotolinecolumn_void) {
 			do_gotolinecolumn(openfile->current->lineno, openfile->placewewant + 1, true, true, false, true);
@@ -217,10 +211,23 @@ int search_init(bool replacing, bool use_answer)
  * to the length of the string we found if it isn't NULL. */
 bool findnextstr(
 #ifdef ENABLE_SPELLER
+	bool whole_word,
+#endif
+	bool no_sameline, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len)
+{
+	return findnextstr(
+#ifdef ENABLE_SPELLER
+		whole_word,
+#endif
+		no_sameline, begin, begin_x, needle.c_str(), needle_len
+	);
+}
+
+bool findnextstr(
+#ifdef ENABLE_SPELLER
     bool whole_word,
 #endif
-    bool no_sameline, const filestruct *begin, size_t begin_x, const
-    char *needle, size_t *needle_len)
+    bool no_sameline, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len)
 {
 	size_t found_len;
 	/* The length of the match we find. */
@@ -392,14 +399,14 @@ void do_search(void)
 	}
 
 	/* If answer is now "", copy last_search into answer. */
-	if (*answer == '\0') {
-		answer = mallocstrcpy(answer, last_search.c_str());
+	if (answer == "") {
+		answer = last_search;
 	} else {
 		last_search = answer;
 	}
 
 	/* If answer is not "", add this search string to the search history list. */
-	if (answer[0] != '\0') {
+	if (answer != "") {
 		update_history(&search_history, answer);
 	}
 
@@ -548,7 +555,7 @@ char *replace_line(const char *needle)
 		new_line_size = replace_regexp(NULL, false);
 	} else {
 		search_match_count = strlen(needle);
-		new_line_size = strlen(openfile->current->data) - search_match_count + strlen(answer) + 1;
+		new_line_size = strlen(openfile->current->data) - search_match_count + answer.length() + 1;
 	}
 
 	/* Create the buffer. */
@@ -561,7 +568,7 @@ char *replace_line(const char *needle)
 	if (ISSET(USE_REGEXP)) {
 		replace_regexp(copy + openfile->current_x, true);
 	} else
-		strcpy(copy + openfile->current_x, answer);
+		strcpy(copy + openfile->current_x, answer.c_str());
 
 	/* The tail of the original line. */
 	assert(openfile->current_x + search_match_count <= strlen(openfile->current->data));
@@ -827,7 +834,7 @@ void do_replace(void)
 	if (i != PROMPT_ENTER_PRESSED && i != PROMPT_BLANK_STRING) {
 		if (i == PROMPT_ABORTED) {  /* Cancel. */
 			if (last_replace != "") {
-				answer = mallocstrcpy(answer, last_replace.c_str());
+				answer = last_replace;
 			}
 			statusbar(_("Cancelled"));
 		}
@@ -873,7 +880,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 	const sc *s;
 
 	if (interactive) {
-		char *ans = mallocstrcpy(NULL, answer);
+		char *ans = mallocstrcpy(NULL, answer.c_str());
 
 		/* Ask for the line and column. */
 		std::shared_ptr<Key> key;
@@ -1201,6 +1208,11 @@ filestruct *find_history(const filestruct *h_start, const filestruct *h_end, con
 }
 
 /* Update a history list.  h should be the current position in the list. */
+void update_history(filestruct **h, const std::string& s)
+{
+	update_history(h, s.c_str());
+}
+
 void update_history(filestruct **h, const char *s)
 {
 	filestruct **hage = NULL, **hbot = NULL, *p;
@@ -1307,6 +1319,15 @@ void get_history_older_void(void)
 /* Move h to the next string that's a tab completion of the string s,
  * looking at only the first len characters of s, and return that string.
  *  If there isn't one, or if len is 0, don't move h and return s. */
+std::string get_history_completion(filestruct **h, const std::string& s, size_t len)
+{
+	char *result_cstr = get_history_completion(h, s.c_str(), len);
+	std::string result(result_cstr);
+	free(result_cstr);
+
+	return result;
+}
+
 char *get_history_completion(filestruct **h, const char *s, size_t len)
 {
 	assert(s != NULL);

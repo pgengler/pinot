@@ -179,7 +179,7 @@ change_browser_directory:
 
 			/* If the directory begins with a newline (i.e. an
 			 * encoded null), treat it as though it's blank. */
-			if (i == PROMPT_ABORTED || i == PROMPT_BLANK_STRING || *answer == '\n') {
+			if (i == PROMPT_ABORTED || i == PROMPT_BLANK_STRING || answer.front() == '\n') {
 				/* We canceled.  Indicate that on the statusbar, and
 				 * blank out ans, since we're done with it. */
 				statusbar(_("Cancelled"));
@@ -201,7 +201,6 @@ change_browser_directory:
 
 			/* Convert newlines to nulls, just before we go to the directory. */
 			sunder(answer);
-			align(&answer);
 
 			new_path = real_dir_from_tilde(answer);
 
@@ -212,7 +211,7 @@ change_browser_directory:
 			dir = opendir(new_path);
 			if (dir == NULL) {
 				/* We can't open this directory for some reason. Complain. */
-				statusbar(_("Error reading %s: %s"), answer, strerror(errno));
+				statusbar(_("Error reading %s: %s"), answer.c_str(), strerror(errno));
 				beep();
 				func = nullptr;
 				continue;
@@ -640,14 +639,14 @@ int filesearch_init(void)
 	backupstring = "";
 
 	/* Cancel any search, or just return with no previous search. */
-	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (i == PROMPT_ENTER_PRESSED && *answer == '\0')) {
+	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (i == PROMPT_ENTER_PRESSED && answer == "")) {
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
 		s = get_shortcut(MBROWSER, *key);
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
 			/* Use last_search if answer is an empty string, or answer if it isn't. */
-			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer)) {
+			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer.c_str())) {
 				return -1;
 			}
 		} else if (s && s->scfunc == case_sens_void) {
@@ -781,14 +780,14 @@ void do_filesearch(void)
 	}
 
 	/* If answer is now "", copy last_search into answer. */
-	if (*answer == '\0') {
-		answer = mallocstrcpy(answer, last_search.c_str());
+	if (answer == "") {
+		answer = last_search;
 	} else {
 		last_search = answer;
 	}
 
 	/* If answer is not "", add this search string to the search history list. */
-	if (answer[0] != '\0') {
+	if (answer != "") {
 		update_history(&search_history, answer);
 	}
 

@@ -477,6 +477,11 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
 
 /* Return the index in buf of the beginning of the multibyte character
  * before the one at pos. */
+size_t move_mbleft(const std::string& str, size_t pos)
+{
+	return move_mbleft(str.c_str(), pos);
+}
+
 size_t move_mbleft(const char *buf, size_t pos)
 {
 	size_t before = 0, char_len = 0;
@@ -495,6 +500,11 @@ size_t move_mbleft(const char *buf, size_t pos)
 
 /* Return the index in buf of the beginning of the multibyte character
  * after the one at pos. */
+size_t move_mbright(const std::string& str, size_t pos)
+{
+	return move_mbright(str.c_str(), pos);
+}
+
 size_t move_mbright(const char *buf, size_t pos)
 {
 	return pos + parse_mbchar(buf + pos, NULL, NULL);
