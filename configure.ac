@@ -77,10 +77,6 @@ AC_ARG_ENABLE(wrapping-as-root, AS_HELP_STRING([--disable-wrapping-as-root], [Di
 
 AC_ARG_ENABLE(libmagic, AS_HELP_STRING([--disable-libmagic], [Disable detection of file types via libmagic]))
 
-AC_MSG_CHECKING([whether to enable UTF-8 support])
-AC_ARG_ENABLE(utf8, AS_HELP_STRING([--enable-utf8], [Enable UTF-8 support]))
-AC_MSG_RESULT(${enable_utf8:-auto})
-
 AC_MSG_CHECKING([whether to use slang])
 CURSES_LIB_NAME=""
 AC_ARG_WITH(slang, AS_HELP_STRING([--with-slang[=DIR]], [Use the slang library instead of curses]), [
@@ -97,8 +93,7 @@ AC_ARG_WITH(slang, AS_HELP_STRING([--with-slang[=DIR]], [Use the slang library i
 	    CPPFLAGS="-I$with_slang/include $CPPFLAGS"
 	fi
 
-	if test "x$enable_utf8" != xno; then
-	    AC_CHECK_HEADER(slcurses.h,
+  AC_CHECK_HEADER(slcurses.h,
 		AC_MSG_CHECKING([for SLutf8_enable in -lslang])
 		_libs=$LIBS
 		LIBS="$LIBS -lslang"
@@ -171,14 +166,9 @@ int main(void)
 *** slang support this header file is required.  Please either
 *** install a version of slang that includes the slcurses.h file or
 *** do not call the configure script with --with-slang.]))
-	fi
 
 	if eval "test x$CURSES_LIB_NAME = x"; then
 	    # Reset libs if the above slang tests failed
-	    if test "x$enable_utf8" != xno; then
-		LIBS=$_libs
-	    fi
-
 	    AC_CHECK_HEADER(slcurses.h,
 		AC_MSG_CHECKING([for SLtt_initialize in -lslang])
 		_libs=$LIBS
@@ -278,10 +268,7 @@ AC_ARG_ENABLE(altrcname, AS_HELP_STRING([--enable-altrcname], [Specify alternate
 dnl Checks for functions.
 
 AC_CHECK_FUNCS(getdelim getline isblank strcasecmp strcasestr strncasecmp strnlen snprintf vsnprintf)
-
-if test "x$enable_utf8" != xno; then
-    AC_CHECK_FUNCS(iswalnum iswblank iswpunct iswspace nl_langinfo mblen mbstowcs mbtowc wctomb wcwidth)
-fi
+AC_CHECK_FUNCS(iswalnum iswblank iswpunct iswspace nl_langinfo mblen mbstowcs mbtowc wctomb wcwidth)
 
 if test x$ac_cv_func_snprintf = xno; then
     AM_PATH_GLIB_2_0(2.0.0,,
@@ -309,7 +296,6 @@ dnl Checks for libraries.
 if eval "test x$CURSES_LIB_NAME = x"; then
     AC_CHECK_HEADERS(ncurses.h)
 
-    if test "x$enable_utf8" != xno; then
 	OLDLIBS="$LIBS"
 	AC_CHECK_TOOL(NCURSESW_CONFIG, ncursesw5-config, no)
 	if test "x$NCURSESW_CONFIG" != xno; then
@@ -321,7 +307,6 @@ if eval "test x$CURSES_LIB_NAME = x"; then
 	    AC_CHECK_LIB(ncursesw, get_wch, [CURSES_LIB="-lncursesw" CURSES_LIB_NAME=ncursesw CURSES_LIB_WIDE=yes])
 	fi
 	LIBS="$OLDLIBS"
-    fi
 
     if eval "test x$CURSES_LIB_NAME = x"; then
 	AC_CHECK_LIB(ncurses, initscr, [CURSES_LIB="-lncurses" CURSES_LIB_NAME=ncurses])
@@ -331,9 +316,7 @@ fi
 if eval "test x$CURSES_LIB_NAME = x"; then
     AC_CHECK_HEADERS(curses.h)
 
-    if test "x$enable_utf8" != xno; then
 	AC_CHECK_LIB(curses, get_wch, [CURSES_LIB="-lcurses" CURSES_LIB_NAME=curses CURSES_LIB_WIDE=yes])
-    fi
 
     if eval "test x$CURSES_LIB_NAME = x"; then
 	 AC_CHECK_LIB(curses, initscr, [CURSES_LIB="-lcurses" CURSES_LIB_NAME=curses])
@@ -362,36 +345,6 @@ if test "x$GLIB_CFLAGS" != "x"; then
 fi
 if test "x$GLIB_LIBS" != "x"; then
     LDFLAGS="$LDFLAGS $GLIB_LIBS"
-fi
-
-if test "x$enable_utf8" != xno && \
-    test x$CURSES_LIB_WIDE = xyes && \
-    test x$ac_cv_func_iswalnum = xyes && \
-    test x$ac_cv_func_iswpunct = xyes && \
-    (test x$ac_cv_func_iswblank = xyes || test x$ac_cv_func_iswspace = xyes) && \
-    test x$ac_cv_func_nl_langinfo = xyes && \
-    test x$ac_cv_func_mblen = xyes && \
-    test x$ac_cv_func_mbstowcs = xyes && \
-    test x$ac_cv_func_mbtowc = xyes && \
-    test x$ac_cv_func_wctomb = xyes && \
-    test x$ac_cv_func_wcwidth = xyes; then
-	AC_DEFINE(ENABLE_UTF8, 1, [Define this if your system has sufficient UTF-8 support (a wide curses library, iswalnum(), iswpunct(), iswblank() or iswspace(), nl_langinfo, mblen(), mbstowcs(), mbtowc(), wctomb(), and wcwidth()).])
-else
-    if test "x$enable_utf8" = xyes; then
-	AC_MSG_ERROR([
-*** UTF-8 support was requested, but insufficient UTF-8 support was
-*** detected in your curses and/or C libraries.  Please verify that your
-*** slang was built with UTF-8 support or your curses was built with
-*** wide character support, and that your C library was built with wide
-*** character support.])
-    elif test "x$enable_utf8" != xno; then
-	AC_MSG_WARN([
-*** Insufficient UTF-8 support was detected in your curses and/or C
-*** libraries.  If you want UTF-8 support, please verify that your slang
-*** was built with UTF-8 support or your curses was built with wide
-*** character support, and that your C library was built with wide
-*** character support.])
-    fi
 fi
 
 AC_MSG_CHECKING([whether LINES and COLS can be redefined])

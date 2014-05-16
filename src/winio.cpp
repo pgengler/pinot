@@ -269,9 +269,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 
 				start_index += buf_mb_len;
 			}
-		}
-#ifdef ENABLE_UTF8
-		else if (using_utf8() && mbwidth(buf_mb) == 2) {
+		} else if (using_utf8() && mbwidth(buf_mb) == 2) {
 			if (column >= start_col) {
 				converted[index++] = ' ';
 				start_col++;
@@ -282,7 +280,6 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 
 			start_index += buf_mb_len;
 		}
-#endif
 	}
 
 	while (buf[start_index] != '\0') {

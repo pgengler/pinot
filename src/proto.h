@@ -110,14 +110,12 @@ void do_last_file(void);
 std::string striponedir(const std::string& path);
 
 /* All functions in chars.c. */
-#ifdef ENABLE_UTF8
 void utf8_init(void);
 bool using_utf8(void);
-#endif
 #ifndef HAVE_ISBLANK
 bool nisblank(int c);
 #endif
-#if !defined(HAVE_ISWBLANK) && defined(ENABLE_UTF8)
+#ifndef HAVE_ISWBLANK
 bool niswblank(wchar_t wc);
 #endif
 bool is_byte(int c);
@@ -125,16 +123,12 @@ bool is_alnum_mbchar(const char *c);
 bool is_blank_mbchar(const char *c);
 bool is_ascii_cntrl_char(int c);
 bool is_cntrl_char(int c);
-#ifdef ENABLE_UTF8
 bool is_cntrl_wchar(wchar_t wc);
-#endif
 bool is_cntrl_mbchar(const char *c);
 bool is_punct_mbchar(const char *c);
 bool is_word_mbchar(const char *c, bool allow_punct);
 char control_rep(char c);
-#ifdef ENABLE_UTF8
 wchar_t control_wrep(wchar_t c);
-#endif
 char *control_mbrep(const char *c, char *crep, int *crep_len);
 char *mbrep(const char *c, char *crep, int *crep_len);
 int mbwidth(const char *c);
@@ -171,9 +165,7 @@ char *revstrpbrk(const char *s, const char *accept, const char *rev_start);
 char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start);
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
-#ifdef ENABLE_UTF8
 bool is_valid_unicode(wchar_t wc);
-#endif
 bool is_valid_mbstring(const char *s);
 
 /* All functions in color.c. */

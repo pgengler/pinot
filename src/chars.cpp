@@ -25,10 +25,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef ENABLE_UTF8
 #ifdef HAVE_WCHAR_H
 #include <wchar.h>
-#endif
 #ifdef HAVE_WCTYPE_H
 #include <wctype.h>
 #endif
@@ -63,7 +61,7 @@ bool nisblank(int c)
 }
 #endif
 
-#if !defined(HAVE_ISWBLANK) && defined(ENABLE_UTF8)
+#ifndef HAVE_ISWBLANK
 /* This function is equivalent to iswblank(). */
 bool niswblank(wchar_t wc)
 {
@@ -93,7 +91,6 @@ bool is_alnum_mbchar(const char *c)
 {
 	assert(c != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 
@@ -103,9 +100,9 @@ bool is_alnum_mbchar(const char *c)
 		}
 
 		return iswalnum(wc);
-	} else
-#endif
+	} else {
 		return isalnum((unsigned char)*c);
+	}
 }
 
 /* This function is equivalent to isblank() for multibyte characters. */
@@ -113,7 +110,6 @@ bool is_blank_mbchar(const char *c)
 {
 	assert(c != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 
@@ -123,9 +119,9 @@ bool is_blank_mbchar(const char *c)
 		}
 
 		return iswblank(wc);
-	} else
-#endif
+	} else {
 		return isblank((unsigned char)*c);
+	}
 }
 
 /* This function is equivalent to iscntrl(), except in that it only
@@ -142,7 +138,6 @@ bool is_cntrl_char(int c)
 	return (-128 <= c && c < -96) || (0 <= c && c < 32) || (127 <= c && c < 160);
 }
 
-#ifdef ENABLE_UTF8
 /* This function is equivalent to iscntrl() for wide characters, except
  * in that it also handles wide control characters with their high bits
  * set. */
@@ -150,7 +145,6 @@ bool is_cntrl_wchar(wchar_t wc)
 {
 	return (0 <= wc && wc < 32) || (127 <= wc && wc < 160);
 }
-#endif
 
 /* This function is equivalent to iscntrl() for multibyte characters,
  * except in that it also handles multibyte control characters with
@@ -159,7 +153,6 @@ bool is_cntrl_mbchar(const char *c)
 {
 	assert(c != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 
@@ -169,9 +162,9 @@ bool is_cntrl_mbchar(const char *c)
 		}
 
 		return is_cntrl_wchar(wc);
-	} else
-#endif
+	} else {
 		return is_cntrl_char((unsigned char)*c);
+	}
 }
 
 /* This function is equivalent to ispunct() for multibyte characters. */
@@ -179,7 +172,6 @@ bool is_punct_mbchar(const char *c)
 {
 	assert(c != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 		int c_mb_len = mbtowc(&wc, c, MB_CUR_MAX);
@@ -190,9 +182,9 @@ bool is_punct_mbchar(const char *c)
 		}
 
 		return iswpunct(wc);
-	} else
-#endif
+	} else {
 		return ispunct((unsigned char)*c);
+	}
 }
 
 /* Return true for a multibyte character found in a word (currently only
@@ -221,7 +213,6 @@ char control_rep(char c)
 	}
 }
 
-#ifdef ENABLE_UTF8
 /* c is a wide control character.  It displays as ^@, ^?, or ^[ch],
  * where ch is (c + 64).  We return that wide character. */
 wchar_t control_wrep(wchar_t wc)
@@ -237,7 +228,6 @@ wchar_t control_wrep(wchar_t wc)
 		return wc + 64;
 	}
 }
-#endif
 
 /* c is a multibyte control character.  It displays as ^@, ^?, or ^[ch],
  * where ch is (c + 64).  We return that multibyte character.  If crep
@@ -247,7 +237,6 @@ char *control_mbrep(const char *c, char *crep, int *crep_len)
 {
 	assert(c != NULL && crep != NULL && crep_len != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 
@@ -264,12 +253,9 @@ char *control_mbrep(const char *c, char *crep, int *crep_len)
 			}
 		}
 	} else {
-#endif
 		*crep_len = 1;
 		*crep = control_rep(*c);
-#ifdef ENABLE_UTF8
 	}
-#endif
 
 	return crep;
 }
@@ -281,7 +267,6 @@ char *mbrep(const char *c, char *crep, int *crep_len)
 {
 	assert(c != NULL && crep != NULL && crep_len != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 
@@ -299,12 +284,9 @@ char *mbrep(const char *c, char *crep, int *crep_len)
 			}
 		}
 	} else {
-#endif
 		*crep_len = 1;
 		*crep = *c;
-#ifdef ENABLE_UTF8
 	}
-#endif
 
 	return crep;
 }
@@ -314,7 +296,6 @@ int mbwidth(const char *c)
 {
 	assert(c != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		wchar_t wc;
 		int width;
@@ -332,19 +313,15 @@ int mbwidth(const char *c)
 		}
 
 		return width;
-	} else
-#endif
+	} else {
 		return 1;
+	}
 }
 
 /* Return the maximum width in bytes of a multibyte character. */
 int mb_cur_max(void)
 {
-	return
-#ifdef ENABLE_UTF8
-	    use_utf8 ? MB_CUR_MAX :
-#endif
-	    1;
+	return use_utf8 ? MB_CUR_MAX : 1;
 }
 
 /* Convert the Unicode value in chr to a multibyte character with the
@@ -358,7 +335,6 @@ char *make_mbchar(long chr, int *chr_mb_len)
 
 	assert(chr_mb_len != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		chr_mb = charalloc(MB_CUR_MAX);
 		*chr_mb_len = wctomb(chr_mb, (wchar_t)chr);
@@ -369,12 +345,9 @@ char *make_mbchar(long chr, int *chr_mb_len)
 			*chr_mb_len = 0;
 		}
 	} else {
-#endif
 		*chr_mb_len = 1;
 		chr_mb = mallocstrncpy(NULL, (char *)&chr, 1);
-#ifdef ENABLE_UTF8
 	}
-#endif
 
 	return chr_mb;
 }
@@ -389,7 +362,6 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
 
 	assert(buf != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		/* Get the number of bytes in the multibyte character. */
 		buf_mb_len = mblen(buf, MB_CUR_MAX);
@@ -441,7 +413,6 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
 			}
 		}
 	} else {
-#endif
 		/* Get the number of bytes in the byte character. */
 		buf_mb_len = 1;
 
@@ -468,9 +439,7 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
 				(*col)++;
 			}
 		}
-#ifdef ENABLE_UTF8
 	}
-#endif
 
 	return buf_mb_len;
 }
@@ -548,7 +517,6 @@ int nstrncasecmp(const char *s1, const char *s2, size_t n)
  * strings. */
 int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 {
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		char *s1_mb, *s2_mb;
 		wchar_t ws1, ws2;
@@ -591,9 +559,9 @@ int mbstrncasecmp(const char *s1, const char *s2, size_t n)
 		free(s2_mb);
 
 		return (n > 0) ? towlower(ws1) - towlower(ws2) : 0;
-	} else
-#endif
+	} else {
 		return strncasecmp(s1, s2, n);
+	}
 }
 
 #ifndef HAVE_STRCASESTR
@@ -624,7 +592,6 @@ char *nstrcasestr(const char *haystack, const char *needle)
 /* This function is equivalent to strcasestr() for multibyte strings. */
 char *mbstrcasestr(const char *haystack, const char *needle)
 {
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		size_t haystack_len, needle_len;
 
@@ -644,9 +611,9 @@ char *mbstrcasestr(const char *haystack, const char *needle)
 		}
 
 		return NULL;
-	} else
-#endif
+	} else {
 		return (char *) strcasestr(haystack, needle);
+	}
 }
 
 /* This function is equivalent to strstr(), except in that it scans the
@@ -711,7 +678,6 @@ char *revstrcasestr(const char *haystack, const char *needle, const char *rev_st
  * except in that it scans the string in reverse, starting at rev_start. */
 char *mbrevstrcasestr(const char *haystack, const char *needle, const char *rev_start)
 {
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		bool begin_line = false;
 		size_t rev_start_len, needle_len;
@@ -744,9 +710,9 @@ char *mbrevstrcasestr(const char *haystack, const char *needle, const char *rev_
 		}
 
 		return NULL;
-	} else
-#endif
+	} else {
 		return revstrcasestr(haystack, needle, rev_start);
+	}
 }
 
 /* This function is equivalent to strlen() for multibyte strings. */
@@ -776,7 +742,6 @@ size_t mbstrnlen(const char *s, size_t maxlen)
 {
 	assert(s != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		size_t n = 0;
 
@@ -785,9 +750,9 @@ size_t mbstrnlen(const char *s, size_t maxlen)
 		}
 
 		return n;
-	} else
-#endif
+	} else {
 		return strnlen(s, maxlen);
+	}
 }
 
 /* This function is equivalent to strchr() for multibyte strings. */
@@ -795,7 +760,6 @@ char *mbstrchr(const char *s, const char *c)
 {
 	assert(s != NULL && c != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		bool bad_s_mb = false, bad_c_mb = false;
 		char *s_mb = charalloc(MB_CUR_MAX);
@@ -833,9 +797,9 @@ char *mbstrchr(const char *s, const char *c)
 		}
 
 		return (char *)q;
-	} else
-#endif
+	} else {
 		return (char *) strchr(s, *c);
+	}
 }
 
 /* This function is equivalent to strpbrk() for multibyte strings. */
@@ -843,7 +807,6 @@ char *mbstrpbrk(const char *s, const char *accept)
 {
 	assert(s != NULL && accept != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		for (; *s != '\0'; s += move_mbright(s, 0)) {
 			if (mbstrchr(accept, s) != NULL) {
@@ -852,9 +815,9 @@ char *mbstrpbrk(const char *s, const char *accept)
 		}
 
 		return NULL;
-	} else
-#endif
+	} else {
 		return (char *) strpbrk(s, accept);
+	}
 }
 
 /* This function is equivalent to strpbrk(), except in that it scans the
@@ -881,7 +844,6 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 {
 	assert(s != NULL && accept != NULL && rev_start != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		bool begin_line = false;
 
@@ -900,9 +862,9 @@ char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start)
 		}
 
 		return NULL;
-	} else
-#endif
+	} else {
 		return revstrpbrk(s, accept, rev_start);
+	}
 }
 
 /* Return true if the string s contains one or more blank characters,
@@ -926,7 +888,6 @@ bool has_blank_mbchars(const char *s)
 {
 	assert(s != NULL);
 
-#ifdef ENABLE_UTF8
 	if (use_utf8) {
 		bool retval = false;
 		char *chr_mb = charalloc(MB_CUR_MAX);
@@ -943,12 +904,11 @@ bool has_blank_mbchars(const char *s)
 		free(chr_mb);
 
 		return retval;
-	} else
-#endif
+	} else {
 		return has_blank_chars(s);
+	}
 }
 
-#ifdef ENABLE_UTF8
 /* Return true if wc is valid Unicode, and false otherwise. */
 bool is_valid_unicode(wchar_t wc)
 {
@@ -958,7 +918,6 @@ bool is_valid_unicode(wchar_t wc)
 		&& (wc <= 0xFDCF || 0xFDF0 <= wc)
 		&& ((wc & 0xFFFF) <= 0xFFFD));
 }
-#endif
 
 /* Check if the string s is a valid multibyte string.  Return true if it
  * is, and false otherwise. */
@@ -966,9 +925,5 @@ bool is_valid_mbstring(const char *s)
 {
 	assert(s != NULL);
 
-	return
-#ifdef ENABLE_UTF8
-	    use_utf8 ? (mbstowcs(NULL, s, 0) != (size_t)-1) :
-#endif
-	    true;
+	return use_utf8 ? (mbstowcs(NULL, s, 0) != (size_t)-1) : true;
 }

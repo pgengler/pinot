@@ -32,9 +32,7 @@
 #include <ctype.h>
 #include <locale.h>
 #include <time.h>
-#ifdef ENABLE_UTF8
 #include <langinfo.h>
-#endif
 #include <termios.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -754,9 +752,6 @@ void version(void)
 #endif
 #ifdef ENABLE_SPELLER
 	printf(" --enable-speller");
-#endif
-#ifdef ENABLE_UTF8
-	printf(" --enable-utf8");
 #endif
 #ifdef USE_SLANG
 	printf(" --with-slang");
@@ -1595,7 +1590,6 @@ int main(int argc, char **argv)
 	};
 #endif
 
-#ifdef ENABLE_UTF8
 	{
 		/* If the locale set exists and uses UTF-8, we should use
 		 * UTF-8. */
@@ -1608,9 +1602,6 @@ int main(int argc, char **argv)
 			utf8_init();
 		}
 	}
-#else
-	setlocale(LC_ALL, "");
-#endif
 
 #ifdef ENABLE_NLS
 	bindtextdomain(PACKAGE, LOCALEDIR);
@@ -1861,14 +1852,11 @@ int main(int argc, char **argv)
 
 	/* If whitespace wasn't specified, set its default value. */
 	if (whitespace == NULL) {
-#ifdef ENABLE_UTF8
 		if (using_utf8()) {
 			whitespace = mallocstrcpy(NULL, "»·");
 			whitespace_len[0] = 2;
 			whitespace_len[1] = 2;
-		} else
-#endif
-		{
+		} else {
 			whitespace = mallocstrcpy(NULL, ">.");
 			whitespace_len[0] = 1;
 			whitespace_len[1] = 1;
