@@ -1562,7 +1562,7 @@ bool do_int_spell_fix(const char *word)
 
 			free(exp_word);
 
-			if (!canceled && strcmp(word, answer) != 0) {
+			if (!canceled && word != answer) {
 				openfile->current_x--;
 				do_replace_loop(true, &canceled, openfile->current, &openfile->current_x, word);
 			}
