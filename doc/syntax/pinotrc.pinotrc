@@ -4,7 +4,7 @@ syntax "pinotrc" "\.?pinotrc$"
 ## Possible errors and parameters
 icolor brightwhite "^\s*((un)?(bind|set)|include|syntax|i?color).*$"
 ## Keywords
-icolor brightgreen "^\s*(set|unset)\s+(allow_insecure_backup|autoindent|backup|backupdir|backwards|boldtext|brackets|casesensitive|const|cut|fill|historylog|locking|matchbrackets|morespace|mouse|multibuffer|noconvert|nofollow|nohelp|nonewlines|nowrap|operatingdir|poslog|preserve|punct)\>" "^\s*(set|unset)\s+(quickblank|quotestr|rebindkeypad|regexp|smarthome|smooth|softwrap|speller|suspend|suspendenable|tabsize|tabstospaces|tempfile|undo|view|whitespace|wordbounds)\b"
+icolor brightgreen "^\s*(set|unset)\s+(allow_insecure_backup|autoindent|backup|backupdir|backwards|boldtext|brackets|casesensitive|const|cut|fill|functioncolor|historylog|keycolor|locking|matchbrackets|morespace|mouse|multibuffer|noconvert|nofollow|nohelp|nonewlines|nowrap|operatingdir|poslog|preserve|punct)\>" "^\s*(set|unset)\s+(quickblank|quotestr|rebindkeypad|regexp|smarthome|smooth|softwrap|speller|statuscolor|suspend|suspendenable|tabsize|tabstospaces|tempfile|titlecolor|undo|view|whitespace|wordbounds)\b"
 icolor brightgreen "^\s*bind\s+((\^|M-)([[:alpha:]]|space)|F([0-9]|1[0-6]))\s+[[:alpha:]]+\s+[[:alpha:]]+\s*$"
 icolor brightgreen "^\s*unbind\s+((\^|M-)([[:alpha:]]|space)|F([0-9]|1[0-6]))\s+[[:alpha:]]+\s*$"
 icolor green "^\s*((un)?(bind|set)|include|syntax|header|magic|extends|linter)\b"
