@@ -57,7 +57,7 @@ DEBUG_LOG("Converted \"" << specified_color_combo[i] << "\" to fg=" << fg << " a
 			init_pair(i + 1, fg, bg);
 			interface_color_pair[i] = COLOR_PAIR(i + 1);
 		} else if (i != FUNCTION_TAG) {
-			interface_color_pair[i] = reverse_attr;
+			interface_color_pair[i] = highlight_attribute;
 		}
 	}
 

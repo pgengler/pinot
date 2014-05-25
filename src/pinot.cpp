@@ -1810,7 +1810,7 @@ int main(int argc, char **argv)
 	/* If we're using bold text instead of reverse video text, set it up
 	 * now. */
 	if (ISSET(BOLD_TEXT)) {
-		reverse_attr = A_BOLD;
+		highlight_attribute = A_BOLD;
 	}
 
 	/* Set up the search/replace history. */

@@ -478,7 +478,7 @@ void browser_refresh(void)
 		/* Start highlighting the currently selected file or
 		 * directory. */
 		if (i == selected) {
-			wattron(edit, reverse_attr);
+			wattron(edit, highlight_attribute);
 		}
 
 		blank_line(edit, line, col, longest);
@@ -551,7 +551,7 @@ void browser_refresh(void)
 
 		/* Finish highlighting the currently selected file or directory. */
 		if (i == selected) {
-			wattroff(edit, reverse_attr);
+			wattroff(edit, highlight_attribute);
 		}
 
 		/* Add some space between the columns. */

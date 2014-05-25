@@ -1627,7 +1627,7 @@ void do_replace_highlight(bool highlight, const char *word)
 	wnoutrefresh(edit);
 
 	if (highlight) {
-		wattron(edit, reverse_attr);
+		wattron(edit, highlight_attribute);
 	}
 
 	/* This is so we can show zero-length matches. */
@@ -1642,6 +1642,6 @@ void do_replace_highlight(bool highlight, const char *word)
 	}
 
 	if (highlight) {
-		wattroff(edit, reverse_attr);
+		wattroff(edit, highlight_attribute);
 	}
 }

@@ -89,7 +89,7 @@ void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos
 extern regex_t search_regexp;
 extern regmatch_t regmatches[10];
 
-extern int reverse_attr;
+extern int highlight_attribute;
 extern std::string specified_color_combo[NUMBER_OF_ELEMENTS];
 extern int interface_color_pair[NUMBER_OF_ELEMENTS];
 
