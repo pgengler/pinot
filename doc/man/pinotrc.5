@@ -369,8 +369,11 @@ Cut the current line of text and store it.
 .B uncut
 Copy the currently stored text into the current buffer position.
 .TP
+.B cutrestoffile
+Cut all text from the cursor position till the end of the buffer.
+.TP
 .B curpos
-Show the current line, column, word positions in the file.
+Show the current cursor position: the line, column, and character positions.
 .TP
 .B speller
 Invoke a spell checking program (or a linting program, if the current
