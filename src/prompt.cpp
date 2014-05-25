@@ -157,7 +157,7 @@ void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
 			continue;
 		}
 
-		answer += char_buf;
+		answer.append(char_buf, char_buf_len);
 
 		statusbar_x += char_buf_len;
 	}
