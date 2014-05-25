@@ -22,6 +22,7 @@
 
 #include "proto.h"
 
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -76,6 +77,10 @@ std::vector<rcoption> rcopts = {
 	{"whitespace", 0, false},
 	{"wordbounds", WORD_BOUNDS, false},
 	{"softwrap", SOFTWRAP, true},
+	{"titlecolor", 0, false},
+	{"statuscolor", 0, false},
+	{"keycolor", 0, false},
+	{"functioncolor", 0, false},
 };
 
 static bool errors = false;
@@ -578,55 +583,58 @@ void parse_include(char *ptr)
 }
 
 /* Return the numeric value corresponding to the color named in colorname,
- * and set bright to true if that color is bright (similarly for underline. */
-COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underline)
+ * and set bright to true if that color is bright (similarly for underline). */
+COLORWIDTH color_name_to_value(std::string colorname, bool *bright, bool *underline)
 {
 	COLORWIDTH mcolor = -1;
 
-	assert(colorname != NULL && bright != NULL && underline != NULL);
+	assert(bright != NULL && underline != NULL);
 
-	if (strncasecmp(colorname, "bright", 6) == 0) {
+	// Convert color name to lowercase so any capitalization will work
+	std::transform(colorname.begin(), colorname.end(), colorname.begin(), ::tolower);
+
+	if (colorname.compare(0, 6, "bright") == 0) {
 		*bright = true;
-		colorname += 6;
-	} else if (strncasecmp(colorname, "bold", 4) == 0) {
+		colorname = colorname.substr(6);
+	} else if (colorname.compare(0, 4, "bold") == 0) {
 		*bright = true;
-		colorname += 4;
+		colorname = colorname.substr(4);
 	}
 
-	if (sscanf(colorname, "%hu", &mcolor) == 1) {
+	if (colorname.compare(0, 5, "under") == 0) {
+		*underline = true;
+		colorname = colorname.substr(5);
+	}
+
+	if (sscanf(colorname.c_str(), "%hu", &mcolor) == 1) {
 		if (mcolor > 255) {
 			mcolor = 255;
 		}
 		return mcolor;
 	}
 
-	if (strncasecmp(colorname, "under", 5) == 0) {
-		*underline = true;
-		colorname += 5;
-	}
-
-	if (strcasecmp(colorname, "green") == 0) {
+	if (colorname == "green") {
 		mcolor = COLOR_GREEN;
-	} else if (strcasecmp(colorname, "red") == 0) {
+	} else if (colorname == "red") {
 		mcolor = COLOR_RED;
-	} else if (strcasecmp(colorname, "blue") == 0) {
+	} else if (colorname == "blue") {
 		mcolor = COLOR_BLUE;
-	} else if (strcasecmp(colorname, "white") == 0) {
+	} else if (colorname == "white") {
 		mcolor = COLOR_WHITE;
-	} else if (strcasecmp(colorname, "yellow") == 0) {
+	} else if (colorname == "yellow") {
 		mcolor = COLOR_YELLOW;
-	} else if (strcasecmp(colorname, "cyan") == 0) {
+	} else if (colorname == "cyan") {
 		mcolor = COLOR_CYAN;
-	} else if (strcasecmp(colorname, "magenta") == 0) {
+	} else if (colorname == "magenta") {
 		mcolor = COLOR_MAGENTA;
-	} else if (strcasecmp(colorname, "black") == 0) {
+	} else if (colorname == "black") {
 		mcolor = COLOR_BLACK;
 	} else
 		rcfile_error(N_("Color \"%s\" not understood.\n"
 		                "Valid colors are \"green\", \"red\", \"blue\",\n"
 		                "\"white\", \"yellow\", \"cyan\", \"magenta\" and\n"
 		                "\"black\", with the optional prefix \"bright\"\n"
-		                "for foreground colors."), colorname);
+		                "for foreground colors."), colorname.c_str());
 
 	return mcolor;
 }
@@ -637,7 +645,7 @@ COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underl
 void parse_colors(char *ptr, bool icase)
 {
 	COLORWIDTH fg, bg;
-	bool bright = false, underline = false, no_fgcolor = false;
+	bool bright = false, underline = false;
 	char *fgstr;
 
 	assert(ptr != NULL);
@@ -655,39 +663,8 @@ void parse_colors(char *ptr, bool icase)
 	fgstr = ptr;
 	ptr = parse_next_word(ptr);
 
-	if (strchr(fgstr, ',') != NULL) {
-		char *bgcolorname;
-
-		strtok(fgstr, ",");
-		bgcolorname = strtok(NULL, ",");
-		if (bgcolorname == NULL) {
-			/* If we have a background color without a foreground color,
-			 * parse it properly. */
-			bgcolorname = fgstr + 1;
-			no_fgcolor = true;
-		}
-		if (strncasecmp(bgcolorname, "bright", 6) == 0 || strncasecmp(bgcolorname, "bold", 4) == 0) {
-			rcfile_error(N_("Background color \"%s\" cannot be bright"), bgcolorname);
-			return;
-		}
-		if (strncasecmp(bgcolorname, "under", 5) == 0) {
-			rcfile_error(N_("Background color \"%s\" cannot be underline"), bgcolorname);
-			return;
-		}
-		bg = color_name_to_value(bgcolorname, &bright, &underline);
-	} else {
-		bg = -1;
-	}
-
-	if (!no_fgcolor) {
-		fg = color_name_to_value(fgstr, &bright, &underline);
-
-		/* Don't try to parse screwed-up foreground colors. */
-		if (fg == -1) {
-			return;
-		}
-	} else {
-		fg = -1;
+	if (!parse_color_names(std::string(fgstr), &fg, &bg, &bright, &underline)) {
+		return;
 	}
 
 	if (*ptr == '\0') {
@@ -784,6 +761,49 @@ void parse_colors(char *ptr, bool icase)
 		}
 	}
 }
+
+/* Parse the color name, or pair of color names, in combostr. */
+bool parse_color_names(const std::string& combostr, short *fg, short *bg, bool *bright, bool *underline)
+{
+	std::string fg_color_name, bg_color_name;
+
+	if (combostr == "") {
+		return false;
+	}
+
+	if (combostr.find(',') != std::string::npos) {
+		fg_color_name = combostr.substr(0, combostr.find(','));
+		bg_color_name = combostr.substr(combostr.find(',') + 1);
+
+		bool bg_bright = false, bg_underline = false;
+		*bg = color_name_to_value(bg_color_name, &bg_bright, &bg_underline);
+		if (bg_bright) {
+			rcfile_error(N_("Background color \"%s\" cannot be bright"), bg_color_name.c_str());
+			return false;
+		}
+		if (bg_underline) {
+			rcfile_error(N_("Background color \"%s\" cannot be underline"), bg_color_name.c_str());
+			return false;
+		}
+	} else {
+		fg_color_name = combostr;
+		*bg = -1;
+	}
+
+	if (fg_color_name != "") {
+		*fg = color_name_to_value(fg_color_name, bright, underline);
+
+		/* Don't try to parse screwed-up foreground colors. */
+		if (*fg == -1) {
+			return false;
+		}
+	} else {
+		*fg = -1;
+	}
+
+	return true;
+}
+
 
 /* Parse the headers (1st line) of the file which may influence the regex used. */
 void parse_headers(char *ptr)
@@ -1009,7 +1029,15 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							break;
 						}
 
-						if (rcopt.name == "fill") {
+						if (rcopt.name == "titlecolor") {
+							specified_color_combo[TITLE_BAR] = argument;
+						} else if (rcopt.name == "statuscolor") {
+							specified_color_combo[STATUS_BAR] = argument;
+						} else if (rcopt.name == "keycolor") {
+							specified_color_combo[KEY_COMBO] = argument;
+						} else if (rcopt.name == "functioncolor") {
+							specified_color_combo[FUNCTION_TAG] = argument;
+						} else if (rcopt.name == "fill") {
 							if (!parse_num(argument.c_str(), &wrap_at)) {
 								rcfile_error(N_("Requested fill size \"%s\" is invalid"), argument.c_str());
 								wrap_at = -CHARS_FROM_EOL;
@@ -1144,6 +1172,4 @@ void do_rcfile(void)
 			;
 		}
 	}
-
-	set_colorpairs();
 }

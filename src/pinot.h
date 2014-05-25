@@ -132,6 +132,15 @@
 
 #include "syntax.h"
 
+/* The elements of the interface that can be colored differently. */
+enum {
+	TITLE_BAR ,
+	STATUS_BAR,
+	KEY_COMBO,
+	FUNCTION_TAG,
+	NUMBER_OF_ELEMENTS
+};
+
 /* Enumeration to be used in flags table. See FLAGBIT and FLAGOFF
  * definitions. */
 enum {

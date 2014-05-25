@@ -411,7 +411,7 @@ void titlebar(const char *path)
 	bool dots = false;
 	/* Do we put an ellipsis before the path? */
 
-	wattron(topwin, reverse_attr);
+	wattron(topwin, interface_color_pair[TITLE_BAR]);
 
 	blank_titlebar();
 
@@ -543,7 +543,7 @@ the_end:
 		}
 	}
 
-	wattroff(topwin, reverse_attr);
+	wattroff(topwin, interface_color_pair[TITLE_BAR]);
 
 	wnoutrefresh(topwin);
 	reset_cursor();
@@ -607,12 +607,12 @@ void statusbar(const char *msg, ...)
 	start_x = (COLS - foo_len - 4) / 2;
 
 	wmove(bottomwin, 0, start_x);
-	wattron(bottomwin, reverse_attr);
+	wattron(bottomwin, interface_color_pair[STATUS_BAR]);
 	waddstr(bottomwin, "[ ");
 	waddstr(bottomwin, foo);
 	free(foo);
 	waddstr(bottomwin, " ]");
-	wattroff(bottomwin, reverse_attr);
+	wattroff(bottomwin, interface_color_pair[STATUS_BAR]);
 	wnoutrefresh(bottomwin);
 	reset_cursor();
 	wnoutrefresh(edit);
@@ -700,9 +700,9 @@ void onekey(const std::string& keystroke, const std::string& desc, size_t len)
 {
 	size_t keystroke_len = keystroke.length() + 1;
 
-	wattron(bottomwin, reverse_attr);
+	wattron(bottomwin, interface_color_pair[KEY_COMBO]);
 	waddnstr(bottomwin, keystroke.c_str(), actual_x(keystroke.c_str(), len));
-	wattroff(bottomwin, reverse_attr);
+	wattroff(bottomwin, interface_color_pair[KEY_COMBO]);
 
 	if (len > keystroke_len) {
 		len -= keystroke_len;
@@ -1092,9 +1092,9 @@ step_two:
 				paintlen = actual_x(converted + index, paintlen);
 			}
 
-			wattron(edit, reverse_attr);
+			wattron(edit,  interface_color_pair[FUNCTION_TAG]);
 			mvwaddnstr(edit, line, x_start, converted + index, paintlen);
-			wattroff(edit, reverse_attr);
+			wattroff(edit,  interface_color_pair[FUNCTION_TAG]);
 		}
 	}
 }

@@ -1893,6 +1893,8 @@ int main(int argc, char **argv)
 	/* Set up the signal handlers. */
 	signal_init();
 
+	set_colorpairs();
+
 	DEBUG_LOG("Main: open file");
 
 	/* If there's a +LINE or +LINE,COLUMN flag here, it is the first

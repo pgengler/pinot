@@ -90,6 +90,8 @@ extern regex_t search_regexp;
 extern regmatch_t regmatches[10];
 
 extern int reverse_attr;
+extern std::string specified_color_combo[NUMBER_OF_ELEMENTS];
+extern int interface_color_pair[NUMBER_OF_ELEMENTS];
 
 extern std::string homedir;
 
@@ -357,8 +359,9 @@ void parse_syntax(char *ptr);
 void parse_extends(char *ptr);
 void parse_magic_syntax(char *ptr);
 void parse_include(char *ptr);
-COLORWIDTH color_name_to_value(const char *colorname, bool *bright, bool *underline);
+COLORWIDTH color_name_to_value(std::string colorname, bool *bright, bool *underline);
 void parse_colors(char *ptr, bool icase);
+bool parse_color_names(const std::string& combostr, short *fg, short *bg, bool *bright, bool *underline);
 void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
 void parse_rcfile(std::ifstream &rcstream, bool syntax_only);

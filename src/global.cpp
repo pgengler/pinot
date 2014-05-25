@@ -146,6 +146,10 @@ regmatch_t regmatches[10];
 
 int reverse_attr = A_REVERSE;
 /* The curses attribute we use for reverse video. */
+std::string specified_color_combo[] = { };
+/* The color combinations as specified in the rcfile. */
+int interface_color_pair[] = { };
+/* The processed color pairs for the interface elements. */
 
 std::string homedir = "";
 /* The user's home directory, from $HOME or /etc/passwd. */

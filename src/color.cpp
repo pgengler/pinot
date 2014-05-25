@@ -34,9 +34,36 @@
  * the color pairs. */
 void set_colorpairs(void)
 {
+	bool defok = false;
+
+	start_color();
+
+#ifdef HAVE_USE_DEFAULT_COLORS
+	/* Use the default colors, if available. */
+	defok = (use_default_colors() != ERR);
+#endif
+
+	for (size_t i = 0; i < NUMBER_OF_ELEMENTS; i++) {
+		COLORWIDTH fg, bg;
+		bool bright = false, underline = false;
+		if (parse_color_names(specified_color_combo[i], &fg, &bg, &bright, &underline)) {
+			if (fg == -1 && !defok) {
+				fg = COLOR_WHITE;
+			}
+			if (bg == -1 && !defok) {
+				bg = COLOR_BLACK;
+			}
+DEBUG_LOG("Converted \"" << specified_color_combo[i] << "\" to fg=" << fg << " and bg=" << bg);
+			init_pair(i + 1, fg, bg);
+			interface_color_pair[i] = COLOR_PAIR(i + 1);
+		} else if (i != FUNCTION_TAG) {
+			interface_color_pair[i] = reverse_attr;
+		}
+	}
+
 	for (auto pair : syntaxes) {
 		auto this_syntax = pair.second;
-		int color_pair = 1;
+		int color_pair = NUMBER_OF_ELEMENTS + 1;
 
 		for (auto this_color : this_syntax->colors()) {
 			if (this_color->pairnum == 0) {
@@ -53,14 +80,8 @@ void color_init(void)
 
 	if (has_colors()) {
 #ifdef HAVE_USE_DEFAULT_COLORS
-		bool defok;
-#endif
-
-		start_color();
-
-#ifdef HAVE_USE_DEFAULT_COLORS
 		/* Use the default colors, if available. */
-		defok = (use_default_colors() != ERR);
+		bool defok = (use_default_colors() != ERR);
 #endif
 
 		for (auto tmpcolor : openfile->colorstrings) {
