@@ -523,11 +523,11 @@ void shortcut_init(void)
 
 	add_to_funcs(do_suspend_void, MMAIN, N_("Suspend"), IFSCHELP(pinot_suspend_msg), true, VIEW);
 
-	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Case Sens"), IFSCHELP(pinot_case_msg), false, VIEW);
+	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE), N_("Case Sens"), IFSCHELP(pinot_case_msg), false, VIEW);
 
-	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Backwards"), IFSCHELP(pinot_reverse_msg), false, VIEW);
+	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE), N_("Backwards"), IFSCHELP(pinot_reverse_msg), false, VIEW);
 
-	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE|MWHEREISFILE), N_("Regexp"), IFSCHELP(pinot_regexp_msg), false, VIEW);
+	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE), N_("Regexp"), IFSCHELP(pinot_regexp_msg), false, VIEW);
 
 	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("PrevHist"), IFSCHELP(pinot_prev_history_msg), false, VIEW);
 
@@ -634,9 +634,9 @@ void shortcut_init(void)
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Up", get_history_older_void, 0, false);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^N", get_history_newer_void, 0, false);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Down", get_history_newer_void, 0, false);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH, "M-C", case_sens_void, 0, false);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH, "M-B", backwards_void, 0, false);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH, "M-R", regexp_void, 0, false);
+	add_to_sclist(MWHEREIS|MREPLACE, "M-C", case_sens_void, 0, false);
+	add_to_sclist(MWHEREIS|MREPLACE, "M-B", backwards_void, 0, false);
+	add_to_sclist(MWHEREIS|MREPLACE, "M-R", regexp_void, 0, false);
 
 	add_to_sclist(MMAIN|MHELP, "M-\\", do_first_line, 0, true);
 	add_to_sclist(MMAIN|MHELP, "M-|", do_first_line, 0, true);
