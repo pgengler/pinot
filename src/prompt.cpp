@@ -928,7 +928,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	if (s && s->scfunc ==  do_cancel) {
 		retval = PROMPT_ABORTED;
 	} else if (s && s->scfunc == do_enter_void) {
-		retval = (answer.front() == '\0') ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
+		retval = answer.empty() ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
 	} else {
 		retval = PROMPT_OTHER_KEY;
 	}
