@@ -956,6 +956,9 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "regexp") || !strcasecmp(input, "regex")) {
 			s->scfunc = regexp_void;
 			s->execute = false;
+		} else if (!strcasecmp(input, "backwards")) {
+			s->scfunc = backwards_void;
+			s->execute = false;
 		} else if (!strcasecmp(input, "dontreplace")) {
 			s->scfunc = no_replace_void;
 			s->execute = false;
