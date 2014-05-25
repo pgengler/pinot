@@ -578,7 +578,7 @@ void statusbar(const char *msg, ...)
 {
 	va_list ap;
 	char *bar, *foo;
-	size_t start_x, foo_len;
+	size_t start_x;
 	bool old_whitespace;
 
 	va_start(ap, msg);
@@ -599,12 +599,11 @@ void statusbar(const char *msg, ...)
 	vsnprintf(bar, mb_cur_max() * (COLS - 3), msg, ap);
 	va_end(ap);
 	foo = display_string(bar, 0, COLS - 4, false);
+	free(bar);
 	if (old_whitespace) {
 		SET(WHITESPACE_DISPLAY);
 	}
-	free(bar);
-	foo_len = strlenpt(foo);
-	start_x = (COLS - foo_len - 4) / 2;
+	start_x = (COLS - strlenpt(foo) - 4) / 2;
 
 	wmove(bottomwin, 0, start_x);
 	wattron(bottomwin, interface_color_pair[STATUS_BAR]);
