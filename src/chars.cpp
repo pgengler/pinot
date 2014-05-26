@@ -460,7 +460,7 @@ size_t move_mbleft(const char *buf, size_t pos)
 	/* There is no library function to move backward one multibyte
 	 * character.  Here is the naive, O(pos) way to do it. */
 	while (before < pos) {
-		char_len += parse_mbchar(buf + before, NULL, NULL);
+		char_len = parse_mbchar(buf + before, NULL, NULL);
 		before += char_len;
 	}
 
