@@ -1,0 +1,20 @@
+## Here is an example for Texinfo files.
+##
+syntax "texinfo" "\.texi$"
+header "^\\input texinfo"
+magic "Texinfo source text"
+
+# Command arguments, trailing and enclosed.
+color cyan "^@[a-z]+\s+.*$"
+color brightmagenta "@[a-z]+\{[^}]*\}"
+# Commands themselves.
+color yellow "@[a-z]+\{?" "\}"
+
+# Menu items.
+color brightred "^\*\s+.*::.*$"
+
+# Comments.
+color green "@c\s+.*$"
+
+# Trailing whitespace.
+color ,green "\s+$"
