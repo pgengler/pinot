@@ -592,6 +592,9 @@ void shortcut_init(void)
 #ifdef ENABLE_SPELLER
 	add_to_sclist(MMAIN, "^T", do_spell, 0, true);
 	add_to_sclist(MMAIN, "F12", do_spell, 0, true);
+#else
+	add_to_sclist(MMAIN, "^T", do_linter, 0, true);
+	add_to_sclist(MMAIN, "F12", do_linter, 0, true);
 #endif
 	add_to_sclist(MMAIN, "^\\", do_replace, 0, true);
 	add_to_sclist(MMAIN, "F14", do_replace, 0, true);
