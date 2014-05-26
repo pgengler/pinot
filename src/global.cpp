@@ -148,7 +148,7 @@ int highlight_attribute = A_REVERSE;
 /* The curses attribute we use for highlighting text (reverse video). */
 std::string specified_color_combo[] = { };
 /* The color combinations as specified in the rcfile. */
-int interface_color_pair[] = { };
+ColorPair interface_colors[] = { };
 /* The processed color pairs for the interface elements. */
 
 std::string homedir = "";

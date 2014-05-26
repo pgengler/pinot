@@ -49,6 +49,14 @@ typedef struct colortype {
 typedef std::shared_ptr<colortype> ColorPtr;
 typedef std::list<ColorPtr> ColorList;
 
+struct ColorPair {
+	int pairnum;
+	/* The color pair number used for this foreground color and background color. */
+
+	bool bright;
+	bool underline;
+};
+
 struct LintMessage {
 	ssize_t lineno;       // line number of the message
 	ssize_t colno;        // column number of the message

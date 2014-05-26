@@ -91,7 +91,7 @@ extern regmatch_t regmatches[10];
 
 extern int highlight_attribute;
 extern std::string specified_color_combo[NUMBER_OF_ELEMENTS];
-extern int interface_color_pair[NUMBER_OF_ELEMENTS];
+extern ColorPair interface_colors[NUMBER_OF_ELEMENTS];
 
 extern std::string homedir;
 
@@ -538,6 +538,8 @@ int strtomenu(char *input);
 void xon_complaint(void);
 void xoff_complaint(void);
 void do_suspend_void(void);
+void set_color(WINDOW *win, ColorPair color);
+void clear_color(WINDOW *win, ColorPair color);
 
 void enable_nodelay(void);
 void disable_nodelay(void);

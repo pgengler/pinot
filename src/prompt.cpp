@@ -116,7 +116,7 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 			*finished = true;
 		}
 	} else {
-		do_statusbar_output(std::string(input),  false);
+		do_statusbar_output(std::string(input), false);
 	}
 
 	return input;
@@ -651,7 +651,7 @@ void update_statusbar_line(const std::string& curranswer, size_t index)
 	index = strnlenpt(curranswer.c_str(), index);
 	page_start = get_statusbar_page_start(start_col, start_col + index);
 
-	wattron(bottomwin, interface_color_pair[TITLE_BAR]);
+	set_color(bottomwin, interface_colors[TITLE_BAR]);
 
 	blank_statusbar();
 
@@ -662,7 +662,7 @@ void update_statusbar_line(const std::string& curranswer, size_t index)
 	std::string expanded = display_string(curranswer, page_start, COLS - start_col - 1, false);
 	waddstr(bottomwin, expanded.c_str());
 
-	wattroff(bottomwin, interface_color_pair[TITLE_BAR]);
+	clear_color(bottomwin, interface_colors[TITLE_BAR]);
 	statusbar_pww = statusbar_xplustabs();
 	reset_statusbar_cursor();
 	wnoutrefresh(bottomwin);
@@ -862,7 +862,7 @@ DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
 	 * we've finished putting in an answer, reset the statusbar cursor
 	 * position too. */
 	if (s) {
-		if (s->scfunc ==  do_cancel || s->scfunc == do_enter_void || ran_func) {
+		if (s->scfunc == do_cancel || s->scfunc == do_enter_void || ran_func) {
 			statusbar_x = old_statusbar_x;
 			statusbar_pww = old_pww;
 
@@ -925,7 +925,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	old_pww = statusbar_pww;
 
 	/* If we left the prompt via Cancel or Enter, set the return value properly. */
-	if (s && s->scfunc ==  do_cancel) {
+	if (s && s->scfunc == do_cancel) {
 		retval = PROMPT_ABORTED;
 	} else if (s && s->scfunc == do_enter_void) {
 		retval = answer.empty() ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
@@ -1014,12 +1014,12 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 		onekey("^C", _("Cancel"), width);
 	}
 
-	wattron(bottomwin,  interface_color_pair[TITLE_BAR]);
+	set_color(bottomwin, interface_colors[TITLE_BAR]);
 
 	blank_statusbar();
 	mvwaddnstr(bottomwin, 0, 0, msg, actual_x(msg, COLS - 1));
 
-	wattroff(bottomwin,  interface_color_pair[TITLE_BAR]);
+	clear_color(bottomwin, interface_colors[TITLE_BAR]);
 
 	/* Refresh the edit window and the statusbar before getting input. */
 	wnoutrefresh(edit);
@@ -1031,9 +1031,9 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 		s = get_shortcut(currmenu, kbinput);
 		std::string input(kbinput);
 
-		if (s && s->scfunc ==  do_cancel) {
+		if (s && s->scfunc == do_cancel) {
 			ok = YESNO_PROMPT_ABORTED;
-		} else if  (s && s->scfunc == total_refresh) {
+		} else if (s && s->scfunc == total_refresh) {
 			total_redraw();
 			continue;
 		} else {

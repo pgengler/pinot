@@ -53,11 +53,18 @@ void set_colorpairs(void)
 			if (bg == -1 && !defok) {
 				bg = COLOR_BLACK;
 			}
-DEBUG_LOG("Converted \"" << specified_color_combo[i] << "\" to fg=" << fg << " and bg=" << bg);
 			init_pair(i + 1, fg, bg);
-			interface_color_pair[i] = COLOR_PAIR(i + 1);
-		} else if (i != FUNCTION_TAG) {
-			interface_color_pair[i] = highlight_attribute;
+			interface_colors[i].bright = bright;
+			interface_colors[i].underline = underline;
+			interface_colors[i].pairnum = COLOR_PAIR(i + 1);
+		} else {
+			interface_colors[i].bright = false;
+			interface_colors[i].underline = false;
+			if (i != FUNCTION_TAG) {
+				interface_colors[i].pairnum = highlight_attribute;
+			} else {
+				interface_colors[i].pairnum = A_NORMAL;
+			}
 		}
 	}
 

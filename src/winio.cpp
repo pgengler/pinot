@@ -411,7 +411,7 @@ void titlebar(const char *path)
 	bool dots = false;
 	/* Do we put an ellipsis before the path? */
 
-	wattron(topwin, interface_color_pair[TITLE_BAR]);
+	set_color(topwin, interface_colors[TITLE_BAR]);
 
 	blank_titlebar();
 
@@ -543,7 +543,7 @@ the_end:
 		}
 	}
 
-	wattroff(topwin, interface_color_pair[TITLE_BAR]);
+	clear_color(topwin, interface_colors[TITLE_BAR]);
 
 	wnoutrefresh(topwin);
 	reset_cursor();
@@ -606,12 +606,12 @@ void statusbar(const char *msg, ...)
 	start_x = (COLS - strlenpt(foo) - 4) / 2;
 
 	wmove(bottomwin, 0, start_x);
-	wattron(bottomwin, interface_color_pair[STATUS_BAR]);
+	set_color(bottomwin, interface_colors[STATUS_BAR]);
 	waddstr(bottomwin, "[ ");
 	waddstr(bottomwin, foo);
 	free(foo);
 	waddstr(bottomwin, " ]");
-	wattroff(bottomwin, interface_color_pair[STATUS_BAR]);
+	clear_color(bottomwin, interface_colors[STATUS_BAR]);
 	wnoutrefresh(bottomwin);
 	reset_cursor();
 	wnoutrefresh(edit);
@@ -699,9 +699,9 @@ void onekey(const std::string& keystroke, const std::string& desc, size_t len)
 {
 	size_t keystroke_len = keystroke.length() + 1;
 
-	wattron(bottomwin, interface_color_pair[KEY_COMBO]);
+	set_color(bottomwin, interface_colors[KEY_COMBO]);
 	waddnstr(bottomwin, keystroke.c_str(), actual_x(keystroke.c_str(), len));
-	wattroff(bottomwin, interface_color_pair[KEY_COMBO]);
+	clear_color(bottomwin, interface_colors[KEY_COMBO]);
 
 	if (len > keystroke_len) {
 		len -= keystroke_len;
@@ -1091,9 +1091,9 @@ step_two:
 				paintlen = actual_x(converted + index, paintlen);
 			}
 
-			wattron(edit,  interface_color_pair[FUNCTION_TAG]);
+			set_color(edit, interface_colors[FUNCTION_TAG]);
 			mvwaddnstr(edit, line, x_start, converted + index, paintlen);
-			wattroff(edit,  interface_color_pair[FUNCTION_TAG]);
+			clear_color(edit, interface_colors[FUNCTION_TAG]);
 		}
 	}
 }
@@ -1644,4 +1644,22 @@ void do_replace_highlight(bool highlight, const char *word)
 	if (highlight) {
 		wattroff(edit, highlight_attribute);
 	}
+}
+
+void set_color(WINDOW *win, ColorPair color)
+{
+	if (color.bright) {
+		wattron(win, A_BOLD);
+	}
+	if (color.underline) {
+		wattron(win, A_UNDERLINE);
+	}
+	wattron(win, color.pairnum);
+}
+
+void clear_color(WINDOW *win, ColorPair color)
+{
+	wattroff(win, A_UNDERLINE);
+	wattroff(win, A_BOLD);
+	wattroff(win, color.pairnum);
 }

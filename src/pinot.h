@@ -134,7 +134,7 @@
 
 /* The elements of the interface that can be colored differently. */
 enum {
-	TITLE_BAR ,
+	TITLE_BAR,
 	STATUS_BAR,
 	KEY_COMBO,
 	FUNCTION_TAG,
