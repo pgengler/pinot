@@ -31,6 +31,7 @@ pkgdata_DATA = \
 		spec.pinotrc \
 		tcl.pinotrc \
 		tex.pinotrc \
+		texinfo.pinotrc \
 		xml.pinotrc
 
 EXTRA_DIST = $(pkgdata_DATA)
