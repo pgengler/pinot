@@ -2043,6 +2043,13 @@ void do_spell(void)
 }
 #endif /* ENABLE_SPELLER */
 
+ /* Cleanup things to do after leaving the linter */
+void lint_cleanup(void)
+{
+	currmenu = MMAIN;
+	display_main_list();
+}
+
 /* Run linter.  Based on alt-speller code.  Return NULL for normal
  * termination, and the error string otherwise. */
 void do_linter(void)
@@ -2068,8 +2075,13 @@ void do_linter(void)
 	if (openfile->modified) {
 		int i = do_yesno_prompt(false, _("Save modified buffer before linting?"));
 
-		if (i == 1) {
-			if (do_writeout(false) != true) {
+		if (i == -1) {
+			statusbar(_("Cancelled"));
+			lint_cleanup();
+			return;
+		} else if (i == 1) {
+			if (do_writeout(FALSE) != TRUE) {
+				lint_cleanup();
 				return;
 			}
 		}
@@ -2079,10 +2091,13 @@ void do_linter(void)
 	/* Create pipe up front. */
 	if (pipe(lint_fd) == -1) {
 		statusbar(_("Could not create pipe"));
+		lint_cleanup();
 		return;
 	}
 
+	blank_bottombars();
 	statusbar(_("Invoking linter, please wait"));
+	doupdate();
 
 	/* Set up an argument list to pass execvp(). */
 	if (lintargs == NULL) {
@@ -2131,6 +2146,7 @@ void do_linter(void)
 	if (pid_lint < 0) {
 		close(lint_fd[0]);
 		statusbar(_("Could not fork"));
+		lint_cleanup();
 		return;
 	}
 
@@ -2138,6 +2154,7 @@ void do_linter(void)
 	if ((pipe_buff_size = fpathconf(lint_fd[0], _PC_PIPE_BUF)) < 1) {
 		close(lint_fd[0]);
 		statusbar(_("Could not get size of pipe buffer"));
+		lint_cleanup();
 		return;
 	}
 
@@ -2225,6 +2242,7 @@ void do_linter(void)
 
 	if (parsesuccess == 0) {
 		statusbar(_("Got 0 parsable lines from command: %s"), openfile->syntax->linter.c_str());
+		lint_cleanup();
 		return;
 	}
 
@@ -2261,7 +2279,11 @@ void do_linter(void)
 						sprintf(msg, _("This message is for unopened file %s, open it in a new buffer?"), curr_lint->filename.c_str());
 						i = do_yesno_prompt(false, msg);
 						free(msg);
-						if (i == 1) {
+						if (i == -1) {
+							statusbar(_("Cancelled"));
+							lint_cleanup();
+							return;
+						} else if (i == 1) {
 							SET(MULTIBUFFER);
 							open_buffer(curr_lint->filename, false);
 						} else {
@@ -2316,10 +2338,7 @@ void do_linter(void)
 		}
 	}
 
-	blank_statusbar();
-	wnoutrefresh(bottomwin);
-	currmenu = MMAIN;
-	display_main_list();
+	lint_cleanup();
 }
 
 /* Our own version of "wc".  Note that its character counts are in
