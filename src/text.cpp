@@ -2020,6 +2020,10 @@ void do_spell(void)
 		return;
 	}
 
+	blank_bottombars();
+	statusbar(_("Invoking spell checker, please wait..."));
+	doupdate();
+
 	spell_msg = (alt_speller != NULL) ? do_alt_speller(temp) : do_int_speller(temp);
 	unlink(temp);
 	free(temp);
@@ -2096,7 +2100,7 @@ void do_linter(void)
 	}
 
 	blank_bottombars();
-	statusbar(_("Invoking linter, please wait"));
+	statusbar(_("Invoking linter, please wait..."));
 	doupdate();
 
 	/* Set up an argument list to pass execvp(). */
