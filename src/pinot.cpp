@@ -1402,8 +1402,8 @@ void precalc_multicolorinfo(void)
 						DEBUG_LOG("marking intermediary line " << fileptr->lineno << " as CWHOLELINE");
 					}
 					alloc_multidata_if_needed(endptr);
-					DEBUG_LOG("marking line " << fileptr->lineno << " as BEGINBEFORE");
-					endptr->multidata[tmpcolor->id] |= CBEGINBEFORE;
+					DEBUG_LOG("marking line " << fileptr->lineno << " as CBEGINBEFORE");
+					fileptr->multidata[tmpcolor->id] = CBEGINBEFORE;
 					/* We should be able to skip all the way to the line of the match.
 					This may introduce more bugs but it's the Right Thing to do */
 					fileptr = endptr;
