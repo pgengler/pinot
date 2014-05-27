@@ -10,9 +10,9 @@
 #define IGNORE_CALL_RESULT(call) do { if (call) {} } while(0)
 
 /* Macros for flags. */
-#define FLAGOFF(flag) ((flag) / (sizeof(unsigned) * 8))
+#define FLAGOFFSET(flag) ((flag) / (sizeof(unsigned) * 8))
 #define FLAGMASK(flag) (1 << ((flag) % (sizeof(unsigned) * 8)))
-#define FLAGS(flag) flags[FLAGOFF(flag)]
+#define FLAGS(flag) flags[FLAGOFFSET(flag)]
 #define SET(flag) FLAGS(flag) |= FLAGMASK(flag)
 #define UNSET(flag) FLAGS(flag) &= ~FLAGMASK(flag)
 #define ISSET(flag) ((FLAGS(flag) & FLAGMASK(flag)) != 0)

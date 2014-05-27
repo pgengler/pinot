@@ -141,8 +141,7 @@ enum {
 	NUMBER_OF_ELEMENTS
 };
 
-/* Enumeration to be used in flags table. See FLAGBIT and FLAGOFF
- * definitions. */
+/* Enumeration to be used in flags table. See FLAGBIT and FLAGOFFSET definitions. */
 enum {
 	DONTUSE,
 	CASE_SENSITIVE,
