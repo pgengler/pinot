@@ -172,7 +172,7 @@ change_browser_directory:
 			              false,
 			              MGOTODIR, key, ans.c_str(),
 			              NULL,
-			              browser_refresh, N_("Go To Directory"));
+			              browser_refresh, _("Go To Directory"));
 
 			curs_set(0);
 			bottombars(MBROWSER);
