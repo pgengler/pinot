@@ -783,6 +783,10 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 	/* Just paint the string in any case (we'll add color or reverse on
 	 * just the text that needs it). */
 	mvwaddstr(edit, line, 0, converted);
+	/* Tell ncurses to really redraw the line without trying to optimize
+	 * for what it thinks is already there, because it gets it wrong in
+	 * the case of a wide character in column zero. */
+	wredrawln(edit, line, 1);
 
 	/* If color syntaxes are available and turned on, we need to display
 	 * them. */
