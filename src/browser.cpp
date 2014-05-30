@@ -623,7 +623,7 @@ int filesearch_init(void)
 	              true,
 	              MWHEREISFILE, key, backupstring.c_str(),
 	              &search_history,
-	              browser_refresh, "%s%s%s%s%s%s", _("Search"),
+	              browser_refresh, "%s%s%s%s%s", _("Search"),
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
 	              ISSET(CASE_SENSITIVE) ? _(" [Case Sensitive]") : "",
@@ -633,7 +633,7 @@ int filesearch_init(void)
 	              /* This string is just a modifier for the search prompt; no
 	               * grammar is implied. */
 	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "",
-								"", buf.c_str());
+								buf.c_str());
 
 
 	backupstring = "";
