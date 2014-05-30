@@ -786,7 +786,9 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 	/* Tell ncurses to really redraw the line without trying to optimize
 	 * for what it thinks is already there, because it gets it wrong in
 	 * the case of a wide character in column zero. */
+#ifndef USE_SLANG
 	wredrawln(edit, line, 1);
+#endif
 
 	/* If color syntaxes are available and turned on, we need to display
 	 * them. */
