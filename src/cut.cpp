@@ -43,6 +43,10 @@ void cutbuffer_reset(void)
  * current line. */
 void cut_line(void)
 {
+	if (!openfile->mark_begin) {
+		openfile->mark_begin = openfile->current;
+	}
+
 	if (openfile->current != openfile->filebot) {
 		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0, openfile->current->next, 0);
 	} else {
@@ -182,11 +186,10 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 			UNSET(NO_NEWLINES);
 		}
 	} else if (!undoing) {
-		update_undo(CUT);
+		update_undo(cut_till_end ? CUT_EOF : CUT);
 	}
 
-	/* Leave the text in the cutbuffer, and mark the file as
-	 * modified. */
+	/* Leave the text in the cutbuffer, and mark the file as modified. */
 	if (!copy_text) {
 		set_modified();
 	}
@@ -218,7 +221,7 @@ void do_copy_text(void)
 /* Cut from the current cursor position to the end of the file. */
 void do_cut_till_end(void)
 {
-	add_undo(CUT);
+	add_undo(CUT_EOF);
 	do_cut_text(false, true, false);
 }
 
@@ -232,7 +235,7 @@ void do_uncut_text(void)
 		return;
 	}
 
-	update_undo(UNCUT);
+	update_undo(PASTE);
 
 	/* Add a copy of the text in the cutbuffer to the current filestruct
 	 * at the current cursor position. */

@@ -438,7 +438,7 @@ void do_down(bool scroll_only)
 	filestruct *topline;
 
 	/* If we're at the bottom of the file, get out. */
-	if (openfile->current == openfile->filebot) {
+	if (openfile->current == openfile->filebot || !openfile->current->next) {
 		return;
 	}
 

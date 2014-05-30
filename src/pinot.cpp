@@ -1490,7 +1490,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		openfile->totsize++;
 		set_modified();
 
-		update_undo(ADD);
+		add_undo(ADD);
 
 		/* Note that current_x has not yet been incremented. */
 		if (openfile->mark_set && openfile->current == openfile->mark_begin && openfile->current_x < openfile->mark_begin_x) {
@@ -1498,6 +1498,8 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		}
 
 		openfile->current_x += char_buf_len;
+
+		update_undo(ADD);
 
 		/* If we're wrapping text, we need to call edit_refresh(). */
 		if (!ISSET(NO_WRAP))
