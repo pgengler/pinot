@@ -57,8 +57,6 @@ void do_delete(void)
 {
 	size_t orig_lenpt = 0;
 
-	update_undo(DEL);
-
 	assert(openfile->current != NULL && openfile->current->data != NULL && openfile->current_x <= strlen(openfile->current->data));
 
 	openfile->placewewant = xplustabs();
@@ -68,6 +66,8 @@ void do_delete(void)
 		size_t line_len = strlen(openfile->current->data + openfile->current_x);
 
 		assert(openfile->current_x < strlen(openfile->current->data));
+
+		update_undo(DEL);
 
 		if (ISSET(SOFTWRAP)) {
 			orig_lenpt = strlenpt(openfile->current->data);
@@ -85,6 +85,8 @@ void do_delete(void)
 		filestruct *foo = openfile->current->next;
 
 		assert(openfile->current_x == strlen(openfile->current->data));
+
+		add_undo(DEL);
 
 		/* If we're deleting at the end of a line, we need to call edit_refresh(). */
 		if (openfile->current->data[openfile->current_x] == '\0') {
