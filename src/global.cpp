@@ -110,7 +110,7 @@ SyntaxMap syntaxes;
 char *syntaxstr = NULL;
 /* The color syntax name specified on the command line. */
 
-bool edit_refresh_needed = 0;
+bool edit_refresh_needed = false;
 /* Did a command mangle enough of the buffer refresh that we
    should repaint the screen */
 
