@@ -241,6 +241,8 @@ void do_uncut_text(void)
 	 * at the current cursor position. */
 	copy_from_filestruct(cutbuffer);
 
+	update_undo(PASTE);
+
 	/* Set the current place we want to where the text from the
 	 * cutbuffer ends. */
 	openfile->placewewant = xplustabs();

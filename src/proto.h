@@ -112,6 +112,7 @@ void do_last_file(void);
 std::string striponedir(const std::string& path);
 
 /* All functions in chars.c. */
+char *addstrings(char *str1, size_t len1, char *str2, size_t len2);
 void utf8_init(void);
 bool using_utf8(void);
 #ifndef HAVE_ISBLANK

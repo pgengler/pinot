@@ -349,12 +349,19 @@ void redo_paste(undo *u)
 	}
 
 	/* Get to where we need to uncut from */
-	goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
+	if (u->xflags == UNcut_cutline) {
+		goto_line_posx(u->mark_begin_lineno, 0);
+	} else {
+		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
+	}
 
 	copy_from_filestruct(cutbuffer);
 	free_filestruct(cutbuffer);
 	cutbuffer = NULL;
 
+	if (u->xflags == UNcut_cutline) {
+		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
+	}
 }
 
 /* Re-do a cut, or undo an uncut */
@@ -384,7 +391,7 @@ void undo_paste(undo *u)
 		openfile->mark_set = true;
 	}
 
-	openfile->mark_begin_x = u->mark_begin_x;
+	openfile->mark_begin_x = (u->xflags == UNcut_cutline) ? 0 : u->mark_begin_x;
 	do_cut_text(false, u->to_end, true);
 	openfile->mark_set = false;
 	openfile->mark_begin = NULL;
@@ -438,10 +445,7 @@ void do_undo(void)
 		strcpy(&data[u->begin + strlen(u->strdata)], &f->data[u->begin]);
 		free(f->data);
 		f->data = data;
-		if (u->xflags == UNdel_backspace) {
-			openfile->current_x += strlen(u->strdata);
-		}
-		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x + 1);
+		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
 		break;
 	case SPLIT:
 		undidmsg = _("line wrap");
@@ -466,7 +470,7 @@ void do_undo(void)
 		free(f->data);
 		f->data = data;
 		splice_node(f, t, f->next);
-		gotolinecolumn = true;
+		goto_line_posx(u->lineno, u->begin);
 		break;
 	case CUT_EOF:
 	case CUT:
@@ -481,8 +485,8 @@ void do_undo(void)
 		undidmsg = _("line break");
 		if (f->next) {
 			filestruct *foo = f->next;
-			f->data = (char *) nrealloc(f->data, strlen(f->data) + strlen(f->next->data) + 1);
-			strcat(f->data,  f->next->data);
+			f->data = (char *) nrealloc(f->data, strlen(f->data) + strlen(&f->next->data[u->mark_begin_x]) + 1);
+			strcat(f->data, &f->next->data[u->mark_begin_x]);
 			unlink_node(foo);
 			delete_node(foo);
 		}
@@ -605,7 +609,7 @@ void do_redo(void)
 			delete_node(tmp);
 		}
 		renumber(f);
-		gotolinecolumn = true;
+		goto_line_posx(u->lineno, u->begin);
 		break;
 	case CUT_EOF:
 	case CUT:
@@ -696,6 +700,10 @@ void do_enter(bool undoing)
 	set_modified();
 
 	openfile->placewewant = xplustabs();
+
+	if (!undoing) {
+		update_undo(ENTER);
+	}
 
 	edit_refresh_needed = true;
 }
@@ -939,15 +947,14 @@ void add_undo(UndoType current_action)
 		/* We need to start copying data into the undo buffer or we wont be able
 		   to restore it later */
 	case ADD:
-		data = charalloc(2);
-		data[0] = '\0';
-		u->strdata = data;
 		break;
 	case DEL:
 		if (u->begin != strlen(fs->current->data)) {
-			data = mallocstrncpy(NULL, &fs->current->data[u->begin], 2);
-			data[1] = '\0';
-			u->strdata = data;
+			char *char_buf = charalloc(mb_cur_max() + 1);
+			int char_buf_len = parse_mbchar(&fs->current->data[u->begin], char_buf, NULL);
+			char_buf[char_buf_len] = '\0';
+			u->strdata = char_buf;  /* Note: there is likely more memory allocated than necessary. */
+			u->mark_begin_x += char_buf_len;
 			break;
 		}
 		/* Else purposely fall into unsplit code */
@@ -984,7 +991,7 @@ void add_undo(UndoType current_action)
 		} else if (ISSET(CUT_TO_END) && !u->to_end) {
 			 /* The entire line is being cut regardless of the cursor position. */
 			u->begin = 0;
-			u->mark_begin_x = 0;
+			u->xflags = UNcut_cutline;
 		}
 		break;
 	case PASTE:
@@ -998,19 +1005,6 @@ void add_undo(UndoType current_action)
 			u->mark_begin_lineno = fs->current->lineno;
 			u->mark_begin_x =  fs->current_x;
 			u->lineno =  fs->current->lineno + cutbottom->lineno - cutbuffer->lineno;
-
-			filestruct *fs_buff = cutbuffer;
-			if (fs_buff->lineno == cutbottom->lineno) {
-				u->begin = fs->current_x +  get_totsize(fs_buff,cutbottom);
-			} else {
-				/* Advance fs_buff to the last line in the cutbuffer. */
-				while (fs_buff->lineno != cutbottom->lineno && fs_buff->next != NULL) {
-					fs_buff = fs_buff->next;
-				}
-				assert(fs_buff->next != NULL);
-				u->begin = get_totsize(fs_buff, cutbottom);
-			}
-
 			u->mark_set = true;
 		}
 		break;
@@ -1034,8 +1028,6 @@ void add_undo(UndoType current_action)
 void update_undo(UndoType action)
 {
 	undo *u;
-	char *data;
-	int len = 0;
 	std::list<OpenFile>::iterator fs = openfile;
 
 	if (!ISSET(UNDOABLE)) {
@@ -1049,7 +1041,7 @@ void update_undo(UndoType action)
 
 	/* Change to an add if we're not using the same undo struct
 	   that we should be using */
-	if (action != fs->last_action || (action != CUT && action != INSERT && action != SPLIT && openfile->current->lineno != fs->current_undo->lineno)) {
+	if (action != fs->last_action || (action != ENTER && action != CUT && action != INSERT && action != SPLIT && openfile->current->lineno != fs->current_undo->lineno)) {
 		add_undo(action);
 		return;
 	}
@@ -1060,50 +1052,33 @@ void update_undo(UndoType action)
 	switch (u->type) {
 	case ADD:
 		DEBUG_LOG("fs->current->data = \"" << fs->current->data << "\", current_x = " << fs->current_x << ", u->begin = " << u->begin);
-		len = strlen(u->strdata) + 2;
-		data = (char *) nrealloc((void *) u->strdata, len * sizeof(char *));
-		data[len-2] = fs->current->data[fs->current_x - 1];
-		data[len-1] = '\0';
-		u->strdata = (char *) data;
+		{
+			char *char_buf = charalloc(mb_cur_max());
+			size_t char_buf_len = parse_mbchar(&fs->current->data[u->mark_begin_x], char_buf, NULL);
+			u->strdata = addstrings(u->strdata, u->strdata ? strlen(u->strdata) : 0, char_buf, char_buf_len);
+		}
 		DEBUG_LOG("current undo data now \"" << u->strdata << '"');
 		u->mark_begin_lineno = fs->current->lineno;
 		u->mark_begin_x = fs->current_x;
 		break;
 	case DEL:
-		len = strlen(u->strdata) + 2;
-		assert(len > 2);
-		if (fs->current_x == u->begin) {
-			/* They're deleting */
-			if (!u->xflags) {
-				u->xflags = UNdel_del;
-			} else if (u->xflags != UNdel_del) {
-				add_undo(action);
+		{
+			char *char_buf = charalloc(mb_cur_max());
+			size_t char_buf_len = parse_mbchar(&fs->current->data[fs->current_x], char_buf, NULL);
+			if (fs->current_x == u->begin) {
+				/* They're deleting */
+				u->strdata = addstrings(u->strdata, strlen(u->strdata), char_buf, char_buf_len);
+				u->mark_begin_x = fs->current_x;
+			} else if (fs->current_x == u->begin - char_buf_len) {
+				/* They're backspacing */
+				u->strdata = addstrings(char_buf, char_buf_len, u->strdata, strlen(u->strdata));
+				u->begin = fs->current_x;
+			} else {
+				/* They deleted something else on the line */
+				free(char_buf);
+				add_undo(DEL);
 				return;
 			}
-			data = charalloc(len);
-			strcpy(data, u->strdata);
-			data[len-2] = fs->current->data[fs->current_x];
-			data[len-1] = '\0';
-			free(u->strdata);
-			u->strdata = data;
-		} else if (fs->current_x == u->begin - 1) {
-			/* They're backspacing */
-			if (!u->xflags) {
-				u->xflags = UNdel_backspace;
-			} else if (u->xflags != UNdel_backspace) {
-				add_undo(action);
-				return;
-			}
-			data = charalloc(len);
-			data[0] = fs->current->data[fs->current_x];
-			strcpy(&data[1], u->strdata);
-			free(u->strdata);
-			u->strdata = data;
-			u->begin--;
-		} else {
-			/* They deleted something else on the line */
-			add_undo(DEL);
-			return;
 		}
 		DEBUG_LOG("current undo data now \"" << u->strdata << '"' << std::endl << "u->begin = " << u->begin);
 		break;
@@ -1141,10 +1116,14 @@ void update_undo(UndoType action)
 		break;
 	case REPLACE:
 	case PASTE:
-		add_undo(action);
+		u->begin = fs->current_x;
+		u->lineno = openfile->current->lineno;
 		break;
 	case INSERT:
 		u->mark_begin_lineno = openfile->current->lineno;
+		break;
+	case ENTER:
+		u->mark_begin_x = fs->current_x;
 		break;
 	case SPLIT:
 		/* This will only be called if we made a completely new line,
@@ -1153,7 +1132,6 @@ void update_undo(UndoType action)
 		break;
 	case UNSPLIT:
 		/* These cases are handled by the earlier check for a new line and action */
-	case ENTER:
 	case OTHER:
 		break;
 	}

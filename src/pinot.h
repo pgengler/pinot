@@ -200,9 +200,10 @@ enum {
 #define MMOST         (MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER)
 
 /* Extra bits for the undo function */
-#define UNdel_del		(1<<0)
-#define UNdel_backspace	(1<<1)
-#define UNsplit_madenew	(1<<2)
+#define UNdel_del       (1<<0)
+#define UNdel_backspace (1<<1)
+#define UNsplit_madenew (1<<2)
+#define UNcut_cutline   (1<<3)
 
 #define VIEW true
 #define NOVIEW false
