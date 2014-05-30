@@ -546,6 +546,7 @@ void shortcut_init(void)
 	add_to_funcs( backup_file_void, MWRITEFILE, N_("Backup File"), IFSCHELP(pinot_backup_msg), false, NOVIEW);
 
 	add_to_funcs(ext_cmd_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
+	add_to_funcs(ext_cmd_void, MEXTCMD, N_("Read File"), IFSCHELP(pinot_insert_msg), false, NOVIEW);
 
 	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), IFSCHELP(pinot_multibuffer_msg), false, NOVIEW);
 
@@ -695,7 +696,7 @@ void shortcut_init(void)
 	add_to_sclist(MWRITEFILE, "M-P", prepend_void, 0, false);
 	add_to_sclist(MWRITEFILE, "M-B", backup_file_void, 0, false);
 	add_to_sclist(MWRITEFILE|MINSERTFILE, "^T", to_files_void, 0, false);
-	add_to_sclist(MINSERTFILE, "^X", ext_cmd_void, 0, false);
+	add_to_sclist(MINSERTFILE|MEXTCMD, "^X", ext_cmd_void, 0, false);
 	add_to_sclist(MMAIN, "^Z", do_suspend_void, 0, false);
 	add_to_sclist(MMAIN|MHELP, "^L", total_refresh, 0, true);
 	add_to_sclist(MMOST, "Tab", do_tab, 0, true);
