@@ -1011,7 +1011,7 @@ void add_undo(UndoType current_action)
 				u->begin = get_totsize(fs_buff, cutbottom);
 			}
 
-			u->mark_set = TRUE;
+			u->mark_set = true;
 		}
 		break;
 	case ENTER:
@@ -2109,7 +2109,7 @@ void do_linter(void)
 			lint_cleanup();
 			return;
 		} else if (i == 1) {
-			if (do_writeout(FALSE) != TRUE) {
+			if (do_writeout(false) != true) {
 				lint_cleanup();
 				return;
 			}
