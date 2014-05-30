@@ -398,7 +398,7 @@ void do_undo(void)
 	bool gotolinecolumn = false;
 	undo *u = openfile->current_undo;
 	filestruct *t = nullptr;
-	int len = 0;
+	size_t len = 0;
 	char *undidmsg, *data;
 	filestruct *oldcutbuffer = cutbuffer, *oldcutbottom = cutbottom;
 
@@ -533,7 +533,7 @@ void do_redo(void)
 {
 	bool gotolinecolumn = false;
 	undo *u = openfile->undotop;
-	int len = 0;
+	size_t len = 0;
 	char *undidmsg, *data;
 
 	for (; u != NULL && u->next != openfile->current_undo; u = u->next) {
