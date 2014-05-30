@@ -1354,14 +1354,14 @@ void precalc_multicolorinfo(void)
 					}
 				}
 
-				while ((nostart = regexec(tmpcolor->start, &fileptr->data[startx], 1, &startmatch, 0))  == 0) {
+				while ((nostart = regexec(tmpcolor->start, &fileptr->data[startx], 1, &startmatch, (startx == 0) ? 0 : REG_NOTBOL)) == 0) {
 					/* Look for end and start marking how many lines are encompassed
 					   whcih should speed up rendering later */
 					startx += startmatch.rm_eo;
 					DEBUG_LOG("match found at pos " << startx);
 
 					/* Look on this line first for end */
-					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, 0)  == 0) {
+					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, (startx == 0) ? 0 : REG_NOTBOL) == 0) {
 						startx += endmatch.rm_eo;
 						fileptr->multidata[tmpcolor->id] |= CSTARTENDHERE;
 						DEBUG_LOG("end found on this line");
