@@ -1055,7 +1055,7 @@ void do_insertfile(bool execute)
 			/* Keep track of whether the mark begins inside the
 			 * partition and will need adjustment. */
 			if (openfile->mark_set) {
-				filestruct *top, *bot;
+				filestruct *top = nullptr, *bot = nullptr;
 				size_t top_x, bot_x;
 
 				mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
@@ -1884,7 +1884,7 @@ bool write_marked_file(const std::string& name, FILE *f_open, bool tmp, AppendTy
 	/* write_file() unsets the modified flag. */
 	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
-	filestruct *top, *bot;
+	filestruct *top = nullptr, *bot = nullptr;
 	size_t top_x, bot_x;
 
 	assert(openfile->mark_set);
