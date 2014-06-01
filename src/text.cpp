@@ -1915,10 +1915,8 @@ const char *do_alt_speller(char *tempfile_name)
 		char *alt_spell_error;
 		char *invoke_error = _("Error invoking \"%s\"");
 
-#ifndef PINOTO_TINY
 		/* Turn the mark back on if it was on before. */
 		openfile->mark_set = old_mark_set;
-#endif
 
 		alt_spell_error = charalloc(strlen(invoke_error) + strlen(alt_speller) + 1);
 		sprintf(alt_spell_error, invoke_error, alt_speller);
