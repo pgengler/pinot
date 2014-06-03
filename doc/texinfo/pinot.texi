@@ -221,10 +221,6 @@ Cut from the current cursor position to the end of the current line.
 When writing files, if the given file is a symbolic link, it is removed
 and a new file is created.
 
-@item -o <dir>, --operatingdir=<dir>
-Set operating directory.  Makes @code{pinot} set up something similar to
-a chroot.
-
 @item -p, --preserve
 Preserve the ^Q (XON) and ^S (XOFF) sequences so data being sent to the
 editor can be can be stopped and started.
@@ -546,12 +542,6 @@ Don't add newlines to the ends of files.
 @item set/unset nowrap
 Don't wrap text at all.
 
-@item set operatingdir "directory"
-@code{pinot} will only read and write files inside "directory" and its
-subdirectories.  Also, the current directory is changed to here, so
-files are inserted from this directory.  By default, the operating
-directory feature is turned off.
-
 @item set/unset preserve
 Preserve the XON and XOFF keys (^Q and ^S).
 
@@ -732,10 +722,6 @@ things about using the editor.
 @item --disable-mouse
 Disable all mouse functionality.  This also disables the -m command line
 option, which enables the mouse functionality.
-
-@item --disable-operatingdir
-Disable setting the operating directory.  This also disables the -o
-command line option, which sets the operating directory.
 
 @item --disable-tabcomp
 Disable the tab completion code when reading or writing files.

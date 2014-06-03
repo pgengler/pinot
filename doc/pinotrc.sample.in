@@ -98,13 +98,6 @@
 ## Don't wrap text at all.
 # set nowrap
 
-## Set operating directory.  pinot will not read or write files outside
-## this directory and its subdirectories.  Also, the current directory
-## is changed to here, so any files are inserted from this dir.  A blank
-## string means the operating directory feature is turned off.
-##
-# set operatingdir ""
-
 ## Remember the cursor position in each file for the next editing session.
 # set poslog
 
