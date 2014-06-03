@@ -170,9 +170,6 @@ Don't convert files from DOS/Mac format.
 @item -O, --morespace
 Use the blank line below the titlebar as extra editing space.
 
-@item -Q <str>, --quotestr=<str>
-Set the quoting string for justifying.  The default value is
-
 @quotation
 @code{^([ \t]*[|>:@}#])+}
 @end quotation
@@ -554,18 +551,6 @@ The default value is @code{"!.?"}.
 @item set/unset quickblank
 Do quick statusbar blanking.  Statusbar messages will disappear after 1
 keystroke instead of 25.
-
-@item set quotestr "string"
-The email-quote string, used to justify email-quoted paragraphs.  This
-is an extended regular expression if your system supports them,
-otherwise a literal string.  The default value is
-
-@quotation
-@code{"^([ \\t]*[#:>\\|@}])+"}
-@end quotation
-
-if you have extended regular expression support, or "> " otherwise.
-Note that '\\t' stands for a literal Tab character.
 
 @item set/unset rebindkeypad
 Interpret the numeric keypad keys so that they all work properly.  You

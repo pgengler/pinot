@@ -116,13 +116,6 @@
 ##
 # set quickblank
 
-## The email-quote string, used to justify email-quoted paragraphs.
-## This is an extended regular expression if your system supports them,
-## otherwise a literal string.  Default:
-# set quotestr "^([ 	]*[#:>\|}])+"
-## if you have extended regular expression support, otherwise:
-# set quotestr "> "
-
 ## Fix Backspace/Delete confusion problem.
 # set rebinddelete
 
