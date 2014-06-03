@@ -3,6 +3,7 @@
 Keyboard::Keyboard()
 {
 	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS|TERMKEY_FLAG_CONVERTKP);
+	termkey_set_canonflags(termkey, termkey_get_canonflags(termkey) | TERMKEY_CANON_DELBS);
 }
 
 bool Keyboard::has_input() const
