@@ -448,6 +448,9 @@ bool close_buffer(void)
 	auto oldfile = switch_to_prevnext_buffer(true);
 
 	openfile = openfiles.erase(oldfile);
+	if (openfile == openfiles.end()) {
+		openfile = openfiles.begin();
+	}
 
 	display_main_list();
 
