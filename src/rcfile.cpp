@@ -394,7 +394,7 @@ void parse_keybinding(char *ptr)
 {
 	char *keyptr = NULL, *keycopy = NULL, *funcptr = NULL, *menuptr = NULL;
 	sc *newsc;
-	int i, menu;
+	int menu;
 
 	assert(ptr != NULL);
 
@@ -464,7 +464,7 @@ void parse_keybinding(char *ptr)
 void parse_unbinding(char *ptr)
 {
 	char *keyptr = NULL, *keycopy = NULL, *menuptr = NULL;
-	int i, menu;
+	int menu;
 
 	assert(ptr != NULL);
 
