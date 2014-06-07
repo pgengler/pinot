@@ -207,18 +207,18 @@ void goto_dir_void(void)
 void no_replace_void(void)
 {
 }
-void ext_cmd_void(void)
+void toggle_execute_void(void)
 {
 }
 
 /* Set type of function based on the string */
 FunctionType strtokeytype(const std::string& str)
 {
-	if (str[0] ==  'M' || str[0] == 'm') {
+	if (str[0] == 'M' || str[0] == 'm') {
 		return META;
 	} else if (str[0] == '^') {
 		return CONTROL;
-	} else if (str[0] ==  'F' || str[0] == 'f') {
+	} else if (str[0] == 'F' || str[0] == 'f') {
 		return FKEY;
 	} else {
 		return RAWINPUT;
@@ -327,7 +327,7 @@ void shortcut_init(void)
 	const char *exit_msg = N_("Exit");
 	const char *whereis_msg = N_("Where Is");
 	const char *refresh_msg = N_("Refresh");
-	const char *insert_file_msg =  N_("Insert File");
+	const char *insert_file_msg = N_("Insert File");
 #ifdef ENABLE_SPELLER
 	const char *spell_msg = N_("To Spell");
 #endif
@@ -545,8 +545,8 @@ void shortcut_init(void)
 	add_to_funcs(prepend_void, MWRITEFILE, N_("Prepend"), IFSCHELP(pinot_prepend_msg), false, NOVIEW);
 	add_to_funcs( backup_file_void, MWRITEFILE, N_("Backup File"), IFSCHELP(pinot_backup_msg), false, NOVIEW);
 
-	add_to_funcs(ext_cmd_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
-	add_to_funcs(ext_cmd_void, MEXTCMD, N_("Read File"), IFSCHELP(pinot_insert_msg), false, NOVIEW);
+	add_to_funcs(toggle_execute_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
+	add_to_funcs(toggle_execute_void, MEXTCMD, N_("Read File"), IFSCHELP(pinot_insert_msg), false, NOVIEW);
 
 	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), IFSCHELP(pinot_multibuffer_msg), false, NOVIEW);
 
@@ -696,7 +696,7 @@ void shortcut_init(void)
 	add_to_sclist(MWRITEFILE, "M-P", prepend_void, 0, false);
 	add_to_sclist(MWRITEFILE, "M-B", backup_file_void, 0, false);
 	add_to_sclist(MWRITEFILE|MINSERTFILE, "^T", to_files_void, 0, false);
-	add_to_sclist(MINSERTFILE|MEXTCMD, "^X", ext_cmd_void, 0, false);
+	add_to_sclist(MINSERTFILE|MEXTCMD, "^X", toggle_execute_void, 0, false);
 	add_to_sclist(MMAIN, "^Z", do_suspend_void, 0, false);
 	add_to_sclist(MMAIN|MHELP, "^L", total_refresh, 0, true);
 	add_to_sclist(MMOST, "Tab", do_tab, 0, true);
@@ -859,73 +859,73 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "redo")) {
 			s->scfunc = do_redo;
 		} else if (!strcasecmp(input, "prevhistory")) {
-			s->scfunc =  get_history_older_void;
+			s->scfunc = get_history_older_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "nexthistory")) {
-			s->scfunc =  get_history_newer_void;
+			s->scfunc = get_history_newer_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "nohelp")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = NO_HELP;
 		} else if (!strcasecmp(input, "constupdate")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = CONST_UPDATE;
 		} else if (!strcasecmp(input, "morespace")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = MORE_SPACE;
 		} else if (!strcasecmp(input, "smoothscroll")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = SMOOTH_SCROLL;
 		} else if (!strcasecmp(input, "whitespacedisplay")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = WHITESPACE_DISPLAY;
 		} else if (!strcasecmp(input, "nosyntax")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = NO_COLOR_SYNTAX;
 		} else if (!strcasecmp(input, "smarthome")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = SMART_HOME;
 		} else if (!strcasecmp(input, "autoindent")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = AUTOINDENT;
 		} else if (!strcasecmp(input, "cuttoend")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = CUT_TO_END;
 		} else if (!strcasecmp(input, "nowrap")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = NO_WRAP;
 		} else if (!strcasecmp(input, "softwrap")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = SOFTWRAP;
 		} else if (!strcasecmp(input, "tabstospaces")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = TABS_TO_SPACES;
 		} else if (!strcasecmp(input, "backupfile")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = BACKUP_FILE;
 		} else if (!strcasecmp(input, "multibuffer")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = MULTIBUFFER;
 		} else if (!strcasecmp(input, "noconvert")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = NO_CONVERT;
 		} else if (!strcasecmp(input, "suspendenable")) {
-			s->scfunc =  do_toggle_void;
+			s->scfunc = do_toggle_void;
 			s->execute = false;
 			s->toggle = SUSPEND;
 		} else if (!strcasecmp(input, "right") || !strcasecmp(input, "forward")) {
@@ -978,22 +978,25 @@ sc *strtosc(char *input)
 			s->scfunc = dos_format_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "macformat")) {
-			s->scfunc =  mac_format_void;
+			s->scfunc = mac_format_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "append")) {
-			s->scfunc =  append_void;
+			s->scfunc = append_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "prepend")) {
-			s->scfunc =  prepend_void;
+			s->scfunc = prepend_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "backup")) {
-			s->scfunc =  backup_file_void;
+			s->scfunc = backup_file_void;
+			s->execute = false;
+		} else if (!strcasecmp(input, "toggleexecute")) {
+			s->scfunc = toggle_execute_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "newbuffer")) {
-			s->scfunc =  new_buffer_void;
+			s->scfunc = new_buffer_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "firstfile")) {
-			s->scfunc =  do_first_file;
+			s->scfunc = do_first_file;
 			s->execute = false;
 		} else if (!strcasecmp(input, "lastfile")) {
 			s->scfunc = do_last_file;

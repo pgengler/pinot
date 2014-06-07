@@ -1033,7 +1033,7 @@ void do_insertfile(bool execute)
 				}
 				continue;
 			} else {
-				if (s && s->scfunc == ext_cmd_void) {
+				if (s && s->scfunc == toggle_execute_void) {
 					execute = !execute;
 					continue;
 				} else if (s && s->scfunc == to_files_void) {
