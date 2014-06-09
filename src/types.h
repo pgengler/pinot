@@ -28,7 +28,7 @@ typedef enum {
 } FunctionType;
 
 typedef enum {
-	ADD, DEL, REPLACE, SPLIT, UNSPLIT, CUT, CUT_EOF, PASTE, ENTER, INSERT, OTHER
+	ADD, DEL, BACK, REPLACE, SPLIT, UNSPLIT, CUT, CUT_EOF, PASTE, ENTER, INSERT, OTHER
 } UndoType;
 
 typedef enum {

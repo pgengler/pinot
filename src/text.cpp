@@ -52,8 +52,8 @@ void do_mark(void)
 	}
 }
 
-/* Delete the character under the cursor. */
-void do_delete(void)
+/* Do deletion of a single character (Delete or Backspace) */
+void do_deletion(UndoType action)
 {
 	size_t orig_lenpt = 0;
 
@@ -67,7 +67,7 @@ void do_delete(void)
 
 		assert(openfile->current_x < strlen(openfile->current->data));
 
-		update_undo(DEL);
+		update_undo(action);
 
 		if (ISSET(SOFTWRAP)) {
 			orig_lenpt = strlenpt(openfile->current->data);
@@ -86,7 +86,7 @@ void do_delete(void)
 
 		assert(openfile->current_x == strlen(openfile->current->data));
 
-		add_undo(DEL);
+		add_undo(action);
 
 		/* If we're deleting at the end of a line, we need to call edit_refresh(). */
 		if (openfile->current->data[openfile->current_x] == '\0') {
@@ -130,13 +130,19 @@ void do_delete(void)
 	}
 }
 
+/* Delete the character under the cursor. */
+void do_delete(void)
+{
+	do_deletion(DEL);
+}
+
 /* Backspace over one character.  That is, move the cursor left one
  * character, and then delete the character under the cursor. */
 void do_backspace(void)
 {
 	if (openfile->current != openfile->fileage || openfile->current_x > 0) {
 		do_left();
-		do_delete();
+		do_deletion(BACK);
 	}
 }
 
@@ -437,6 +443,7 @@ void do_undo(void)
 		f->data = data;
 		goto_line_posx(u->lineno, u->begin);
 		break;
+	case BACK:
 	case DEL:
 		undidmsg = _("text delete");
 		len = strlen(f->data) + strlen(u->strdata) + 1;
@@ -467,8 +474,8 @@ void do_undo(void)
 		undidmsg = _("line join");
 		t = make_new_node(f);
 		t->data = mallocstrcpy(NULL, u->strdata);
-		data = mallocstrncpy(NULL, f->data, u->begin + 1);
-		data[u->begin] = '\0';
+		data = mallocstrncpy(NULL, f->data, u->mark_begin_x + 1);
+		data[u->mark_begin_x] = '\0';
 		free(f->data);
 		f->data = data;
 		splice_node(f, t, f->next);
@@ -574,6 +581,7 @@ void do_redo(void)
 		f->data = data;
 		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
 		break;
+	case BACK:
 	case DEL:
 		undidmsg = _("text delete");
 		len = strlen(f->data) + strlen(u->strdata) + 1;
@@ -584,7 +592,7 @@ void do_redo(void)
 		f->data = data;
 		openfile->current_x = u->begin;
 		openfile->placewewant = xplustabs();
-		goto_line_posx(u->lineno, u->begin);
+		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
 		break;
 	case ENTER:
 		undidmsg = _("line break");
@@ -950,22 +958,29 @@ void add_undo(UndoType current_action)
 		   to restore it later */
 	case ADD:
 		break;
+	case BACK:
 	case DEL:
 		if (u->begin != strlen(fs->current->data)) {
 			char *char_buf = charalloc(mb_cur_max() + 1);
 			int char_buf_len = parse_mbchar(&fs->current->data[u->begin], char_buf, NULL);
 			char_buf[char_buf_len] = '\0';
 			u->strdata = char_buf;  /* Note: there is likely more memory allocated than necessary. */
-			u->mark_begin_x += char_buf_len;
+			if (u->type == BACK) {
+				u->mark_begin_x += char_buf_len;
+			}
 			break;
 		}
 		/* Else purposely fall into unsplit code */
-		current_action = u->type = UNSPLIT;
 	case UNSPLIT:
 		if (fs->current->next) {
+			if (u->type == BACK) {
+				u->lineno = fs->current->next->lineno;
+				u->begin = 0;
+			}
 			data = mallocstrcpy(NULL, fs->current->next->data);
 			u->strdata = data;
 		}
+		current_action = u->type = UNSPLIT;
 		break;
 	case SPLIT:
 		wrap_loc = break_line(openfile->current->data, fill, false);
@@ -1063,6 +1078,7 @@ void update_undo(UndoType action)
 		u->mark_begin_lineno = fs->current->lineno;
 		u->mark_begin_x = fs->current_x;
 		break;
+	case BACK:
 	case DEL:
 		{
 			char *char_buf = charalloc(mb_cur_max());
@@ -1078,7 +1094,7 @@ void update_undo(UndoType action)
 			} else {
 				/* They deleted something else on the line */
 				free(char_buf);
-				add_undo(DEL);
+				add_undo(u->type);
 				return;
 			}
 		}
