@@ -434,7 +434,7 @@ void cancel_command(int signal);
 bool execute_command(const std::string& command);
 int execute_command_silently(const std::string& command);
 void wrap_reset(void);
-bool do_wrap(filestruct *line, bool undoing);
+bool do_wrap(filestruct *line);
 ssize_t break_line(const char *line, ssize_t goal, bool newln);
 size_t indent_length(const std::string& line);
 #ifdef ENABLE_SPELLER

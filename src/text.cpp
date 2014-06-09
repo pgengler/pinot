@@ -456,19 +456,16 @@ void do_undo(void)
 		f->data = data;
 		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
 		break;
-	case SPLIT:
+	case SPLIT_END:
 		undidmsg = _("line wrap");
-		f->data = (char *) nrealloc(f->data, strlen(f->data) + strlen(u->strdata) + 1);
-		strcpy(&f->data[strlen(f->data) - 1], u->strdata);
-		if (u->strdata2 != NULL) {
-			f->next->data = mallocstrcpy(f->next->data, u->strdata2);
-		} else {
-			filestruct *foo = openfile->current->next;
-			unlink_node(foo);
-			delete_node(foo);
+		goto_line_posx(u->lineno, u->begin);
+		openfile->current_undo = openfile->current_undo->next;
+		openfile->last_action = OTHER;
+		while (openfile->current_undo->type != SPLIT_BEGIN) {
+			do_undo();
 		}
-		renumber(f);
-		gotolinecolumn = true;
+		u = openfile->current_undo;
+		f = openfile->current;
 		break;
 	case UNSPLIT:
 		undidmsg = _("line join");
@@ -599,14 +596,16 @@ void do_redo(void)
 		goto_line_posx(u->lineno, u->begin);
 		do_enter(true);
 		break;
-	case SPLIT:
+	case SPLIT_BEGIN:
 		undidmsg = _("line wrap");
-		if (u->xflags & UNsplit_madenew) {
-			prepend_wrap = true;
+		goto_line_posx(u->lineno, u->begin);
+		openfile->current_undo = u;
+		openfile->last_action = OTHER;
+		while (openfile->current_undo->type != SPLIT_END) {
+			do_redo();
 		}
-		do_wrap(f, true);
-		renumber(f);
-		gotolinecolumn = true;
+		u = openfile->current_undo;
+		goto_line_posx(u->lineno, u->begin);
 		break;
 	case UNSPLIT:
 		undidmsg = _("line join");
@@ -909,7 +908,6 @@ void add_undo(UndoType current_action)
 	undo *u;
 	char *data;
 	std::list<OpenFile>::iterator fs = openfile;
-	ssize_t wrap_loc;	/* For calculating split beginning */
 
 	if (!ISSET(UNDOABLE)) {
 		return;
@@ -940,9 +938,15 @@ void add_undo(UndoType current_action)
 	u->type = current_action;
 	u->lineno = fs->current->lineno;
 	u->begin = fs->current_x;
-	u->next = fs->undotop;
-	fs->undotop = u;
-	fs->current_undo = u;
+	if (u->type == SPLIT_BEGIN) {
+		/* Some action, most likely an ADD, was performed that invoked do_wrap().  Rearrange the undo order so that this previous action is after the SPLIT_BEGIN undo. */
+		u->next = fs->undotop->next;
+		fs->undotop->next = u;
+	} else {
+		u->next = fs->undotop;
+		fs->undotop = u;
+		fs->current_undo = u;
+	}
 	u->strdata = NULL;
 	u->strdata2 = NULL;
 	u->cutbuffer = NULL;
@@ -982,15 +986,10 @@ void add_undo(UndoType current_action)
 		}
 		current_action = u->type = UNSPLIT;
 		break;
-	case SPLIT:
-		wrap_loc = break_line(openfile->current->data, fill, false);
-		u->strdata = mallocstrcpy(NULL, &openfile->current->data[wrap_loc]);
-		/* Don't both saving the next line if we're not prepending as a new line
-		   will be created */
-		if (prepend_wrap) {
-			u->strdata2 = mallocstrcpy(NULL, fs->current->next->data);
-		}
-		u->begin = wrap_loc;
+	case SPLIT_BEGIN:
+		current_action = fs->undotop->type;
+		break;
+	case SPLIT_END:
 		break;
 	case INSERT:
 	case REPLACE:
@@ -1058,7 +1057,7 @@ void update_undo(UndoType action)
 
 	/* Change to an add if we're not using the same undo struct
 	   that we should be using */
-	if (action != fs->last_action || (action != ENTER && action != CUT && action != INSERT && action != SPLIT && openfile->current->lineno != fs->current_undo->lineno)) {
+	if (action != fs->last_action || (action != ENTER && action != CUT && action != INSERT && openfile->current->lineno != fs->current_undo->lineno)) {
 		add_undo(action);
 		return;
 	}
@@ -1143,10 +1142,8 @@ void update_undo(UndoType action)
 	case ENTER:
 		u->mark_begin_x = fs->current_x;
 		break;
-	case SPLIT:
-		/* This will only be called if we made a completely new line,
-		   and as such we should note that so we can destroy it later */
-		u->xflags = UNsplit_madenew;
+	case SPLIT_BEGIN:
+	case SPLIT_END:
 		break;
 	case UNSPLIT:
 		/* These cases are handled by the earlier check for a new line and action */
@@ -1164,10 +1161,8 @@ void wrap_reset(void)
 	prepend_wrap = false;
 }
 
-/* We wrap the given line.  Precondition: we assume the cursor has been
- * moved forward since the last typed character.  Return true if we
- * wrapped, and false otherwise. */
-bool do_wrap(filestruct *line, bool undoing)
+/* Try wrapping the given line. Return true if wrapped, false otherwise. */
+bool do_wrap(filestruct *line)
 {
 	size_t line_len;
 	/* The length of the line we wrap. */
@@ -1181,16 +1176,10 @@ bool do_wrap(filestruct *line, bool undoing)
 	/* The text after the wrap point. */
 	size_t after_break_len;
 	/* The length of after_break. */
-	bool prepending = false;
-	/* Do we prepend to the next line? */
 	const char *next_line = NULL;
 	/* The next line, minus indentation. */
 	size_t next_line_len = 0;
 	/* The length of next_line. */
-	char *new_line = NULL;
-	/* The line we create. */
-	size_t new_line_len = 0;
-	/* The eventual length of new_line. */
 
 	/* There are three steps.  First, we decide where to wrap.  Then, we
 	 * create the new wrap line.  Finally, we clean up. */
@@ -1227,10 +1216,6 @@ bool do_wrap(filestruct *line, bool undoing)
 		return false;
 	}
 
-	if (!undoing) {
-		add_undo(SPLIT);
-	}
-
 	/* If autoindent is turned on, and we're on the character just after
 	 * the indentation, we don't wrap. */
 	if (ISSET(AUTOINDENT)) {
@@ -1242,6 +1227,11 @@ bool do_wrap(filestruct *line, bool undoing)
 			return false;
 		}
 	}
+
+	add_undo(SPLIT_BEGIN);
+	size_t old_x = openfile->current_x;
+	filestruct *old_line = openfile->current;
+	openfile->current = line;
 
 	/* Step 2, making the new wrap line.  It will consist of indentation
 	 * followed by the text after the wrap point, optionally followed by
@@ -1261,9 +1251,13 @@ bool do_wrap(filestruct *line, bool undoing)
 	if (prepend_wrap && line != openfile->filebot) {
 		const char *end = after_break + move_mbleft(after_break, after_break_len);
 
+		/* Go to the end of the line. */
+		openfile->current_x = line_len;
+
 		/* If after_break doesn't end in a blank, make sure it ends in a
 		 * space. */
 		if (!is_blank_mbchar(end)) {
+			add_undo(ADD);
 			line_len++;
 			line->data = charealloc(line->data, line_len + 1);
 			line->data[line_len - 1] = ' ';
@@ -1271,119 +1265,39 @@ bool do_wrap(filestruct *line, bool undoing)
 			after_break = line->data + wrap_loc;
 			after_break_len++;
 			openfile->totsize++;
+			openfile->current_x++;
+			update_undo(ADD);
 		}
 
 		next_line = line->next->data;
 		next_line_len = strlen(next_line);
 
 		if (after_break_len + next_line_len <= fill) {
-			prepending = true;
-			new_line_len += next_line_len;
+			/* Delete the LF to join the two lines. */
+			do_delete();
+			/* Delete any leading blanks from the joined-on line. */
+			while (is_blank_mbchar(&line->data[openfile->current_x])) {
+				do_delete();
+			}
+			renumber(line);
 		}
 	}
 
-	/* new_line_len is now the length of the text that will be wrapped
-	 * to the next line, plus (if we're prepending to it) the length of
-	 * the text of the next line. */
-	new_line_len += after_break_len;
+	/* Go to the wrap location and split the line there. */
+	openfile->current_x = wrap_loc;
+	do_enter(false);
 
-	if (ISSET(AUTOINDENT)) {
-		if (prepending) {
-			/* If we're prepending, the indentation will come from the next line. */
-			indent_string = next_line;
-			indent_len = indent_length(indent_string);
-			next_line += indent_len;
-		} else {
-			/* Otherwise, it will come from this line, in which case
-			 * we should increase new_line_len to make room for it. */
-			new_line_len += indent_len;
-			openfile->totsize += mbstrnlen(indent_string, indent_len);
-		}
-	}
-
-	/* Now we allocate the new line and copy the text into it. */
-	new_line = charalloc(new_line_len + 1);
-	new_line[0] = '\0';
-
-	if (ISSET(AUTOINDENT)) {
-		/* Copy the indentation. */
-		strncpy(new_line, indent_string, indent_len);
-		new_line[indent_len] = '\0';
-		new_line_len += indent_len;
-	}
-
-	/* Copy all the text after the wrap point of the current line. */
-	strcat(new_line, after_break);
-
-	/* Break the current line at the wrap point. */
-	null_at(&line->data, wrap_loc);
-
-	if (prepending) {
-		if (!undoing) {
-			update_undo(SPLIT);
-		}
-		/* If we're prepending, copy the text from the next line, minus
-		 * the indentation that we already copied above. */
-		strcat(new_line, next_line);
-
-		free(line->next->data);
-		line->next->data = new_line;
-
-		/* If the NO_NEWLINES flag isn't set, and text has been added to
-		 * the magicline, make a new magicline. */
-		if (!ISSET(NO_NEWLINES) && openfile->filebot->data[0] != '\0') {
-			new_magicline();
-		}
+	if (old_x < wrap_loc) {
+		openfile->current_x = old_x;
+		openfile->current = old_line;
+		prepend_wrap = true;
 	} else {
-		/* Otherwise, make a new line and copy the text after where we
-		 * broke this line to the beginning of the new line. */
-		splice_node(openfile->current, make_new_node(openfile->current), openfile->current->next);
-
-		/* If the current line is the last line of the file, move the
-		 * last line of the file down to the next line. */
-		if (openfile->filebot == openfile->current) {
-			openfile->filebot = openfile->current->next;
-		}
-
-		openfile->current->next->data = new_line;
-
-		openfile->totsize++;
-	}
-
-	/* Step 3, clean up.  Reposition the cursor and mark, and do some
-	 * other sundry things. */
-
-	/* Set the prepend_wrap flag, so that later wraps of this line will
-	 * be prepended to the next line. */
-	prepend_wrap = true;
-
-	/* Each line knows its number.  We recalculate these if we inserted
-	 * a new line. */
-	if (!prepending) {
-		renumber(line);
-	}
-
-	/* If the cursor was after the break point, we must move it.  We
-	 * also clear the prepend_wrap flag in this case. */
-	if (openfile->current_x > wrap_loc) {
+		openfile->current_x += (old_x - wrap_loc);
 		prepend_wrap = false;
-
-		openfile->current = openfile->current->next;
-		openfile->current_x -= wrap_loc - indent_len;
-		openfile->placewewant = xplustabs();
 	}
+	openfile->placewewant = xplustabs();
 
-	/* If the mark was on this line after the wrap point, we move it
-	 * down.  If it was on the next line and we prepended to that line,
-	 * we move it right. */
-	if (openfile->mark_set) {
-		if (openfile->mark_begin == line && openfile->mark_begin_x > wrap_loc) {
-			openfile->mark_begin = line->next;
-			openfile->mark_begin_x -= wrap_loc - indent_len + 1;
-		} else if (prepending && openfile->mark_begin == line->next) {
-			openfile->mark_begin_x += after_break_len;
-		}
-	}
+	add_undo(SPLIT_END);
 
 	return true;
 }
