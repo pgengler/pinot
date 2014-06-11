@@ -400,7 +400,7 @@ void titlebar(const char *path)
 	const char *state;
 	/* "Modified", "View", or "".  Shows the state of this
 	 * buffer. */
-	size_t statelen = 0;
+	ssize_t statelen = 0;
 	/* The length of the state in columns, or the length of
 	 * "Modified" if the state is blank and we're not in the file
 	 * browser. */
