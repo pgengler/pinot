@@ -25,15 +25,14 @@ nano text editor while also offering a few enhancements.
 make
 
 %install
-rm -rf %{buildroot}
 make DESTDIR="%{buildroot}" install
+rm -f %{buildroot}%{_infodir}/dir
 
 %files
 %defattr(-,root,root)
 %doc AUTHORS.nano BUGS COPYING ChangeLog INSTALL README THANKS TODO doc/faq.html doc/pinotrc.sample
 %{_bindir}/*
 %{_mandir}/man*/*
-%{_mandir}/fr/man*/*
 %{_infodir}/pinot.info*
 %{_datadir}/locale/*/LC_MESSAGES/pinot.mo
 %{_datadir}/pinot/*
