@@ -73,7 +73,6 @@ std::vector<rcoption> rcopts = {
 	{"smarthome", SMART_HOME, false},
 	{"smooth", SMOOTH_SCROLL, false},
 	{"tabstospaces", TABS_TO_SPACES, true},
-	{"undo", UNDOABLE, false},
 	{"whitespace", 0, false},
 	{"wordbounds", WORD_BOUNDS, false},
 	{"softwrap", SOFTWRAP, true},
@@ -1073,10 +1072,6 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 					UNSET(rcopt.flag);
 				} else {
 					rcfile_error(N_("Cannot unset flag \"%s\""), rcopt.name.c_str());
-				}
-				/* Looks like we still need this specific hack for undo */
-				if (rcopt.name == "undo") {
-					shortcut_init();
 				}
 				break;
 			}

@@ -909,10 +909,6 @@ void add_undo(UndoType current_action)
 	char *data;
 	std::list<OpenFile>::iterator fs = openfile;
 
-	if (!ISSET(UNDOABLE)) {
-		return;
-	}
-
 	/* Ugh, if we were called while cutting not-to-end, non-marked and on the same lineno,
 	   we need to  abort here */
 	u = fs->current_undo;
@@ -1045,10 +1041,6 @@ void update_undo(UndoType action)
 {
 	undo *u;
 	std::list<OpenFile>::iterator fs = openfile;
-
-	if (!ISSET(UNDOABLE)) {
-		return;
-	}
 
 	DEBUG_LOG("action = " << action << ", fs->last_action = " << fs->last_action << ",  openfile->current->lineno = " << openfile->current->lineno);
 	if (fs->current_undo) {

@@ -721,7 +721,6 @@ void usage(void)
 	print_opt(_("-s <prog>"), _("--speller=<prog>"), N_("Enable alternate speller"));
 #endif
 	print_opt("-t", "--tempfile", N_("Auto save on exit, don't prompt"));
-	print_opt("-u", "--undo", N_("Allow generic undo [EXPERIMENTAL]"));
 
 	print_opt("-v", "--view", N_("View mode (read-only)"));
 	print_opt("-w", "--nowrap", N_("Don't wrap long lines"));
@@ -1583,7 +1582,6 @@ int main(int argc, char **argv)
 		{"poslog", 0, NULL, 'P'},
 		{"smooth", 0, NULL, 'S'},
 		{"quickblank", 0, NULL, 'U'},
-		{"undo", 0, NULL, 'u'},
 		{"wordbounds", 0, NULL, 'W'},
 		{"autoindent", 0, NULL, 'i'},
 		{"cut", 0, NULL, 'k'},
@@ -1612,10 +1610,10 @@ int main(int argc, char **argv)
 
 	while ((optchr =
 #ifdef HAVE_GETOPT_LONG
-	            getopt_long(argc, argv, "ABC:DEFGHIKLNOPQ:RST:UVWY:chiklmo:pqr:s:tuvwxz$", long_options, NULL)
+	            getopt_long(argc, argv, "ABC:DEFGHIKLNOPQ:RST:UVWY:chiklmo:pqr:s:tvwxz$", long_options, NULL)
 #else
 	            getopt(argc, argv,
-	                   "ABC:DEFGHIKLNOPQ:RST:UVWY:chiklmo:pqr:s:tuvwxz$")
+	                   "ABC:DEFGHIKLNOPQ:RST:UVWY:chiklmo:pqr:s:tvwxz$")
 #endif
 	       ) != -1) {
 		switch (optchr) {
@@ -1719,9 +1717,6 @@ int main(int argc, char **argv)
 #endif
 		case 't':
 			SET(TEMP_FILE);
-			break;
-		case 'u':
-			SET(UNDOABLE);
 			break;
 		case 'v':
 			SET(VIEW_MODE);

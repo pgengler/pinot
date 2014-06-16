@@ -472,10 +472,8 @@ void shortcut_init(void)
 
 	add_to_funcs(do_unindent, MMAIN, N_("Unindent Text"), IFSCHELP(pinot_unindent_msg), false, NOVIEW);
 
-	if (ISSET(UNDOABLE)) {
-		add_to_funcs(do_undo, MMAIN, N_("Undo"), IFSCHELP(pinot_undo_msg), false, NOVIEW);
-		add_to_funcs(do_redo, MMAIN, N_("Redo"), IFSCHELP(pinot_redo_msg), true, NOVIEW);
-	}
+	add_to_funcs(do_undo, MMAIN, N_("Undo"), IFSCHELP(pinot_undo_msg), false, NOVIEW);
+	add_to_funcs(do_redo, MMAIN, N_("Redo"), IFSCHELP(pinot_redo_msg), true, NOVIEW);
 
 	add_to_funcs(do_execute_command, MMAIN, N_("Exec Cmd"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
 
@@ -612,10 +610,8 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-6", do_copy_text, 0, true);
 	add_to_sclist(MMAIN, "M-}", do_indent_void, 0, true);
 	add_to_sclist(MMAIN, "M-{", do_unindent, 0, true);
-	if (ISSET(UNDOABLE)) {
-		add_to_sclist(MMAIN, "M-U", do_undo, 0, true);
-		add_to_sclist(MMAIN, "M-E", do_redo, 0, true);
-	}
+	add_to_sclist(MMAIN, "M-U", do_undo, 0, true);
+	add_to_sclist(MMAIN, "M-E", do_redo, 0, true);
 	add_to_sclist(MMOST, "^F", do_right, 0, true);
 	add_to_sclist(MMOST, "Right", do_right, 0, true);
 	add_to_sclist(MMOST, "^B", do_left, 0, true);
