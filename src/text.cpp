@@ -937,7 +937,6 @@ void add_undo(UndoType current_action)
 		fs->current_undo = u;
 	}
 	u->strdata = NULL;
-	u->strdata2 = NULL;
 	u->cutbuffer = NULL;
 	u->cutbottom  = NULL;
 	u->mark_set = 0;
