@@ -2579,7 +2579,7 @@ int check_dotpinot(void)
 	return 1;
 }
 
-/* Load histories from ~/.pinot_history. */
+/* Load search histories from file. */
 void load_history(void)
 {
 	std::string pinothist = histfilename();
@@ -2750,8 +2750,7 @@ int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column)
 	return 0;
 }
 
-
-/* Load histories from ~/.pinot_history. */
+/* Load position histories from file. */
 void load_poshistory(void)
 {
 	std::string pinothist = poshistfilename();
