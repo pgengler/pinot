@@ -466,7 +466,7 @@ void do_undo(void)
 		u = openfile->current_undo;
 		f = openfile->current;
 		break;
-	case UNSPLIT:
+	case JOIN:
 		undidmsg = _("line join");
 		t = make_new_node(f);
 		t->data = mallocstrcpy(NULL, u->strdata);
@@ -602,7 +602,7 @@ void do_redo(void)
 		u = openfile->current_undo;
 		goto_line_posx(u->lineno, u->begin);
 		break;
-	case UNSPLIT:
+	case JOIN:
 		undidmsg = _("line join");
 		len = strlen(f->data) + strlen(u->strdata) + 1;
 		f->data = charealloc(f->data, len);
@@ -961,8 +961,8 @@ void add_undo(UndoType current_action)
 			}
 			break;
 		}
-		/* Else purposely fall into unsplit code */
-	case UNSPLIT:
+		/* Else purposely fall into join code */
+	case JOIN:
 		if (fs->current->next) {
 			if (u->type == BACK) {
 				u->lineno = fs->current->next->lineno;
@@ -971,7 +971,7 @@ void add_undo(UndoType current_action)
 			data = mallocstrcpy(NULL, fs->current->next->data);
 			u->strdata = data;
 		}
-		current_action = u->type = UNSPLIT;
+		current_action = u->type = JOIN;
 		break;
 	case SPLIT_BEGIN:
 		current_action = fs->undotop->type;
@@ -1127,8 +1127,7 @@ void update_undo(UndoType action)
 		break;
 	case SPLIT_BEGIN:
 	case SPLIT_END:
-		break;
-	case UNSPLIT:
+	case JOIN:
 		/* These cases are handled by the earlier check for a new line and action */
 	case OTHER:
 		break;
