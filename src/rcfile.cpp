@@ -446,7 +446,6 @@ void parse_keybinding(char *ptr)
 
 	newsc->keystr = keycopy;
 	newsc->menu = menu;
-	newsc->type = strtokeytype(newsc->keystr);
 	DEBUG_LOG("s->keystr = \"" << newsc->keystr << '"');
 
 	/* Remove previous bindings for this key/menu combination */

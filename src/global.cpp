@@ -211,20 +211,6 @@ void toggle_execute_void(void)
 {
 }
 
-/* Set type of function based on the string */
-FunctionType strtokeytype(const std::string& str)
-{
-	if (str[0] == 'M' || str[0] == 'm') {
-		return META;
-	} else if (str[0] == '^') {
-		return CONTROL;
-	} else if (str[0] == 'F' || str[0] == 'f') {
-		return FKEY;
-	} else {
-		return RAWINPUT;
-	}
-}
-
 /* Add a string to the new function list strict.
    Does not allow updates, yet anyway */
 void add_to_funcs(void (*func)(void), int menus, const char *desc, const char *help, bool blank_after, bool viewok)
@@ -260,7 +246,6 @@ const sc *first_sc_for(int menu, void (*func)(void))
 void add_to_sclist(int menu, const std::string& scstring, void (*func)(void), int toggle, int execute)
 {
 	auto shortcut = new sc;
-	shortcut->type = strtokeytype(scstring);
 	shortcut->menu = menu;
 	shortcut->toggle = toggle;
 	shortcut->keystr = scstring;

@@ -410,10 +410,6 @@ void help_init(void)
 				continue;
 			}
 
-			if (s->type == RAWINPUT) {
-				continue;
-			}
-
 			if ((s->menu & currmenu) == 0) {
 				continue;
 			}

@@ -536,7 +536,6 @@ const subnfunc *getfuncfromkey(WINDOW *win);
 void empty_sclist(void);
 void print_sclist(void);
 sc *strtosc(char *input);
-FunctionType strtokeytype(const std::string& str);
 int strtomenu(char *input);
 void xon_complaint(void);
 void xoff_complaint(void);

@@ -24,10 +24,6 @@ typedef enum {
 } UpdateType;
 
 typedef enum {
-	CONTROL, META, FKEY, RAWINPUT
-} FunctionType;
-
-typedef enum {
 	ADD, DEL, BACK, REPLACE, SPLIT_BEGIN, SPLIT_END, JOIN, CUT, CUT_EOF, PASTE, ENTER, INSERT, OTHER
 } UndoType;
 
@@ -117,8 +113,6 @@ typedef struct rcoption {
 typedef struct sc {
 	std::string keystr;
 	/* The shortcut key for a function, ASCII version */
-	FunctionType type;
-	/* What kind of function key is it for convenience later */
 	int menu;
 	/* What list does this apply to */
 	void (*scfunc)(void);
