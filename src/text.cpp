@@ -1359,11 +1359,7 @@ ssize_t break_line(const char *line, ssize_t goal, bool newln)
 	line_len = parse_mbchar(line, NULL, NULL);
 	line += line_len;
 
-	while (*line != '\0' && (is_blank_mbchar(line) || (newln && *line == '\n'))) {
-		if (newln && *line == '\n') {
-			break;
-		}
-
+	while (*line != '\0' && is_blank_mbchar(line)) {
 		line_len = parse_mbchar(line, NULL, NULL);
 
 		line += line_len;
