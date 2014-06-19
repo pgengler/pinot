@@ -149,7 +149,7 @@ Convert typed tabs to spaces.
 Enable multiple file buffers, if available.
 
 @item -H, --historylog
-Log search and replace strings to ~/.pinot_history, so they can be
+Log search and replace strings to ~/.pinot/search_history, so they can be
 retrieved in later sessions, if pinotrc support is available.
 
 @item -I, --ignorercfiles
