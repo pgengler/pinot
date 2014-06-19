@@ -90,8 +90,6 @@ typedef struct undo {
 	/* Copy of cutbottom */
 	bool mark_set;
 	/* was the marker set when we cut */
-	bool to_end;
-	/* was this a cut to end */
 	ssize_t mark_begin_lineno;
 	/* copy copy copy */
 	size_t mark_begin_x;

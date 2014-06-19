@@ -400,7 +400,7 @@ void undo_paste(undo *u)
 	}
 
 	openfile->mark_begin_x = (u->xflags == UNcut_cutline) ? 0 : u->mark_begin_x;
-	do_cut_text(false, u->to_end, true);
+	do_cut_text(false, (u->type == CUT_EOF), true);
 	openfile->mark_set = false;
 	openfile->mark_begin = NULL;
 	openfile->mark_begin_x = 0;
@@ -944,7 +944,6 @@ void add_undo(UndoType current_action)
 	u->mark_begin_lineno = fs->current->lineno;
 	u->mark_begin_x = fs->current_x;
 	u->xflags = 0;
-	u->to_end = false;
 
 	switch (u->type) {
 		/* We need to start copying data into the undo buffer or we wont be able
@@ -986,15 +985,13 @@ void add_undo(UndoType current_action)
 		u->strdata = data;
 		break;
 	case CUT_EOF:
-		u->to_end = true;
-		// fallthrough
 	case CUT:
 		cutbuffer_reset();
 		u->mark_set = openfile->mark_set;
 		if (u->mark_set) {
 			u->mark_begin_lineno = openfile->mark_begin->lineno;
 			u->mark_begin_x = openfile->mark_begin_x;
-		} else if (ISSET(CUT_TO_END) && !u->to_end) {
+		} else if (ISSET(CUT_TO_END) && (u->type != CUT_EOF)) {
 			 /* The entire line is being cut regardless of the cursor position. */
 			u->begin = 0;
 			u->xflags = UNcut_cutline;
@@ -1113,7 +1110,7 @@ void update_undo(UndoType action)
 			while (u->cutbottom->next != NULL) {
 				u->cutbottom = u->cutbottom->next;
 			}
-			if (!u->to_end) {
+			if (u->type != CUT_EOF) {
 				u->lineno++;
 			}
 		}
