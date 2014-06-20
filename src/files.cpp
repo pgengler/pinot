@@ -2573,7 +2573,7 @@ int check_dotpinot(void)
 			return 0;
 		}
 	} else if (!S_ISDIR(dirstat.st_mode)) {
-		history_error(N_("Path %s is not a directory and needs to be.\npinot will be unable to load or save search or cursor position history\n"));
+		history_error(N_("Path %s is not a directory and needs to be.\npinot will be unable to load or save search or cursor position history\n"), pinotdir.c_str());
 		return 0;
 	}
 	return 1;
