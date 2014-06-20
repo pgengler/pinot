@@ -27,7 +27,6 @@
 /* All external variables.  See global.c for their descriptions. */
 extern sigjmp_buf jump_buf;
 extern bool jump_buf_set;
-extern bool use_undo;
 
 extern Keyboard *keyboard;
 
@@ -54,7 +53,6 @@ extern char *matchbrackets;
 
 extern char *whitespace;
 extern int whitespace_len[2];
-extern UndoType last_action;
 
 extern bool nodelay_mode;
 extern std::string answer;
@@ -545,8 +543,6 @@ void clear_color(WINDOW *win, ColorPair color);
 
 void enable_nodelay(void);
 void disable_nodelay(void);
-
-extern const char *regexp_msg;
 
 /* May as just throw these here since they are just placeholders */
 void do_cancel(void);
