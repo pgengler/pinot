@@ -612,6 +612,9 @@ void do_redo(void)
 		strcat(f->data, u->strdata);
 		if (f->next != NULL) {
 			filestruct *tmp = f->next;
+			if (tmp == openfile->filebot) {
+				openfile->filebot = f;
+			}
 			unlink_node(tmp);
 			delete_node(tmp);
 		}
