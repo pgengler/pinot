@@ -349,13 +349,6 @@ void redo_paste(undo *u)
 		return;
 	}
 
-	cutbuffer = copy_filestruct(u->cutbuffer);
-
-	/* Compute cutbottom for the uncut using out copy */
-	for (cutbottom = cutbuffer; cutbottom->next != NULL; cutbottom = cutbottom->next) {
-		;
-	}
-
 	/* Get to where we need to uncut from */
 	if (u->xflags == UNcut_cutline) {
 		goto_line_posx(u->mark_begin_lineno, 0);
@@ -363,9 +356,7 @@ void redo_paste(undo *u)
 		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
 	}
 
-	copy_from_filestruct(cutbuffer);
-	free_filestruct(cutbuffer);
-	cutbuffer = NULL;
+	copy_from_filestruct(u->cutbuffer);
 
 	if (u->xflags == UNcut_cutline || u->xflags == UNcut_marked_backwards || u->type == CUT_EOF) {
 		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
@@ -387,20 +378,12 @@ void undo_paste(undo *u)
 		openfile->placewewant = xplustabs();
 	}
 
-	openfile->mark_set = u->mark_set;
-	if (cutbuffer) {
-		free(cutbuffer);
-	}
-	cutbuffer = NULL;
-
+	openfile->mark_set = ISSET(CUT_TO_END) ? u->mark_set : true;
 	openfile->mark_begin = fsfromline(u->mark_begin_lineno);
-
-	if (!ISSET(CUT_TO_END)) {
-		openfile->mark_set = true;
-	}
-
 	openfile->mark_begin_x = (u->xflags == UNcut_cutline) ? 0 : u->mark_begin_x;
+
 	do_cut_text(false, (u->type == CUT_EOF), true);
+
 	openfile->mark_set = false;
 	openfile->mark_begin = NULL;
 	openfile->mark_begin_x = 0;
@@ -1009,7 +992,7 @@ void add_undo(UndoType current_action)
 			statusbar(_("Internal error: can't setup uncut.  Please save your work."));
 		} else {
 			if (u->cutbuffer) {
-				free(u->cutbuffer);
+				free_filestruct(u->cutbuffer);
 			}
 			u->cutbuffer = copy_filestruct(cutbuffer);
 			u->mark_begin_lineno = fs->current->lineno;
@@ -1095,7 +1078,7 @@ void update_undo(UndoType action)
 			break;
 		}
 		if (u->cutbuffer) {
-			free(u->cutbuffer);
+			free_filestruct(u->cutbuffer);
 		}
 		u->cutbuffer = copy_filestruct(cutbuffer);
 		if (u->mark_set) {
