@@ -1094,10 +1094,8 @@ void do_toggle(int flag)
 		edit_refresh();
 		break;
 	case NO_COLOR_SYNTAX:
-		edit_refresh();
-		break;
 	case SOFTWRAP:
-		total_refresh();
+		edit_refresh();
 		break;
 	}
 
