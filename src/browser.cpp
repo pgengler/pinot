@@ -48,8 +48,6 @@ std::string do_browser(std::string path, DIR *dir)
 {
 	std::string retval;
 	bool old_const_update = ISSET(CONST_UPDATE);
-	bool abort = false;
-	/* Whether we should abort the file browser. */
 	std::string prev_dir;
 	/* The directory we were in, if any, before backing up via browsing to "..". */
 	std::string ans;
@@ -96,7 +94,7 @@ change_browser_directory:
 	void (*func)() = nullptr;
 	Key *kbinput = nullptr;
 
-	while (!abort) {
+	while (true) {
 		struct stat st;
 		size_t fileline = selected / width;
 		/* The line number the selected file is on. */
@@ -253,16 +251,15 @@ change_browser_directory:
 				continue;
 			}
 
-			/* If we've successfully opened a file, we're done, so get out. */
 			if (!S_ISDIR(st.st_mode)) {
+				/* We've successfully opened a file, we're done, so get out. */
 				retval = filelist[selected];
-				abort = true;
 				func = nullptr;
-				continue;
-				/* If we've successfully opened a directory, and it's
-				 * "..", save the current directory in prev_dir, so that
-				 * we can select it later. */
+				break;
 			} else if (tail(filelist[selected]) == "..") {
+				/* We've successfully opened the parent directory,
+				 * save the current directory in prev_dir, so that
+				  * we can easily return to it by hitting Enter. */
 				prev_dir = striponedir(filelist[selected]);
 			}
 
@@ -279,9 +276,9 @@ change_browser_directory:
 
 			/* Start over again with the new path value. */
 			goto change_browser_directory;
-			/* Abort the file browser. */
 		} else if (func == do_exit) {
-			abort = true;
+			/* Exit from the file browser. */
+			break;
 		}
 		func = nullptr;
 	}
