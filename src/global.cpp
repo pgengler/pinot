@@ -204,7 +204,7 @@ void backwards_void(void)
 void goto_dir_void(void)
 {
 }
-void no_replace_void(void)
+void toggle_replace_void(void)
 {
 }
 void toggle_execute_void(void)
@@ -445,7 +445,7 @@ void shortcut_init(void)
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), false, VIEW);
 
-	add_to_funcs(do_replace, (MMAIN|MWHEREIS), _("Replace"), IFSCHELP(pinot_replace_msg), false, NOVIEW);
+	add_to_funcs(do_replace, MMAIN, _("Replace"), IFSCHELP(pinot_replace_msg), false, NOVIEW);
 
 	add_to_funcs(do_mark, MMAIN, N_("Mark Text"), IFSCHELP(pinot_mark_msg), false, VIEW);
 
@@ -516,7 +516,8 @@ void shortcut_init(void)
 
 	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("NextHist"), IFSCHELP(pinot_next_history_msg), false, VIEW);
 
-	add_to_funcs(no_replace_void, MREPLACE, N_("No Replace"), IFSCHELP(pinot_whereis_msg), false, VIEW);
+	add_to_funcs(toggle_replace_void, MWHEREIS, N_("Replace"), IFSCHELP(pinot_whereis_msg), false, VIEW);
+	add_to_funcs(toggle_replace_void, MREPLACE, N_("No Replace"), IFSCHELP(pinot_whereis_msg), false, VIEW);
 
 	add_to_funcs(gototext_void, MGOTOLINE, N_("Go To Text"), IFSCHELP(pinot_whereis_msg), true, VIEW);
 
@@ -583,8 +584,7 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "^\\", do_replace, 0, true);
 	add_to_sclist(MMAIN, "F14", do_replace, 0, true);
 	add_to_sclist(MMAIN, "M-R", do_replace, 0, true);
-	add_to_sclist(MWHEREIS, "^R", do_replace, 0, false);
-	add_to_sclist(MREPLACE, "^R", no_replace_void, 0, false);
+	add_to_sclist(MWHEREIS|MREPLACE, "^R", toggle_replace_void, 0, false);
 	add_to_sclist(MWHEREIS, "^T", do_gotolinecolumn_void, 0, false);
 	add_to_sclist(MMAIN, "^^", do_mark, 0, true);
 	add_to_sclist(MMAIN, "F15", do_mark, 0, true);
@@ -946,8 +946,8 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "backwards")) {
 			s->scfunc = backwards_void;
 			s->execute = false;
-		} else if (!strcasecmp(input, "dontreplace")) {
-			s->scfunc = no_replace_void;
+		} else if (!strcasecmp(input, "togglereplace")) {
+			s->scfunc = toggle_replace_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "gototext")) {
 			s->scfunc = gototext_void;

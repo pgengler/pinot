@@ -189,7 +189,7 @@ int search_init(bool replacing, bool use_answer)
 			TOGGLE(USE_REGEXP);
 			backupstring = answer;
 			return 1;
-		} else if (func == do_replace || func == no_replace_void) {
+		} else if (func == do_replace || func == toggle_replace_void) {
 			backupstring = answer;
 			return -2;	/* Call the opposite search function. */
 		} else if (func == do_gotolinecolumn_void) {
