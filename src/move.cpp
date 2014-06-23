@@ -403,7 +403,7 @@ void do_up(bool scroll_only)
 	 * scroll_only is true, scroll the edit window up one line
 	 * unconditionally. */
 	if (openfile->current_y == 0 || (ISSET(SOFTWRAP) && openfile->edittop->lineno == openfile->current->next->lineno) || scroll_only) {
-		edit_scroll(UP_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? 1 : editwinrows / 2 + 1);
+		edit_scroll(UPWARD, (ISSET(SMOOTH_SCROLL) || scroll_only) ? 1 : editwinrows / 2 + 1);
 	}
 
 	/* If we're below the first line of the edit window, update the
@@ -473,7 +473,7 @@ void do_down(bool scroll_only)
  		if (amount < 1 || scroll_only) {
 			amount = 1;
 		}
-		edit_scroll(DOWN_DIR, (ISSET(SMOOTH_SCROLL) || scroll_only) ? amount : editwinrows / 2 + 1);
+		edit_scroll(DOWNWARD, (ISSET(SMOOTH_SCROLL) || scroll_only) ? amount : editwinrows / 2 + 1);
 
 		edit_refresh_needed = true;
 	}

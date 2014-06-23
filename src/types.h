@@ -16,7 +16,7 @@ typedef enum {
 } AppendType;
 
 typedef enum {
-	UP_DIR, DOWN_DIR
+	UPWARD, DOWNWARD
 } ScrollDir;
 
 typedef enum {
