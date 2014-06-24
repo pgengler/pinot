@@ -999,37 +999,40 @@ sc *strtosc(std::string input)
 }
 
 /* Same thing as abnove but for the menu */
-int strtomenu(char *input)
+int strtomenu(std::string input)
 {
-	if (!strcasecmp(input, "all")) {
+	// Convert input to lowercase for case-insensitive comparisons
+	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+	if (input == "all") {
 		return MMOST;
-	} else if (!strcasecmp(input, "main")) {
+	} else if (input == "main") {
 		return MMAIN;
-	} else if (!strcasecmp(input, "search")) {
+	} else if (input == "search") {
 		return MWHEREIS;
-	} else if (!strcasecmp(input, "replace")) {
+	} else if (input == "replace") {
 		return MREPLACE;
-	} else if (!strcasecmp(input, "replace2") || !strcasecmp(input, "replacewith")) {
+	} else if (input == "replacewith" || input == "replace2") {
 		return MREPLACEWITH;
-	} else if (!strcasecmp(input, "gotoline")) {
+	} else if (input == "gotoline") {
 		return MGOTOLINE;
-	} else if (!strcasecmp(input, "writeout")) {
+	} else if (input == "writeout") {
 		return MWRITEFILE;
-	} else if (!strcasecmp(input, "insert")) {
+	} else if (input == "insert") {
 		return MINSERTFILE;
-	} else if (!strcasecmp(input, "externalcmd") || !strcasecmp(input, "extcmd")) {
+	} else if (input == "extcmd" || input == "externalcmd") {
 		return MEXTCMD;
-	} else if (!strcasecmp(input, "help")) {
+	} else if (input == "help") {
 		return MHELP;
-	} else if (!strcasecmp(input, "spell")) {
+	} else if (input == "spell") {
 		return MSPELL;
-	} else if (!strcasecmp(input, "linter")) {
+	} else if (input == "linter") {
 		return MLINTER;
-	} else if (!strcasecmp(input, "browser")) {
+	} else if (input == "browser") {
 		return MBROWSER;
-	} else if (!strcasecmp(input, "whereisfile")) {
+	} else if (input == "whereisfile") {
 		return MWHEREISFILE;
-	} else if (!strcasecmp(input, "gotodir")) {
+	} else if (input == "gotodir") {
 		return MGOTODIR;
 	}
 
