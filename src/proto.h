@@ -140,10 +140,6 @@ size_t move_mbleft(const std::string& str, size_t pos);
 size_t move_mbleft(const char *buf, size_t pos);
 size_t move_mbright(const std::string& str, size_t pos);
 size_t move_mbright(const char *buf, size_t pos);
-#ifndef HAVE_STRCASECMP
-int nstrcasecmp(const char *s1, const char *s2);
-#endif
-int mbstrcasecmp(const char *s1, const char *s2);
 #ifndef HAVE_STRNCASECMP
 int nstrncasecmp(const char *s1, const char *s2, size_t n);
 #endif

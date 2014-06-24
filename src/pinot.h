@@ -102,17 +102,13 @@
 #define vsnprintf g_vsnprintf
 #endif
 
-/* If no isblank(), iswblank(), strcasecmp(), strncasecmp(),
- * strcasestr(), strnlen(), getdelim(), or getline(), use the versions
- * we have. */
+/* If no isblank(), iswblank(), strncasecmp(), strcasestr(), strnlen(),
+ * getdelim(), or getline(), use the versions we have. */
 #ifndef HAVE_ISBLANK
 #define isblank nisblank
 #endif
 #ifndef HAVE_ISWBLANK
 #define iswblank niswblank
-#endif
-#ifndef HAVE_STRCASECMP
-#define strcasecmp nstrcasecmp
 #endif
 #ifndef HAVE_STRNCASECMP
 #define strncasecmp nstrncasecmp
