@@ -2163,28 +2163,6 @@ bool sort_directories(const std::string& a, const std::string& b)
 	return false;
 }
 
-int diralphasort(const void *va, const void *vb)
-{
-	struct stat fileinfo;
-	const char *a = *(const char *const *)va;
-	const char *b = *(const char *const *)vb;
-	bool aisdir = stat(a, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode);
-	bool bisdir = stat(b, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode);
-
-	if (aisdir && !bisdir) {
-		return -1;
-	}
-	if (!aisdir && bisdir) {
-		return 1;
-	}
-
-	/* Standard function brain damage: We should be sorting
-	 * alphabetically and case-insensitively according to the current
-	 * locale, but there's no standard strcasecoll() function, so we
-	 * have to use multibyte strcasecmp() instead, */
-	return mbstrcasecmp(a, b);
-}
-
 /* Is the given path a directory? */
 bool is_dir(const char *buf)
 {
