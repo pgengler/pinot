@@ -952,9 +952,6 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "gototext")) {
 			s->scfunc = gototext_void;
 			s->execute = false;
-		} else if (!strcasecmp(input, "browser") || !strcasecmp(input, "tofiles")) {
-			s->scfunc = to_files_void;
-			s->execute = false;
 		} else if (!strcasecmp(input, "dosformat")) {
 			s->scfunc = dos_format_void;
 			s->execute = false;
@@ -973,8 +970,14 @@ sc *strtosc(char *input)
 		} else if (!strcasecmp(input, "toggleexecute")) {
 			s->scfunc = toggle_execute_void;
 			s->execute = false;
-		} else if (!strcasecmp(input, "newbuffer")) {
+		} else if (!strcasecmp(input, "newbuffer") || !strcasecmp(input, "togglebuffer")) {
 			s->scfunc = new_buffer_void;
+			s->execute = false;
+		} else if (!strcasecmp(input, "browser") || !strcasecmp(input, "files")) {
+			s->scfunc = to_files_void;
+			s->execute = false;
+		} else if (!strcasecmp(input, "gotodir")) {
+			s->scfunc = goto_dir_void;
 			s->execute = false;
 		} else if (!strcasecmp(input, "firstfile")) {
 			s->scfunc = do_first_file;

@@ -323,7 +323,8 @@ Insert a file into the current buffer (or into a new buffer when multibuffer
 is enabled).
 .TP
 .B whereis
-Search for text in the current buffer.
+Search for text in the current buffer, or filenames matching a string in the
+current list in the file browser.
 .TP
 .B searchagain
 Repeat the last search command.
@@ -364,6 +365,9 @@ Move to the last line of the file.
 .TP
 .B gotoline
 Move to a specific line (and column if specified).
+.TP
+.B gototext
+Switch between targeting a line number and searching for text.
 .TP
 .B replace
 Interactively replace text within the current buffer.
@@ -467,10 +471,16 @@ Show the next history entry in the prompt menus (e.g. search).
 Toggles between searching for something and replacing something.
 .TP
 .B toggleexecute
-Toggle between inserting a file and executing a command.
+Toggles between inserting a file and executing a command.
 .TP
-.B gototext
-Search for files matching a string in the file browser (reading or writing files).
+.B togglenewbuffer
+Toggles between inserting into the current buffer and into a new empty buffer.
+.TP
+.B tofiles
+Starts the file browser, allowing a file to be selected from a list.
+.TP
+.B gotodir
+Goes to a directory.
 .TP
 .B dosformat
 When writing a file, switch to writing a DOS format (CR/LF).
