@@ -22,6 +22,7 @@
 
 #include "proto.h"
 
+#include <algorithm>
 #include <list>
 #include <ctype.h>
 #include <string.h>
@@ -763,236 +764,234 @@ const char *flagtostr(int flag)
 
 /* Interpret the string given by the rc file and return a
     shortcut struct, complete with proper value for execute */
-sc *strtosc(char *input)
+sc *strtosc(std::string input)
 {
-	sc *s;
-
-	s = new sc;
+	sc *s = new sc;
 	s->execute = true; /* overridden as needed below */
 
+	// Convert input to lowercase for case-insensitive comparisons
+	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
 
-	if (!strcasecmp(input, "help")) {
+	if (input == "help") {
 		s->scfunc = do_help_void;
-	} else {
-		if (!strcasecmp(input, "cancel")) {
-			s->scfunc = do_cancel;
-			s->execute = false;
-		} else if (!strcasecmp(input, "exit")) {
-			s->scfunc = do_exit;
-		} else if (!strcasecmp(input, "writeout")) {
-			s->scfunc = do_writeout_void;
-		} else if (!strcasecmp(input, "insert")) {
-			s->scfunc = do_insertfile_void;
-		} else if (!strcasecmp(input, "execute")) {
-			s->scfunc = do_execute_command;
-		} else if (!strcasecmp(input, "whereis")) {
-			s->scfunc = do_search;
-		} else if (!strcasecmp(input, "up")) {
-			s->scfunc = do_up_void;
-		} else if (!strcasecmp(input, "down")) {
-			s->scfunc = do_down_void;
-		} else if (!strcasecmp(input, "pageup") || !strcasecmp(input, "prevpage")) {
-			s->scfunc = do_page_up;
-		} else if (!strcasecmp(input, "pagedown") || !strcasecmp(input, "nextpage")) {
-			s->scfunc = do_page_down;
-		} else if (!strcasecmp(input, "cut")) {
-			s->scfunc = do_cut_text_void;
-		} else if (!strcasecmp(input, "uncut")) {
-			s->scfunc = do_uncut_text;
-		} else if (!strcasecmp(input, "cutrestoffile")) {
-			s->scfunc = do_cut_till_end;
-		} else if (!strcasecmp(input, "curpos") || !strcasecmp(input, "cursorpos")) {
-			s->scfunc = do_cursorpos_void;
-		} else if (!strcasecmp(input, "firstline")) {
-			s->scfunc = do_first_line;
-		} else if (!strcasecmp(input, "lastline")) {
-			s->scfunc = do_last_line;
-		} else if (!strcasecmp(input, "gotoline")) {
-			s->scfunc = do_gotolinecolumn_void;
-		} else if (!strcasecmp(input, "replace")) {
-			s->scfunc = do_replace;
-		} else if (!strcasecmp(input, "mark")) {
-			s->scfunc = do_mark;
-		} else if (!strcasecmp(input, "searchagain") || !strcasecmp(input, "research")) {
-			s->scfunc = do_research;
-		} else if (!strcasecmp(input, "copytext")) {
-			s->scfunc = do_copy_text;
-		} else if (!strcasecmp(input, "indent")) {
-			s->scfunc = do_indent_void;
-		} else if (!strcasecmp(input, "unindent")) {
-			s->scfunc = do_unindent;
-		} else if (!strcasecmp(input, "scrollup")) {
-			s->scfunc = do_scroll_up;
-		} else if (!strcasecmp(input, "scrolldown")) {
-			s->scfunc = do_scroll_down;
-		} else if (!strcasecmp(input, "prevword")) {
-			s->scfunc = do_prev_word_void;
-		} else if (!strcasecmp(input, "nextword")) {
-			s->scfunc = do_next_word_void;
-		} else if (!strcasecmp(input, "findbracket")) {
-			s->scfunc = do_find_bracket;
-		} else if (!strcasecmp(input, "wordcount")) {
-			s->scfunc = do_wordlinechar_count;
-		} else if (!strcasecmp(input, "suspend")) {
-			s->scfunc = do_suspend_void;
-		} else if (!strcasecmp(input, "undo")) {
-			s->scfunc = do_undo;
-		} else if (!strcasecmp(input, "redo")) {
-			s->scfunc = do_redo;
-		} else if (!strcasecmp(input, "prevhistory")) {
-			s->scfunc = get_history_older_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "nexthistory")) {
-			s->scfunc = get_history_newer_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "nohelp")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = NO_HELP;
-		} else if (!strcasecmp(input, "constupdate")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = CONST_UPDATE;
-		} else if (!strcasecmp(input, "morespace")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = MORE_SPACE;
-		} else if (!strcasecmp(input, "smoothscroll")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = SMOOTH_SCROLL;
-		} else if (!strcasecmp(input, "whitespacedisplay")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = WHITESPACE_DISPLAY;
-		} else if (!strcasecmp(input, "nosyntax")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = NO_COLOR_SYNTAX;
-		} else if (!strcasecmp(input, "smarthome")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = SMART_HOME;
-		} else if (!strcasecmp(input, "autoindent")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = AUTOINDENT;
-		} else if (!strcasecmp(input, "cuttoend")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = CUT_TO_END;
-		} else if (!strcasecmp(input, "nowrap")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = NO_WRAP;
-		} else if (!strcasecmp(input, "softwrap")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = SOFTWRAP;
-		} else if (!strcasecmp(input, "tabstospaces")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = TABS_TO_SPACES;
-		} else if (!strcasecmp(input, "backupfile")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = BACKUP_FILE;
-		} else if (!strcasecmp(input, "multibuffer")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = MULTIBUFFER;
-		} else if (!strcasecmp(input, "noconvert")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = NO_CONVERT;
-		} else if (!strcasecmp(input, "suspendenable")) {
-			s->scfunc = do_toggle_void;
-			s->execute = false;
-			s->toggle = SUSPEND;
-		} else if (!strcasecmp(input, "right") || !strcasecmp(input, "forward")) {
-			s->scfunc = do_right;
-		} else if (!strcasecmp(input, "left") || !strcasecmp(input, "back")) {
-			s->scfunc = do_left;
-		} else if (!strcasecmp(input, "up") || !strcasecmp(input, "prevline")) {
-			s->scfunc = do_up_void;
-		} else if (!strcasecmp(input, "down") || !strcasecmp(input, "nextline")) {
-			s->scfunc = do_down_void;
-		} else if (!strcasecmp(input, "home")) {
-			s->scfunc = do_home;
-		} else if (!strcasecmp(input, "end")) {
-			s->scfunc = do_end;
-		} else if (!strcasecmp(input, "prevbuf")) {
-			s->scfunc = switch_to_prev_buffer_void;
-		} else if (!strcasecmp(input, "nextbuf")) {
-			s->scfunc = switch_to_next_buffer_void;
-		} else if (!strcasecmp(input, "verbatim")) {
-			s->scfunc = do_verbatim_input;
-		} else if (!strcasecmp(input, "tab")) {
-			s->scfunc = do_tab;
-		} else if (!strcasecmp(input, "enter")) {
-			s->scfunc = do_enter_void;
-		} else if (!strcasecmp(input, "delete")) {
-			s->scfunc = do_delete;
-		} else if (!strcasecmp(input, "backspace")) {
-			s->scfunc = do_backspace;
-		} else if (!strcasecmp(input, "refresh")) {
-			s->scfunc = total_refresh;
-		} else if (!strcasecmp(input, "casesens")) {
-			s->scfunc = case_sens_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "regexp") || !strcasecmp(input, "regex")) {
-			s->scfunc = regexp_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "backwards")) {
-			s->scfunc = backwards_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "togglereplace")) {
-			s->scfunc = toggle_replace_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "gototext")) {
-			s->scfunc = gototext_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "dosformat")) {
-			s->scfunc = dos_format_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "macformat")) {
-			s->scfunc = mac_format_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "append")) {
-			s->scfunc = append_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "prepend")) {
-			s->scfunc = prepend_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "backup")) {
-			s->scfunc = backup_file_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "toggleexecute")) {
-			s->scfunc = toggle_execute_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "newbuffer") || !strcasecmp(input, "togglebuffer")) {
-			s->scfunc = new_buffer_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "browser") || !strcasecmp(input, "files")) {
-			s->scfunc = to_files_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "gotodir")) {
-			s->scfunc = goto_dir_void;
-			s->execute = false;
-		} else if (!strcasecmp(input, "firstfile")) {
-			s->scfunc = do_first_file;
-			s->execute = false;
-		} else if (!strcasecmp(input, "lastfile")) {
-			s->scfunc = do_last_file;
-			s->execute = false;
+	} else if (input == "cancel") {
+		s->scfunc = do_cancel;
+		s->execute = false;
+	} else if (input == "exit") {
+		s->scfunc = do_exit;
+	} else if (input == "writeout") {
+		s->scfunc = do_writeout_void;
+	} else if (input == "insert") {
+		s->scfunc = do_insertfile_void;
+	} else if (input == "execute") {
+		s->scfunc = do_execute_command;
+	} else if (input == "whereis") {
+		s->scfunc = do_search;
+	} else if (input == "up") {
+		s->scfunc = do_up_void;
+	} else if (input == "down") {
+		s->scfunc = do_down_void;
+	} else if (input == "pageup" || input == "prevpage") {
+		s->scfunc = do_page_up;
+	} else if (input == "pagedown" || input == "nextpage") {
+		s->scfunc = do_page_down;
+	} else if (input == "cut") {
+		s->scfunc = do_cut_text_void;
+	} else if (input == "uncut") {
+		s->scfunc = do_uncut_text;
+	} else if (input == "cutrestoffile") {
+		s->scfunc = do_cut_till_end;
+	} else if (input == "curpos" || input == "cursorpos") {
+		s->scfunc = do_cursorpos_void;
+	} else if (input == "firstline") {
+		s->scfunc = do_first_line;
+	} else if (input == "lastline") {
+		s->scfunc = do_last_line;
+	} else if (input == "gotoline") {
+		s->scfunc = do_gotolinecolumn_void;
+	} else if (input == "replace") {
+		s->scfunc = do_replace;
+	} else if (input == "mark") {
+		s->scfunc = do_mark;
+	} else if (input == "searchagain" || input == "research") {
+		s->scfunc = do_research;
+	} else if (input == "copytext") {
+		s->scfunc = do_copy_text;
+	} else if (input == "indent") {
+		s->scfunc = do_indent_void;
+	} else if (input == "unindent") {
+		s->scfunc = do_unindent;
+	} else if (input == "scrollup") {
+		s->scfunc = do_scroll_up;
+	} else if (input == "scrolldown") {
+		s->scfunc = do_scroll_down;
+	} else if (input == "prevword") {
+		s->scfunc = do_prev_word_void;
+	} else if (input == "nextword") {
+		s->scfunc = do_next_word_void;
+	} else if (input == "findbracket") {
+		s->scfunc = do_find_bracket;
+	} else if (input == "wordcount") {
+		s->scfunc = do_wordlinechar_count;
+	} else if (input == "suspend") {
+		s->scfunc = do_suspend_void;
+	} else if (input == "undo") {
+		s->scfunc = do_undo;
+	} else if (input == "redo") {
+		s->scfunc = do_redo;
+	} else if (input == "prevhistory") {
+		s->scfunc = get_history_older_void;
+		s->execute = false;
+	} else if (input == "nexthistory") {
+		s->scfunc = get_history_newer_void;
+		s->execute = false;
+	} else if (input == "nohelp") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = NO_HELP;
+	} else if (input == "constupdate") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = CONST_UPDATE;
+	} else if (input == "morespace") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = MORE_SPACE;
+	} else if (input == "smoothscroll") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = SMOOTH_SCROLL;
+	} else if (input == "whitespacedisplay") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = WHITESPACE_DISPLAY;
+	} else if (input == "nosyntax") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = NO_COLOR_SYNTAX;
+	} else if (input == "smarthome") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = SMART_HOME;
+	} else if (input == "autoindent") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = AUTOINDENT;
+	} else if (input == "cuttoend") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = CUT_TO_END;
+	} else if (input == "nowrap") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = NO_WRAP;
+	} else if (input == "softwrap") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = SOFTWRAP;
+	} else if (input == "tabstospaces") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = TABS_TO_SPACES;
+	} else if (input == "backupfile") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = BACKUP_FILE;
+	} else if (input == "multibuffer") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = MULTIBUFFER;
+	} else if (input == "noconvert") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = NO_CONVERT;
+	} else if (input == "suspendable") {
+		s->scfunc = do_toggle_void;
+		s->execute = false;
+		s->toggle = SUSPEND;
+	} else if (input == "right" || input == "forward") {
+		s->scfunc = do_right;
+	} else if (input == "left" || input == "back") {
+		s->scfunc = do_left;
+	} else if (input == "up" || input == "prevline") {
+		s->scfunc = do_up_void;
+	} else if (input == "down" || input == "nextline") {
+		s->scfunc = do_down_void;
+	} else if (input == "home") {
+		s->scfunc = do_home;
+	} else if (input == "end") {
+		s->scfunc = do_end;
+	} else if (input == "prevbuf") {
+		s->scfunc = switch_to_prev_buffer_void;
+	} else if (input == "nextbuf") {
+		s->scfunc = switch_to_next_buffer_void;
+	} else if (input == "verbatim") {
+		s->scfunc = do_verbatim_input;
+	} else if (input == "tab") {
+		s->scfunc = do_tab;
+	} else if (input == "enter") {
+		s->scfunc = do_enter_void;
+	} else if (input == "delete") {
+		s->scfunc = do_delete;
+	} else if (input == "backspace") {
+		s->scfunc = do_backspace;
+	} else if (input == "refresh") {
+		s->scfunc = total_refresh;
+	} else if (input == "casesens") {
+		s->scfunc = case_sens_void;
+		s->execute = false;
+	} else if (input == "regexp" || input == "regex") {
+		s->scfunc = regexp_void;
+		s->execute = false;
+	} else if (input == "backwards") {
+		s->scfunc = backwards_void;
+		s->execute = false;
+	} else if (input == "togglereplace") {
+		s->scfunc = toggle_replace_void;
+		s->execute = false;
+	} else if (input == "gototext") {
+		s->scfunc = gototext_void;
+		s->execute = false;
+	} else if (input == "dosformat") {
+		s->scfunc = dos_format_void;
+		s->execute = false;
+	} else if (input == "macformat") {
+		s->scfunc = mac_format_void;
+		s->execute = false;
+	} else if (input == "append") {
+		s->scfunc = append_void;
+		s->execute = false;
+	} else if (input == "prepend") {
+		s->scfunc = prepend_void;
+		s->execute = false;
+	} else if (input == "backup") {
+		s->scfunc = backup_file_void;
+		s->execute = false;
+	} else if (input == "toggleexecute") {
+		s->scfunc = toggle_execute_void;
+		s->execute = false;
+	} else if (input == "newbuffer" || input == "togglebuffer") {
+		s->scfunc = new_buffer_void;
+		s->execute = false;
+	} else if (input == "browser" || input == "files") {
+		s->scfunc = to_files_void;
+		s->execute = false;
+	} else if (input == "gotodir") {
+		s->scfunc = goto_dir_void;
+		s->execute = false;
+	} else if (input == "firstfile") {
+		s->scfunc = do_first_file;
+		s->execute = false;
+	} else if (input == "lastfile") {
+		s->scfunc = do_last_file;
+		s->execute = false;
 #ifdef ENABLE_SPELLER
-		} else if (!strcasecmp(input, "tospell") || !strcasecmp(input, "speller")) {
-			s->scfunc = do_spell;
+	} else if (input == "tospell" || input == "speller") {
+		s->scfunc = do_spell;
 #endif
-		} else {
-			delete s;
-			return NULL;
-		}
+	} else {
+		delete s;
+		return NULL;
 	}
 
 	return s;

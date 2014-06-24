@@ -533,7 +533,7 @@ const subnfunc *sctofunc(sc *s);
 const subnfunc *getfuncfromkey(WINDOW *win);
 void empty_sclist(void);
 void print_sclist(void);
-sc *strtosc(char *input);
+sc *strtosc(std::string input);
 int strtomenu(char *input);
 void xon_complaint(void);
 void xoff_complaint(void);
