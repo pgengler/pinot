@@ -154,15 +154,11 @@ change_browser_directory:
 				selected = filelist.size() - 1;
 			}
 		} else if (func == do_first_file) {
-			if (kbinput->has_meta_key()) {
-				selected = 0;
-			}
+			selected = 0;
 		} else if (func == do_last_file) {
-			if (kbinput->has_meta_key()) {
-				selected = filelist.size() - 1;
-			}
-			/* Go to a specific directory. */
+			selected = filelist.size() - 1;
 		} else if (func == goto_dir_void) {
+			/* Go to a specific directory. */
 			curs_set(1);
 
 			std::shared_ptr<Key> key;
