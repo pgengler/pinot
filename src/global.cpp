@@ -569,8 +569,8 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "^V", do_page_down, 0, true);
 	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "F8", do_page_down, 0, true);
 	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "PageDown", do_page_down, 0, true);
-	add_to_sclist(MMAIN, "^K", do_cut_text_void, 0, true);
-	add_to_sclist(MMAIN, "F9", do_cut_text_void, 0, true);
+	add_to_sclist(MMOST, "^K", do_cut_text_void, 0, true);
+	add_to_sclist(MMOST, "F9", do_cut_text_void, 0, true);
 	add_to_sclist(MMAIN, "^U", do_uncut_text, 0, true);
 	add_to_sclist(MMAIN, "F10", do_uncut_text, 0, true);
 	add_to_sclist(MMAIN, "^C", do_cursorpos_void, 0, true);
@@ -603,8 +603,8 @@ void shortcut_init(void)
 	add_to_sclist(MMOST, "^B", do_left, 0, true);
 	add_to_sclist(MMOST, "Left", do_left, 0, true);
 
-	add_to_sclist(MMAIN, "^@", do_next_word_void, 0, true);
-	add_to_sclist(MMAIN, "M- ", do_prev_word_void, 0, true);
+	add_to_sclist(MMOST, "^@", do_next_word_void, 0, true);
+	add_to_sclist(MMOST, "M- ", do_prev_word_void, 0, true);
 
 	add_to_sclist(MMAIN, "^Q", xon_complaint, 0, true);
 	add_to_sclist(MMAIN, "^S", xoff_complaint, 0, true);
