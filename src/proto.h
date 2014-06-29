@@ -318,7 +318,7 @@ void do_output(const std::string& output, bool allow_cntrls);
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
-Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void));
+Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void));
 void do_statusbar_output(std::string output, bool allow_cntrls);
 void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls);
 void do_statusbar_home(void);

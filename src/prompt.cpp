@@ -40,19 +40,13 @@ static bool reset_statusbar_x = false;
 /* Should we reset the cursor position at the statusbar prompt? */
 
 /* Read in a character, interpret it as a shortcut or toggle if
- * necessary, and return it. Sset have_shortcut to true if the character
- * is a shortcut key, set ran_func to true if we ran a function associated
- * with a shortcut key, and set finished to true if we're done after running
- * or trying to run a function associated with a shortcut key.  If
- * allow_funcs is false, don't actually run any functions associated
- * with shortcut keys.  refresh_func is the function we will call to
- * refresh the edit window. */
-Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool allow_funcs, void (*refresh_func)(void))
+ * necessary, and return it. Set ran_func to true if we ran a function
+ * associated with a shortcut key, and set finished to true if we're
+ * done after running or trying to run a function associated with a
+ * shortcut key. refresh_func is the function we will call to refresh
+ * the edit window. */
+Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void))
 {
-	const sc *s;
-	const subnfunc *f;
-
-	*have_shortcut = false;
 	*ran_func = false;
 	*finished = false;
 
@@ -60,19 +54,19 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 	Key input = get_kbinput(bottomwin);
 
 	/* Check for a shortcut in the current list. */
-	s = get_shortcut(currmenu, input);
+	const sc *s = get_shortcut(currmenu, input);
 
 	/* If we got a shortcut from the current list, or a "universal"
 	 * statusbar prompt shortcut, set have_shortcut to true. */
-	*have_shortcut = (s != NULL);
+	bool have_shortcut = (s != NULL);
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
-	if (!*have_shortcut && (input.has_control_key() || input.has_meta_key())) {
+	if (!have_shortcut && (input.has_control_key() || input.has_meta_key())) {
 		beep();
 	}
 
-	if (allow_funcs && *have_shortcut) {
+	if (have_shortcut) {
 		if (s->scfunc == do_tab || s->scfunc == do_enter_void) {
 			;
 		} else if (s->scfunc == total_refresh) {
@@ -104,7 +98,7 @@ Key do_statusbar_input(bool *have_shortcut, bool *ran_func, bool *finished, bool
 			* that we're done after running or trying to run their
 			* associated functions. */
 
-			f = sctofunc((sc *) s);
+			const subnfunc *f = sctofunc((sc *) s);
 			if (s->scfunc != 0 && s->execute == true) {
 				*ran_func = true;
 				if (f && (!ISSET(VIEW_MODE) || (f->viewok))) {
@@ -533,7 +527,7 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), int menu, bool *list)
 {
 	std::shared_ptr<Key> kbinput, last_kbinput;
-	bool have_shortcut, ran_func, finished;
+	bool ran_func, finished;
 	const sc *s;
 	bool tabbed = false;
 	/* Whether we've pressed Tab. */
@@ -578,7 +572,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	wnoutrefresh(bottomwin);
 
 	while (1) {
-		kbinput = std::make_shared<Key>(do_statusbar_input(&have_shortcut, &ran_func, &finished, true, refresh_func));
+		kbinput = std::make_shared<Key>(do_statusbar_input(&ran_func, &finished, refresh_func));
 		assert(statusbar_x <= answer.length());
 
 DEBUG_LOG("currmenu == 0x" << std::hex << currmenu << std::dec);
