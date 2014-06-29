@@ -389,6 +389,16 @@ void parse_magictype(char *ptr)
 #endif /* HAVE_LIBMAGIC */
 }
 
+bool is_universal_function(void (*func)(void))
+{
+	if (func == do_left || func == do_right || func == do_home || func == do_end ||
+	    func == do_prev_word_void || func == do_next_word_void || func == do_verbatim_input ||
+	    func == do_cut_text_void || func == do_delete || func == do_backspace || func == do_tab || func == do_enter_void) {
+		return true;
+	}
+	return false;
+}
+
 void parse_keybinding(char *ptr)
 {
 	char *keyptr = NULL, *keycopy = NULL, *funcptr = NULL, *menuptr = NULL;
@@ -443,6 +453,25 @@ void parse_keybinding(char *ptr)
 
 
 	DEBUG_LOG("newsc now address " << static_cast<void *>(&newsc) << ", menu func assigned = " << newsc->scfunc << ", menu = " << menu);
+
+	int mask = 0;
+	for (auto f : allfuncs) {
+		if (f->scfunc == newsc->scfunc) {
+			mask |= f->menus;
+		}
+	}
+
+	if (is_universal_function(newsc->scfunc)) {
+		menu = menu & MMOST;
+	} else {
+		menu = menu & mask;
+	}
+
+	if (!menu) {
+		rcfile_error(N_("Function '%s' does not exist in menu '%s'"), funcptr, menuptr);
+		free(newsc);
+		return;
+	}
 
 	newsc->keystr = keycopy;
 	newsc->menu = menu;
