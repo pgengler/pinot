@@ -92,16 +92,16 @@ Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void
 		} else if (s->scfunc == do_backspace) {
 			do_statusbar_backspace();
 		} else {
-			/* Handle the normal statusbar prompt shortcuts, setting
+			/* Handle any other shortcut in the current menu, setting
 			* ran_func to true if we try to run their associated
 			* functions and setting finished to true to indicate
 			* that we're done after running or trying to run their
 			* associated functions. */
 
 			const subnfunc *f = sctofunc((sc *) s);
-			if (s->scfunc != 0 && s->execute == true) {
+			if (s->scfunc != NULL) {
 				*ran_func = true;
-				if (f && (!ISSET(VIEW_MODE) || (f->viewok))) {
+				if (f && (!ISSET(VIEW_MODE) || (f->viewok)) && f->scfunc != do_gotolinecolumn_void) {
 					f->scfunc();
 				}
 			}
