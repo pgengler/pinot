@@ -367,7 +367,7 @@ void shortcut_init(void)
 	const char *pinot_enter_msg = N_("Insert a newline at the cursor position");
 	const char *pinot_delete_msg = N_("Delete the character under the cursor");
 	const char *pinot_backspace_msg = N_("Delete the character to the left of the cursor");
-	const char *pinot_cut_till_end_msg = N_("Cut from the cursor position to the end of the file");
+	const char *pinot_cut_till_eof_msg = N_("Cut from the cursor position to the end of the file");
 	const char *pinot_wordcount_msg = N_("Count the number of words, lines, and characters");
 	const char *pinot_refresh_msg = N_("Refresh (redraw) the current screen");
 	const char *pinot_suspend_msg = N_("Suspend the editor (if suspend is enabled)");
@@ -498,7 +498,7 @@ void shortcut_init(void)
 	add_to_funcs(do_delete, MMAIN, N_("Delete"), IFSCHELP(pinot_delete_msg), false, NOVIEW);
 	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg), false, NOVIEW);
 
-	add_to_funcs(do_cut_till_end, MMAIN, N_("CutTillEnd"), IFSCHELP(pinot_cut_till_end_msg), true, NOVIEW);
+	add_to_funcs(do_cut_till_eof, MMAIN, N_("CutTillEnd"), IFSCHELP(pinot_cut_till_eof_msg), true, NOVIEW);
 
 	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), false, VIEW);
 
@@ -648,7 +648,7 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M->", switch_to_next_buffer_void, 0);
 	add_to_sclist(MMAIN, "M-.", switch_to_next_buffer_void, 0);
 	add_to_sclist(MMOST, "M-V", do_verbatim_input, 0);
-	add_to_sclist(MMAIN, "M-T", do_cut_till_end, 0);
+	add_to_sclist(MMAIN, "M-T", do_cut_till_eof, 0);
 	add_to_sclist(MMAIN, "M-D", do_wordlinechar_count, 0);
 	add_to_sclist(MMAIN, "M-X", do_toggle_void, NO_HELP);
 	add_to_sclist(MMAIN, "M-C", do_toggle_void, CONST_UPDATE);
@@ -797,7 +797,7 @@ sc *strtosc(std::string input)
 	} else if (input == "uncut") {
 		s->scfunc = do_uncut_text;
 	} else if (input == "cutrestoffile") {
-		s->scfunc = do_cut_till_end;
+		s->scfunc = do_cut_till_eof;
 	} else if (input == "curpos" || input == "cursorpos") {
 		s->scfunc = do_cursorpos_void;
 	} else if (input == "firstline") {

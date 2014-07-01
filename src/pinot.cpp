@@ -1262,7 +1262,7 @@ void do_input(void)
 	} else {
 		/* If the function associated with this shortcut is
 		* cutting or copying text, indicate this. */
-		if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_end) {
+		if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_eof) {
 			cut_copy = true;
 		}
 

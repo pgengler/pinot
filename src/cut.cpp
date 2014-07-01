@@ -110,9 +110,9 @@ void cut_to_eof(void)
 
 /* Move text from the current filestruct into the cutbuffer.  If
  * copy_text is true, copy the text back into the filestruct afterward.
- * If cut_till_end is true, move all text from the current cursor
+ * If cut_till_eof is true, move all text from the current cursor
  * position to the end of the file into the cutbuffer. */
-void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
+void do_cut_text(bool copy_text, bool cut_till_eof, bool undoing)
 {
 	filestruct *cb_save = NULL;
 	/* The current end of the cutbuffer, before we add text to it. */
@@ -149,8 +149,8 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 	 * cutbuffer instead of replacing it. */
 	keep_cutbuffer = true;
 
-	if (cut_till_end) {
-		/* If cut_till_end is true, move all text up to the end of the
+	if (cut_till_eof) {
+		/* If cut_till_eof is true, move all text up to the end of the
 		 * file into the cutbuffer. */
 		cut_to_eof();
 	} else if (openfile->mark_set) {
@@ -192,7 +192,7 @@ void do_cut_text(bool copy_text, bool cut_till_end, bool undoing)
 			UNSET(NO_NEWLINES);
 		}
 	} else if (!undoing) {
-		update_undo(cut_till_end ? CUT_EOF : CUT);
+		update_undo(cut_till_eof ? CUT_EOF : CUT);
 	}
 
 	/* Leave the text in the cutbuffer, and mark the file as modified. */
@@ -236,7 +236,7 @@ void do_copy_text(void)
 }
 
 /* Cut from the current cursor position to the end of the file. */
-void do_cut_till_end(void)
+void do_cut_till_eof(void)
 {
 	add_undo(CUT_EOF);
 	do_cut_text(false, true, false);

@@ -177,10 +177,10 @@ void cut_line(void);
 void cut_marked(void);
 void cut_to_eol(void);
 void cut_to_eof(void);
-void do_cut_text(bool copy_text, bool cut_till_end, bool undoing);
+void do_cut_text(bool copy_text, bool cut_till_eof, bool undoing);
 void do_cut_text_void(void);
 void do_copy_text(void);
-void do_cut_till_end(void);
+void do_cut_till_eof(void);
 void do_uncut_text(void);
 
 /* All functions in files.c. */
