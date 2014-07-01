@@ -169,7 +169,7 @@ int search_init(bool replacing, bool use_answer)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		const sc *s = key ? get_shortcut(currmenu, *key) : nullptr;
+		const sc *s = key ? get_shortcut(*key) : nullptr;
 		auto func = s ? s->scfunc : nullptr;
 
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
@@ -913,7 +913,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 		}
 
 
-		s = get_shortcut(currmenu, *key);
+		s = get_shortcut(*key);
 		if (s && s->scfunc ==  gototext_void) {
 			/* Keep answer up on the statusbar. */
 			search_init(true, true);

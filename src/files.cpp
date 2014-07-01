@@ -939,7 +939,7 @@ void do_execute_command()
 		} else {
 			ans = answer;
 
-			s = get_shortcut(currmenu, *key);
+			s = get_shortcut(*key);
 
 			if (s && s->scfunc == to_files_void) {
 				std::string tmp = do_browse_from(answer);
@@ -1024,7 +1024,7 @@ void do_insertfile(bool execute)
 
 			ans = answer;
 
-			s = get_shortcut(currmenu, *key);
+			s = get_shortcut(*key);
 
 			if (s && s->scfunc == new_buffer_void) {
 				/* Don't allow toggling if we're in view mode. */
@@ -1982,7 +1982,7 @@ bool do_writeout(bool exiting)
 			break;
 		} else {
 			ans = answer;
-			s = get_shortcut(currmenu, *key);
+			s = get_shortcut(*key);
 
 			if (s && s->scfunc == to_files_void) {
 				std::string tmp = do_browse_from(answer);

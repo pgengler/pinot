@@ -59,6 +59,7 @@ std::string do_browser(std::string path, DIR *dir)
 
 	curs_set(0);
 	blank_statusbar();
+	currmenu = MBROWSER;
 	bottombars(MBROWSER);
 	wnoutrefresh(bottomwin);
 
@@ -118,7 +119,7 @@ change_browser_directory:
 			// Deal with the keyboard input
 			kbinput = new Key(get_kbinput(edit));
 
-			s = get_shortcut(MBROWSER, *kbinput);
+			s = get_shortcut(*kbinput);
 			if (!s) {
 				continue;
 			}
@@ -169,6 +170,7 @@ change_browser_directory:
 			              browser_refresh, _("Go To Directory"));
 
 			curs_set(0);
+			currmenu = MBROWSER;
 			bottombars(MBROWSER);
 
 			/* If the directory begins with a newline (i.e. an
@@ -636,7 +638,7 @@ int filesearch_init(void)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		s = get_shortcut(MBROWSER, *key);
+		s = get_shortcut(*key);
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
 			/* Use last_search if answer is an empty string, or answer if it isn't. */
 			if (ISSET(USE_REGEXP) && !regexp_init((i == PROMPT_BLANK_STRING) ? last_search.c_str() : answer.c_str())) {

@@ -2221,7 +2221,7 @@ void do_linter(void)
 		}
 
 		Key kbinput = get_kbinput(bottomwin);
-		s = get_shortcut(currmenu, kbinput);
+		s = get_shortcut(kbinput);
 		last_lint = curr_lint;
 
 		if (!s) {

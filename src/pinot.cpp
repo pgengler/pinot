@@ -1230,7 +1230,7 @@ void do_input(void)
 	bool cut_copy = false;
 
 	/* Check for a shortcut in the main list. */
-	const sc *s = get_shortcut(MMAIN, input);
+	const sc *s = get_shortcut(input);
 
 	/* If we got a shortcut from the main list, or a "universal"
 	 * edit window shortcut, set have_shortcut to true. */

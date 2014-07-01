@@ -73,7 +73,7 @@ std::string get_verbatim_kbinput(WINDOW *win)
  * function.  For example, passing in a meta key sequence that corresponds
  * to a function with a control key, a function key, and a meta key sequence
  * will return the control key corresponding to that function. */
-const sc *get_shortcut(int menu, Key &kbinput)
+const sc *get_shortcut(Key &kbinput)
 {
 	std::string key = kbinput.format();
 
@@ -81,11 +81,11 @@ const sc *get_shortcut(int menu, Key &kbinput)
 
 	for (auto s : sclist) {
 		// If this shortcut doesn't apply to the current menu, skip it
-		if (!(menu & s->menu)) {
+		if (!(currmenu & s->menu)) {
 			continue;
 		}
 		if (key == s->keystr) {
-			DEBUG_LOG("matched seq \"" << s->keystr << "\" (menus " << menu << " = " << s->menu << ")");
+			DEBUG_LOG("matched seq \"" << s->keystr << "\" (menus " << currmenu << " = " << s->menu << ")");
 			return s;
 		}
 	}
@@ -102,7 +102,7 @@ const subnfunc *getfuncfromkey(WINDOW *win)
 {
 	Key kbinput = get_kbinput(win);
 
-	const sc *s = get_shortcut(currmenu, kbinput);
+	const sc *s = get_shortcut(kbinput);
 	if (!s) {
 		return NULL;
 	}

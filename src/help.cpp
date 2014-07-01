@@ -40,6 +40,8 @@ void do_help(void (*refresh_func)(void))
 	size_t last_line = 0;
 	/* The line number in help_text of the last help line.  This
 	 * variable is zero-based. */
+	int oldmenu = currmenu;
+	/* The menu we were called from. */
 	const char *ptr;
 	/* The current line of the help text. */
 	size_t old_line = (size_t)-1;
@@ -55,6 +57,8 @@ void do_help(void (*refresh_func)(void))
 	help_init();
 
 	assert(help_text != NULL);
+
+	currmenu = MHELP;
 
 	if (ISSET(NO_HELP)) {
 		/* Make sure that the help screen's shortcut list will actually
@@ -116,7 +120,7 @@ void do_help(void (*refresh_func)(void))
 		Key kbinput = get_kbinput(edit);
 		std::string key(kbinput);
 
-		s = get_shortcut(MHELP, kbinput);
+		s = get_shortcut(kbinput);
 		if (!s) {
 			continue;
 		}
@@ -155,6 +159,8 @@ void do_help(void (*refresh_func)(void))
 			break;
 		}
 	}
+
+	currmenu = oldmenu;
 
 	if (old_no_help) {
 		blank_bottombars();
