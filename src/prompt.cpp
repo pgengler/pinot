@@ -750,7 +750,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(key, allow_tabs, allow_files, curranswer, history_list, refresh_func, menu, &list);
+	s = get_prompt_string(key, allow_tabs, allow_files, curranswer, history_list, refresh_func, &list);
 
 	free(prompt);
 	prompt = NULL;
