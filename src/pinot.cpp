@@ -1227,7 +1227,8 @@ void terminal_init(void)
 void do_input(void)
 {
 	Key input = get_kbinput(edit);
-	bool cut_copy = false;
+	bool preserve = false;
+	/* Preserve the contents of the cutbuffer? */
 
 	/* Check for a shortcut in the main list. */
 	const sc *s = get_shortcut(input);
@@ -1263,7 +1264,7 @@ void do_input(void)
 		/* If the function associated with this shortcut is
 		* cutting or copying text, indicate this. */
 		if (s->scfunc == do_cut_text_void || s->scfunc == do_copy_text || s->scfunc == do_cut_till_eof) {
-			cut_copy = true;
+			preserve = true;
 		}
 
 		if (s->scfunc != 0) {
@@ -1273,6 +1274,9 @@ void do_input(void)
 			} else {
 				if (s->scfunc == do_toggle_void) {
 					do_toggle(s->toggle);
+					if (s->toggle != CUT_TO_END) {
+						preserve = true;
+					}
 				} else {
 					s->scfunc();
 					if (f && !f->viewok && openfile->syntax != NULL && openfile->syntax->nmultis > 0) {
@@ -1290,7 +1294,7 @@ void do_input(void)
 	}
 
 	/* If we aren't cutting or copying text, blow away the text in the cutbuffer. */
-	if (!cut_copy) {
+	if (!preserve) {
 		cutbuffer_reset();
 	}
 }
