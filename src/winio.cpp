@@ -95,22 +95,6 @@ const sc *get_shortcut(Key kbinput)
 	return NULL;
 }
 
-/* Try to get a function back from a window.  Just a wrapper so
-   functions to need to create function_key meta_key blah blah
-    mmenu - what menu name to look through for valid funcs */
-const subnfunc *getfuncfromkey(WINDOW *win)
-{
-	Key kbinput = get_kbinput(win);
-
-	const sc *s = get_shortcut(kbinput);
-	if (!s) {
-		return NULL;
-	}
-
-	return sctofunc((sc *) s);
-
-}
-
 /* Move to (x, y) in win, and display a line of n spaces with the
  * current attributes. */
 void blank_line(WINDOW *win, int y, int x, int n)

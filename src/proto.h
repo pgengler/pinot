@@ -523,7 +523,6 @@ void do_cursorpos_void(void);
 void do_replace_highlight(bool highlight, const char *word);
 const char *flagtostr(int flag);
 const subnfunc *sctofunc(sc *s);
-const subnfunc *getfuncfromkey(WINDOW *win);
 FunctionPtr func_from_key(const Key& kbinput);
 void empty_sclist(void);
 void print_sclist(void);

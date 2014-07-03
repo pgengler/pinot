@@ -169,8 +169,7 @@ int search_init(bool replacing, bool use_answer)
 		statusbar(_("Cancelled"));
 		return -1;
 	} else {
-		const sc *s = key ? get_shortcut(*key) : nullptr;
-		auto func = s ? s->scfunc : nullptr;
+		auto func = func_from_key(*key);
 
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ENTER_PRESSED) {
 			/* Use last_search if answer is an empty string, or answer if it isn't. */
@@ -236,7 +235,6 @@ bool findnextstr(
 	ssize_t current_y_find = openfile->current_y;
 	filestruct *fileptr = openfile->current;
 	const char *rev_start = fileptr->data, *found = NULL;
-	const subnfunc *f;
 	time_t lastkbcheck = time(NULL);
 
 	/* rev_start might end up 1 character before the start or after the
@@ -251,10 +249,12 @@ bool findnextstr(
 	while (true) {
 		if (time(NULL) - lastkbcheck > 1) {
 			lastkbcheck = time(NULL);
-			f = getfuncfromkey(edit);
-			if (f && f->scfunc == do_cancel) {
-				statusbar(_("Cancelled"));
-				return false;
+			if (keyboard->has_input()) {
+				auto func = func_from_key(keyboard->get_key());
+				if (func == do_cancel) {
+					statusbar(_("Cancelled"));
+					return false;
+				}
 			}
 		}
 
@@ -890,8 +890,6 @@ void goto_line_posx(ssize_t line, size_t pos_x)
  * the line and column numbers should be one-based. */
 void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool interactive, bool save_pos, bool allow_update)
 {
-	const sc *s;
-
 	if (interactive) {
 		char *ans = mallocstrcpy(NULL, answer.c_str());
 
@@ -913,8 +911,8 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 		}
 
 
-		s = get_shortcut(*key);
-		if (s && s->scfunc ==  gototext_void) {
+		auto func = func_from_key(*key);
+		if (func == gototext_void) {
 			/* Keep answer up on the statusbar. */
 			search_init(true, true);
 
