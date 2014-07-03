@@ -371,6 +371,9 @@ void undo_paste(undo *u)
 		return;
 	}
 
+	filestruct *oldcutbuffer = cutbuffer, *oldcutbottom = cutbottom;
+	cutbuffer = cutbottom = NULL;
+
   goto_line_posx(u->lineno, u->begin);
 
 	if (ISSET(NO_NEWLINES) && openfile->current->lineno != u->lineno) {
@@ -388,6 +391,12 @@ void undo_paste(undo *u)
 	openfile->mark_begin = NULL;
 	openfile->mark_begin_x = 0;
 	edit_refresh_needed = true;
+
+	if (cutbuffer) {
+		free_filestruct(cutbuffer);
+	}
+	cutbuffer = oldcutbuffer;
+	cutbottom = oldcutbottom;
 }
 
 /* Undo the last thing(s) we did */
@@ -498,6 +507,9 @@ void do_undo(void)
 		openfile->mark_set = true;
 		goto_line_posx(u->lineno, u->begin);
 		cut_marked();
+		if (u->cutbuffer) {
+			free_filestruct(u->cutbuffer);
+		}
 		u->cutbuffer = cutbuffer;
 		u->cutbottom = cutbottom;
 		cutbuffer = oldcutbuffer;
@@ -627,6 +639,8 @@ void do_redo(void)
 		redidmsg = _("text insert");
 		goto_line_posx(u->lineno, u->begin);
 		copy_from_filestruct(u->cutbuffer);
+		free_filestruct(u->cutbuffer);
+		u->cutbuffer = NULL;
 		break;
 	default:
 		redidmsg = _("Internal error: unknown type.  Please save your work.");
@@ -971,6 +985,7 @@ void add_undo(UndoType current_action)
 	case SPLIT_END:
 		break;
 	case INSERT:
+		break;
 	case REPLACE:
 		data = mallocstrcpy(NULL, fs->current->data);
 		u->strdata = data;
