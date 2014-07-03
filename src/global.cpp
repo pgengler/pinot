@@ -403,148 +403,148 @@ void shortcut_init(void)
 	}
 
 	/* TRANSLATORS: Try to keep the "Get Help" string to at most 10 characters. */
-	add_to_funcs(do_help_void, MMOST, N_("Get Help"), IFSCHELP(pinot_help_msg), false, VIEW);
+	add_to_funcs(do_help_void, MMOST, N_("Get Help"), IFSCHELP(pinot_help_msg), GROUP_TOGETHER, VIEW);
 
 	add_to_funcs(do_cancel,
 	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
-	              N_("Cancel"), IFSCHELP(pinot_cancel_msg), false, VIEW);
+	              N_("Cancel"), IFSCHELP(pinot_cancel_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_exit, MMAIN, openfiles.size() > 0 ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
+	add_to_funcs(do_exit, MMAIN, openfiles.size() > 0 ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), false, VIEW);
+	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), false, NOVIEW);
+	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), false, VIEW);
+	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_search, MMAIN|MBROWSER, whereis_msg, IFSCHELP(pinot_whereis_msg), false, VIEW);
+	add_to_funcs(do_search, MMAIN|MBROWSER, whereis_msg, IFSCHELP(pinot_whereis_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_page_up, MMAIN|MHELP|MBROWSER, N_("Prev Page"), IFSCHELP(pinot_prevpage_msg), false, VIEW);
-	add_to_funcs(do_page_down, MMAIN|MHELP|MBROWSER, N_("Next Page"), IFSCHELP(pinot_nextpage_msg), true, VIEW);
+	add_to_funcs(do_page_up, MMAIN|MHELP|MBROWSER, N_("Prev Page"), IFSCHELP(pinot_prevpage_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_page_down, MMAIN|MHELP|MBROWSER, N_("Next Page"), IFSCHELP(pinot_nextpage_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_page_up, MLINTER, prev_lint_msg, IFSCHELP(pinot_prevlint_msg), false, VIEW);
-	add_to_funcs(do_page_down, MLINTER, next_lint_msg, IFSCHELP(pinot_nextlint_msg), false, VIEW);
+	add_to_funcs(do_page_up, MLINTER, prev_lint_msg, IFSCHELP(pinot_prevlint_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_page_down, MLINTER, next_lint_msg, IFSCHELP(pinot_nextlint_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), false, NOVIEW);
+	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), false, NOVIEW);
+	add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), false, VIEW);
+	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), GROUP_TOGETHER, VIEW);
 
 #ifdef ENABLE_SPELLER
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_spell, MMAIN, spell_msg, IFSCHELP(pinot_spell_msg), true, NOVIEW);
+	add_to_funcs(do_spell, MMAIN, spell_msg, IFSCHELP(pinot_spell_msg), BLANK_AFTER, NOVIEW);
 #endif
-	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), true, NOVIEW);
+	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("First Line"), IFSCHELP(pinot_firstline_msg), false, VIEW);
-	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("Last Line"), IFSCHELP(pinot_lastline_msg), true, VIEW);
+	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("First Line"), IFSCHELP(pinot_firstline_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("Last Line"), IFSCHELP(pinot_lastline_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), N_("Go To Line"), IFSCHELP(pinot_gotoline_msg), false, VIEW);
+	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), N_("Go To Line"), IFSCHELP(pinot_gotoline_msg), GROUP_TOGETHER, VIEW);
 
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), false, VIEW);
+	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_replace, MMAIN, _("Replace"), IFSCHELP(pinot_replace_msg), false, NOVIEW);
+	add_to_funcs(do_replace, MMAIN, _("Replace"), IFSCHELP(pinot_replace_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_mark, MMAIN, N_("Mark Text"), IFSCHELP(pinot_mark_msg), false, VIEW);
+	add_to_funcs(do_mark, MMAIN, N_("Mark Text"), IFSCHELP(pinot_mark_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_research, (MMAIN|MBROWSER), whereis_next_msg, IFSCHELP(pinot_whereis_next_msg), true, VIEW);
+	add_to_funcs(do_research, (MMAIN|MBROWSER), whereis_next_msg, IFSCHELP(pinot_whereis_next_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_copy_text, MMAIN, N_("Copy Text"), IFSCHELP(pinot_copy_msg), false, NOVIEW);
+	add_to_funcs(do_copy_text, MMAIN, N_("Copy Text"), IFSCHELP(pinot_copy_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_indent_void, MMAIN, N_("Indent Text"), IFSCHELP(pinot_indent_msg), false, NOVIEW);
+	add_to_funcs(do_indent_void, MMAIN, N_("Indent Text"), IFSCHELP(pinot_indent_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_unindent, MMAIN, N_("Unindent Text"), IFSCHELP(pinot_unindent_msg), false, NOVIEW);
+	add_to_funcs(do_unindent, MMAIN, N_("Unindent Text"), IFSCHELP(pinot_unindent_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_undo, MMAIN, N_("Undo"), IFSCHELP(pinot_undo_msg), false, NOVIEW);
-	add_to_funcs(do_redo, MMAIN, N_("Redo"), IFSCHELP(pinot_redo_msg), true, NOVIEW);
+	add_to_funcs(do_undo, MMAIN, N_("Undo"), IFSCHELP(pinot_undo_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_redo, MMAIN, N_("Redo"), IFSCHELP(pinot_redo_msg), BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_execute_command, MMAIN, N_("Exec Cmd"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
+	add_to_funcs(do_execute_command, MMAIN, N_("Exec Cmd"), IFSCHELP(pinot_execute_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_right, MMAIN, N_("Forward"), IFSCHELP(pinot_forward_msg), false, VIEW);
+	add_to_funcs(do_right, MMAIN, N_("Forward"), IFSCHELP(pinot_forward_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_right, MBROWSER, N_("Forward"), IFSCHELP(pinot_forwardfile_msg), false, VIEW);
+	add_to_funcs(do_right, MBROWSER, N_("Forward"), IFSCHELP(pinot_forwardfile_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_left, MMAIN, N_("Back"), IFSCHELP(pinot_back_msg), false, VIEW);
+	add_to_funcs(do_left, MMAIN, N_("Back"), IFSCHELP(pinot_back_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_left, MBROWSER, N_("Back"), IFSCHELP(pinot_backfile_msg), false, VIEW);
+	add_to_funcs(do_left, MBROWSER, N_("Back"), IFSCHELP(pinot_backfile_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), IFSCHELP(pinot_prevword_msg), false, VIEW);
+	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), IFSCHELP(pinot_prevword_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), false, VIEW);
+	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_up_void, (MMAIN|MHELP|MBROWSER), N_("Prev Line"), IFSCHELP(pinot_prevline_msg), false, VIEW);
+	add_to_funcs(do_up_void, (MMAIN|MHELP|MBROWSER), N_("Prev Line"), IFSCHELP(pinot_prevline_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_down_void, (MMAIN|MHELP|MBROWSER), N_("Next Line"), IFSCHELP(pinot_nextline_msg), true, VIEW);
+	add_to_funcs(do_down_void, (MMAIN|MHELP|MBROWSER), N_("Next Line"), IFSCHELP(pinot_nextline_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_home, MMAIN, N_("Home"), IFSCHELP(pinot_home_msg), false, VIEW);
+	add_to_funcs(do_home, MMAIN, N_("Home"), IFSCHELP(pinot_home_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_end, MMAIN, N_("End"), IFSCHELP(pinot_end_msg), false, VIEW);
+	add_to_funcs(do_end, MMAIN, N_("End"), IFSCHELP(pinot_end_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_find_bracket, MMAIN, _("Find Other Bracket"), IFSCHELP(pinot_bracket_msg), false, VIEW);
+	add_to_funcs(do_find_bracket, MMAIN, _("Find Other Bracket"), IFSCHELP(pinot_bracket_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_scroll_up, MMAIN, N_("Scroll Up"), IFSCHELP(pinot_scrollup_msg), false, VIEW);
+	add_to_funcs(do_scroll_up, MMAIN, N_("Scroll Up"), IFSCHELP(pinot_scrollup_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_scroll_down, MMAIN, N_("Scroll Down"), IFSCHELP(pinot_scrolldown_msg), false, VIEW);
+	add_to_funcs(do_scroll_down, MMAIN, N_("Scroll Down"), IFSCHELP(pinot_scrolldown_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(switch_to_prev_buffer_void, MMAIN, _("Previous File"), IFSCHELP(pinot_prevfile_msg), false, VIEW);
-	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), IFSCHELP(pinot_nextfile_msg), true, VIEW);
+	add_to_funcs(switch_to_prev_buffer_void, MMAIN, _("Previous File"), IFSCHELP(pinot_prevfile_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), IFSCHELP(pinot_nextfile_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim Input"), IFSCHELP(pinot_verbatim_msg), false, NOVIEW);
+	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim Input"), IFSCHELP(pinot_verbatim_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_tab, MMAIN, N_("Tab"), IFSCHELP(pinot_tab_msg), false, NOVIEW);
-	add_to_funcs(do_enter_void, MMAIN, N_("Enter"), IFSCHELP(pinot_enter_msg), false, NOVIEW);
-	add_to_funcs(do_delete, MMAIN, N_("Delete"), IFSCHELP(pinot_delete_msg), false, NOVIEW);
-	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg), false, NOVIEW);
+	add_to_funcs(do_tab, MMAIN, N_("Tab"), IFSCHELP(pinot_tab_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_enter_void, MMAIN, N_("Enter"), IFSCHELP(pinot_enter_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_delete, MMAIN, N_("Delete"), IFSCHELP(pinot_delete_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_cut_till_eof, MMAIN, N_("CutTillEnd"), IFSCHELP(pinot_cut_till_eof_msg), true, NOVIEW);
+	add_to_funcs(do_cut_till_eof, MMAIN, N_("CutTillEnd"), IFSCHELP(pinot_cut_till_eof_msg), BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), false, VIEW);
+	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(total_refresh, (MMAIN|MHELP), refresh_msg, IFSCHELP(pinot_refresh_msg), false, VIEW);
+	add_to_funcs(total_refresh, (MMAIN|MHELP), refresh_msg, IFSCHELP(pinot_refresh_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_suspend_void, MMAIN, N_("Suspend"), IFSCHELP(pinot_suspend_msg), true, VIEW);
+	add_to_funcs(do_suspend_void, MMAIN, N_("Suspend"), IFSCHELP(pinot_suspend_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE), N_("Case Sens"), IFSCHELP(pinot_case_msg), false, VIEW);
+	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE), N_("Case Sens"), IFSCHELP(pinot_case_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE), N_("Backwards"), IFSCHELP(pinot_reverse_msg), false, VIEW);
+	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE), N_("Backwards"), IFSCHELP(pinot_reverse_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE), N_("Regexp"), IFSCHELP(pinot_regexp_msg), false, VIEW);
+	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE), N_("Regexp"), IFSCHELP(pinot_regexp_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("PrevHist"), IFSCHELP(pinot_prev_history_msg), false, VIEW);
+	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("PrevHist"), IFSCHELP(pinot_prev_history_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("NextHist"), IFSCHELP(pinot_next_history_msg), false, VIEW);
+	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("NextHist"), IFSCHELP(pinot_next_history_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(toggle_replace_void, MWHEREIS, N_("Replace"), IFSCHELP(pinot_whereis_msg), false, VIEW);
-	add_to_funcs(toggle_replace_void, MREPLACE, N_("No Replace"), IFSCHELP(pinot_whereis_msg), false, VIEW);
+	add_to_funcs(toggle_replace_void, MWHEREIS, N_("Replace"), IFSCHELP(pinot_whereis_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(toggle_replace_void, MREPLACE, N_("No Replace"), IFSCHELP(pinot_whereis_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(gototext_void, MGOTOLINE, N_("Go To Text"), IFSCHELP(pinot_whereis_msg), true, VIEW);
+	add_to_funcs(gototext_void, MGOTOLINE, N_("Go To Text"), IFSCHELP(pinot_whereis_msg), BLANK_AFTER, VIEW);
 
-	add_to_funcs(to_files_void, MINSERTFILE, N_("To Files"), IFSCHELP(pinot_tofiles_msg), false, VIEW);
+	add_to_funcs(to_files_void, MINSERTFILE, N_("To Files"), IFSCHELP(pinot_tofiles_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(dos_format_void, MWRITEFILE, N_("DOS Format"), IFSCHELP(pinot_dos_msg), false, NOVIEW);
-	add_to_funcs(mac_format_void, MWRITEFILE, N_("Mac Format"), IFSCHELP(pinot_mac_msg), false, NOVIEW);
-	add_to_funcs(append_void, MWRITEFILE, N_("Append"), IFSCHELP(pinot_append_msg), false, NOVIEW);
-	add_to_funcs(prepend_void, MWRITEFILE, N_("Prepend"), IFSCHELP(pinot_prepend_msg), false, NOVIEW);
-	add_to_funcs( backup_file_void, MWRITEFILE, N_("Backup File"), IFSCHELP(pinot_backup_msg), false, NOVIEW);
+	add_to_funcs(dos_format_void, MWRITEFILE, N_("DOS Format"), IFSCHELP(pinot_dos_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(mac_format_void, MWRITEFILE, N_("Mac Format"), IFSCHELP(pinot_mac_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(append_void, MWRITEFILE, N_("Append"), IFSCHELP(pinot_append_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(prepend_void, MWRITEFILE, N_("Prepend"), IFSCHELP(pinot_prepend_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs( backup_file_void, MWRITEFILE, N_("Backup File"), IFSCHELP(pinot_backup_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(toggle_execute_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), false, NOVIEW);
-	add_to_funcs(toggle_execute_void, MEXTCMD, N_("Read File"), IFSCHELP(pinot_insert_msg), false, NOVIEW);
+	add_to_funcs(toggle_execute_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(toggle_execute_void, MEXTCMD, N_("Read File"), IFSCHELP(pinot_insert_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), IFSCHELP(pinot_multibuffer_msg), false, NOVIEW);
+	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), IFSCHELP(pinot_multibuffer_msg), GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_insertfile_void, MEXTCMD, insert_file_msg, IFSCHELP(pinot_insert_msg), false, VIEW);
+	add_to_funcs(do_insertfile_void, MEXTCMD, insert_file_msg, IFSCHELP(pinot_insert_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(edit_refresh, MHELP, refresh_msg, pinot_refresh_msg, false, VIEW);
+	add_to_funcs(edit_refresh, MHELP, refresh_msg, pinot_refresh_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_exit, MHELP, exit_msg, IFSCHELP(pinot_exit_msg), false, VIEW);
+	add_to_funcs(do_exit, MHELP, exit_msg, IFSCHELP(pinot_exit_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), N_("First File"), IFSCHELP(pinot_firstfile_msg), false, VIEW);
+	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), N_("First File"), IFSCHELP(pinot_firstfile_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), N_("Last File"), IFSCHELP(pinot_lastfile_msg), false, VIEW);
+	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), N_("Last File"), IFSCHELP(pinot_lastfile_msg), GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(goto_dir_void, MBROWSER, N_("Go To Dir"), IFSCHELP(pinot_gotodir_msg), false, VIEW);
+	add_to_funcs(goto_dir_void, MBROWSER, N_("Go To Dir"), IFSCHELP(pinot_gotodir_msg), GROUP_TOGETHER, VIEW);
 
 	empty_sclist();
 
