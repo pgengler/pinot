@@ -524,7 +524,7 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), bool *list)
+const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void))
 {
 	std::shared_ptr<Key> kbinput, last_kbinput;
 	bool ran_func, finished;
@@ -750,7 +750,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(key, allow_tabs, allow_files, curranswer, history_list, refresh_func, &list);
+	s = get_prompt_string(key, allow_tabs, allow_files, &list, curranswer, history_list, refresh_func);
 
 	free(prompt);
 	prompt = NULL;

@@ -337,7 +337,7 @@ void reset_statusbar_cursor(void);
 void update_statusbar_line(const std::string& curranswer, size_t index);
 bool need_statusbar_horizontal_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
-const sc *get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), bool *list);
+const sc *get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void));
 PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 YesNoPromptResult do_yesno_prompt(bool all, const char *msg);
