@@ -54,8 +54,6 @@ std::string do_browser(std::string path, DIR *dir)
 	/* The last answer the user typed at the statusbar prompt. */
 	size_t old_selected;
 	/* The selected file we had before the current selected file. */
-	const sc *s;
-	const subnfunc *f;
 
 	curs_set(0);
 	blank_statusbar();
@@ -92,7 +90,6 @@ change_browser_directory:
 
 	titlebar(path);
 
-	void (*func)() = nullptr;
 	Key *kbinput = nullptr;
 
 	while (true) {
@@ -115,20 +112,10 @@ change_browser_directory:
 
 		old_selected = selected;
 
-		if (!func) {
-			// Deal with the keyboard input
-			kbinput = new Key(get_kbinput(edit));
+		// Deal with the keyboard input
+		kbinput = new Key(get_kbinput(edit));
 
-			s = get_shortcut(*kbinput);
-			if (!s) {
-				continue;
-			}
-			f = sctofunc((sc *) s);
-			if (!f) {
-				break;
-			}
-			func = f->scfunc;
-		}
+		auto func = func_from_key(*kbinput);
 
 		if (func == total_refresh) {
 			total_redraw();
@@ -699,7 +686,6 @@ void filesearch_abort(void)
 void do_filesearch(void)
 {
 	size_t begin = selected;
-	int i;
 	bool didfind;
 
 	UNSET(CASE_SENSITIVE);

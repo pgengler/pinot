@@ -46,8 +46,6 @@ void do_help(void (*refresh_func)(void))
 	/* The current line of the help text. */
 	size_t old_line = (size_t)-1;
 	/* The line we were on before the current line. */
-	const sc *s;
-	const subnfunc *f;
 
 	curs_set(0);
 	blank_edit();
@@ -120,42 +118,35 @@ void do_help(void (*refresh_func)(void))
 		Key kbinput = get_kbinput(edit);
 		std::string key(kbinput);
 
-		s = get_shortcut(kbinput);
-		if (!s) {
-			continue;
-		}
-		f = sctofunc((sc *) s);
-		if (!f) {
-			continue;
-		}
+		auto func = func_from_key(kbinput);
 
-		if (f->scfunc == total_refresh) {
+		if (func == total_refresh) {
 			total_redraw();
-		} else if (f->scfunc == do_page_up || key == " ") {
+		} else if (func == do_page_up || key == " ") {
 			if (line > editwinrows - 2) {
 				line -= editwinrows - 2;
 			} else {
 				line = 0;
 			}
-		} else if (f->scfunc == do_page_down || key == "-") {
+		} else if (func == do_page_down || key == "-") {
 			if (line + (editwinrows - 1) < last_line) {
 				line += editwinrows - 2;
 			}
-		} else if (f->scfunc == do_up_void) {
+		} else if (func == do_up_void) {
 			if (line > 0) {
 				line--;
 			}
-		} else if (f->scfunc == do_down_void) {
+		} else if (func == do_down_void) {
 			if (line + (editwinrows - 1) < last_line) {
 				line++;
 			}
-		} else if (f->scfunc == do_first_line) {
+		} else if (func == do_first_line) {
 			line = 0;
-		} else if (f->scfunc == do_last_line) {
+		} else if (func == do_last_line) {
 			if (line + (editwinrows - 1) < last_line) {
 				line = last_line - (editwinrows - 1);
 			}
-		} else if (f->scfunc == do_exit || key == "E" || key == "e") {
+		} else if (func == do_exit || key == "E" || key == "e") {
 			break;
 		}
 	}
