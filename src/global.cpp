@@ -286,6 +286,14 @@ void empty_sclist(void)
 	}
 }
 
+/* Return a pointer to the function that is bound to the given key. */
+FunctionPtr func_from_key(const Key& kbinput)
+{
+	const sc *s = get_shortcut(kbinput);
+
+	return s ? s->scfunc : NULL;
+}
+
 #ifdef DEBUG
 
 void print_sclist(void)

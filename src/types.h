@@ -138,3 +138,5 @@ typedef struct subnfunc {
 	long toggle;
 	/* If this is a toggle, if nonzero what toggle to set */
 } subnfunc;
+
+typedef void (*FunctionPtr)(void);

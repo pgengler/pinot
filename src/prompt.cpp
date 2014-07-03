@@ -524,11 +524,11 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 
 /* Get a string of input at the statusbar prompt.  This should only be
  * called from do_prompt(). */
-const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void))
+FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void))
 {
 	std::shared_ptr<Key> kbinput, last_kbinput;
 	bool ran_func, finished;
-	const sc *s;
+	FunctionPtr func;
 	bool tabbed = false;
 	/* Whether we've pressed Tab. */
 	char *history = NULL;
@@ -573,19 +573,17 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 		kbinput = std::make_shared<Key>(do_statusbar_input(&ran_func, &finished, refresh_func));
 		assert(statusbar_x <= answer.length());
 
-		s = get_shortcut(*kbinput);
+		func = func_from_key(*kbinput);
 
-		if (s) {
-			if (s->scfunc == do_cancel || s->scfunc == do_enter_void) {
-				break;
-			}
+		if (func == do_cancel || func == do_enter_void) {
+			break;
 		}
 
-		if (s && s->scfunc != do_tab) {
+		if (func != do_tab) {
 			tabbed = false;
 		}
 
-		if (s && s->scfunc == do_tab) {
+		if (func == do_tab) {
 			if (history_list != NULL) {
 				if (last_kbinput->format() != "Tab") {
 					complete_len = answer.length();
@@ -601,7 +599,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 
 			update_statusbar_line(answer, statusbar_x);
 		} else {
-			if (s && s->scfunc == get_history_older_void) {
+			if (func == get_history_older_void) {
 				if (history_list != NULL) {
 					/* If we're scrolling up at the bottom of the
 					 * history list and answer isn't blank, save answer
@@ -627,7 +625,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 					 * statusbar prompt. */
 					finished = false;
 				}
-			} else if (s && s->scfunc == get_history_newer_void) {
+			} else if (func == get_history_newer_void) {
 				if (history_list != NULL) {
 					/* Get the newer search from the history list and
 					 * save it in answer.  If there is no newer search,
@@ -655,7 +653,7 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 					 * statusbar prompt. */
 					finished = false;
 				}
-			} else if (s && s->scfunc == do_help_void) {
+			} else if (func == do_help_void) {
 				update_statusbar_line(answer, statusbar_x);
 
 				/* This key has a shortcut list entry when it's used to
@@ -695,24 +693,22 @@ const sc *get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool 
 	 * associated function, so reset statusbar_x and statusbar_pww.  If
 	 * we've finished putting in an answer, reset the statusbar cursor
 	 * position too. */
-	if (s) {
-		if (s->scfunc == do_cancel || s->scfunc == do_enter_void || ran_func) {
-			statusbar_x = old_statusbar_x;
-			statusbar_pww = old_pww;
+	if (func == do_cancel || func == do_enter_void || ran_func) {
+		statusbar_x = old_statusbar_x;
+		statusbar_pww = old_pww;
 
-			if (!ran_func) {
-				reset_statusbar_x = true;
-			}
-			/* Otherwise, we're still putting in an answer or a shortcut with
-			 * an associated function, so leave the statusbar cursor position
-			 * alone. */
-		} else {
-			reset_statusbar_x = false;
+		if (!ran_func) {
+			reset_statusbar_x = true;
 		}
+		/* Otherwise, we're still putting in an answer or a shortcut with
+		 * an associated function, so leave the statusbar cursor position
+		 * alone. */
+	} else {
+		reset_statusbar_x = false;
 	}
 
 	actual = kbinput;
-	return s;
+	return func;
 }
 
 /* Ask a question on the statusbar.  The prompt will be stored in the
@@ -731,7 +727,6 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 {
 	va_list ap;
 	PromptResult retval;
-	const sc *s;
 	bool list = false;
 
 	/* prompt has been freed and set to NULL unless the user resized
@@ -750,7 +745,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	va_end(ap);
 	null_at(&prompt, actual_x(prompt, COLS - 4));
 
-	s = get_prompt_string(key, allow_tabs, allow_files, &list, curranswer, history_list, refresh_func);
+	auto func = get_prompt_string(key, allow_tabs, allow_files, &list, curranswer, history_list, refresh_func);
 
 	free(prompt);
 	prompt = NULL;
@@ -760,9 +755,9 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	old_pww = statusbar_pww;
 
 	/* If we left the prompt via Cancel or Enter, set the return value properly. */
-	if (s && s->scfunc == do_cancel) {
+	if (func == do_cancel) {
 		retval = PROMPT_ABORTED;
-	} else if (s && s->scfunc == do_enter_void) {
+	} else if (func == do_enter_void) {
 		retval = answer.empty() ? PROMPT_BLANK_STRING : PROMPT_ENTER_PRESSED;
 	} else {
 		retval = PROMPT_OTHER_KEY;
