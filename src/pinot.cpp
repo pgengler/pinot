@@ -1848,13 +1848,13 @@ int main(int argc, char **argv)
 	}
 
 	/* If whitespace wasn't specified, set its default value. */
-	if (whitespace == NULL) {
+	if (whitespace == "") {
 		if (using_utf8()) {
-			whitespace = mallocstrcpy(NULL, "»·");
+			whitespace = "»·";
 			whitespace_len[0] = 2;
 			whitespace_len[1] = 2;
 		} else {
-			whitespace = mallocstrcpy(NULL, ">.");
+			whitespace = ">.";
 			whitespace_len[0] = 1;
 			whitespace_len[1] = 1;
 		}

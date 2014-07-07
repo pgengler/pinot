@@ -51,7 +51,7 @@ extern std::list<OpenFile>::iterator openfile;
 
 extern char *matchbrackets;
 
-extern char *whitespace;
+extern std::string whitespace;
 extern int whitespace_len[2];
 
 extern bool nodelay_mode;

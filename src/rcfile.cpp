@@ -1070,13 +1070,13 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 								matchbrackets = NULL;
 							}
 						} else if (rcopt.name == "whitespace") {
-							whitespace = mallocstrcpy(whitespace, argument.c_str());
-							if (mbstrlen(whitespace) != 2 || strlenpt(whitespace) != 2) {
+							whitespace = argument;
+							if (mbstrlen(whitespace.c_str()) != 2 || strlenpt(whitespace.c_str()) != 2) {
 								rcfile_error(N_("Two single-column characters required"));
-								whitespace = NULL;
+								whitespace = "";
 							} else {
-								whitespace_len[0] = parse_mbchar(whitespace, NULL, NULL);
-								whitespace_len[1] = parse_mbchar(whitespace + whitespace_len[0], NULL, NULL);
+								whitespace_len[0] = parse_mbchar(whitespace.c_str(), NULL, NULL);
+								whitespace_len[1] = parse_mbchar(whitespace.c_str() + whitespace_len[0], NULL, NULL);
 							}
 						} else if (rcopt.name == "backupdir") {
 							backup_dir = argument;

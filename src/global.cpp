@@ -78,7 +78,7 @@ char *matchbrackets = NULL;
 /* The opening and closing brackets that can be found by bracket
  * searches. */
 
-char *whitespace = NULL;
+std::string whitespace;
 /* The characters used when displaying the first characters of
  * tabs and spaces. */
 int whitespace_len[2];
