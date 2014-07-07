@@ -1679,7 +1679,7 @@ int main(int argc, char **argv)
 			SET(WORD_BOUNDS);
 			break;
 		case 'Y':
-			syntaxstr = mallocstrcpy(syntaxstr, optarg);
+			syntaxstr = std::string(optarg);
 			break;
 		case 'c':
 			SET(CONST_UPDATE);

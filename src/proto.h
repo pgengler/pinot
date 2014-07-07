@@ -70,7 +70,7 @@ extern char *alt_speller;
 extern std::list<sc*> sclist;
 extern std::list<subnfunc*> allfuncs;
 extern SyntaxMap syntaxes;
-extern char *syntaxstr;
+extern std::string syntaxstr;
 
 extern bool edit_refresh_needed;
 extern int currmenu;

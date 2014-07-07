@@ -108,7 +108,7 @@ char *alt_speller = NULL;
 
 SyntaxMap syntaxes;
 /* The global list of color syntaxes. */
-char *syntaxstr = NULL;
+std::string syntaxstr;
 /* The color syntax name specified on the command line. */
 
 bool edit_refresh_needed = false;
@@ -1030,9 +1030,6 @@ void thanks_for_all_the_fish(void)
 #endif
 	if (cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
-	}
-	if (syntaxstr != NULL) {
-		free(syntaxstr);
 	}
 	/* Free the search and replace history lists. */
 	if (searchage != NULL) {
