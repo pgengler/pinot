@@ -271,7 +271,7 @@ int do_lockfile(const std::string& filename)
 		}
 	} else {
 		std::string lockfile_dir = dirname(lockfilename);
-		if (stat(lockfilename.c_str(), &fileinfo) == -1) {
+		if (stat(lockfile_dir.c_str(), &fileinfo) == -1) {
 			statusbar(_("Error writing lock file: Directory \'%s\' doesn't exist"), lockfile_dir.c_str());
 			return -1;
 		}
