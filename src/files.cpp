@@ -273,7 +273,7 @@ int do_lockfile(const std::string& filename)
 		std::string lockfile_dir = dirname(lockfilename);
 		if (stat(lockfile_dir.c_str(), &fileinfo) == -1) {
 			statusbar(_("Error writing lock file: Directory \'%s\' doesn't exist"), lockfile_dir.c_str());
-			return -1;
+			return 0;
 		}
 	}
 
@@ -831,6 +831,7 @@ int open_file(const std::string& filename, bool newfie, FILE **f)
 {
 	struct stat fileinfo, fileinfo2;
 	int fd;
+	bool quiet = false;
 	std::string full_filename;
 
 	assert(f != NULL);
@@ -844,20 +845,28 @@ int open_file(const std::string& filename, bool newfie, FILE **f)
 		full_filename = filename;
 	}
 
-	if (ISSET(LOCKING))
-		if (do_lockfile(full_filename) < 0) {
+	if (ISSET(LOCKING)) {
+		int lock_status = do_lockfile(full_filename);
+		if (lock_status < 0) {
 			return -1;
+		} else if (lock_status == 0) {
+			quiet = true;
 		}
+	}
 
 	if (stat(full_filename, &fileinfo) == -1) {
 		/* Well, maybe we can open the file even if the OS says its not there */
 		if ((fd = open(filename.c_str(), O_RDONLY)) != -1) {
-			statusbar(_("Reading File"));
+			if (!quiet) {
+				statusbar(_("Reading File"));
+			}
 			return 0;
 		}
 
 		if (newfie) {
-			statusbar(_("New File"));
+			if (!quiet) {
+				statusbar(_("New File"));
+			}
 			return -2;
 		}
 		statusbar(_("\"%s\" not found"), filename.c_str());
