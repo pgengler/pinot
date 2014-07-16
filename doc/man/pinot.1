@@ -28,7 +28,7 @@ pinot \- Enhanced version of the GNU nano editor
 
 .SH SYNOPSIS
 .B pinot
-.I [OPTIONS]\ [[\+LINE,COLUMN]\ FILE]...
+.RI [ options "] [[+" line , column "]\ " file "]..."
 .br
 
 .SH DESCRIPTION
@@ -44,8 +44,8 @@ while adding some developer-friendly features like PCRE regular expressions.
 
 .SH OPTIONS
 .TP
-.B \+\fILINE\fP,\fICOLUMN\fP
-Places cursor at line number \fILINE\fP and column number \fICOLUMN\fP
+.B +\fIline\fP,\fIcolumn\fP
+Places cursor at line number \fIline\fP and column number \fIcolumn\fP
 (at least one of which must be specified) on startup, instead of the
 default of line 1, column 1.
 .TP
@@ -61,7 +61,7 @@ line.
 .TP
 .B \-B (\-\-backup)
 When saving a file, back up the previous version of it to the current
-filename suffixed with a ~.  
+filename suffixed with a ~.
 .TP
 .B \-C \fIdir\fP (\-\-backupdir=\fIdir\fP)
 Set the directory where \fBpinot\fP puts unique backup files if file
@@ -188,8 +188,8 @@ Enable suspend ability.
 Enable 'soft wrapping'.  \fBpinot\fP will attempt to display the entire
 contents of a line, even if it is longer than the screen width.  Since
 \&'$' normally refers to a variable in the Unix shell, you should specify
-this option last when using other options (e.g. 'pinot \-wS$') or pass it
-separately (e.g. 'pinot \-wS \-$').
+this option last when using other options (e.g.\& 'pinot \-wS$') or pass it
+separately (e.g.\& 'pinot \-wS \-$').
 
 .SH INITIALIZATION FILE
 \fBpinot\fP will read initialization files in the following order:
@@ -208,7 +208,7 @@ SIGTERM or runs out of memory.  It will write the buffer into a file
 named \fIpinot.save\fP if the buffer didn't have a name already, or will
 add a ".save" suffix to the current filename.  If an emergency file with
 that name already exists in the current directory, it will add ".save"
-plus a number (e.g. ".save.1") to the current filename in order to make
+plus a number (e.g.\& ".save.1") to the current filename in order to make
 it unique.  In multibuffer mode, \fBpinot\fP will write all the open
 buffers to their respective emergency files.
 
