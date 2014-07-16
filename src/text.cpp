@@ -478,10 +478,12 @@ void do_undo(void)
 	case CUT:
 		undidmsg = _("text cut");
 		redo_paste(u);
+		f = fsfromline(u->lineno);
 		break;
 	case PASTE:
 		undidmsg = _("text uncut");
 		undo_paste(u);
+		f = fsfromline(u->lineno);
 		break;
 	case ENTER:
 		undidmsg = _("line break");

@@ -342,6 +342,9 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 			*file_bot = openfile->filebot;
 		}
 
+		openfile->fileage->next = NULL;
+		free_filestruct(openfile->fileage);
+
 		/* Renumber starting with the line after the original file_bot. */
 		if (file_bot_save->next != NULL) {
 			renumber(file_bot_save->next);
@@ -418,6 +421,7 @@ void copy_from_filestruct(filestruct *some_buffer)
 	edittop_inside = (openfile->edittop == openfile->fileage);
 
 	/* Put the top and bottom of the current filestruct at the top and bottom of of a copy of the passed buffer */
+	free_filestruct(openfile->fileage);
 	openfile->fileage = copy_filestruct(some_buffer);
 	openfile->filebot = openfile->fileage;
 	while (openfile->filebot->next != NULL) {
