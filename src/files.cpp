@@ -939,7 +939,6 @@ void do_execute_command()
 	char statusbartext[50];
 	const char *msg;
 	std::string ans;
-	const sc *s;
 	currmenu = MEXTCMD;
 
 	while (true) {
@@ -954,9 +953,9 @@ void do_execute_command()
 		} else {
 			ans = answer;
 
-			s = get_shortcut(*key);
+			auto func = func_from_key(*key);
 
-			if (s && s->scfunc == to_files_void) {
+			if (func == to_files_void) {
 				std::string tmp = do_browse_from(answer);
 
 				if (tmp == "") {
@@ -1012,7 +1011,6 @@ void do_insertfile(bool execute)
 	size_t current_x_save = openfile->current_x;
 	ssize_t current_y_save = openfile->current_y;
 	bool edittop_inside = false;
-	const sc *s;
 	bool right_side_up = false, single_line = false;
 
 	currmenu = MINSERTFILE;
@@ -1039,19 +1037,19 @@ void do_insertfile(bool execute)
 
 			ans = answer;
 
-			s = get_shortcut(*key);
+			auto func = func_from_key(*key);
 
-			if (s && s->scfunc == new_buffer_void) {
+			if (func == new_buffer_void) {
 				/* Don't allow toggling if we're in view mode. */
 				if (!ISSET(VIEW_MODE)) {
 					TOGGLE(MULTIBUFFER);
 				}
 				continue;
 			} else {
-				if (s && s->scfunc == toggle_execute_void) {
+				if (func == toggle_execute_void) {
 					execute = !execute;
 					continue;
-				} else if (s && s->scfunc == to_files_void) {
+				} else if (func == to_files_void) {
 					std::string tmp = do_browse_from(answer);
 
 					if (tmp == "") {
@@ -1946,7 +1944,6 @@ bool do_writeout(bool exiting)
 	std::string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	bool retval = false;
-	const sc *s;
 
 	currmenu = MWRITEFILE;
 
@@ -1997,9 +1994,9 @@ bool do_writeout(bool exiting)
 			break;
 		} else {
 			ans = answer;
-			s = get_shortcut(*key);
+			auto func = func_from_key(*key);
 
-			if (s && s->scfunc == to_files_void) {
+			if (func == to_files_void) {
 				std::string tmp = do_browse_from(answer);
 
 				if (tmp == "") {
@@ -2009,22 +2006,22 @@ bool do_writeout(bool exiting)
 				/* We have a file now.  Indicate this. */
 				answer = tmp;
 			} else {
-				if (s && s->scfunc == dos_format_void) {
+				if (func == dos_format_void) {
 					openfile->fmt = (openfile->fmt == DOS_FILE) ? NIX_FILE : DOS_FILE;
 					continue;
-				} else if (s && s->scfunc == mac_format_void) {
+				} else if (func == mac_format_void) {
 					openfile->fmt = (openfile->fmt == MAC_FILE) ? NIX_FILE : MAC_FILE;
 					continue;
-				} else if (s && s->scfunc == backup_file_void) {
+				} else if (func == backup_file_void) {
 					TOGGLE(BACKUP_FILE);
 					continue;
-				} else if (s && s->scfunc == prepend_void) {
+				} else if (func == prepend_void) {
 					append = (append == PREPEND) ? OVERWRITE : PREPEND;
 					continue;
-				} else if (s && s->scfunc == append_void) {
+				} else if (func == append_void) {
 					append = (append == APPEND) ? OVERWRITE : APPEND;
 					continue;
-				} else if (s && s->scfunc == do_help_void) {
+				} else if (func == do_help_void) {
 					continue;
 				}
 			}
