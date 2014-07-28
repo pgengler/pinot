@@ -799,7 +799,6 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 	const char *yesstr;		/* String of Yes characters accepted. */
 	const char *nostr;		/* Same for No. */
 	const char *allstr;		/* And All, surprise! */
-	const sc *s;
 	int oldmenu = currmenu;
 
 	assert(msg != NULL);
@@ -858,12 +857,12 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 	do {
 		currmenu = MYESNO;
 		Key kbinput = get_kbinput(bottomwin);
-		s = get_shortcut(kbinput);
+		auto func = func_from_key(kbinput);
 		std::string input(kbinput);
 
-		if (s && s->scfunc == do_cancel) {
+		if (func == do_cancel) {
 			ok = YESNO_PROMPT_ABORTED;
-		} else if (s && s->scfunc == total_refresh) {
+		} else if (func == total_refresh) {
 			total_redraw();
 			continue;
 		} else {
