@@ -2003,7 +2003,6 @@ void do_linter(void)
 	static char **lintargs = NULL;
 	char *lintcopy;
 	char *convendptr = NULL;
-	const sc *s;
 	LintMessages lints;
 
 	if (!openfile->syntax || openfile->syntax->linter == "") {
@@ -2251,26 +2250,22 @@ void do_linter(void)
 		}
 
 		Key kbinput = get_kbinput(bottomwin);
-		s = get_shortcut(kbinput);
+		auto func = func_from_key(kbinput);
 		last_lint = curr_lint;
 
-		if (!s) {
-			continue;
-		} else if (s->scfunc == do_cancel) {
+		if (func == do_cancel) {
 			break;
-		} else if (s->scfunc == do_help_void) {
+		} else if (func == do_help_void) {
 			do_help_void();
-		} else if (s->scfunc == do_page_down) {
+		} else if (func == do_page_down) {
 			if (curr_lint == lints.end()) {
 				statusbar(_("At last message"));
-				continue;
 			} else {
 				++curr_lint;
 			}
-		} else if (s->scfunc == do_page_up) {
+		} else if (func == do_page_up) {
 			if (curr_lint == lints.begin()) {
 				statusbar(_("At first message"));
-				continue;
 			} else {
 				--curr_lint;
 			}
