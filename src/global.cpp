@@ -242,27 +242,14 @@ const sc *first_sc_for(int menu, void (*func)(void))
 }
 
 
-/* Add a string to the new shortcut list implementation
-   Allows updates to existing entries in the list */
+/* Add a key combo to the shortcut list. */
 void add_to_sclist(int menu, const std::string& scstring, void (*func)(void), int toggle)
 {
 	auto shortcut = new sc;
-	shortcut->menu = menu;
-	shortcut->toggle = toggle;
 	shortcut->keystr = scstring;
+	shortcut->menu = menu;
 	shortcut->scfunc = func;
-
-	DEBUG_LOG("list val = " << shortcut->menu);
-
-	// First look if we already have a shortcut for this menu and key string
-	for (auto s : sclist) {
-		if (s->menu == menu && s->keystr == scstring) {
-			// If we do, replace the existing one
-			*s = *shortcut;
-			delete shortcut;
-			return;
-		}
-	}
+	shortcut->toggle = toggle;
 
 	sclist.push_back(shortcut);
 }
