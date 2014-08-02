@@ -29,7 +29,6 @@ pinot \- Enhanced version of the GNU nano editor
 .SH SYNOPSIS
 .B pinot
 .RI [ options "] [[+" line , column "]\ " file "]..."
-.br
 
 .SH DESCRIPTION
 This manual page briefly documents the \fBpinot\fP command.
@@ -52,139 +51,139 @@ default of line 1, column 1.
 .B \-?
 Same as \fB-h (\-\-help)\fP.
 .TP
-.B \-A (\-\-smarthome)
+.BR \-A, "\-\-smarthome"
 Make the Home key smarter.  When Home is pressed anywhere but at the
 very beginning of non-whitespace characters on a line, the cursor will
 jump to that beginning (either forwards or backwards).  If the cursor is
 already at that position, it will jump to the true beginning of the
 line.
 .TP
-.B \-B (\-\-backup)
+.BR \-B, "\-\-backup"
 When saving a file, back up the previous version of it to the current
 filename suffixed with a ~.
 .TP
-.B \-C \fIdir\fP (\-\-backupdir=\fIdir\fP)
+.BR \-C\ \fIdirectory\fR , " \-\-backupdir=" \fIdirectory
 Set the directory where \fBpinot\fP puts unique backup files if file
 backups are enabled.
 .TP
-.B \-D (\-\-boldtext)
+.BR \-D, "\-\-boldtext"
 Use bold text instead of reverse video text.
 .TP
-.B \-E (\-\-tabstospaces)
+.BR \-E, "\-\-tabstospaces"
 Convert typed tabs to spaces.
 .TP
-.B \-F (\-\-multibuffer)
+.BR \-F, "\-\-multibuffer"
 Enable multiple file buffers, if available.
 .TP
-.B \-G (\-\-locking)
+.BR \-G, "\-\-locking"
 Enable vim-style file locking when editing files.
 .TP
-.B \-H (\-\-historylog)
+.BR \-H, "\-\-historylog"
 Log search and replace strings to \fI~/.pinot/search_history\fP, so they can be
 retrieved in later sessions, if \fIpinotrc\fP support is available.
 .TP
-.B \-I (\-\-ignorercfiles)
+.BR \-I, "\-\-ignorercfiles"
 Don't look at \fISYSCONFDIR/pinorrc\fP or \fI~/.pinotrc\fP, if
 \fIpinotrc\fP support is available.
 .TP
-.B \-K (\-\-rebindkeypad)
+.BR \-K, "\-\-rebindkeypad"
 Interpret the numeric keypad keys so that they all work properly.  You
 should only need to use this option if they don't, as mouse support
 won't work properly with this option enabled.
 .TP
-.B \-L (\-\-nonewlines)
+.BR \-L, "\-\-nonewlines"
 Don't add newlines to the ends of files.
 .TP
-.B \-N (\-\-noconvert)
+.BR \-N, "\-\-noconvert"
 Disable automatic conversion of files from DOS/Mac format.
 .TP
-.B \-O (\-\-morespace)
+.BR \-O, "\-\-morespace"
 Use the blank line below the titlebar as extra editing space.
 .TP
-.B \-P (\-\-poslog)
+.BR \-P, "\-\-poslog"
 Log & read location of cursor position.
 .TP
-.B \-S (\-\-smooth)
+.BR \-S, "\-\-smooth"
 Enable smooth scrolling.  Text will scroll line-by-line, instead of the
 usual chunk-by-chunk behavior.
 .TP
-.B \-T \fIcols\fP (\-\-tabsize=\fIcols\fP)
-Set the size (width) of a tab to \fIcols\fP columns.  The value of
-\fIcols\fP must be greater than 0.  The default value is 8.
+.BR \-T\ \fInumber\fR , " \-\-tabsize=" \fInumber
+Set the size (width) of a tab to \fInumber\fP columns.  The value of
+\fInumber\fP must be greater than 0.  The default value is 8.
 .TP
-.B \-U (\-\-quickblank)
+.BR \-U, "\-\-quickblank"
 Do quick statusbar blanking.  Statusbar messages will disappear after 1
 keystroke instead of 25.  Note that \fB-c\fP overrides this.
 .TP
-.B \-V (\-\-version)
+.BR \-V, "\-\-version"
 Show the current version number and exit.
 .TP
-.B \-W (\-\-wordbounds)
+.BR \-W, "\-\-wordbounds"
 Detect word boundaries more accurately by treating punctuation
 characters as part of a word.
 .TP
-.B \-Y \fIstr\fP (\-\-syntax=\fIstr\fP)
+.BR \-Y\ \fIname\fR , " \-\-syntax=" \fIname
 Specify a specific syntax highlighting from the \fIpinotrc\fP to use, if
 available.
 .TP
-.B \-c (\-\-const)
+.BR \-c, "\-\-const"
 Constantly show the cursor position.  Note that this overrides \fB-U\fP.
 .TP
-.B \-h (\-\-help)
+.BR \-h, "\-\-help"
 Show a summary of command line options and exit.
 .TP
-.B \-i (\-\-autoindent)
+.BR \-i, "\-\-autoindent"
 Indent new lines to the previous line's indentation.  Useful when
 editing source code.
 .TP
-.B \-k (\-\-cut)
+.BR \-k, "\-\-cut"
 Enable cut from cursor to end of line.
 .TP
-.B \-l (\-\-nofollow)
+.BR \-l, "\-\-nofollow"
 If the file being edited is a symbolic link, replace the link with
 a new file instead of following it.  Good for editing files in
 \fI/tmp\fP, perhaps?
 .TP
-.B \-m (\-\-mouse)
+.BR \-m, "\-\-mouse"
 Enable mouse support, if available for your system.  When enabled, mouse
 clicks can be used to place the cursor, set the mark (with a double
 click), and execute shortcuts.  The mouse will work in the X Window
 System, and on the console when gpm is running.
 .TP
-.B \-p (\-\-preserve)
+.BR \-p, "\-\-preserve"
 Preserve the XON and XOFF sequences (^Q and ^S) so they will be caught
 by the terminal.
 .TP
-.B \-q (\-\-quiet)
+.BR \-q, "\-\-quiet"
 Do not report errors in the \fIpinotrc\fP file and ask them to be
 acknowledged by pressing Enter at startup.
 .TP
-.B \-r \fIcols\fP (\-\-fill=\fIcols\fP)
-Wrap lines at column \fIcols\fP.  If this value is 0 or less, wrapping
-will occur at the width of the screen less \fIcols\fP columns, allowing
+.BR \-r\ \fInumber\fR , " \-\-fill=" \fInumber
+Wrap lines at column \fInumber\fP.  If this value is 0 or less, wrapping
+will occur at the width of the screen less \fInumber\fP columns, allowing
 the wrap point to vary along with the width of the screen if the screen
 is resized.  The default value is \-8.
 .TP
-.B \-s \fIprog\fP (\-\-speller=\fIprog\fP)
-Enable alternative spell checker command.
+.BR \-s\ \fIprogram\fR , " \-\-speller=" \fIprogram
+Use this alternative spell checker command.
 .TP
-.B \-t (\-\-tempfile)
-Always save changed buffer without prompting.  Same as Pico's \fB-t\fP
+.BR \-t, "\-\-tempfile"
+Always save a changed buffer without prompting.  Same as Pico's \fB-t\fP
 option.
 .TP
-.B \-v (\-\-view)
+.BR \-v, "\-\-view"
 View file (read only) mode.
 .TP
-.B \-w (\-\-nowrap)
+.BR \-w, "\-\-nowrap"
 Disable wrapping of long lines.
 .TP
-.B \-x (\-\-nohelp)
+.BR \-x, "\-\-nohelp"
 Disable help screen at bottom of editor.
 .TP
-.B \-z (\-\-suspend)
+.BR \-z, "\-\-suspend"
 Enable suspend ability.
 .TP
-.B \-$ (\-\-softwrap)
+.BR \-$, "\-\-softwrap"
 Enable 'soft wrapping'.  \fBpinot\fP will attempt to display the entire
 contents of a line, even if it is longer than the screen width.  Since
 \&'$' normally refers to a variable in the Unix shell, you should specify
