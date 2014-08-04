@@ -19,7 +19,7 @@
 .\"   <http://www.gnu.org/licenses/>.
 .\"
 .\" $Id: pinotrc.5 4533 2011-02-24 02:14:30Z astyanax $
-.TH PINOTRC 5 "version 0.0.4" "June 21, 2013"
+.TH PINOTRC 5 "version 0.0.6" "August 3, 2014"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .SH NAME
@@ -43,38 +43,42 @@ commands, which can be used to configure pinot on startup without using
 the command line options.  Additionally, the \fBsyntax\fP, \fBcolor\fP,
 and \fBicolor\fP keywords are used to define syntax highlighting rules
 for different text patterns.  \fBpinot\fP will read one command per line.
-
+.PP
 Options in \fIpinotrc\fP files take precedence over pinot's defaults, and
-command line options override \fIpinotrc\fP settings.  Also, options are
-unset by default, except for those that take arguments.
-
-Quotes inside string parameters don't have to be escaped with
+command-line options override \fIpinotrc\fP settings.  Also, options that
+do not take an argument are unset by default.  So using the \fBunset\fR
+command is only needed when wanting to override a setting of the system's
+\fIpinotrc\fR file in your own \fB~/.pinotrc\fR.  Options that take an
+argument cannot be unset.
+.PP
+Below, the \fIstring\fR parameters need to be enclosed in double quotes.
+Quotes inside these string parameters don't have to be escaped with
 backslashes.  The last double quote in the string will be treated as its
 end.  For example, for the \fBbrackets\fP option, "\fI"')>]}\fP" will
 match \fI"\fP, \fI'\fP, \fI)\fP, \fI>\fP, \fI]\fP, and \fI}\fP.
-
+.PP
 The supported commands and arguments are:
 
 .TP 3
-.B set/unset allow_insecure_backup
+.B set allow_insecure_backup
 When backing up files, allow the backup to succeed even if its permissions
 can't be (re)set due to special OS considerations.  You should 
 NOT enable this option unless you are sure you need it.
 .TP
-.B set/unset autoindent
+.B set autoindent
 Use auto-indentation.
 .TP
-.B set/unset backup
+.B set backup
 Create backup files in \fIfilename~\fP.
 .TP
 .B set backupdir "\fIdirectory\fP"
 Set the directory where \fBpinot\fP puts unique backup files if file
 backups are enabled.
 .TP
-.B set/unset backwards
+.B set backwards
 Do backwards searches by default.
 .TP
-.B set/unset boldtext
+.B set boldtext
 Use bold text instead of reverse video text.
 .TP
 .B set brackets "\fIstring\fP"
@@ -83,26 +87,26 @@ paragraphs.  They cannot contain blank characters.  Only closing
 punctuation, optionally followed by closing brackets, can end sentences.
 The default value is "\fI"')>]}\fP".
 .TP
-.B set/unset casesensitive
+.B set casesensitive
 Do case sensitive searches by default.
 .TP
-.B set/unset const
+.B set const
 Constantly display the cursor position in the status bar.
 .TP
-.B set/unset cut
+.B set cut
 Use cut to end of line by default.
 .TP
-.B set fill \fIn\fP
-Wrap lines at column number \fIn\fP.  If \fIn\fP is 0 or less, the
-maximum line length will be the screen width less \fIn\fP columns.  The
-default value is \-8.
+.B set fill \fInumber\fR
+Hard-wrap lines at column number \fInumber\fR.  If \fInumber\fR is 0 or less,
+the maximum line length will be the screen width less \fInumber\fP columns.
+The default value is \fB\-8\fR.
 .TP
 .B set functioncolor \fIfgcolor\fR,\fIbgcolor\fR
 Specify the color combination to use for the function descriptions
 in the two help lines at the bottom of the screen.
 See \fBset titlecolor\fR for more details.
 .TP
-.B set/unset historylog
+.B set historylog
 Enable \fI~/.pinot/search_history\fP for saving and reading search/replace
 strings.
 .TP
@@ -111,7 +115,7 @@ Specify the color combination to use for the shortcut key combos
 in the two help lines at the bottom of the screen.
 See \fBset titlecolor\fR for more details.
 .TP
-.B set/unset locking
+.B set locking
 Enable vim-style lock-files for when editing files.
 .TP
 .B set matchbrackets "\fIstring\fP"
@@ -120,71 +124,61 @@ searches.  They cannot contain blank characters.  The former set must
 come before the latter set, and both must be in the same order.  The
 default value is "\fI(<[{)>]}\fP".
 .TP
-.B set/unset morespace
+.B set morespace
 Use the blank line below the titlebar as extra editing space.
 .TP
-.B set/unset multibuffer
+.B set multibuffer
 Allow inserting files into their own buffers.
 .TP
-.B set/unset noconvert
+.B set noconvert
 Don't convert files from DOS/Mac format.
 .TP
-.B set/unset nofollow
+.B set nofollow
 Don't follow symlinks when writing files.
 .TP
-.B set/unset nohelp
+.B set nohelp
 Don't display the help lists at the bottom of the screen.
 .TP
-.B set/unset nonewlines
+.B set nonewlines
 Don't add newlines to the ends of files.
 .TP
-.B set/unset nowrap
+.B set nowrap
 Toggle whether long lines will be wrapped to the next line.
 .TP
-.B softwrap
-Toggle whether lines longer than the current windoe will be displayed
-over multiple screen lines.
+.B set poslog
+Save the cursor position of files between editing sessions.
 .TP
-.B set/unset preserve
+.B set preserve
 Preserve the XON and XOFF keys (^Q and ^S).
 .TP
-.B set punct "\fIstring\fP"
-Set the characters treated as closing punctuation when justifying
-paragraphs.  They cannot contain blank characters.  Only closing
-punctuation, optionally followed by closing brackets, can end sentences.
-The default value is "\fI!.?\fP".
-.TP
-.B set/unset quiet
+.B set quiet
 \fBpinot\fP will not report errors in the \fIpinotrc\fP file and ask them
 to be acknowledged by pressing enter at startup.  If this is used it
 should be placed at the top of the file to be fully effective.
 .TP
-.B set/unset quickblank
+.B set quickblank
 Do quick statusbar blanking.  Statusbar messages will disappear after 1
 keystroke instead of 25.
 .TP
-.B set/unset rebindkeypad
+.B set rebindkeypad
 Interpret the numeric keypad keys so that they all work properly.  You
 should only need to use this option if they don't, as mouse support
 won't work properly with this option enabled.
 .TP
-.B set/unset regexp
+.B set regexp
 Do extended regular expression searches by default.
 .TP
-.B set/unset poslog
-Save the cursor position of files between editing sessions.
-.TP
-.B set/unset smarthome
+.B set smarthome
 Make the Home key smarter.  When Home is pressed anywhere but at the
 very beginning of non-whitespace characters on a line, the cursor will
 jump to that beginning (either forwards or backwards).  If the cursor is
 already at that position, it will jump to the true beginning of the
 line.
 .TP
-.B set/unset smooth
+.B set smooth
 Use smooth scrolling by default.
 .TP
-.B set/unset softwrap
+.B set softwrap
 Enable soft line wrapping for easier viewing of very long lines.
 .TP
 .B set speller "\fIspellprog\fP"
@@ -195,17 +189,17 @@ calls \fIspell\fP.
 Specify the color combination to use for the statusbar.
 See \fBset titlecolor\fR for more details.
 .TP
-.B set/unset suspend
+.B set suspend
 Allow \fBpinot\fP to be suspended.
 .TP
 .B set tabsize \fIn\fP
-Use a tab size of \fIn\fP columns.  The value of \fIn\fP must be greater
-than 0.  The default value is 8.  
+Use a tab size of \fInumber\fR columns.  The value of \fInumber\fP must be
+greater than 0.  The default value is \fB8\fR.
 .TP
-.B set/unset tabstospaces
+.B set tabstospaces
 Convert typed tabs to spaces.
 .TP
-.B set/unset tempfile
+.B set tempfile
 Save automatically on exit, don't prompt.
 .TP
  .B set titlecolor \fIfgcolor\fR,\fIbgcolor\fR
@@ -214,17 +208,14 @@ Valid color names for foreground and background are:
 .BR white , \ black , \ red , \ blue , \ green , \ yellow , \ magenta ", and " cyan .
 And either "\fIfgcolor\fR" or ",\fIbgcolor\fR" may be left out.
 .TP
-.B set/unset view
+.B set view
 Disallow file modification.
-.TP
-.B set/unset softwrap
-Enable soft line wrapping for easier viewing of very long lones.
 .TP
 .B set whitespace "\fIstring\fP"
 Set the two characters used to display the first characters of tabs and
 spaces.  They must be single-column characters.
 .TP
-.B set/unset wordbounds
+.B set wordbounds
 Detect word boundaries more accurately by treating punctuation
 characters as parts of words.
 .TP
