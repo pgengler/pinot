@@ -2,7 +2,7 @@
 ## Perl
 ##
 syntax "perl" "\.(pl|pm|psgi|cgi)$"
-header "#!/usr/bin/perl"
+header "^#!.*perl[-0-9._]*"
 
 # Subroutine names
 icolor bold27 "(?<=sub)\s+[0-9A-Z_]+"
