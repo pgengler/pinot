@@ -263,7 +263,7 @@ int do_lockfile(const std::string& filename)
 		DEBUG_LOG("lockpid = " << lockpid);
 		DEBUG_LOG("program name which created this lock file should be " << lockprog);
 		DEBUG_LOG("user which created this lock file should be " << lockuser);
-		sprintf(promptstr, "File being edited (by %s, PID %d, user %s), continue?", lockprog, lockpid, lockuser);
+		sprintf(promptstr, _("File is being edited (by %s, PID %d, user %s); continue?"), lockprog, lockpid, lockuser);
 		ans = do_yesno_prompt(false, promptstr);
 		if (ans < 1) {
 			blank_statusbar();
