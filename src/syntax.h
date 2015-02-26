@@ -102,6 +102,9 @@ class Syntax {
 		std::string linter;
 		/* Command to 'lint' this type of file */
 
+		std::string formatter;
+		/* Command to format files of this type (e.g., gofmt) */
+
 		int nmultis;
 		/* How many multi line strings this syntax has */
 

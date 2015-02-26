@@ -33,6 +33,19 @@ std::string dirname(const std::string& path)
 	return std::string(::dirname(path.c_str()));
 }
 
+int execvp(const std::string& file, const std::vector<std::string>& argv, char ***buf)
+{
+	*buf = (char **)malloc((argv.size() + 1) * sizeof(char *));
+	char **args = *buf;
+	size_t pos = 0;
+	for (auto arg : argv) {
+		args[pos++] = mallocstrcpy(NULL, arg.c_str());
+	}
+	args[pos] = NULL;
+
+	return execvp(file.c_str(), args);
+}
+
 FILE* fopen(const std::string& path, const std::string& mode)
 {
 	return ::fopen(path.c_str(), mode.c_str());
@@ -56,9 +69,12 @@ int lstat(const std::string& path, struct stat *buf)
 
 int mkstemp(std::string& name_template)
 {
-	char *buffer = (char *)malloc(name_template.length() * sizeof(char));
+	char *buffer = (char *)malloc((name_template.length() + 1) * sizeof(char));
+	strncpy(buffer, name_template.c_str(), name_template.length());
+	buffer[ name_template.length() ] = '\0';
 	int fd = mkstemp(buffer);
 	name_template = buffer;
+	free(buffer);
 	return fd;
 }
 

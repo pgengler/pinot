@@ -101,10 +101,8 @@ const std::string locking_prefix = ".";
 const std::string locking_suffix = ".swp";
 /* Suffix of the vim-style lock file */
 
-#ifdef ENABLE_SPELLER
 char *alt_speller = NULL;
 /* The command to use for the alternate spell checker. */
-#endif
 
 SyntaxMap syntaxes;
 /* The global list of color syntaxes. */
@@ -308,9 +306,7 @@ void shortcut_init(void)
 	const char *whereis_msg = N_("Where Is");
 	const char *refresh_msg = N_("Refresh");
 	const char *insert_file_msg = N_("Insert File");
-#ifdef ENABLE_SPELLER
 	const char *spell_msg = N_("To Spell");
-#endif
 	const char *lint_msg = N_("To Linter");
 	const char *pinot_lint_msg = N_("Invoke the linter, if available");
 	/* TRANSLATORS: Try to keep the next two strings to at most 14 characters. */
@@ -330,9 +326,7 @@ void shortcut_init(void)
 	const char *pinot_cut_msg = N_("Cut the current line and store it in the cutbuffer");
 	const char *pinot_uncut_msg = N_("Uncut from the cutbuffer into the current line");
 	const char *pinot_cursorpos_msg = N_("Display the position of the cursor");
-#ifdef ENABLE_SPELLER
 	const char *pinot_spell_msg = N_("Invoke the spell checker, if available");
-#endif
 	const char *pinot_replace_msg = N_("Replace a string or a regular expression");
 	const char *pinot_gotoline_msg = N_("Go to line and column number");
 	const char *pinot_mark_msg = N_("Mark text at the cursor position");
@@ -387,6 +381,7 @@ void shortcut_init(void)
 	const char *pinot_gotodir_msg = N_("Go to directory");
 	const char *pinot_prevlint_msg = N_("Go to previous linter msg");
 	const char *pinot_nextlint_msg = N_("Go to next linter msg");
+	const char *pinot_formatter_msg = N_("Invoke formatter, if available");
 
 // FIXME
 #define IFSCHELP(help) help
@@ -426,11 +421,10 @@ void shortcut_init(void)
 
 	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), GROUP_TOGETHER, VIEW);
 
-#ifdef ENABLE_SPELLER
 	/* TRANSLATORS: Try to keep this at most 10 characters. */
 	add_to_funcs(do_spell, MMAIN, spell_msg, IFSCHELP(pinot_spell_msg), BLANK_AFTER, NOVIEW);
-#endif
 	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), BLANK_AFTER, NOVIEW);
+	add_to_funcs(do_formatter, MMAIN, N_("Formatter"), IFSCHELP(pinot_formatter_msg), GROUP_TOGETHER, NOVIEW);
 
 	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("First Line"), IFSCHELP(pinot_firstline_msg), GROUP_TOGETHER, VIEW);
 	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("Last Line"), IFSCHELP(pinot_lastline_msg), BLANK_AFTER, VIEW);
@@ -569,13 +563,12 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "F10", do_uncut_text, 0);
 	add_to_sclist(MMAIN, "^C", do_cursorpos_void, 0);
 	add_to_sclist(MMAIN, "F11", do_cursorpos_void, 0);
-#ifdef ENABLE_SPELLER
 	add_to_sclist(MMAIN, "^T", do_spell, 0);
 	add_to_sclist(MMAIN, "F12", do_spell, 0);
-#else
 	add_to_sclist(MMAIN, "^T", do_linter, 0);
 	add_to_sclist(MMAIN, "F12", do_linter, 0);
-#endif
+	add_to_sclist(MMAIN, "^T", do_formatter, 0);
+	add_to_sclist(MMAIN, "F12", do_formatter, 0);
 	add_to_sclist(MMAIN, "^\\", do_replace, 0);
 	add_to_sclist(MMAIN, "F14", do_replace, 0);
 	add_to_sclist(MMAIN, "M-R", do_replace, 0);
@@ -688,18 +681,21 @@ void shortcut_init(void)
 
 }
 
-void set_lint_shortcuts(void)
+void set_lint_or_format_shortcuts(void)
 {
-#ifdef ENABLE_SPELLER
-	replace_scs_for(do_spell, do_linter);
-#endif
+	if (openfile->syntax->formatter != "") {
+		replace_scs_for(do_spell, do_formatter);
+		replace_scs_for(do_linter, do_formatter);
+	} else {
+		replace_scs_for(do_spell, do_linter);
+		replace_scs_for(do_formatter, do_linter);
+	}
 }
 
 void set_spell_shortcuts(void)
 {
-#ifdef ENABLE_SPELLER
+	replace_scs_for(do_formatter, do_spell);
 	replace_scs_for(do_linter, do_spell);
-#endif
 }
 
 const subnfunc *sctofunc(sc *s)
@@ -943,10 +939,8 @@ sc *strtosc(std::string input)
 		s->scfunc = do_first_file;
 	} else if (input == "lastfile") {
 		s->scfunc = do_last_file;
-#ifdef ENABLE_SPELLER
 	} else if (input == "tospell" || input == "speller") {
 		s->scfunc = do_spell;
-#endif
 	} else {
 		delete s;
 		return NULL;
@@ -982,7 +976,7 @@ int strtomenu(std::string input)
 		return MEXTCMD;
 	} else if (input == "help") {
 		return MHELP;
-	} else if (input == "spell") {
+	} else if (input == "spell" || input == "formatter") {
 		return MSPELL;
 	} else if (input == "linter") {
 		return MLINTER;
@@ -1010,11 +1004,9 @@ void thanks_for_all_the_fish(void)
 	delwin(edit);
 	delwin(bottomwin);
 
-#ifdef ENABLE_SPELLER
 	if (alt_speller != NULL) {
 		free(alt_speller);
 	}
-#endif
 	if (cutbuffer != NULL) {
 		free_filestruct(cutbuffer);
 	}

@@ -275,9 +275,7 @@ void help_init(void)
 		            "To Directory mode:\n\n");
 		htx[1] = NULL;
 		htx[2] = NULL;
-	}
-#ifdef ENABLE_SPELLER
-	else if (currmenu == MSPELL) {
+	} else if (currmenu == MSPELL) {
 		htx[0] = N_("Spell Check Help Text\n\n "
 		            "The spell checker checks the spelling of all text in "
 		            "the current file.  When an unknown word is "
@@ -289,9 +287,7 @@ void help_init(void)
 		            "are available in Spell Check mode:\n\n");
 		htx[1] = NULL;
 		htx[2] = NULL;
-	}
-#endif /* ENABLE_SPELLER */
-	else if (currmenu == MEXTCMD) {
+	} else if (currmenu == MEXTCMD) {
 		htx[0] = N_("Execute Command Help Text\n\n "
 		            "This mode allows you to insert the output of a "
 		            "command run by the shell into the current buffer (or "

@@ -331,7 +331,6 @@ void open_buffer(const std::string& filename, bool undoable)
 	}
 }
 
-#ifdef ENABLE_SPELLER
 /* If it's not "", filename is a file to open.  We blow away the text of
  * the current buffer, and then open and read the file, if
  * applicable.  Note that we skip the operating directory test when
@@ -361,7 +360,6 @@ void replace_buffer(const std::string& filename)
 	openfile->current_x = 0;
 	openfile->placewewant = 0;
 }
-#endif /* ENABLE_SPELLER */
 
 /* Update the screen to account for the current buffer. */
 void display_buffer(void)

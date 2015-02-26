@@ -50,9 +50,7 @@ std::vector<rcoption> rcopts = {
 	{"preserve", PRESERVE, false},
 	{"rebindkeypad", REBIND_KEYPAD, false},
 	{"regexp", USE_REGEXP, false},
-#ifdef ENABLE_SPELLER
 	{"speller", 0, false},
-#endif
 	{"suspend", SUSPEND, false},
 	{"tabsize", 0, true},
 	{"tempfile", TEMP_FILE, false},
@@ -890,6 +888,23 @@ void parse_linter(char *ptr)
 	new_syntax->linter = std::string(ptr);
 }
 
+void parse_formatter(char *ptr)
+{
+	assert(ptr != NULL);
+
+	if (syntaxes.empty()) {
+		rcfile_error(N_("Cannot add a formatter without a syntax command"));
+		return;
+	}
+
+	if (*ptr == '\0') {
+		rcfile_error(N_("Missing formatter command"));
+		return;
+	}
+
+	new_syntax->formatter = std::string(ptr);
+}
+
 /* Check whether the user has unmapped every shortcut for a
 sequence we consider 'vital', like the exit function */
 static void check_vitals_mapped(void)
@@ -1009,6 +1024,10 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_linter(ptr);
 			free(ptr);
+		} else if (keyword == "formatter") {
+			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
+			parse_formatter(ptr);
+			free(ptr);
 		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword.c_str());
 		}
@@ -1080,13 +1099,9 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 							}
 						} else if (rcopt.name == "backupdir") {
 							backup_dir = argument;
-						} else
-#ifdef ENABLE_SPELLER
-						if (rcopt.name == "speller") {
+						} else if (rcopt.name == "speller") {
 							alt_speller = mallocstrcpy(alt_speller, argument.c_str());
-						} else
-#endif
-						if (rcopt.name == "tabsize") {
+						} else if (rcopt.name == "tabsize") {
 							if (!parse_num(argument.c_str(), &tabsize) || tabsize <= 0) {
 								rcfile_error(N_("Requested tab size \"%s\" is invalid"), argument.c_str());
 								tabsize = -1;

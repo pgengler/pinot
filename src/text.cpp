@@ -22,6 +22,9 @@
 
 #include "proto.h"
 
+#include <sstream>
+#include <vector>
+
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
@@ -1420,7 +1423,6 @@ size_t indent_length(const std::string& line)
 	return len;
 }
 
-#ifdef ENABLE_SPELLER
 /* A word is misspelled in the file.  Let the user replace it.  We
  * return false if the user cancels. */
 bool do_int_spell_fix(const char *word)
@@ -1980,7 +1982,6 @@ void do_spell(void)
 		statusbar(_("Finished checking spelling"));
 	}
 }
-#endif /* ENABLE_SPELLER */
 
  /* Cleanup things to do after leaving the linter */
 void lint_cleanup(void)
@@ -2273,6 +2274,134 @@ void do_linter(void)
 	}
 
 	lint_cleanup();
+}
+
+/* Run a formatter for the given syntax.
+ * Expects the formatter to be non-interactive and
+ * operate on a file in-place, which we'll pass it
+ * on the command line.  Another mashuhp of the speller
+ * and alt_speller routines.
+ */
+void do_formatter(void)
+{
+	bool status;
+	FILE *temp_file;
+	std::string temp = safe_tempfile(&temp_file);
+	int format_status;
+	size_t current_x_save = openfile->current_x;
+	size_t pww_save = openfile->placewewant;
+	ssize_t current_y_save = openfile->current_y;
+	ssize_t lineno_save = openfile->current->lineno;
+	pid_t pid_format;
+	char *finalstatus = NULL;
+
+	/* Check whether we're using syntax highlighting and formatter option is set */
+	if (!openfile->syntax || openfile->syntax->formatter == "") {
+		statusbar(_("Error: no formatter defined"));
+		return;
+	}
+
+	if (temp == "") {
+		statusbar(_("Error creating temp file: %s"), strerror(errno));
+		return;
+	}
+
+	/* we're not supporting partial formatting, oi vey */
+	openfile->mark_set = FALSE;
+	status = write_file(temp, temp_file, TRUE, OVERWRITE, FALSE);
+
+	if (!status) {
+		statusbar(_("Error writing temp file: %s"), strerror(errno));
+		return;
+	}
+
+	if (openfile->totsize == 0) {
+		statusbar(_("Finished"));
+		return;
+	}
+
+	blank_bottombars();
+	statusbar(_("Invoking formatter, please wait"));
+	doupdate();
+
+	endwin();
+
+	/* Set up an argument list to pass execvp(). */
+	std::vector<std::string> format_args;
+	std::stringstream stream(openfile->syntax->formatter);
+	std::string arg;
+	while (stream >> arg) {
+		format_args.push_back(arg);
+	}
+	format_args.push_back(temp);
+	char **argbuf;
+
+	/* Start a new process for the formatter. */
+	if ((pid_format = fork()) == 0) {
+		/* Start alternate format program; we are using $PATH. */
+		execvp(format_args[0], format_args, &argbuf);
+
+		/* Should not be reached, if alternate formatter is found!!! */
+		exit(1);
+	}
+
+	/* If we couldn't fork, get out. */
+	if (pid_format < 0) {
+		statusbar(_("Could not fork"));
+		return;
+	}
+
+	/* Don't handle a pending SIGWINCH until the alternate format checker
+	 * is finished and we've loaded the format-checked file back in. */
+	allow_pending_sigwinch(FALSE);
+
+	/* Wait for the formatter to finish. */
+	wait(&format_status);
+	free(argbuf);
+
+	/* Reenter curses mode. */
+	doupdate();
+
+	/* Restore the terminal to its previous state. */
+	terminal_init();
+
+	/* Turn the cursor back on for sure. */
+	curs_set(1);
+
+	/* The screen might have been resized.  If it has, reinitialize all
+	 * the windows based on the new screen dimensions. */
+	window_init();
+
+	if (!WIFEXITED(format_status) || WEXITSTATUS(format_status) != 0) {
+		char *format_error;
+		char *invoke_error = _("Error invoking \"%s\"");
+
+		format_error = charalloc(strlen(invoke_error) + openfile->syntax->formatter.length() + 1);
+		sprintf(format_error, invoke_error, openfile->syntax->formatter.c_str());
+		finalstatus = format_error;
+	} else {
+		/* Replace the text of the current buffer with the format-checked text. */
+		replace_buffer(temp);
+
+		/* Go back to the old position, and mark the file as modified. */
+		do_gotopos(lineno_save, current_x_save, current_y_save, pww_save);
+		set_modified();
+
+		/* Handle a pending SIGWINCH again. */
+		allow_pending_sigwinch(TRUE);
+
+		finalstatus = _("Finished formatting");
+	}
+
+	unlink(temp);
+
+	currmenu = MMAIN;
+
+	/* If the spell-checker printed any error messages onscreen, make
+	 * sure that they're cleared off. */
+	total_refresh();
+
+	statusbar(finalstatus);
 }
 
 /* Our own version of "wc".  Note that its character counts are in

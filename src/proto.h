@@ -63,9 +63,7 @@ extern std::string backup_dir;
 extern const std::string locking_prefix;
 extern const std::string locking_suffix;
 
-#ifdef ENABLE_SPELLER
 extern char *alt_speller;
-#endif
 
 extern std::list<sc*> sclist;
 extern std::list<subnfunc*> allfuncs;
@@ -188,9 +186,7 @@ void make_new_buffer(void);
 void initialize_buffer(void);
 void initialize_buffer_text(void);
 void open_buffer(const std::string& filename, bool undoable);
-#ifdef ENABLE_SPELLER
 void replace_buffer(const std::string& filename);
-#endif
 void display_buffer(void);
 std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next);
 void switch_to_prev_buffer_void(void);
@@ -236,7 +232,7 @@ int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column);
 /* All functions in global.c. */
 size_t length_of_list(int menu);
 void shortcut_init(void);
-void set_lint_shortcuts(void);
+void set_lint_or_format_shortcuts(void);
 void set_spell_shortcuts(void);
 #ifdef DEBUG
 void thanks_for_all_the_fish(void);
@@ -367,33 +363,18 @@ void not_found_msg(const std::string& str);
 void not_found_msg(const char *str);
 void search_replace_abort(void);
 int search_init(bool replacing, bool use_answer);
-bool findnextstr(
-#ifdef ENABLE_SPELLER
-	bool whole_word,
-#endif
-	bool no_sameline, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len);
-bool findnextstr(
-#ifdef ENABLE_SPELLER
-    bool whole_word,
-#endif
-    bool no_sameline, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len);
+bool findnextstr(bool whole_word, bool no_sameline, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len);
+bool findnextstr(bool whole_word, bool no_sameline, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len);
 void findnextstr_wrap_reset(void);
 void do_search(void);
 void do_research(void);
 int replace_regexp(char *string, bool create);
 char *replace_line(const char *needle);
-ssize_t do_replace_loop(
-#ifdef ENABLE_SPELLER
-    bool whole_word,
-#endif
-    bool *canceled, const filestruct *real_current, size_t
-    *real_current_x, const char *needle);
+ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_current, size_t *real_current_x, const char *needle);
 void do_replace(void);
 void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool interactive, bool save_pos, bool allow_update);
 void do_gotolinecolumn_void(void);
-#ifdef ENABLE_SPELLER
 void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t pos_pww);
-#endif
 void goto_line_posx(ssize_t line, size_t pos_x);
 bool find_bracket_match(bool reverse, const char *bracket_set);
 void do_find_bracket(void);
@@ -429,13 +410,12 @@ void wrap_reset(void);
 bool do_wrap(filestruct *line);
 ssize_t break_line(const char *line, ssize_t goal, bool newln);
 size_t indent_length(const std::string& line);
-#ifdef ENABLE_SPELLER
 bool do_int_spell_fix(const char *word);
 const char *do_int_speller(const char *tempfile_name);
 const char *do_alt_speller(char *tempfile_name);
 void do_spell(void);
-#endif
 void do_linter(void);
+void do_formatter(void);
 void do_wordlinechar_count(void);
 void do_verbatim_input(void);
 
@@ -460,9 +440,7 @@ ssize_t ngetdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 ssize_t getdelim(char **lineptr, size_t *n, char delim, std::istream &stream);
 ssize_t getline(char **lineptr, size_t *n, std::istream &stream);
 bool regexp_bol_or_eol(const regex_t *preg, const char *string);
-#ifdef ENABLE_SPELLER
 bool is_whole_word(size_t pos, const char *buf, const char *word);
-#endif
 const char *strstrwrapper(const char *haystack, const char *needle, const char *start);
 void nperror(const char *s);
 void *nmalloc(size_t howmuch);

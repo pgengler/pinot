@@ -721,9 +721,7 @@ void usage(void)
 	print_opt("-p", "--preserve", N_("Preserve XON (^Q) and XOFF (^S) keys"));
 	print_opt("-q", "--quiet", N_("Silently ignore startup issues like rc file errors"));
 	print_opt(_("-r <#cols>"), _("--fill=<#cols>"), N_("Set wrapping point at column #cols"));
-#ifdef ENABLE_SPELLER
 	print_opt(_("-s <prog>"), _("--speller=<prog>"), N_("Enable alternate speller"));
-#endif
 	print_opt("-t", "--tempfile", N_("Auto save on exit, don't prompt"));
 
 	print_opt("-v", "--view", N_("View mode (read-only)"));
@@ -752,9 +750,6 @@ void version(void)
 #endif
 #ifdef DEBUG
 	printf(" --enable-debug");
-#endif
-#ifdef ENABLE_SPELLER
-	printf(" --enable-speller");
 #endif
 #ifdef USE_SLANG
 	printf(" --with-slang");
@@ -1568,9 +1563,7 @@ int main(int argc, char **argv)
 		{"preserve", 0, NULL, 'p'},
 		{"quiet", 0, NULL, 'q'},
 		{"fill", 1, NULL, 'r'},
-#ifdef ENABLE_SPELLER
 		{"speller", 1, NULL, 's'},
-#endif
 		{"tempfile", 0, NULL, 't'},
 		{"view", 0, NULL, 'v'},
 		{"nowrap", 0, NULL, 'w'},
@@ -1714,11 +1707,9 @@ int main(int argc, char **argv)
 			}
 			fill_used = true;
 			break;
-#ifdef ENABLE_SPELLER
 		case 's':
 			alt_speller = mallocstrcpy(alt_speller, optarg);
 			break;
-#endif
 		case 't':
 			SET(TEMP_FILE);
 			break;
@@ -1757,18 +1748,14 @@ int main(int argc, char **argv)
 	 * haven't changed afterward, restore the backed-up values. */
 	if (!no_rcfiles) {
 		ssize_t wrap_at_cpy = wrap_at;
-#ifdef ENABLE_SPELLER
 		char *alt_speller_cpy = alt_speller;
-#endif
 		ssize_t tabsize_cpy = tabsize;
 		unsigned flags_cpy[sizeof(flags) / sizeof(flags[0])];
 		size_t i;
 
 		memcpy(flags_cpy, flags, sizeof(flags_cpy));
 
-#ifdef ENABLE_SPELLER
 		alt_speller = NULL;
-#endif
 
 		do_rcfile();
 
@@ -1780,12 +1767,10 @@ int main(int argc, char **argv)
 		if (fill_used) {
 			wrap_at = wrap_at_cpy;
 		}
-#ifdef ENABLE_SPELLER
 		if (alt_speller_cpy != NULL) {
 			free(alt_speller);
 			alt_speller = alt_speller_cpy;
 		}
-#endif
 		if (tabsize_cpy != -1) {
 			tabsize = tabsize_cpy;
 		}
@@ -1835,7 +1820,6 @@ int main(int argc, char **argv)
 	 * and is a directory, so that backup files will be saved there. */
 	init_backup_dir();
 
-#ifdef ENABLE_SPELLER
 	/* If we don't have an alternative spell checker after reading the
 	 * command line and/or rcfile(s), check $SPELL for one, as Pico does */
 	if (alt_speller == NULL) {
@@ -1844,7 +1828,6 @@ int main(int argc, char **argv)
 			alt_speller = mallocstrcpy(NULL, spellenv);
 		}
 	}
-#endif
 
 	/* If matchbrackets wasn't specified, set its default value. */
 	if (matchbrackets == NULL) {

@@ -9,7 +9,7 @@ icolor yellow "^\s*set\s+(functioncolor|keycolor|statuscolor|titlecolor)\s+((bri
 icolor brightgreen "^\s*set\s+(backupdir|brackets|functioncolor|keycolor|matchbrackets|punct|speller|statuscolor|titlecolor|whitespace)\s+"
 icolor brightgreen "^\s*bind\s+((\^|M-)([[:alpha:]]|space)|F([0-9]|1[0-6])|Ins|Del)\s+[[:alpha:]]+\s+[[:alpha:]]+\s*$"
 icolor brightgreen "^\s*unbind\s+((\^|M-)([[:alpha:]]|space)|F([0-9]|1[0-6])|Ins|Del)\s+[[:alpha:]]+\s*$"
-icolor green "^\s*((un)?(bind|set)|include|syntax|header|magic|extends|linter)\b"
+icolor green "^\s*((un)?(bind|set)|include|syntax|header|magic|extends|linter|formatter)\b"
 ## Colors
 icolor yellow "^\s*i?color\s*(bright)?(white|black|red|blue|green|yellow|magenta|cyan)?(,(white|black|red|blue|green|yellow|magenta|cyan))?\b"
 icolor magenta "^\s*i?color\b" "\b(start|end)="

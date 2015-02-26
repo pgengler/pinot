@@ -336,7 +336,6 @@ bool regexp_bol_or_eol(const regex_t *preg, const char *string)
 	        regexec(preg, string, 0, NULL, REG_NOTBOL | REG_NOTEOL) == REG_NOMATCH);
 }
 
-#ifdef ENABLE_SPELLER
 /* Is the word starting at position pos in buf a whole word? */
 bool is_whole_word(size_t pos, const char *buf, const char *word)
 {
@@ -360,7 +359,6 @@ bool is_whole_word(size_t pos, const char *buf, const char *word)
 
 	return retval;
 }
-#endif /* ENABLE_SPELLER */
 
 /* If we are searching backwards, we will find the last match that
  * starts no later than start.  Otherwise we find the first match
