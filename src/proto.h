@@ -185,7 +185,7 @@ void do_uncut_text(void);
 void make_new_buffer(void);
 void initialize_buffer(void);
 void initialize_buffer_text(void);
-void open_buffer(const std::string& filename, bool undoable);
+void open_buffer(std::string filename, bool undoable);
 void replace_buffer(const std::string& filename);
 void display_buffer(void);
 std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next);

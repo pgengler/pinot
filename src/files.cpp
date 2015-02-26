@@ -282,7 +282,7 @@ int do_lockfile(const std::string& filename)
 
 /* If it's not "", filename is a file to open.  We make a new buffer, if
  * necessary, and then open and read the file, if applicable. */
-void open_buffer(const std::string& filename, bool undoable)
+void open_buffer(std::string filename, bool undoable)
 {
 	bool new_buffer = (openfiles.size() == 0 || ISSET(MULTIBUFFER));
 	/* Whether we load into this buffer or a new one. */
@@ -294,6 +294,19 @@ void open_buffer(const std::string& filename, bool undoable)
 	/* If we're loading into a new buffer, add a new entry to openfile. */
 	if (new_buffer) {
 		make_new_buffer();
+
+		if (ISSET(LOCKING) && filename != "") {
+			int lockstatus = do_lockfile(filename);
+			if (lockstatus < 0) {
+				if (openfiles.size() > 1) {
+					close_buffer();
+					statusbar(_("Cancelled"));
+					return;
+				} else {
+					filename = "";
+				}
+			}
+		}
 	}
 
 	/* If the filename isn't blank, open the file.  Otherwise, treat it
@@ -841,15 +854,6 @@ int open_file(const std::string& filename, bool newfie, FILE **f)
 	   permissions, just try the relative one */
 	if (full_filename == "" || (stat(full_filename, &fileinfo) == -1 && stat(filename, &fileinfo2) != -1)) {
 		full_filename = filename;
-	}
-
-	if (ISSET(LOCKING)) {
-		int lock_status = do_lockfile(full_filename);
-		if (lock_status < 0) {
-			return -1;
-		} else if (lock_status == 0) {
-			quiet = true;
-		}
 	}
 
 	if (stat(full_filename, &fileinfo) == -1) {
