@@ -181,7 +181,7 @@ int write_lockfile(const std::string& lockfilename, const std::string& origfilen
 
 	   This is likely very wrong, so this is a WIP
 	 */
-	null_at(&lockdata, lockdatalen);
+	memset(lockdata, 0, lockdatalen);
 	lockdata[0] = 0x62;
 	lockdata[1] = 0x30;
 	lockdata[24] = mypid % 256;
