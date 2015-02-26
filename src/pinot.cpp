@@ -809,7 +809,7 @@ void do_exit(void)
 			delete_lockfile(openfile->lock_filename);
 		}
 		/* Exit only if there are no more open file buffers. */
-		if (!close_buffer()) {
+		if (!close_buffer(false)) {
 			finish();
 		}
 		/* If the user canceled, we go on. */

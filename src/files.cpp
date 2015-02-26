@@ -113,6 +113,7 @@ int write_lockfile(const std::string& lockfilename, const std::string& origfilen
 	pid_t mypid;
 	uid_t myuid;
 	struct passwd *mypwuid;
+	struct stat fileinfo;
 	char *lockdata = charalloc(1024);
 	char myhostname[32];
 	ssize_t lockdatalen = 1024;
@@ -131,8 +132,11 @@ int write_lockfile(const std::string& lockfilename, const std::string& origfilen
 		return -1;
 	}
 
-	if (delete_lockfile(lockfilename) < 0) {
-		return -1;
+	 /* Check if the lock exists before we try to delete it... */
+	if (stat(lockfilename, &fileinfo) != -1) {
+		if (delete_lockfile(lockfilename) < 0) {
+			return -1;
+		}
 	}
 
 	if (ISSET(INSECURE_BACKUP)) {
@@ -143,11 +147,10 @@ int write_lockfile(const std::string& lockfilename, const std::string& origfilen
 
 	fd = open(lockfilename.c_str(), cflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
-	/* Maybe we just don't have write access, don't stop us from
-	   opening the file at all, just don't set the lock_filename
-	   and return success */
-	if (fd < 0 && errno == EACCES) {
-		return 1;
+	/* Maybe we just don't have write access.  Print an error message and continue. */
+	if (fd < 0) {
+		statusbar(_("Error writing lock file %s: %s"), lockfilename.c_str(), strerror(errno));
+		return 0;
 	}
 
 	/* Now we've got a safe file stream.  If the previous open()
@@ -284,6 +287,7 @@ int do_lockfile(const std::string& filename)
  * necessary, and then open and read the file, if applicable. */
 void open_buffer(std::string filename, bool undoable)
 {
+	bool quiet = false;
 	bool new_buffer = (openfiles.size() == 0 || ISSET(MULTIBUFFER));
 	/* Whether we load into this buffer or a new one. */
 	FILE *f;
@@ -299,22 +303,20 @@ void open_buffer(std::string filename, bool undoable)
 			int lockstatus = do_lockfile(filename);
 			if (lockstatus < 0) {
 				if (openfiles.size() > 1) {
-					close_buffer();
+					close_buffer(true);
 					statusbar(_("Cancelled"));
 					return;
-				} else {
-					filename = "";
+				} else if (lockstatus == 0) {
+					quiet = true;
 				}
 			}
 		}
 	}
 
-	/* If the filename isn't blank, open the file.  Otherwise, treat it
-	 * as a new file. */
-	rc = (filename != "") ? open_file(filename, new_buffer, &f) : -2;
+	/* If the filename isn't blank, open the file.  Otherwise, treat it as a new file. */
+	rc = (filename != "") ? open_file(filename, new_buffer, quiet, &f) : -2;
 
-	/* If we have a file, and we're loading into a new buffer, update
-	 * the filename. */
+	/* If we have a file, and we're loading into a new buffer, update the filename. */
 	if (rc != -1 && new_buffer) {
 		openfile->filename = filename;
 	}
@@ -357,7 +359,7 @@ void replace_buffer(const std::string& filename)
 
 	/* If the filename isn't blank, open the file.  Otherwise, treat it
 	 * as a new file. */
-	rc = (filename != "") ? open_file(filename, true, &f) : -2;
+	rc = (filename != "") ? open_file(filename, true, false, &f) : -2;
 
 	/* Reinitialize the text of the current buffer. */
 	free_filestruct(openfile->fileage);
@@ -390,13 +392,15 @@ void display_buffer(void)
 
 /* Switch to the next file buffer if next_buf is true.  Otherwise,
  * switch to the previous file buffer. */
-std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next_buf)
+std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next_buf, bool quiet)
 {
 	assert(openfiles.size() > 0);
 
 	/* If only one file buffer is open, indicate it on the statusbar and get out. */
 	if (openfiles.size() == 1) {
-		statusbar(_("No more open file buffers"));
+		if (!quiet) {
+			statusbar(_("No more open file buffers"));
+		}
 		return openfile;
 	}
 
@@ -422,7 +426,9 @@ std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next_buf)
 	display_buffer();
 
 	/* Indicate the switch on the statusbar. */
-	statusbar(_("Switched to %s"), ((openfile->filename[0] == '\0') ? _("New Buffer") : openfile->filename.c_str()));
+	if (!quiet) {
+		statusbar(_("Switched to %s"), ((openfile->filename[0] == '\0') ? _("New Buffer") : openfile->filename.c_str()));
+	}
 
 #ifdef DEBUG
 	dump_filestruct(openfile->current);
@@ -448,7 +454,7 @@ void switch_to_next_buffer_void(void)
 /* Delete an entry from the openfile filebuffer, and switch to the one
  * after it.  Return true on success, or false if there are no more open
  * file buffers. */
-bool close_buffer(void)
+bool close_buffer(bool quiet)
 {
 	assert(openfiles.size() > 0);
 
@@ -462,7 +468,7 @@ bool close_buffer(void)
 	update_poshistory(openfile->filename, openfile->current->lineno, xplustabs() + 1);
 
 	/* Switch to the next file buffer. */
-	auto oldfile = switch_to_prevnext_buffer(true);
+	auto oldfile = switch_to_prevnext_buffer(true, quiet);
 
 	openfile = openfiles.erase(oldfile);
 	if (openfile == openfiles.end()) {
@@ -838,11 +844,10 @@ void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool
  * Return -2 if we say "New File", -1 if the file isn't opened, and the
  * fd opened otherwise.  The file might still have an error while reading
  * with a 0 return value.  *f is set to the opened file. */
-int open_file(const std::string& filename, bool newfie, FILE **f)
+int open_file(const std::string& filename, bool newfie, bool quiet, FILE **f)
 {
 	struct stat fileinfo, fileinfo2;
 	int fd;
-	bool quiet = false;
 	std::string full_filename;
 
 	assert(f != NULL);
