@@ -186,7 +186,7 @@ int write_lockfile(const std::string& lockfilename, const std::string& origfilen
 	lockdata[1] = 0x30;
 	lockdata[24] = mypid % 256;
 	lockdata[25] = mypid / 256;
-	snprintf(&lockdata[2], 10, "pinot%s", VERSION);
+	snprintf(&lockdata[2], 11, "pinot%s", VERSION);
 	strncpy(&lockdata[28], mypwuid->pw_name, 16);
 	strncpy(&lockdata[68], myhostname, 31);
 	strncpy(&lockdata[108], origfilename.c_str(), 768);
