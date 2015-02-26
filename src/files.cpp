@@ -262,7 +262,7 @@ int do_lockfile(const std::string& filename)
 		}
 		memset(lockprog, 0, 11);
 		strncpy(lockprog, &lockbuf[2], 10);
-		lockpid = lockbuf[25] * 256 + lockbuf[24];
+		lockpid = (unsigned char)lockbuf[25] * 256 + (unsigned char)lockbuf[24];
 		memset(lockuser, 0, 17);
 		strncpy(lockuser, &lockbuf[28], 16);
 		DEBUG_LOG("lockpid = " << lockpid);
