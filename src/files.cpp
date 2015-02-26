@@ -235,7 +235,7 @@ int do_lockfile(const std::string& filename)
 {
 	std::string lockdir = dirname(filename);
 	std::string lockbase = basename(filename.c_str());
-	char lockprog[12], lockuser[16];
+	char lockprog[11], lockuser[17];
 	struct stat fileinfo;
 	int lockfd, lockpid;
 
@@ -260,8 +260,10 @@ int do_lockfile(const std::string& filename)
 			statusbar(_("Error reading lockfile %s: Not enough data read"), lockfilename.c_str());
 			return -1;
 		}
+		memset(lockprog, 0, 11);
 		strncpy(lockprog, &lockbuf[2], 10);
 		lockpid = lockbuf[25] * 256 + lockbuf[24];
+		memset(lockuser, 0, 17);
 		strncpy(lockuser, &lockbuf[28], 16);
 		DEBUG_LOG("lockpid = " << lockpid);
 		DEBUG_LOG("program name which created this lock file should be " << lockprog);
