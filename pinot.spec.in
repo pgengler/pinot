@@ -11,7 +11,7 @@ Group		: Applications/Editors
 URL		: http://github.com/pgengler
 Source		: http://github.com/pgengler
 BuildRoot	: %{_tmppath}/%{name}-%{version}-root
-BuildRequires	: autoconf, automake, gettext-devel, ncurses-devel
+BuildRequires	: autoconf, automake, gettext-devel, ncurses-devel, texinfo
 
 %description
 pinot is a small and friendly text editor.  It aims to emulate the
@@ -32,6 +32,7 @@ rm -f %{buildroot}%{_infodir}/dir
 %defattr(-,root,root)
 %doc AUTHORS.nano COPYING ChangeLog INSTALL README THANKS TODO doc/faq.html doc/pinotrc.sample
 %{_bindir}/*
+%{_docdir}/pinot/*
 %{_mandir}/man*/*
 %{_infodir}/pinot.info*
 %{_datadir}/locale/*/LC_MESSAGES/pinot.mo
