@@ -1763,6 +1763,8 @@ const char *do_alt_speller(char *tempfile_name)
 	size_t pww_save = openfile->placewewant;
 	ssize_t current_y_save = openfile->current_y;
 	ssize_t lineno_save = openfile->current->lineno;
+	struct stat spellfileinfo;
+	__time_t timestamp;
 	pid_t pid_spell;
 	char *ptr;
 	static int arglen = 3;
@@ -1794,6 +1796,10 @@ const char *do_alt_speller(char *tempfile_name)
 		statusbar(_("Finished checking spelling"));
 		return NULL;
 	}
+
+	/* Get the timestamp of the temporary file. */
+	stat(tempfile_name, &spellfileinfo);
+	timestamp = spellfileinfo.st_mtime;
 
 	endwin();
 
@@ -1927,7 +1933,13 @@ const char *do_alt_speller(char *tempfile_name)
 
 	/* Go back to the old position, and mark the file as modified. */
 	do_gotopos(lineno_save, current_x_save, current_y_save, pww_save);
-	set_modified();
+
+	/* Stat the temporary file again, and mark the buffer as modified only
+	 * if this file was changed since it was written. */
+	stat(tempfile_name, &spellfileinfo);
+	if (spellfileinfo.st_mtime != timestamp) {
+		set_modified();
+	}
 
 	/* Handle a pending SIGWINCH again. */
 	allow_pending_sigwinch(true);
