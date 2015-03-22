@@ -277,8 +277,8 @@ bool findnextstr(bool whole_word, bool no_sameline, const filestruct *begin, siz
 			}
 		}
 
-		/* We've finished processing the file, so get out. */
 		if (search_last_line) {
+			/* We've finished processing the file, so get out. */
 			not_found_msg(needle);
 			disable_nodelay();
 			return false;
@@ -293,8 +293,8 @@ bool findnextstr(bool whole_word, bool no_sameline, const filestruct *begin, siz
 			current_y_find++;
 		}
 
-		/* We've reached the start or end of the buffer, so wrap around. */
 		if (fileptr == NULL) {
+			/* We've reached the start or end of the buffer, so wrap around. */
 			if (ISSET(BACKWARDS_SEARCH)) {
 				fileptr = openfile->filebot;
 				current_y_find = editwinrows - 1;
@@ -305,8 +305,8 @@ bool findnextstr(bool whole_word, bool no_sameline, const filestruct *begin, siz
 			statusbar(_("Search Wrapped"));
 		}
 
-		/* We've reached the original starting line. */
 		if (fileptr == begin) {
+			/* We've reached the original starting line. */
 			search_last_line = true;
 		}
 
@@ -775,8 +775,7 @@ void do_replace(void)
 	              &replace_history,
 	              edit_refresh, _("Replace with"));
 
-	/* Add this replace string to the replace history list.  i == 0
-	 * means that the string is not "". */
+	/*  If the replace string is not "", add it to the replace history list. */
 	if (i == PROMPT_ENTER_PRESSED) {
 		update_history(&replace_history, answer);
 	}
@@ -966,8 +965,8 @@ bool find_bracket_match(bool reverse, const char *bracket_set)
 		                  mbrevstrpbrk(fileptr->data, bracket_set, rev_start) :
 		                  mbstrpbrk(rev_start, bracket_set));
 
-		/* We've found a potential match. */
 		if (found != NULL) {
+			/* We've found a potential match. */
 			break;
 		}
 
@@ -979,8 +978,8 @@ bool find_bracket_match(bool reverse, const char *bracket_set)
 			current_y_find++;
 		}
 
-		/* We've reached the start or end of the buffer, so get out. */
 		if (fileptr == NULL) {
+			/* We've reached the start or end of the buffer, so get out. */
 			return false;
 		}
 
