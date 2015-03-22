@@ -229,7 +229,11 @@ bool findnextstr(bool whole_word, bool no_sameline, const filestruct *begin, siz
 	 * will return immediately and say that no match was found, and
 	 * rev_start will be properly set when the search continues on the
 	 * previous or next line. */
-	rev_start += ISSET(BACKWARDS_SEARCH) ? openfile->current_x - 1 : openfile->current_x + 1;
+	if (ISSET(BACKWARDS_SEARCH)) {
+		rev_start += ((openfile->current_x == 0) ? -1 : move_mbleft(fileptr->data, openfile->current_x));
+	} else {
+		rev_start += move_mbright(fileptr->data, openfile->current_x);
+	}
 
 	/* Look for needle in the current line we're searching. */
 	enable_nodelay();
