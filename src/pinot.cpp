@@ -165,7 +165,9 @@ void renumber(filestruct *fileptr)
 {
 	ssize_t line;
 
-	assert(fileptr != NULL);
+	if (fileptr == NULL) {
+		return;
+	}
 
 	line = (fileptr->prev == NULL) ? 0 : fileptr->prev->lineno;
 
@@ -346,9 +348,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 		free_filestruct(openfile->fileage);
 
 		/* Renumber starting with the line after the original file_bot. */
-		if (file_bot_save->next != NULL) {
-			renumber(file_bot_save->next);
-		}
+		renumber(file_bot_save->next);
 	}
 
 	/* Since the text has now been saved, remove it from the filestruct. */

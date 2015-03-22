@@ -1201,9 +1201,7 @@ void update_history(filestruct **h, const char *s)
 		bar = p->next;
 		unlink_node(foo);
 		delete_node(foo);
-		if (bar != NULL) {
-			renumber(bar);
-		}
+		renumber(bar);
 	}
 
 	/* If the history is full, delete the beginning entry to make room
