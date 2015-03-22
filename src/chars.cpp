@@ -464,12 +464,18 @@ size_t move_mbleft(const std::string& str, size_t pos)
 
 size_t move_mbleft(const char *buf, size_t pos)
 {
-	size_t before = 0, char_len = 0;
+	size_t before, char_len = 0;
 
 	assert(buf != NULL && pos <= strlen(buf));
 
-	/* There is no library function to move backward one multibyte
-	 * character.  Here is the naive, O(pos) way to do it. */
+	/* There is no library function to move backward one multibyte character.
+	 * So we just start groping for one at the farthestpossible point. */
+	if (mb_cur_max() > pos) {
+		before = 0;
+	} else {
+		before = pos - mb_cur_max();
+	}
+
 	while (before < pos) {
 		char_len = parse_mbchar(buf + before, NULL, NULL);
 		before += char_len;
