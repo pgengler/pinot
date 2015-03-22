@@ -868,7 +868,6 @@ void finish_stdin_pager(void)
 void cancel_stdin_pager(int signal)
 {
 	UNUSED_VAR(signal);
-	/* Currently do nothing, just handle the intr silently */
 	pager_input_aborted = true;
 }
 
@@ -881,11 +880,11 @@ void stdin_pager(void)
 	}
 	fprintf(stderr, _("Reading from stdin, ^C to abort\n"));
 
-	/* Set things up so that Ctrl-C will cancel the new process. */
 	/* Enable interpretation of the special control keys so that we get
 	 * SIGINT when Ctrl-C is pressed. */
 	enable_signals();
 
+	/* Set things up so that Ctrl-C will cancel the new process. */
 	if (sigaction(SIGINT, NULL, &pager_newaction) == -1) {
 		pager_sig_failed = true;
 		nperror("sigaction");
