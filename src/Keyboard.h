@@ -2,6 +2,9 @@
 
 #include <string>
 
+// include ncurses for ESCDELAY
+#include <ncurses.h>
+
 // need to include "termkey-internal.h" because that actually defines
 // the TermKeyStruct and we get compiler errors without it
 #include "termkey-internal.h"
