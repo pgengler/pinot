@@ -1781,13 +1781,6 @@ const char *do_alt_speller(char *tempfile_name)
 	size_t totsize_save = openfile->totsize;
 	/* Our saved value of totsize, used when we spell-check a marked selection. */
 
-	if (old_mark_set) {
-		/* If the mark is on, save the number of the line it starts on,
-		 * and then turn the mark off. */
-		mb_lineno_save = openfile->mark_begin->lineno;
-		openfile->mark_set = false;
-	}
-
 	/* Get the timestamp of the temporary file. */
 	stat(tempfile_name, &spellfileinfo);
 	timestamp = spellfileinfo.st_mtime;
@@ -1795,6 +1788,13 @@ const char *do_alt_speller(char *tempfile_name)
 	 /* If the number of bytes to check is zero, get out. */
 	if (spellfileinfo.st_size == 0) {
 		return NULL;
+	}
+
+	if (old_mark_set) {
+		/* If the mark is on, save the number of the line it starts on,
+		 * and then turn the mark off. */
+		mb_lineno_save = openfile->mark_begin->lineno;
+		openfile->mark_set = false;
 	}
 
 	endwin();
