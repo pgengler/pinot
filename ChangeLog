@@ -2,6 +2,12 @@
 -----
 * Underscores are considered part of words when moving forward/backward by words
 * Incorporate various fixes/changes from 'nano' (up to about their 2.4.0 release)
+* Use std::string instead of char* in more places
+* Updated some code to avoid compiler warnings
+* Use ‘false’ and ‘true’ instead of ‘FALSE’ and ‘TRUE’
+* Always build with UTF-8 features (can still be disabled at runtime)
+* Use C++ file streams instead of C-style file I/O in some places
+* Convert some C-style linked-list structs to use std::list
 
 0.0.6
 -----
