@@ -205,7 +205,7 @@ bool is_word_mbchar(const char *c, bool allow_punct)
 {
 	assert(c != NULL);
 
-	return is_alnum_mbchar(c) || (allow_punct ? is_punct_mbchar(c) : false);
+	return is_alnum_mbchar(c) || (*c == '_') || (allow_punct ? is_punct_mbchar(c) : false);
 }
 
 /* c is a control character.  It displays as ^@, ^?, or ^[ch], where ch
