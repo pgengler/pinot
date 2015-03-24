@@ -8,7 +8,7 @@
 @c Run 'makeinfo' rather than 'texinfo-format-buffer'.
 @smallbook
 @set EDITION 0.2
-@set VERSION 0.0.6
+@set VERSION 0.0.7
 @set UPDATED 11 August 2014
 
 @dircategory Editors
@@ -23,7 +23,7 @@
 @titlepage
 @title @code{pinot}
 @subtitle a small and friendly text editor.
-@subtitle version 0.0.6
+@subtitle version 0.0.7
 
 @author Phil Gengler
 @page

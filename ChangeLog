@@ -1,3 +1,8 @@
+0.0.7
+-----
+* Underscores are considered part of words when moving forward/backward by words
+* Incorporate various fixes/changes from 'nano' (up to about their 2.4.0 release)
+
 0.0.6
 -----
 * Change to use libtermkey (http://www.leonerd.org.uk/code/libtermkey/) for keyboard input, instead of ncurses.
