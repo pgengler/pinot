@@ -1788,14 +1788,14 @@ const char *do_alt_speller(char *tempfile_name)
 		openfile->mark_set = false;
 	}
 
-	if (openfile->totsize == 0) {
-		statusbar(_("Finished checking spelling"));
-		return NULL;
-	}
-
 	/* Get the timestamp of the temporary file. */
 	stat(tempfile_name, &spellfileinfo);
 	timestamp = spellfileinfo.st_mtime;
+
+	 /* If the number of bytes to check is zero, get out. */
+	if (spellfileinfo.st_size == 0) {
+		return NULL;
+	}
 
 	endwin();
 
