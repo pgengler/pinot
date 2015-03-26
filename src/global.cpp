@@ -941,6 +941,8 @@ sc *strtosc(std::string input)
 		s->scfunc = do_last_file;
 	} else if (input == "tospell" || input == "speller") {
 		s->scfunc = do_spell;
+	} else if (input == "linter") {
+		s->scfunc = do_linter;
 	} else {
 		delete s;
 		return NULL;
