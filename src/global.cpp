@@ -976,7 +976,7 @@ int strtomenu(std::string input)
 		return MEXTCMD;
 	} else if (input == "help") {
 		return MHELP;
-	} else if (input == "spell" || input == "formatter") {
+	} else if (input == "spell") {
 		return MSPELL;
 	} else if (input == "linter") {
 		return MLINTER;
