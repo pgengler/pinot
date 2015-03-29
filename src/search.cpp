@@ -605,10 +605,6 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 			bol_or_eol = false;
 		}
 
-		if (!replaceall) {
-			edit_refresh();
-		}
-
 		/* Indicate that we found the search string. */
 		if (numreplaced == -1) {
 			numreplaced = 0;
@@ -617,6 +613,8 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 		if (!replaceall) {
 			size_t xpt = xplustabs();
 			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, false);
+
+			edit_refresh();
 
 			curs_set(0);
 
@@ -697,7 +695,6 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 			openfile->current->data = copy;
 
 			reset_multis(openfile->current, true);
-			edit_refresh();
 			if (!replaceall) {
 				/* If color syntaxes are available and turned on, we
 				 * need to call edit_refresh(). */
@@ -720,7 +717,6 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 		unpartition_filestruct(&filepart);
 		openfile->edittop = edittop_save;
 		openfile->mark_set = true;
-		edit_refresh();
 	}
 
 	/* If the NO_NEWLINES flag isn't set, and text has been added to the
