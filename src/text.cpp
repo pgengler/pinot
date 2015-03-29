@@ -1773,6 +1773,7 @@ const char *do_alt_speller(char *tempfile_name)
 	/* Whether we added a magicline after filebot. */
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
+	bool right_side_up = false;
 	ssize_t mb_lineno_save = 0;
 	/* We're going to close the current file, and open the output of
 	 * the alternate spell command.  The line that mark_begin points
@@ -1865,7 +1866,7 @@ const char *do_alt_speller(char *tempfile_name)
 		 * set, keep track of whether the text will have a magicline
 		 * added when we're done correcting misspelled words; and
 		 * turn the mark off. */
-		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, NULL);
+		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
 		filepart = partition_filestruct(top, top_x, bot, bot_x);
 		if (!ISSET(NO_NEWLINES)) {
 			added_magicline = (openfile->filebot->data[0] != '\0');
@@ -1881,6 +1882,13 @@ const char *do_alt_speller(char *tempfile_name)
 
 	if (old_mark_set) {
 		filestruct *top_save = openfile->fileage;
+
+		/* Adjust the end point of the marked region for any change in length of the region's last line. */
+		if (right_side_up) {
+			current_x_save = strlen(openfile->filebot->data);
+		} else {
+			openfile->mark_begin_x = strlen(openfile->filebot->data);
+		}
 
 		/* If the mark was on, the NO_NEWLINES flag isn't set, and we
 		 * added a magicline, remove it now. */
@@ -1903,12 +1911,7 @@ const char *do_alt_speller(char *tempfile_name)
 		openfile->totsize = totsize_save;
 
 		/* Assign mark_begin to the line where the mark began before. */
-		goto_line_posx(mb_lineno_save, openfile->mark_begin_x);
-		openfile->mark_begin = openfile->current;
-
-		/* Assign mark_begin_x to the location in mark_begin where the
-		 * mark began before, adjusted for any shortening of the line. */
-		openfile->mark_begin_x = openfile->current_x;
+		openfile->mark_begin = fsfromline(mb_lineno_save);
 
 		/* Turn the mark back on. */
 		openfile->mark_set = true;
