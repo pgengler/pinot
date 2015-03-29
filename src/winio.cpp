@@ -1433,7 +1433,7 @@ void edit_refresh(void)
 		DEBUG_LOG("edit_refresh(): line = " << openfile->current->lineno << ", edittop " << openfile->edittop->lineno << " + maxrows " << maxrows);
 
 		/* Make sure the current line is on the screen. */
-		edit_update(CENTER);
+		edit_update(ISSET(SMOOTH_SCROLL) ? NONE : CENTER);
 	}
 
 	foo = openfile->edittop;
