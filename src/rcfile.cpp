@@ -334,11 +334,11 @@ void parse_extends(char *ptr)
 	new_syntax->extends.push_back(syntax_name);
 }
 
+#ifdef HAVE_LIBMAGIC
 /* Parse the next syntax string from the line at ptr, and add it to the
  * global list of color syntaxes. */
 void parse_magictype(char *ptr)
 {
-#ifdef HAVE_LIBMAGIC
 	const char *fileregptr = NULL;
 
 	assert(ptr != NULL);
@@ -384,8 +384,8 @@ void parse_magictype(char *ptr)
 			new_syntax->magics.push_back(newext);
 		}
 	}
-#endif /* HAVE_LIBMAGIC */
 }
+#endif /* HAVE_LIBMAGIC */
 
 bool is_universal_function(void (*func)(void))
 {
@@ -997,9 +997,11 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			parse_extends(ptr);
 			free(ptr);
 		} else if (keyword == "magic") {
+#ifdef HAVE_LIBMAGIC
 			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_magictype(ptr);
 			free(ptr);
+#endif
 		} else if (keyword == "header") {
 			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
 			parse_headers(ptr);
