@@ -737,7 +737,6 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 
 	prompt = charalloc(((COLS - 4) * mb_cur_max()) + 1);
 
-	currmenu = menu;
 	bottombars(menu);
 
 	va_start(ap, msg);

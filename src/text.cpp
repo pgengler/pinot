@@ -1986,7 +1986,6 @@ void do_spell(void)
  /* Cleanup things to do after leaving the linter */
 void lint_cleanup(void)
 {
-	currmenu = MMAIN;
 	display_main_list();
 }
 
@@ -2185,7 +2184,6 @@ void do_linter(void)
 		return;
 	}
 
-	currmenu = MLINTER;
 	bottombars(MLINTER);
 
 	auto curr_lint = lints.begin();

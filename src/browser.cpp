@@ -55,7 +55,6 @@ std::string do_browser(std::string path, DIR *dir)
 
 	curs_set(0);
 	blank_statusbar();
-	currmenu = MBROWSER;
 	bottombars(MBROWSER);
 	wnoutrefresh(bottomwin);
 
@@ -155,7 +154,6 @@ change_browser_directory:
 			              browser_refresh, _("Go To Directory"));
 
 			curs_set(0);
-			currmenu = MBROWSER;
 			bottombars(MBROWSER);
 
 			/* If the directory begins with a newline (i.e. an
@@ -671,7 +669,6 @@ void findnextfile(const std::string& needle)
  * shortcut list to the browser shortcut list, and displaying it. */
 void filesearch_abort(void)
 {
-	currmenu = MBROWSER;
 	bottombars(MBROWSER);
 }
 

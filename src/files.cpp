@@ -1023,8 +1023,6 @@ void do_insertfile(bool execute)
 	bool edittop_inside = false;
 	bool right_side_up = false, single_line = false;
 
-	currmenu = MINSERTFILE;
-
 	while (true) {
 		if (execute) {
 			msg = ISSET(MULTIBUFFER) ? _("Command to execute in new buffer [from %s] ") : _("Command to execute [from %s] ");
@@ -1954,8 +1952,6 @@ bool do_writeout(bool exiting)
 	std::string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	bool retval = false;
-
-	currmenu = MWRITEFILE;
 
 	if (exiting && openfile->filename != "" && ISSET(TEMP_FILE)) {
 		retval = write_file(openfile->filename, NULL, false, OVERWRITE, false);

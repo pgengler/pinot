@@ -618,6 +618,9 @@ void bottombars(int menu)
 	size_t i = 0, colwidth, slen;
 	const sc *s;
 
+	/* Set the global variable to the given menu. */
+	currmenu = menu;
+
 	if (ISSET(NO_HELP)) {
 		return;
 	}
