@@ -665,13 +665,6 @@ void findnextfile(const std::string& needle)
 	selected = currselected;
 }
 
-/* Abort the current filename search.  Clean up by setting the current
- * shortcut list to the browser shortcut list, and displaying it. */
-void filesearch_abort(void)
-{
-	bottombars(MBROWSER);
-}
-
 /* Search for a filename. */
 void do_filesearch(void)
 {
@@ -681,7 +674,7 @@ void do_filesearch(void)
 
 	if (filesearch_init() != 0) {
 		/* Cancelled or a blank search string. */
-		filesearch_abort();
+		bottombars(MBROWSER);
 		return;
 	}
 
@@ -699,7 +692,7 @@ void do_filesearch(void)
 
 	findnextfile(answer);
 
-	filesearch_abort();
+	bottombars(MBROWSER);
 }
 
 /* Search for the last given filename without prompting. */
@@ -710,8 +703,6 @@ void do_fileresearch(void)
 	} else {
 		findnextfile(last_search);
 	}
-
-	filesearch_abort();
 }
 
 /* Select the first file in the list. */
