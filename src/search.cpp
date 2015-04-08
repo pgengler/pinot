@@ -404,7 +404,7 @@ void do_search(void)
 		 * that we find one only once per line.  We should only end up
 		 * back at the same position if the string isn't found again, in
 		 * which case it's the only occurrence. */
-		if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search.c_str())) {
+		if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, answer.c_str())) {
 			didfind = findnextstr(false, true, openfile->current, openfile->current_x, answer, NULL);
 			if (fileptr == openfile->current && fileptr_x == openfile->current_x && !didfind) {
 				statusbar(_("This is the only occurrence"));
@@ -445,7 +445,7 @@ void do_research(void)
 			 * only end up back at the same position if the string isn't
 			 * found again, in which case it's the only occurrence. */
 			if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, last_search.c_str())) {
-				didfind = findnextstr(false, true, openfile->current, openfile->current_x, answer, NULL);
+				didfind = findnextstr(false, true, openfile->current, openfile->current_x, last_search, NULL);
 				if (fileptr == openfile->current && fileptr_x == openfile->current_x && !didfind) {
 					statusbar(_("This is the only occurrence"));
 				}
