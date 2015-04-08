@@ -49,7 +49,7 @@ std::string do_browser(std::string path, DIR *dir)
 	std::string retval;
 	bool old_const_update = ISSET(CONST_UPDATE);
 	std::string prev_dir;
-	/* The directory we were in, if any, before backing up via browsing to "..". */
+	/* The directory we were in before backing up to "..". */
 	std::string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	size_t old_selected;
@@ -584,11 +584,6 @@ int filesearch_init(void)
 	static std::string backupstring = "";
 	/* The search string we'll be using. */
 
-	/* We display the search prompt below.  If the user types a partial
-	 * search string and then Replace or a toggle, we will return to
-	 * do_search() or do_replace() and be called again.  In that case,
-	 * we should put the same search string back up. */
-
 	if (last_search != "") {
 		std::string disp = display_string(last_search, 0, COLS / 3, false);
 
@@ -629,15 +624,15 @@ bool findnextfile(bool no_sameline, size_t begin, const std::string& needle)
 	while (true) {
 		found = strstrwrapper(filetail.c_str(), needle.c_str(), rev_start);
 
-		/* We've found a potential match.  If we're not allowed to find
+		/* If we've found a potential match and we're not allowed to find
 		 * a match on the same filename we started on and this potential
-		 * match is on that line, continue searching. */
+		 * match is that filename, continue searching. */
 		if (found != NULL && (!no_sameline || currselected != begin)) {
 			break;
 		}
 
-		/* We've finished processing the filenames, so get out. */
 		if (search_last_file) {
+			/* We've finished processing the filenames, so get out. */
 			not_found_msg(needle);
 			return false;
 		}
@@ -651,8 +646,8 @@ bool findnextfile(bool no_sameline, size_t begin, const std::string& needle)
 			statusbar(_("Search Wrapped"));
 		}
 
-		/* We've reached the original starting file. */
 		if (currselected == begin) {
+			/* We've reached the original starting file. */
 			search_last_file = true;
 		}
 
@@ -727,7 +722,7 @@ void do_filesearch(void)
 	filesearch_abort();
 }
 
-/* Search for the last filename without prompting. */
+/* Search for the last given filename without prompting. */
 void do_fileresearch(void)
 {
 	size_t begin = selected;
