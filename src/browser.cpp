@@ -39,7 +39,7 @@ static int longest = 0;
 static size_t selected = 0;
 /* The currently selected filename in the list.  This variable
  * is zero-based. */
-static bool search_last_file = false;
+static bool came_full_circle = false;
 /* Have we gone past the last file while searching? */
 
 /* Our main file browser function.  path is the tilde-expanded path we
@@ -631,7 +631,7 @@ bool findnextfile(bool no_sameline, size_t begin, const std::string& needle)
 			break;
 		}
 
-		if (search_last_file) {
+		if (came_full_circle) {
 			/* We've finished processing the filenames, so get out. */
 			not_found_msg(needle);
 			return false;
@@ -648,7 +648,7 @@ bool findnextfile(bool no_sameline, size_t begin, const std::string& needle)
 
 		if (currselected == begin) {
 			/* We've reached the original starting file. */
-			search_last_file = true;
+			came_full_circle = true;
 		}
 
 		filetail = tail(filelist[currselected]);
@@ -660,13 +660,6 @@ bool findnextfile(bool no_sameline, size_t begin, const std::string& needle)
 	selected = currselected;
 
 	return true;
-}
-
-/* Clear the flag indicating that a search reached the last file in the
- * list.  We need to do this just before a new search. */
-void findnextfile_wrap_reset(void)
-{
-	search_last_file = false;
 }
 
 /* Abort the current filename search.  Clean up by setting the current
@@ -705,7 +698,7 @@ void do_filesearch(void)
 		update_history(&search_history, answer);
 	}
 
-	findnextfile_wrap_reset();
+	came_full_circle = false;
 	didfind = findnextfile(false, begin, answer);
 
 	/* Check to see if there's only one occurrence of the string and we're on it now. */
@@ -729,7 +722,7 @@ void do_fileresearch(void)
 	bool didfind;
 
 	if (last_search != "") {
-		findnextfile_wrap_reset();
+		came_full_circle = false;
 		didfind = findnextfile(false, begin, last_search);
 
 		/* Check to see if there's only one occurrence of the string and

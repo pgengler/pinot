@@ -99,7 +99,6 @@ void browser_refresh(void);
 bool browser_select_filename(const std::string& needle);
 int filesearch_init(void);
 bool findnextfile(bool no_sameline, size_t begin, const std::string& needle);
-void findnextfile_wrap_reset(void);
 void filesearch_abort(void);
 void do_filesearch(void);
 void do_fileresearch(void);
