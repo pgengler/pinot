@@ -1616,7 +1616,7 @@ const char *do_int_speller(const char *tempfile_name)
 
 	/* A new process to run sort in. */
 	if ((pid_sort = fork()) == 0) {
-		/* Child continues (i.e. future spell process).  Replace the
+		/* Child continues (i.e. future sort process).  Replace the
 		 * standard input with the standard output of the old pipe. */
 		if (dup2(spell_fd[0], STDIN_FILENO) != STDIN_FILENO) {
 			goto close_pipes_and_exit;
@@ -1631,8 +1631,7 @@ const char *do_int_speller(const char *tempfile_name)
 
 		close(sort_fd[1]);
 
-		/* Start the sort program.  Use -f to remove mixed case.  If
-		 * this isn't portable, let me know. */
+		/* Start the sort program.  Use -f to ignore case. */
 		execlp("sort", "sort", "-f", NULL);
 
 		/* This should not be reached if sort is found. */
@@ -1722,7 +1721,7 @@ const char *do_int_speller(const char *tempfile_name)
 	search_replace_abort();
 	edit_refresh_needed = true;
 
-	/* Process the end of the spell process. */
+	/* Process the end of the three process. */
 	waitpid(pid_spell, &spell_status, 0);
 	waitpid(pid_sort, &sort_status, 0);
 	waitpid(pid_uniq, &uniq_status, 0);
@@ -1800,7 +1799,7 @@ const char *do_alt_speller(char *tempfile_name)
 
 	endwin();
 
-	/* Set up an argument list to pass execvp(). */
+	/* Set up an argument list to pass to execvp(). */
 	if (spellargs == NULL) {
 		spellargs = (char **)nmalloc(arglen * sizeof(char *));
 
@@ -2037,7 +2036,7 @@ void do_linter(void)
 	statusbar(_("Invoking linter, please wait..."));
 	doupdate();
 
-	/* Set up an argument list to pass execvp(). */
+	/* Set up an argument list to pass to execvp(). */
 	if (lintargs == NULL) {
 		lintargs = (char **)nmalloc(arglen * sizeof(char *));
 
@@ -2051,13 +2050,13 @@ void do_linter(void)
 	}
 	lintargs[arglen - 2] = mallocstrcpy(NULL, openfile->filename.c_str());
 
-	/* A new process to run linter. */
+	/* A new process to run the linter in. */
 	if ((pid_lint = fork()) == 0) {
 
-		/* Child continues (i.e. future spell process). */
+		/* Child continues (i.e. future linting process). */
 		close(lint_fd[0]);
 
-		/* Send linter's standard output/err to the pipe. */
+		/* Send the linter's standard output + err to the pipe. */
 		if (dup2(lint_fd[1], STDOUT_FILENO) != STDOUT_FILENO) {
 			exit(1);
 		}
@@ -2096,7 +2095,7 @@ void do_linter(void)
 		return;
 	}
 
-	/* Read in the returned spelling errors. */
+	/* Read in the returned errors. */
 	read_buff_read = 0;
 	read_buff_size = pipe_buff_size + 1;
 	read_buff = read_buff_ptr = charalloc(read_buff_size);
@@ -2114,7 +2113,7 @@ void do_linter(void)
 
 	DEBUG_LOG("do_lint(): Raw output: " << read_buff);
 
-	/* Process output. */
+	/* Process the output. */
 	read_buff_word = read_buff_ptr = read_buff;
 
 	while (*read_buff_ptr != '\0') {
@@ -2173,7 +2172,9 @@ void do_linter(void)
 		read_buff_ptr++;
 	}
 
-	/* Process the end of the lint process. */
+	/* Process the end of the linting process.
+	 * XXX: The return value should be checked.
+	 * Will make an invocation-error routine. */
 	waitpid(pid_lint, &lint_status, 0);
 
 	free(read_buff);
@@ -2274,12 +2275,9 @@ void do_linter(void)
 	lint_cleanup();
 }
 
-/* Run a formatter for the given syntax.
- * Expects the formatter to be non-interactive and
- * operate on a file in-place, which we'll pass it
- * on the command line.  Another mashup of the speller
- * and alt_speller routines.
- */
+/* Run a formatter for the current syntax. This expects the formatter
+ * to be non-interactive and operate on a file in-place, which we'll
+ * pass it on the command line. */
 void do_formatter(void)
 {
 	bool status;
@@ -2324,7 +2322,7 @@ void do_formatter(void)
 
 	endwin();
 
-	/* Set up an argument list to pass execvp(). */
+	/* Set up an argument list to pass to execvp(). */
 	std::vector<std::string> format_args;
 	std::stringstream stream(openfile->syntax->formatter);
 	std::string arg;
