@@ -558,22 +558,25 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 	/* The starting-line match and bol/eol regex flags. */
 	bool begin_line = false, bol_or_eol = false;
 	bool old_mark_set = openfile->mark_set;
-	filestruct *edittop_save = openfile->edittop, *top, *bot;
+	filestruct *top, *bot;
 	size_t top_x, bot_x;
 	bool right_side_up = false;
 	/* true if (mark_begin, mark_begin_x) is the top of the mark,
 	 * false if (current, current_x) is. */
 
 	if (old_mark_set) {
-		/* If the mark is on, partition the filestruct so that it
-		 * contains only the marked text, set edittop to the top of the
-		 * partition, turn the mark off, and refresh the screen. */
+		/* If the mark is on, frame the region and turn the mark off. */
 		mark_order((const filestruct **)&top, &top_x, (const filestruct **)&bot, &bot_x, &right_side_up);
-		filepart = partition_filestruct(top, top_x, bot, bot_x);
-		openfile->edittop = openfile->fileage;
 		openfile->mark_set = false;
-		reset_multis(openfile->current, true);
-		edit_refresh();
+
+		/* Start either at the top or the bottom of the marked region. */
+		if (!ISSET(BACKWARDS_SEARCH)) {
+			openfile->current = top;
+			openfile->current_x = (top_x == 0 ? 0 : top_x - 1);
+		} else {
+			openfile->current = bot;
+			openfile->current_x = bot_x;
+		}
 	}
 
 	if (canceled != NULL) {
@@ -587,6 +590,16 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 	 * beginning line when doing this search. */
 	while (findnextstr(whole_word, bol_or_eol, real_current, *real_current_x, needle, &match_len)) {
 		int i = 0;
+
+		if (old_mark_set) {
+			/* When we've found an occurrence outside of the marked region, stop the fanfare. */
+			if (openfile->current->lineno > bot->lineno ||
+			    openfile->current->lineno < top->lineno ||
+			    (openfile->current == bot && openfile->current_x > bot_x) ||
+			    (openfile->current == top && openfile->current_x < top_x)) {
+				break;
+			}
+		}
 
 		/* If the bol_or_eol flag is set, we've found a match on the
 		 * beginning line already, and we're still on the beginning line
@@ -646,7 +659,7 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 			char *copy;
 			size_t length_change;
 
-			update_undo(REPLACE);
+			add_undo(REPLACE);
 
 			if (i == 2) {
 				replaceall = true;
@@ -666,6 +679,7 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 					} else {
 						openfile->mark_begin_x += length_change;
 					}
+					bot_x = *real_current_x;
 				}
 			}
 
@@ -694,7 +708,10 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 			free(openfile->current->data);
 			openfile->current->data = copy;
 
-			reset_multis(openfile->current, true);
+			/* Reset the precalculated multiline-regex hints only when the first replacement has been made. */
+			if (numreplaced == 0) {
+				reset_multis(openfile->current, true);
+			}
 			if (!replaceall) {
 				/* If color syntaxes are available and turned on, we
 				 * need to call edit_refresh(). */
@@ -710,12 +727,11 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 		}
 	}
 
+	if (numreplaced == -1) {
+		not_found_msg(needle);
+	}
+
 	if (old_mark_set) {
-		/* If the mark was on, unpartition the filestruct so that it
-		 * contains all the text again, set edittop back to what it was
-		 * before, turn the mark back on, and refresh the screen. */
-		unpartition_filestruct(&filepart);
-		openfile->edittop = edittop_save;
 		openfile->mark_set = true;
 	}
 
