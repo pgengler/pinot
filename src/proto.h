@@ -97,7 +97,7 @@ std::string do_browse_from(const std::string& inpath);
 void browser_init(const std::string& path, DIR *dir);
 void browser_refresh(void);
 bool browser_select_filename(const std::string& needle);
-int filesearch_init(void);
+bool filesearch_init(void);
 void findnextfile(const std::string& needle);
 void filesearch_abort(void);
 void do_filesearch(void);

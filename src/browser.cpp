@@ -570,11 +570,10 @@ bool browser_select_filename(const std::string& needle)
 	return found;
 }
 
-/* Set up the system variables for a filename search.  Return -1 if the
- * search should be canceled (due to Cancel, a blank search string, or a
- * failed regcomp()), return 0 on success, and return 1 on rerun calling
- * program. */
-int filesearch_init(void)
+/* Set up the system variables for a filename search.  Return true on success
+ * and false if the search should be canceled (due to Cancel, a blank search
+ * string, or a failed regcomp()). */
+bool filesearch_init(void)
 {
 	std::string buf;
 	static std::string backupstring = "";
@@ -591,17 +590,21 @@ int filesearch_init(void)
 
 	/* This is now one simple call.  It just does a lot. */
 	std::shared_ptr<Key> key;
-	PromptResult i = do_prompt(false, true, MWHEREISFILE, key, backupstring.c_str(), &search_history, browser_refresh, "%s%s", _("Search"), buf.c_str());
+	PromptResult input = do_prompt(false, true, MWHEREISFILE, key, backupstring.c_str(), &search_history, browser_refresh, "%s%s", _("Search"), buf.c_str());
 
 	backupstring = "";
 
-	/* Cancel any search, or just return with no previous search. */
-	if (i == PROMPT_ABORTED || (i == PROMPT_BLANK_STRING && last_search == "") || (i == PROMPT_ENTER_PRESSED && answer == "")) {
-		statusbar(_("Cancelled"));
-		return -1;
+	/* If only Enter was pressed but we have a previous string, it's okay. */
+	if (input == PROMPT_BLANK_STRING && last_search != "") {
+		return true;
 	}
 
-	return 0;
+	/* Otherwise negative inputs are a bailout. */
+	if (input < 0) {
+		statusbar(_("Cancelled"));
+	}
+
+	return (input >= 0);
 }
 
 /* Look for the given needle in the list of files. */
@@ -672,7 +675,7 @@ void do_filesearch(void)
 	UNSET(USE_REGEXP);
 	UNSET(BACKWARDS_SEARCH);
 
-	if (filesearch_init() != 0) {
+	if (!filesearch_init()) {
 		/* Cancelled or a blank search string. */
 		bottombars(MBROWSER);
 		return;
