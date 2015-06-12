@@ -26,6 +26,7 @@ pkgdata_DATA = \
 		perl.pinotrc \
 		php.pinotrc \
 		pinotrc.pinotrc \
+		postgresql.pinotrc \
 		pov.pinotrc \
 		python.pinotrc \
 		ruby.pinotrc \
