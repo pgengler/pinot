@@ -551,12 +551,12 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "Insert", do_insertfile_void, 0);
 	add_to_sclist(MMAIN|MBROWSER, "^W", do_search, 0);
 	add_to_sclist(MMAIN|MBROWSER, "F6", do_search, 0);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "^Y", do_page_up, 0);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "F7", do_page_up, 0);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "PageUp", do_page_up, 0);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "^V", do_page_down, 0);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "F8", do_page_down, 0);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MWHEREISFILE|MLINTER, "PageDown", do_page_down, 0);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "^Y", do_page_up, 0);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "F7", do_page_up, 0);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "PageUp", do_page_up, 0);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "^V", do_page_down, 0);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "F8", do_page_down, 0);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "PageDown", do_page_down, 0);
 	add_to_sclist(MMOST, "^K", do_cut_text_void, 0);
 	add_to_sclist(MMOST, "F9", do_cut_text_void, 0);
 	add_to_sclist(MMAIN, "^U", do_uncut_text, 0);
@@ -620,11 +620,13 @@ void shortcut_init(void)
 
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-\\", do_first_file, 0);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-|", do_first_file, 0);
+	add_to_sclist(MWHEREISFILE, "^Y", do_first_file, 0);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-/", do_last_file, 0);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-?", do_last_file, 0);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "^_", goto_dir_void, 0);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "F13", goto_dir_void, 0);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "M-G", goto_dir_void, 0);
+	add_to_sclist(MWHEREISFILE, "^V", do_last_file, 0);
+	add_to_sclist(MBROWSER, "^_", goto_dir_void, 0);
+	add_to_sclist(MBROWSER, "F13", goto_dir_void, 0);
+	add_to_sclist(MBROWSER, "M-G", goto_dir_void, 0);
 	add_to_sclist(MMAIN, "M-]", do_find_bracket, 0);
 	add_to_sclist(MMAIN, "M--", do_scroll_up, 0);
 	add_to_sclist(MMAIN, "M-_", do_scroll_up, 0);
