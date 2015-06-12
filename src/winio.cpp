@@ -293,10 +293,8 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 				converted[index++] = ' ';
 				start_col++;
 			}
-			/* If buf contains a control character, interpret it.  If buf
-			 * contains an invalid multibyte control character, display it
-			 * as such.*/
 		} else if (is_cntrl_mbchar(buf_mb)) {
+			/* If buf contains a control character, interpret it. */
 			char *ctrl_buf_mb = charalloc(mb_cur_max());
 			int ctrl_buf_mb_len, i;
 
@@ -324,12 +322,16 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 				converted[index++] = ' ';
 			}
 			start_col++;
-			/* If buf contains a non-control character, interpret it.  If
-			 * buf contains an invalid multibyte non-control character,
-			 * display it as such. */
 		} else {
+			/* If buf contains a non-control character, interpret it.  If buf
+			 * contains an invalid multibyte sequence, display it as such. */
 			char *nctrl_buf_mb = charalloc(mb_cur_max());
 			int nctrl_buf_mb_len, i;
+
+			/* Make sure an invalid sequence-starter byte is properly
+			 * terminated, so that it doesn't pick up lingering bytes
+			 * of any previous content. */
+			null_at(&buf_mb, buf_mb_len);
 
 			nctrl_buf_mb = mbrep(buf_mb, nctrl_buf_mb, &nctrl_buf_mb_len);
 
