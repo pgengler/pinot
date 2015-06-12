@@ -416,7 +416,6 @@ void browser_init(const std::string& path, DIR *dir)
  * necessary, and display the list of files. */
 void browser_refresh(void)
 {
-	static int uimax_digits = -1;
 	size_t i;
 	int col = 0;
 	/* The maximum number of columns that the filenames will take up. */
@@ -424,10 +423,6 @@ void browser_refresh(void)
 	/* The maximum number of lines that the filenames will take up. */
 	std::string foo;
 	/* The file information that we'll display. */
-
-	if (uimax_digits == -1) {
-		uimax_digits = digits(UINT_MAX);
-	}
 
 	blank_edit();
 
@@ -497,27 +492,28 @@ void browser_refresh(void)
 			unsigned long result = st.st_size;
 			char modifier;
 
-			/* Bytes. */
+			foo = charalloc(foomaxlen + 1);
+
 			if (st.st_size < (1 << 10)) {
-				modifier = ' ';
-			}
-			/* Kilobytes. */
-			else if (st.st_size < (1 << 20)) {
+				modifier = ' '; // bytes
+			} else if (st.st_size < (1 << 20)) {
 				result >>= 10;
-				modifier = 'K';
-				/* Megabytes. */
+				modifier = 'K'; // kilobytes
 			} else if (st.st_size < (1 << 30)) {
 				result >>= 20;
-				modifier = 'M';
-				/* Gigabytes. */
+				modifier = 'M'; // megabytes
 			} else {
 				result >>= 30;
-				modifier = 'G';
+				modifier = 'G'; // gigabytes
 			}
 
-			char disp[8];
-			snprintf(disp, 8, "%4lu %cB", result, modifier);
-			foo = disp;
+			/* If less than a terabyte, or if numbers can't even go
+			 * that high, show the size, otherwise show "(huge)". */
+			if (st.st_size < (1 << 40) || (1 << 40) == 0) {
+				snprintf(foo, 8, "%4lu %cB", result, modifier);
+			} else {
+				foo = mallocstrcpy(foo, _("(huge)"));
+			}
 		}
 
 		/* Make sure foo takes up no more than foomaxlen columns. */
