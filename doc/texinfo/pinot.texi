@@ -152,7 +152,7 @@ Convert typed tabs to spaces.
 
 @item -F
 @itemx --multibuffer
-Enable multiple file buffers, if available.
+Read a file into a new buffer by default.
 
 @item -G
 @itemx --locking
@@ -552,7 +552,7 @@ default value is
 Use the blank line below the titlebar as extra editing space.
 
 @item set multibuffer
-Allow inserting files into their own buffers.
+When reading in a file with ^R, insert it into a new buffer by default.
 
 @item set noconvert
 Don't convert files from DOS/Mac format.

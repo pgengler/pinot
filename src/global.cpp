@@ -790,7 +790,7 @@ const char *flagtostr(int flag)
 	case BACKUP_FILE:
 		return N_("Backup files");
 	case MULTIBUFFER:
-		return N_("Multiple file buffers");
+		return N_("Reading file into separate buffer");
 	case NO_CONVERT:
 		return N_("No conversion from DOS/Mac format");
 	case SUSPEND:

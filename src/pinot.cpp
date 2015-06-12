@@ -699,7 +699,7 @@ void usage(void)
 	print_opt(_("-C <dir>"), _("--backupdir=<dir>"), N_("Directory for saving unique backup files"));
 	print_opt("-D", "--boldtext", N_("Use bold instead of reverse video text"));
 	print_opt("-E", "--tabstospaces", N_("Convert typed tabs to spaces"));
-	print_opt("-F", "--multibuffer", N_("Enable multiple file buffers"));
+	print_opt("-F", "--multibuffer", N_("Read a file into a new buffer by default"));
 	print_opt("-G", "--locking", N_("Use (vim-style) lock files"));
 	print_opt("-H", "--historylog", N_("Log & read search/replace string history"));
 	print_opt("-I", "--ignorercfiles", N_("Don't look at pinotorc files"));

@@ -128,7 +128,7 @@ default value is "\fI(<[{)>]}\fP".
 Use the blank line below the titlebar as extra editing space.
 .TP
 .B set multibuffer
-Allow inserting files into their own buffers.
+When reading in a file with ^R, insert it into a new buffer by default.
 .TP
 .B set noconvert
 Don't convert files from DOS/Mac format.
@@ -319,8 +319,8 @@ Write the current buffer to disk.
 Justify the current text.
 .TP
 .B insert
-Insert a file into the current buffer (or into a new buffer when multibuffer
-is enabled).
+Inserts a file into the current buffer (at the current cursor position),
+or into a new buffer when option \fBmultibuffer\fR is set.
 .TP
 .B whereis
 Search for text in the current buffer, or filenames matching a string in the
@@ -413,10 +413,10 @@ Scroll up one line of text from the current position.
 Scroll down one line of text from the current position.
 .TP
 .B prevbuf
-Switch to editing/viewing the previous buffer when using multibuffer mode.
+Switches to editing/viewing the previous buffer when multiple buffers are open.
 .TP
 .B nextbuf
-Switch to editing/viewing the next buffer when using multibuffer mode.
+Switches to editing/viewing the next buffer when multiple buffers are open.
 .TP
 .B verbatim
 Insert the next character verbatim into the file.
@@ -541,7 +541,8 @@ Toggle whether typed tabs will be converted to spaces.
 Toggle whether a backup will be made of the file to be edited.
 .TP
 .B multibuffer
-Toggle the use of multiple file buffers (if available).
+Toggles whether a file is inserted into the current buffer
+or read into a new buffer.
 .TP
 .B noconvert
 Toggle automatic conversion of files from DOS/Mac format.
