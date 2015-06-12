@@ -2,16 +2,18 @@
 %define version	@VERSION@
 %define release	1
 
-Summary	: Nano editor clone with enhancements
 Name		: %{name}
 Version		: %{version}
 Release		: %{release}
+Summary	: A developer-centered fork of the Nano editor
 License		: GPL
 Group		: Applications/Editors
 URL		: http://github.com/pgengler
 Source		: http://github.com/pgengler
 BuildRoot	: %{_tmppath}/%{name}-%{version}-root
 BuildRequires	: autoconf, automake, gettext-devel, ncurses-devel, texinfo
+Requires(post)  : info
+Requires(preun) : info
 
 %description
 pinot is a small and friendly text editor.  It aims to emulate the
@@ -27,6 +29,14 @@ make
 %install
 make DESTDIR="%{buildroot}" install
 rm -f %{buildroot}%{_infodir}/dir
+
+%post
+/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :
+
+%preun
+if [ $1 = 0 ] ; then
+	/sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
+fi
 
 %files
 %defattr(-,root,root)
