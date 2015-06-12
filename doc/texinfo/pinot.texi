@@ -82,6 +82,8 @@ completion.
 @code{pinot} was created as a fork of the GNU nano editor, which some
 additional features to make it a more developer-friendly editor.
 
+Please report bugs via Github at @url{https://github.com/pgengler/pinot}.
+
 @node Invoking
 @chapter Invoking
 
@@ -104,14 +106,13 @@ adding it with a comma.  So the complete synopsis is:
 @code{pinot [OPTION]@dots{} [[+LINE,COLUMN] FILE]@dots{}}
 @end quotation
 
-Report bugs via Github at @url{https://github.com/pgengler/pinot}.
-
 @node Command-line Options
 @section Command-line Options
 
 @command{pinot} takes the following options from the command line:
 
 @table @option
+
 @item +@var{line},@var{column}
 Start at line number @var{line} and column number @var{column} (at least one of
 which must be specified) instead of the default of line 1, column 1.
@@ -160,7 +161,7 @@ so they can be retrieved in later sessions.
 
 @item -I
 @itemx --ignorercfiles
-Don't look at the system's nanorc file nor at the user's @file{~/.pinotrc}.
+Don't look at the system's pinotrc file nor at the user's @file{~/.pinotrc}.
 
 @item -K
 @itemx --rebindkeypad
@@ -278,7 +279,7 @@ implement a read-only file.
 @item -w
 @itemx --nowrap
 Don't hard-wrap long lines at any length.  This option conflicts with
-@option{-r} -- the last one given takes effect.
+@option{-r} --- the last one given takes effect.
 
 @anchor{Expert Mode}
 @item -x
@@ -390,62 +391,62 @@ and ^V (Page Down) keys.  ^X exits the help system.
 @node Feature Toggles
 @chapter Feature Toggles
 
-Toggles allow you to change certain aspects of the editor that would
-normally be done via command line options.  They are invoked via Meta
-key sequences.  See @xref{Special Functions}, for more info.  The
-following global toggles are available:
+Toggles allow you to change on-the-fly certain aspects of the editor
+which would normally be specified via command-line options.  They are
+invoked via Meta-key sequences.  See @xref{Special Functions}, for more info.
+The following global toggles are available:
 
 @table @code
 
 @item Backup Files Toggle (Meta-B)
-toggles the -B (@code{--backup}) command line option.
+toggles the -B (@code{--backup}) command-line option.
 
 @item Constant Cursor Position Display Toggle (Meta-C)
-toggles the -c (@code{--const}) command line option.
+toggles the -c (@code{--const}) command-line option.
 
 @item Multiple File Buffers Toggle (Meta-F)
-toggles the -F (@code{--multibuffer}) command line option.
+toggles the -F (@code{--multibuffer}) command-line option.
 
 @item Smart Home Key Toggle (Meta-H)
-toggles the -A (@code{--smarthome}) command line option.
+toggles the -A (@code{--smarthome}) command-line option.
 
 @item Auto Indent Toggle (Meta-I)
-toggles the -i (@code{--autoindent}) command line option.
+toggles the -i (@code{--autoindent}) command-line option.
 
 @item Cut To End Toggle (Meta-K)
-toggles the -k (@code{--cut}) command line option.
+toggles the -k (@code{--cut}) command-line option.
 
 @item Long Line Wrapping Toggle (Meta-L)
-toggles the -w (@code{--nowrap}) command line option.
+toggles the -w (@code{--nowrap}) command-line option.
 
 @item No Conversion From DOS/Mac Format Toggle (Meta-N)
-toggles the -N (@code{--noconvert}) command line option.
+toggles the -N (@code{--noconvert}) command-line option.
 
 @item More Space For Editing Toggle (Meta-O)
-toggles the -O (@code{--morespace}) command line option.
+toggles the -O (@code{--morespace}) command-line option.
 
 @item Whitespace Display Toggle (Meta-P)
 toggles whitespace display mode.
 See @xref{Whitespace}, for more info.
 
 @item Tabs to Spaces Toggle (Meta-Q)
-toggles the -E (@code{--tabstospaces}) command line option.
+toggles the -E (@code{--tabstospaces}) command-line option.
 
 @item Smooth Scrolling Toggle (Meta-S)
-toggles the -S (@code{--smooth}) command line option.
+toggles the -S (@code{--smooth}) command-line option.
 
 @item Expert/No Help Toggle (Meta-X)
-toggles the -x (@code{--nohelp}) command line option.
+toggles the -x (@code{--nohelp}) command-line option.
 
 @item Color Syntax Highlighting Toggle (Meta-Y)
 toggles color syntax highlighting if you have color syntaxes in your
 pinotrc.  See @xref{Pinotrc Files}, for more info.
 
 @item Suspend Toggle (Meta-Z)
-toggles the -z (@code{--suspend}) command line option.
+toggles the -z (@code{--suspend}) command-line option.
 
 @item Soft Wrapping Toggle (Meta-$)
-toggles the -$ (@code{--softwrap}) command line option.
+toggles the -$ (@code{--softwrap}) command-line option.
 
 @end table
 
@@ -454,18 +455,19 @@ toggles the -$ (@code{--softwrap}) command line option.
 @chapter Pinotrc Files
 
 The pinotrc files contain the default settings for @code{pinot}.  They
-should not be in DOS or Mac format.  During startup, @code{pinot} will
-first read its system-wide settings from SYSCONFDIR/pinotrc, and then
-user-specific settings from ~/.pinotrc.
+should be in Unix format, not in DOS or Mac format.  During startup,
+@code{pinot} will first read the system-wide settings, from /etc/pinotrc
+(the exact path might be different), and then the user-specific settings,
+from ~/.pinotrc.
 
 A pinotrc file accepts a series of "set" and "unset" commands, which can
-be used to configure @code{pinot} on startup without using the command
-line options.  Additionally, the "syntax", "color", and "icolor"
-keywords are used to define syntax highlighting rules for different text
-patterns.  @code{pinot} will read one command per line.
+be used to configure @code{pinot} on startup without using command-line
+options.  Additionally, there are some commands to define syntax highlighting
+and to rebind keys --- @xref{Syntax Highlighting}, and @xref{Rebinding Keys}.
+@code{pinot} will read one command per line.
 
 Options in pinotrc files take precedence over @code{pinot}'s defaults, and
-command-line options override nanorc settings.  Also, options that do not
+command-line options override pinotrc settings.  Also, options that do not
 take an argument are unset by default.  So using the @code{unset} command
 is only needed when wanting to override a setting of the system's pinotrc
 file in your own @file{~/.pinotrc}.  Options that take an argument cannot
@@ -473,16 +475,19 @@ be unset.
 
 Quotes inside string parameters don't have to be escaped with
 backslashes.  The last double quote in the string will be treated as its
-end.  For example, for the "brackets" option,
+end.  For example, for the "brackets" option, @code{""')>]@}"} will match
+@code{"}, @code{'}, @code{)}, @code{>}, @code{]}, and @code{@}}.
 
-@quotation
-@code{""')>]@}"}
-@end quotation
+@menu
+* Settings::
+* Syntax Highlighting::
+* Rebinding Keys::
+@end menu
 
-will match @code{"}, @code{'}, @code{)}, @code{>}, @code{]}, and
-@code{@}}.
+@node Settings
+@section Settings
 
-The supported commands and arguments are:
+The supported settings in a pinotrc file are:
 
 @table @code
 
@@ -752,7 +757,7 @@ but makes it difficult for new users to learn more than very basic
 things about using the editor.
 
 @item --disable-mouse
-Disable all mouse functionality.  This also disables the -m command line
+Disable all mouse functionality.  This also disables the -m command-line
 option, which enables the mouse functionality.
 
 @item --disable-tabcomp
