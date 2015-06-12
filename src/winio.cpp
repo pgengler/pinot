@@ -1180,20 +1180,12 @@ int update_line(filestruct *fileptr, size_t index)
 	return extralinesused;
 }
 
-/* Return true if we need an update after moving horizontally, and false
- * otherwise.  We need one if the mark is on or if pww_save and
- * placewewant are on different pages. */
-bool need_horizontal_update(size_t pww_save)
+/* Return true if we need an update after moving the cursor, and false otherwise.
+ * We need an update if the mark is on, or if pww_save and placewewant are on different pages. */
+bool need_screen_update(size_t pww_save)
 {
 	return openfile->mark_set || get_page_start(pww_save) != get_page_start(openfile->placewewant);
-}
 
-/* Return true if we need an update after moving vertically, and false
- * otherwise.  We need one if the mark is on or if pww_save and
- * placewewant are on different pages. */
-bool need_vertical_update(size_t pww_save)
-{
-	return openfile->mark_set || get_page_start(pww_save) != get_page_start(openfile->placewewant);
 }
 
 /* When edittop changes, try and figure out how many lines
@@ -1233,15 +1225,11 @@ void edit_scroll(ScrollDir direction, ssize_t nlines)
 {
 	filestruct *foo;
 	ssize_t i;
-	bool do_redraw = false;
+	bool do_redraw = need_screen_update(0);
 
 	/* Don't bother scrolling less than one line. */
 	if (nlines < 1) {
 		return;
-	}
-
-	if (need_vertical_update(0)) {
-		do_redraw = true;
 	}
 
 	/* Part 1: nlines is the number of lines we're going to scroll the
@@ -1344,8 +1332,8 @@ void edit_scroll(ScrollDir direction, ssize_t nlines)
  * updated.  Use this if we've moved without changing any text. */
 void edit_redraw(filestruct *old_current, size_t pww_save)
 {
-	bool do_redraw = need_vertical_update(0) || need_vertical_update(pww_save);
 	filestruct *foo = NULL;
+	bool do_redraw = need_screen_update(0) || need_screen_update(pww_save);
 
 	/* If either old_current or current is offscreen, scroll the edit
 	 * window until it's onscreen and get out. */
