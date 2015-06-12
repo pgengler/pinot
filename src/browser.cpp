@@ -570,14 +570,12 @@ bool browser_select_filename(const std::string& needle)
 	return found;
 }
 
-/* Set up the system variables for a filename search.  Return true on success
- * and false if the search should be canceled (due to Cancel, a blank search
- * string, or a failed regcomp()). */
+/* Set up the system variables for a filename search.  Return fale if
+ * the search should be canceled (due to Cancel or a blank search string),
+ * return 0 when we have a string, and return true when some function was run. */
 bool filesearch_init(void)
 {
 	std::string buf;
-	static std::string backupstring = "";
-	/* The search string we'll be using. */
 
 	if (last_search != "") {
 		std::string disp = display_string(last_search, 0, COLS / 3, false);
@@ -590,9 +588,7 @@ bool filesearch_init(void)
 
 	/* This is now one simple call.  It just does a lot. */
 	std::shared_ptr<Key> key;
-	PromptResult input = do_prompt(false, true, MWHEREISFILE, key, backupstring.c_str(), &search_history, browser_refresh, "%s%s", _("Search"), buf.c_str());
-
-	backupstring = "";
+	PromptResult input = do_prompt(false, true, MWHEREISFILE, key, nullptr, &search_history, browser_refresh, "%s%s", _("Search"), buf.c_str());
 
 	/* If only Enter was pressed but we have a previous string, it's okay. */
 	if (input == PROMPT_BLANK_STRING && last_search != "") {
