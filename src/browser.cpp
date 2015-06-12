@@ -510,9 +510,11 @@ void browser_refresh(void)
 			/* If less than a terabyte, or if numbers can't even go
 			 * that high, show the size, otherwise show "(huge)". */
 			if (st.st_size < (1 << 40) || (1 << 40) == 0) {
-				snprintf(foo, 8, "%4lu %cB", result, modifier);
+				char buf[8];
+				snprintf(buf, 8, "%4lu %cB", result, modifier);
+				foo = std::string(buf);
 			} else {
-				foo = mallocstrcpy(foo, _("(huge)"));
+				foo = _("(huge)");
 			}
 		}
 
