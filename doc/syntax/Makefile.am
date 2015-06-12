@@ -5,10 +5,12 @@ pkgdata_DATA = \
 		c.pinotrc \
 		css.pinotrc \
 		debian.pinotrc \
+		elisp.pinotrc \
 		fortran.pinotrc \
 		gentoo.pinotrc \
 		go.pinotrc \
 		groff.pinotrc \
+		guile.pinotrc \
 		html.pinotrc \
 		java.pinotrc \
 		javascript.pinotrc \

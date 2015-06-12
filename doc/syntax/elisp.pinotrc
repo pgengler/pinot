@@ -1,0 +1,31 @@
+## Here is an example for Emacs Lisp.
+
+syntax "elisp" "\.el$"
+
+# Basic functions/macros
+color brightcyan "\b(if|when|unless|cond|and|or|lambda|let|progn|while|dolist|dotimes)\b"
+color brightcyan "\bsave-((window-)?excursion|restriction)\b"
+color brightcyan "\beval-(and|when)-compile\b"
+# Defining functions
+color brightcyan "\bdef(un|macro|subst|generic|alias)\b"
+color brightcyan "\bcl-def(un|macro|subst|generic|struct|type)\b"
+color brightcyan "\bdefine-(derived|minor|generic)-mode\b"
+# Defining variables
+color brightcyan "\bdef(class|const|var(-local|alias)?)\b"
+# Customization functions
+color brightcyan "\bdef(custom|face|group|theme)\b"
+# Setting values
+color brightcyan "\b(setq(-default|-local)?|setf|push|pop|declare(-function)?)\b"
+# Feature functions
+color brightcyan "\b(require|provide)\b"
+# Quoted symbols
+color brightyellow "#?'\b(\w|-)+\b"
+# Booleans
+color brightred "\b(t|nil)\b"
+# Keywords
+color blue ":(\w|[?-])+"
+# Strings
+color yellow start="^[[:blank:]]+\"" end="[^\]\""
+color yellow ""(\\.|[^"])*""
+# Comments
+color cyan "(^|[[:space:]]);.*$"
