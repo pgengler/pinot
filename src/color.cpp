@@ -30,6 +30,17 @@
 #include <magic.h>
 #endif
 
+std::string canonical_filename(const std::string& filename)
+{
+	std::string current_dir = getcwd();
+	std::string filename_with_dir;
+	if (current_dir != "") {
+		filename_with_dir = current_dir + "/" + filename;
+	}
+	std::string canonical_name = realpath(filename_with_dir);
+	return (canonical_name != "") ? canonical_name : filename;
+}
+
 /* For each syntax list entry, go through the list of colors and assign
  * the color pairs. */
 void set_colorpairs(void)
@@ -148,38 +159,20 @@ void color_update(void)
 		}
 	}
 
-#ifdef HAVE_LIBMAGIC
-	struct stat fileinfo;
-	const char *magicstring = NULL;
-
-	if (stat(openfile->filename, &fileinfo) == 0) {
-		magic_t m = magic_open(MAGIC_SYMLINK |
-#ifdef DEBUG
-		               MAGIC_DEBUG | MAGIC_CHECK |
-#endif /* DEBUG */
-		               MAGIC_ERROR);
-		if (m == NULL || magic_load(m, NULL) < 0) {
-			std::cerr << "magic_load() failed: " << strerror(errno) << std::endl;
-		} else {
-			magicstring = magic_file(m, openfile->filename.c_str());
-			if (magicstring == NULL) {
-				std::cerr << "magic_file(" << openfile->filename << ") failed: " << magic_error(m) << std::endl;
-			}
-			DEBUG_LOG("magic string returned: " << magicstring);
-		}
-	}
-#endif /* HAVE_LIBMAGIC */
-
 	/* If we didn't specify a syntax override string, or if we did and
-	 * there was no syntax by that name, get the syntax based on the
-	 * file extension, and then look in the header. */
+	* there was no syntax by that name, get the syntax based on the
+	* file extension, then try the headerline, and then try magic. */
 	if (openfile->colorstrings.empty()) {
+
+		// Get the canonical name for the file, not the user-provided one
+		std::string canonical_name = canonical_filename(openfile->filename);
+
 		for (auto pair : syntaxes) {
 			auto tmpsyntax = pair.second;
 
 			/* If this is the default syntax, it has no associated
-			 * extensions, which we've checked for elsewhere.  Skip over
-			 * it here, but keep track of its color regexes. */
+			* extensions, which we've checked for elsewhere.  Skip over
+			* it here, but keep track of its color regexes. */
 			if (tmpsyntax->desc == "default") {
 				defsyntax = tmpsyntax;
 				default_colors = tmpsyntax->colors();
@@ -187,53 +180,71 @@ void color_update(void)
 			}
 
 			for (auto e : tmpsyntax->extensions) {
-				if (e->matches(openfile->filename)) {
+				if (e->matches(canonical_name)) {
+					openfile->syntax = tmpsyntax;
+					openfile->colorstrings = tmpsyntax->colors();
+					break;
+				}
+			}
+
+		}
+	}
+
+	/* If we haven't matched anything yet, try the headers */
+	if (openfile->colorstrings.empty()) {
+		DEBUG_LOG("No match for file extensions, looking at headers...");
+		for (auto pair : syntaxes) {
+			auto tmpsyntax = pair.second;
+
+			for (auto e : tmpsyntax->headers) {
+
+				/* Set colorstrings if we matched the extension regex. */
+				if (e->matches(openfile->fileage->data)) {
 					openfile->syntax = tmpsyntax;
 					openfile->colorstrings = tmpsyntax->colors();
 					break;
 				}
 			}
 		}
+	}
 
-		/* Check magic if we don't yet have an answer */
 #ifdef HAVE_LIBMAGIC
-		if (openfile->colorstrings.empty()) {
+	/* If we still haven't matched anything yet, try libmagic */
+	if (openfile->colorstrings.empty()) {
+		DEBUG_LOG("No match using extension, trying libmagic...");
 
-			DEBUG_LOG("No match using extension, trying libmagic...");
+		struct stat fileinfo;
+		const char *magicstring = NULL;
 
-			for (auto pair : syntaxes) {
-				auto tmpsyntax = pair.second;
-				for (auto e : tmpsyntax->magics) {
-					if (magicstring && e->matches(magicstring)) {
-						openfile->syntax = tmpsyntax;
-						openfile->colorstrings = tmpsyntax->colors();
-						break;
-					}
+		if (stat(openfile->filename, &fileinfo) == 0) {
+			magic_t m = magic_open(MAGIC_SYMLINK |
+	#ifdef DEBUG
+			               MAGIC_DEBUG | MAGIC_CHECK |
+	#endif /* DEBUG */
+			               MAGIC_ERROR);
+			if (m == NULL || magic_load(m, NULL) < 0) {
+				std::cerr << "magic_load() failed: " << strerror(errno) << std::endl;
+			} else {
+				magicstring = magic_file(m, openfile->filename.c_str());
+				if (magicstring == NULL) {
+					std::cerr << "magic_file(" << openfile->filename << ") failed: " << magic_error(m) << std::endl;
 				}
+				DEBUG_LOG("magic string returned: " << magicstring);
 			}
 		}
-#endif /* HAVE_LIBMAGIC */
 
-		/* If we haven't matched anything yet, try the headers */
-		if (openfile->colorstrings.empty()) {
-			DEBUG_LOG("No match for file extensions, looking at headers...");
-			for (auto pair : syntaxes) {
-				auto tmpsyntax = pair.second;
-
-				for (auto e : tmpsyntax->headers) {
-
-					/* Set colorstrings if we matched the extension
-					 * regex. */
-					if (e->matches(openfile->fileage->data)) {
-						openfile->syntax = tmpsyntax;
-						openfile->colorstrings = tmpsyntax->colors();
-						break;
-					}
+		for (auto pair : syntaxes) {
+			auto tmpsyntax = pair.second;
+			for (auto e : tmpsyntax->magics) {
+				if (magicstring && e->matches(magicstring)) {
+					openfile->syntax = tmpsyntax;
+					openfile->colorstrings = tmpsyntax->colors();
+					break;
 				}
 			}
 		}
 	}
-
+#endif /* HAVE_LIBMAGIC */
 
 	/* If we didn't get a syntax based on the file extension, and we
 	 * have a default syntax, use it. */

@@ -19,5 +19,6 @@ std::string getcwd();
 int lstat(const std::string& path, struct stat *buf);
 int mkstemp(std::string& name_template);
 DIR *opendir(const std::string& name);
+std::string realpath(const std::string& path);
 int stat(const std::string& path, struct stat *buf);
 int unlink(const std::string& path);

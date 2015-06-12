@@ -83,6 +83,15 @@ DIR *opendir(const std::string& name)
 	return opendir(name.c_str());
 }
 
+std::string realpath(const std::string& path)
+{
+	char *real_path = realpath(path.c_str(), NULL);
+	std::string real_path_str = std::string(real_path);
+	free(real_path);
+
+	return real_path_str;
+}
+
 int stat(const std::string& path, struct stat *buf)
 {
 	return stat(path.c_str(), buf);
