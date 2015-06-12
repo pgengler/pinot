@@ -207,12 +207,12 @@ int search_init(bool replacing, bool use_answer)
  * where we first started searching, at column begin_x.  The return
  * value specifies whether we found anything.  If we did, set needle_len
  * to the length of the string we found if it isn't NULL. */
-bool findnextstr(bool whole_word, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len)
+bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len)
 {
-	return findnextstr(whole_word, begin, begin_x, needle.c_str(), needle_len);
+	return findnextstr(whole_word_only, begin, begin_x, needle.c_str(), needle_len);
 }
 
-bool findnextstr(bool whole_word, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len)
+bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len)
 {
 	size_t found_len;
 	/* The length of the match we find. */
@@ -263,7 +263,7 @@ bool findnextstr(bool whole_word, const filestruct *begin, size_t begin_x, const
 
 			/* If we're searching for whole words, see if this potential
 			 * match is a whole word. */
-			if (whole_word) {
+			if (whole_word_only) {
 				char *word = mallocstrncpy(NULL, found, found_len + 1);
 				word[found_len] = '\0';
 
@@ -275,7 +275,7 @@ bool findnextstr(bool whole_word, const filestruct *begin, size_t begin_x, const
 			 * match isn't a whole word, or if we're not allowed to find
 			 * a match on the same line we started on and this potential
 			 * match is on that line, continue searching. */
-			if (!whole_word || found_whole) {
+			if (!whole_word_only || found_whole) {
 				break;
 			}
 		}
@@ -525,7 +525,7 @@ char *replace_line(const char *needle)
  * needle is the string to seek.  We replace it with answer.  Return -1
  * if needle isn't found, else the number of replacements performed.  If
  * canceled isn't NULL, set it to true if we canceled. */
-ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_current, size_t *real_current_x, const char *needle)
+ssize_t do_replace_loop(bool whole_word_only, bool *canceled, const filestruct *real_current, size_t *real_current_x, const char *needle)
 {
 	ssize_t numreplaced = -1;
 	size_t match_len;
@@ -557,7 +557,7 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 	}
 
 	findnextstr_wrap_reset();
-	while (findnextstr(whole_word, real_current, *real_current_x, needle, &match_len)) {
+	while (findnextstr(whole_word_only, real_current, *real_current_x, needle, &match_len)) {
 		int i = 0;
 
 		if (old_mark_set) {
