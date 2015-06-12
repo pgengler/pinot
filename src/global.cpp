@@ -599,10 +599,10 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "Up", do_up_void);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "^N", do_down_void);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "Down", do_down_void);
-	add_to_sclist(MMOST, "^A", do_home);
-	add_to_sclist(MMOST, "Home", do_home);
-	add_to_sclist(MMOST, "^E", do_end);
-	add_to_sclist(MMOST, "End", do_end);
+	add_to_sclist((MMOST & ~MBROWSER), "^A", do_home);
+	add_to_sclist((MMOST & ~MBROWSER), "Home", do_home);
+	add_to_sclist((MMOST & ~MBROWSER), "^E", do_end);
+	add_to_sclist((MMOST & ~MBROWSER), "End", do_end);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^P", get_history_older_void);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Up", get_history_older_void);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^N", get_history_newer_void);
@@ -618,12 +618,14 @@ void shortcut_init(void)
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MHELP, "^Y", do_first_line);
 	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MHELP, "^V", do_last_line);
 
+	add_to_sclist(MWHEREISFILE, "^Y", do_first_file);
+	add_to_sclist(MWHEREISFILE, "^V", do_last_file);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-\\", do_first_file);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-|", do_first_file);
-	add_to_sclist(MWHEREISFILE, "^Y", do_first_file);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-/", do_last_file);
 	add_to_sclist(MBROWSER|MWHEREISFILE, "M-?", do_last_file);
-	add_to_sclist(MWHEREISFILE, "^V", do_last_file);
+	add_to_sclist(MBROWSER, "Home", do_first_file);
+	add_to_sclist(MBROWSER, "End", do_last_file);
 	add_to_sclist(MBROWSER, "^_", goto_dir_void);
 	add_to_sclist(MBROWSER, "F13", goto_dir_void);
 	add_to_sclist(MBROWSER, "M-G", goto_dir_void);
@@ -658,6 +660,8 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP);
 	add_to_sclist(MHELP|MBROWSER, "^C", do_exit);
 	add_to_sclist(MHELP, "^G", do_exit);
+	add_to_sclist(MHELP, "Home", do_first_line);
+	add_to_sclist(MHELP, "End", do_last_line);
 	add_to_sclist(MGOTOLINE, "^T",  gototext_void);
 	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F", new_buffer_void);
 	add_to_sclist((MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER), "^C", do_cancel);
