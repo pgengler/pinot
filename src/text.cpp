@@ -1496,7 +1496,7 @@ bool do_int_spell_fix(const char *word)
 
 	/* Find the first whole occurrence of word. */
 	findnextstr_wrap_reset();
-	while (findnextstr(true, false, openfile->fileage, 0, word, &match_len)) {
+	while (findnextstr(true, openfile->fileage, 0, word, &match_len)) {
 		if (is_whole_word(openfile->current_x, openfile->current->data, word)) {
 			size_t xpt = xplustabs();
 			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, false);
