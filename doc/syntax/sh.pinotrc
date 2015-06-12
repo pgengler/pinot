@@ -3,6 +3,8 @@
 syntax "sh" "\.sh$"
 magic "(POSIX|Bourne.*) shell script text"
 header "^#!.*((ba|da|k|pdk)?sh[-0-9_]*|openrc-run|runscript)"
+linter dash -n
+
 icolor brightgreen "^[0-9A-Z_]+\(\)"
 color green "\b(case|do|done|elif|else|esac|exit|fi|for|function|if|in|local|read|return|select|shift|then|time|until|while)\b"
 color green "(\{|\}|\(|\)|\;|\]|\[|`|\\|\$|<|>|!|=|&|\|)"
