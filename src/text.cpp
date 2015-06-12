@@ -1442,9 +1442,10 @@ bool do_int_spell_fix(const char *word)
 	/* Save where we are. */
 	bool canceled = false;
 	/* The return value. */
-	bool case_sens_set = ISSET(CASE_SENSITIVE);
-	bool backwards_search_set = ISSET(BACKWARDS_SEARCH);
-	bool regexp_set = ISSET(USE_REGEXP);
+
+	unsigned stash[sizeof(flags) / sizeof(flags[0])];
+	/* A storage place for the current flag settings. */
+
 	bool old_mark_set = openfile->mark_set;
 	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
@@ -1453,6 +1454,9 @@ bool do_int_spell_fix(const char *word)
 	 * false if (current, current_x) is. */
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
+
+	/* Save the settings of the global flags. */
+	memcpy(stash, flags, sizeof(flags));
 
 	/* Make sure spell-check is case sensitive. */
 	SET(CASE_SENSITIVE);
@@ -1554,19 +1558,8 @@ bool do_int_spell_fix(const char *word)
 	openfile->current_x = current_x_save;
 	openfile->placewewant = pww_save;
 
-	/* Restore case sensitivity setting. */
-	if (!case_sens_set) {
-		UNSET(CASE_SENSITIVE);
-	}
-
-	/* Restore search/replace direction. */
-	if (backwards_search_set) {
-		SET(BACKWARDS_SEARCH);
-	}
-	/* Restore regular expression usage setting. */
-	if (regexp_set) {
-		SET(USE_REGEXP);
-	}
+	/* Restore the settings of the global flags. */
+	memcpy(flags, stash, sizeof(flags));
 
 	return !canceled;
 }
