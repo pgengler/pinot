@@ -443,7 +443,7 @@ void browser_refresh(void)
 		/* The maximum length of the file information in
 		 * columns: seven for "--", "(dir)", or the file size,
 		 * and 12 for "(parent dir)". */
-		bool dots = (COLS >= 15 && filetail.length() >= longest - foomaxlen - 1);
+		bool dots = (COLS >= 15 && filetail.length() >= longest - foomaxlen);
 		/* Do we put an ellipsis before the filename?  Don't set
 		 * this to true if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
