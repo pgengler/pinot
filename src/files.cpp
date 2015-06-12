@@ -913,12 +913,7 @@ int open_file(const std::string& filename, bool newfie, bool quiet, FILE **f)
  * extension exists, we return "". */
 std::string get_next_filename(const std::string& name, const std::string& suffix)
 {
-	static int ulmax_digits = -1;
 	unsigned long i = 0;
-
-	if (ulmax_digits == -1) {
-		ulmax_digits = digits(ULONG_MAX);
-	}
 
 	std::string buf = name + suffix;
 
@@ -928,11 +923,12 @@ std::string get_next_filename(const std::string& name, const std::string& suffix
 		if (stat(buf, &fs) == -1) {
 			return buf;
 		}
-		if (i == ULONG_MAX) {
+		 /* Limit the number of backup files to a hundred thousand. */
+		if (++i == 100000) {
 			break;
 		}
 
-		buf = name + suffix + "." + std::to_string(++i);
+		buf = name + suffix + "." + std::to_string(i);
 	}
 
 	/* We get here only if there is no possible save file. */
