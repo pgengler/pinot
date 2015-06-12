@@ -1,11 +1,9 @@
 \input texinfo  @c -*-texinfo-*-
 @c %**start of header
 @setfilename pinot.info
-@settitle pinot Command Manual
+@settitle pinot
 @c %**end of header
 
-@c This file has the new style title page commands.
-@c Run 'makeinfo' rather than 'texinfo-format-buffer'.
 @smallbook
 @set EDITION 0.2
 @set VERSION 0.0.7
@@ -62,6 +60,8 @@ editor.
 
 @menu
 * Introduction::
+* Invoking::
+* Command-line Options::
 * Editor Basics::
 * Online Help::
 * Feature Toggles::
@@ -79,16 +79,11 @@ search and replace, go to line and column number, auto-indentation,
 feature toggles, internationalization support, and filename tab
 completion.
 
-@menu
-* Overview::
-* Command Line Options::
-@end menu
-
-@node Overview
-@section Overview
-
 @code{pinot} was created as a fork of the GNU nano editor, which some
 additional features to make it a more developer-friendly editor.
+
+@node Invoking
+@chapter Invoking
 
 The usual way to invoke @code{pinot} is:
 
@@ -111,8 +106,8 @@ adding it with a comma.  So the complete synopsis is:
 
 Report bugs via Github at @url{https://github.com/pgengler/pinot}.
 
-@node Command Line Options
-@section Command Line Options
+@node Command-line Options
+@section Command-line Options
 
 @command{pinot} takes the following options from the command line:
 
