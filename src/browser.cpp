@@ -617,6 +617,17 @@ void findnextfile(const std::string& needle)
 
 	const char *rev_start = filetail.c_str(), *found = NULL;
 
+	unsigned stash[sizeof(flags) / sizeof(flags[0])];
+	/* A storage place for the current flag settings. */
+
+	/* Save the settings of all flags. */
+	memcpy(stash, flags, sizeof(flags));
+
+	/* Search forward, case insensitive and without regexes. */
+	UNSET(BACKWARDS_SEARCH);
+	UNSET(CASE_SENSITIVE);
+	UNSET(USE_REGEXP);
+
 	/* Step through each filename in the list until a match is found or
 	 * we've come back to the point where we started. */
 	while (true) {
@@ -660,6 +671,9 @@ void findnextfile(const std::string& needle)
 		rev_start = filetail.c_str();
 	}
 
+	/* Restore the settings of all flags. */
+	memcpy(flags, stash, sizeof(flags));
+
 	/* Select the one we've found. */
 	selected = currselected;
 }
@@ -667,10 +681,6 @@ void findnextfile(const std::string& needle)
 /* Search for a filename. */
 void do_filesearch(void)
 {
-	UNSET(CASE_SENSITIVE);
-	UNSET(USE_REGEXP);
-	UNSET(BACKWARDS_SEARCH);
-
 	if (!filesearch_init()) {
 		/* Cancelled or a blank search string. */
 		bottombars(MBROWSER);
