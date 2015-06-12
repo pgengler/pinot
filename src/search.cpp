@@ -531,8 +531,6 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 	ssize_t numreplaced = -1;
 	size_t match_len;
 	bool replaceall = false;
-	/* The starting-line match and bol/eol regex flags. */
-	bool begin_line = false, bol_or_eol = false;
 	bool old_mark_set = openfile->mark_set;
 	filestruct *top, *bot;
 	size_t top_x, bot_x;
@@ -560,11 +558,7 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 	}
 
 	findnextstr_wrap_reset();
-	/* We should find a bol and/or eol regex only once per line.  If
-	 * the bol_or_eol flag is set, it means that the last search
-	 * found one on the beginning line, so we should skip over the
-	 * beginning line when doing this search. */
-	while (findnextstr(whole_word, bol_or_eol, real_current, *real_current_x, needle, &match_len)) {
+	while (findnextstr(whole_word, false, real_current, *real_current_x, needle, &match_len)) {
 		int i = 0;
 
 		if (old_mark_set) {
@@ -575,23 +569,6 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 			    (openfile->current == top && openfile->current_x < top_x)) {
 				break;
 			}
-		}
-
-		/* If the bol_or_eol flag is set, we've found a match on the
-		 * beginning line already, and we're still on the beginning line
-		 * after the search, it means that we've wrapped around, so
-		 * we're done. */
-		if (bol_or_eol && begin_line && openfile->current == real_current) {
-			break;
-		}
-		/* Otherwise, set the begin_line flag if we've found a match on
-		 * the beginning line, reset the bol_or_eol flag, and
-		 * continue. */
-		else {
-			if (openfile->current == real_current) {
-				begin_line = true;
-			}
-			bol_or_eol = false;
 		}
 
 		/* Indicate that we found the search string. */
@@ -623,12 +600,6 @@ ssize_t do_replace_loop(bool whole_word, bool *canceled, const filestruct *real_
 				}
 				break;
 			}
-		}
-
-		/* Set the bol_or_eol flag if we're doing a bol and/or eol regex
-		 * replace ("^", "$", or "^$"). */
-		if (ISSET(USE_REGEXP) && regexp_bol_or_eol(&search_regexp, needle)) {
-			bol_or_eol = true;
 		}
 
 		if (i > 0 || replaceall) {	/* Yes, replace it!!!! */

@@ -328,14 +328,6 @@ ssize_t getline(char **lineptr, size_t *n, std::istream &stream)
 	return getdelim(lineptr, n, '\n', stream);
 }
 
-/* Do the compiled regex in preg and the regex in string match the
- * beginning or end of a line? */
-bool regexp_bol_or_eol(const regex_t *preg, const char *string)
-{
-	return (regexec(preg, string, 0, NULL, 0) == 0 &&
-	        regexec(preg, string, 0, NULL, REG_NOTBOL | REG_NOTEOL) == REG_NOMATCH);
-}
-
 /* Is the word starting at position pos in buf a whole word? */
 bool is_whole_word(size_t pos, const char *buf, const char *word)
 {
