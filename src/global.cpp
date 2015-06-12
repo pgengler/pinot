@@ -39,7 +39,7 @@ Keyboard *keyboard = nullptr;
 ssize_t fill = 0;
 /* The column where we will wrap lines. */
 ssize_t wrap_at = -CHARS_FROM_EOL;
-/* The position where we will wrap lines.  fill is equal to this
+/* The position where we will wrap lines. fill is equal to this
  * if it's greater than zero, and equal to (COLS + this) if it
  * isn't. */
 
@@ -91,7 +91,7 @@ std::string answer;
 /* The answer string used by the statusbar prompt. */
 
 ssize_t tabsize = -1;
-/* The width of a tab in spaces.  The default value is set in
+/* The width of a tab in spaces. The default value is set in
  * main(). */
 
 std::string backup_dir = "";
@@ -110,8 +110,7 @@ std::string syntaxstr;
 /* The color syntax name specified on the command line. */
 
 bool edit_refresh_needed = false;
-/* Did a command mangle enough of the buffer refresh that we
-   should repaint the screen */
+/* Did a command mangle enough of the buffer refresh that we should repaint the screen */
 
 int currmenu;
 /* The currently loaded menu */
@@ -134,7 +133,7 @@ filestruct *replaceage = NULL;
 filestruct *replacebot = NULL;
 /* The bottom of the replace string history list. */
 std::list<poshiststruct *> poshistory;
-/* The cursor position history list  */
+/* The cursor position history list */
 
 /* Regular expressions. */
 regex_t search_regexp;
@@ -301,17 +300,19 @@ const char *whereis_next_msg = N_("WhereIs Next");
 /* Initialize all shortcut lists. */
 void shortcut_init(void)
 {
-	/* TRANSLATORS: Try to keep the following strings at most 10 characters. */
-	const char *exit_msg = N_("Exit");
-	const char *whereis_msg = N_("Where Is");
-	const char *refresh_msg = N_("Refresh");
-	const char *insert_file_msg = N_("Insert File");
-	const char *spell_msg = N_("To Spell");
-	const char *lint_msg = N_("To Linter");
-	const char *pinot_lint_msg = N_("Invoke the linter, if available");
-	/* TRANSLATORS: Try to keep the next two strings to at most 14 characters. */
-	const char *prev_lint_msg = N_("Prev Lint Msg");
-	const char *next_lint_msg = N_("Next Lint Msg");
+	/* TRANSLATORS: Try to keep these strings at most 10 characters. */
+	const char *exit_tag = N_("Exit");
+	const char *uncut_tag = N_("Uncut Text");
+	const char *whereis_next_tag = N_("WhereIs Next");
+	const char *whereis_tag = N_("Where Is");
+	const char *replace_tag = N_("Replace");
+	const char *gotoline_tag = N_("Go To Line");
+	const char *prev_line_tag = N_("Prev Line");
+	const char *next_line_tag = N_("Next Line");
+	const char *prev_page_tag = N_("Prev Page");
+	const char *next_page_tag = N_("Next Page");
+	const char *read_file_tag = N_("Read File");
+	const char *refresh_tag = N_("Refresh");
 
 	/* TRANSLATORS: The next long series of strings are shortcut descriptions;
 	 * they are best kept shorter than 56 characters, but may be longer. */
@@ -321,16 +322,17 @@ void shortcut_init(void)
 	const char *pinot_writeout_msg = N_("Write the current file to disk");
 	const char *pinot_insert_msg = N_("Insert another file into the current one");
 	const char *pinot_whereis_msg = N_("Search for a string or a regular expression");
-	const char *pinot_prevpage_msg = N_("Go to previous screen");
-	const char *pinot_nextpage_msg = N_("Go to next screen");
+	const char *pinot_browser_whereis_msg = N_("Search for a string");
+	const char *pinot_prevpage_msg = N_("Go one screenful up");
+	const char *pinot_nextpage_msg = N_("Go one screenful down");
 	const char *pinot_cut_msg = N_("Cut the current line and store it in the cutbuffer");
 	const char *pinot_uncut_msg = N_("Uncut from the cutbuffer into the current line");
 	const char *pinot_cursorpos_msg = N_("Display the position of the cursor");
 	const char *pinot_spell_msg = N_("Invoke the spell checker, if available");
 	const char *pinot_replace_msg = N_("Replace a string or a regular expression");
 	const char *pinot_gotoline_msg = N_("Go to line and column number");
-	const char *pinot_mark_msg = N_("Mark text at the cursor position");
-	const char *pinot_whereis_next_msg = N_("Repeat last search");
+	const char *pinot_mark_msg = N_("Mark text starting from the cursor position");
+	const char *pinot_whereis_next_msg = N_("Repeat the last search");
 	const char *pinot_copy_msg = N_("Copy the current line and store it in the cutbuffer");
 	const char *pinot_indent_msg = N_("Indent the current line");
 	const char *pinot_unindent_msg = N_("Unindent the current line");
@@ -376,15 +378,13 @@ void shortcut_init(void)
 	const char *pinot_exitbrowser_msg = N_("Exit from the file browser");
 	const char *pinot_firstfile_msg = N_("Go to the first file in the list");
 	const char *pinot_lastfile_msg = N_("Go to the last file in the list");
-	const char *pinot_forwardfile_msg = N_("Go to the next file in the list");
 	const char *pinot_backfile_msg = N_("Go to the previous file in the list");
+	const char *pinot_forwardfile_msg = N_("Go to the next file in the list");
 	const char *pinot_gotodir_msg = N_("Go to directory");
+	const char *pinot_lint_msg = N_("Invoke the linter, if available");
 	const char *pinot_prevlint_msg = N_("Go to previous linter msg");
 	const char *pinot_nextlint_msg = N_("Go to next linter msg");
 	const char *pinot_formatter_msg = N_("Invoke formatter, if available");
-
-// FIXME
-#define IFSCHELP(help) help
 
 	while (allfuncs.size() > 0) {
 		auto f = allfuncs.front();
@@ -392,244 +392,231 @@ void shortcut_init(void)
 		delete f;
 	}
 
-	/* TRANSLATORS: Try to keep the "Get Help" string to at most 10 characters. */
-	add_to_funcs(do_help_void, MMOST, N_("Get Help"), IFSCHELP(pinot_help_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_help_void, MMOST, N_("Get Help"), pinot_help_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_cancel,
-	              (MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER),
-	              N_("Cancel"), IFSCHELP(pinot_cancel_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_cancel, ((MMOST & ~MMAIN & ~MBROWSER) | MYESNO), N_("Cancel"), pinot_cancel_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_exit, MMAIN, openfiles.size() > 0 ? N_("Close") : exit_msg, IFSCHELP(pinot_exit_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_exit, MMAIN, exit_tag, pinot_exit_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_exit, MBROWSER, exit_msg, IFSCHELP(pinot_exitbrowser_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_exit, MBROWSER,	exit_tag, pinot_exitbrowser_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_writeout_void, MMAIN, N_("WriteOut"), IFSCHELP(pinot_writeout_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_writeout_void, MMAIN, N_("Write Out"), pinot_writeout_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_insertfile_void, MMAIN, N_("Read File"), IFSCHELP(pinot_insert_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_insertfile_void, MMAIN,	read_file_tag, pinot_insert_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_search, MMAIN|MBROWSER, whereis_msg, IFSCHELP(pinot_whereis_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_search, MMAIN, whereis_tag, pinot_whereis_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_page_up, MMAIN|MHELP|MBROWSER, N_("Prev Page"), IFSCHELP(pinot_prevpage_msg), GROUP_TOGETHER, VIEW);
-	add_to_funcs(do_page_down, MMAIN|MHELP|MBROWSER, N_("Next Page"), IFSCHELP(pinot_nextpage_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(do_replace, MMAIN,	replace_tag, pinot_replace_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_page_up, MLINTER, prev_lint_msg, IFSCHELP(pinot_prevlint_msg), GROUP_TOGETHER, VIEW);
-	add_to_funcs(do_page_down, MLINTER, next_lint_msg, IFSCHELP(pinot_nextlint_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_search, MBROWSER,	whereis_tag, pinot_browser_whereis_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), IFSCHELP(pinot_cut_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(goto_dir_void, MBROWSER, N_("Go To Dir"), pinot_gotodir_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_uncut_text, MMAIN, N_("UnCut Text"), IFSCHELP(pinot_uncut_msg), GROUP_TOGETHER, NOVIEW);
+	/* The description ("x") and blank_after (0) are irrelevant, because the help viewer does not have a help text. */
+	add_to_funcs(do_exit, MHELP, exit_tag, "x", 0, VIEW);
+	add_to_funcs(total_refresh, MHELP, refresh_tag, "x", 0, VIEW);
+	add_to_funcs(do_up_void, MHELP, prev_line_tag, "x", 0, VIEW);
+	add_to_funcs(do_down_void, MHELP, next_line_tag, "x" , 0, VIEW);
 
-	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_cut_text_void, MMAIN, N_("Cut Text"), pinot_cut_msg, GROUP_TOGETHER, NOVIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_spell, MMAIN, spell_msg, IFSCHELP(pinot_spell_msg), BLANK_AFTER, NOVIEW);
-	add_to_funcs(do_linter, MMAIN, lint_msg, IFSCHELP(pinot_lint_msg), BLANK_AFTER, NOVIEW);
-	add_to_funcs(do_formatter, MMAIN, N_("Formatter"), IFSCHELP(pinot_formatter_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_uncut_text, MMAIN, uncut_tag, pinot_uncut_msg, BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_first_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("First Line"), IFSCHELP(pinot_firstline_msg), GROUP_TOGETHER, VIEW);
-	add_to_funcs(do_last_line, (MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE), N_("Last Line"), IFSCHELP(pinot_lastline_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(do_spell, MMAIN, N_("To Spell"), pinot_spell_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_gotolinecolumn_void, (MMAIN|MWHEREIS), N_("Go To Line"), IFSCHELP(pinot_gotoline_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_linter, MMAIN, N_("To Linter"), pinot_lint_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_formatter, MMAIN, N_("Formatter"), pinot_formatter_msg, BLANK_AFTER, NOVIEW);
 
-	/* TRANSLATORS: Try to keep this at most 10 characters. */
-	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), IFSCHELP(pinot_cursorpos_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(case_sens_void, MWHEREIS|MREPLACE, N_("Case Sens"), pinot_case_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(regexp_void, MWHEREIS|MREPLACE, N_("Regexp"), pinot_regexp_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(backwards_void, MWHEREIS|MREPLACE, N_("Backwards"), pinot_reverse_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_replace, MMAIN, _("Replace"), IFSCHELP(pinot_replace_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(toggle_replace_void, MWHEREIS,	replace_tag, pinot_replace_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_mark, MMAIN, N_("Mark Text"), IFSCHELP(pinot_mark_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(toggle_replace_void, MREPLACE, N_("No Replace"), pinot_whereis_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_research, (MMAIN|MBROWSER), whereis_next_msg, IFSCHELP(pinot_whereis_next_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(do_cursorpos_void, MMAIN, N_("Cur Pos"), pinot_cursorpos_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_copy_text, MMAIN, N_("Copy Text"), IFSCHELP(pinot_copy_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_gotolinecolumn_void, MMAIN|MWHEREIS, gotoline_tag, pinot_gotoline_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_indent_void, MMAIN, N_("Indent Text"), IFSCHELP(pinot_indent_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_page_up, MMAIN|MHELP,	prev_page_tag, pinot_prevpage_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_page_down, MMAIN|MHELP,	next_page_tag, pinot_nextpage_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_unindent, MMAIN, N_("Unindent Text"), IFSCHELP(pinot_unindent_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_first_line, MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE, N_("First Line"), pinot_firstline_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_last_line, MMAIN|MHELP|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE, N_("Last Line"), pinot_lastline_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_undo, MMAIN, N_("Undo"), IFSCHELP(pinot_undo_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(do_redo, MMAIN, N_("Redo"), IFSCHELP(pinot_redo_msg), BLANK_AFTER, NOVIEW);
+	add_to_funcs(do_research, MMAIN, whereis_next_tag, pinot_whereis_next_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_execute_command, MMAIN, N_("Exec Cmd"), IFSCHELP(pinot_execute_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_find_bracket, MMAIN, N_("To Bracket"), pinot_bracket_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_right, MMAIN, N_("Forward"), IFSCHELP(pinot_forward_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_mark, MMAIN, N_("Mark Text"), pinot_mark_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_right, MBROWSER, N_("Forward"), IFSCHELP(pinot_forwardfile_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_copy_text, MMAIN, N_("Copy Text"), pinot_copy_msg, BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_left, MMAIN, N_("Back"), IFSCHELP(pinot_back_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_indent_void, MMAIN, N_("Indent Text"), pinot_indent_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_unindent, MMAIN, N_("Unindent Text"), pinot_unindent_msg, BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_left, MBROWSER, N_("Back"), IFSCHELP(pinot_backfile_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_undo, MMAIN, N_("Undo"), pinot_undo_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_redo, MMAIN, N_("Redo"), pinot_redo_msg, BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), IFSCHELP(pinot_prevword_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_left, MMAIN, N_("Back"), pinot_back_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_right, MMAIN, N_("Forward"), pinot_forward_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), IFSCHELP(pinot_nextword_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_left, MBROWSER, N_("Back"), pinot_backfile_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_right, MBROWSER, N_("Forward"), pinot_forwardfile_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_up_void, (MMAIN|MHELP|MBROWSER), N_("Prev Line"), IFSCHELP(pinot_prevline_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_prev_word_void, MMAIN, N_("Prev Word"), pinot_prevword_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_next_word_void, MMAIN, N_("Next Word"), pinot_nextword_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_down_void, (MMAIN|MHELP|MBROWSER), N_("Next Line"), IFSCHELP(pinot_nextline_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(do_home, MMAIN, N_("Home"), pinot_home_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_end, MMAIN, N_("End"), pinot_end_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_home, MMAIN, N_("Home"), IFSCHELP(pinot_home_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_up_void, MMAIN|MBROWSER, prev_line_tag, pinot_prevline_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_down_void, MMAIN|MBROWSER, next_line_tag, pinot_nextline_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_end, MMAIN, N_("End"), IFSCHELP(pinot_end_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_scroll_up, MMAIN, N_("Scroll Up"), pinot_scrollup_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_scroll_down, MMAIN, N_("Scroll Down"), pinot_scrolldown_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_find_bracket, MMAIN, _("Find Other Bracket"), IFSCHELP(pinot_bracket_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(switch_to_prev_buffer_void, MMAIN, N_("Prev File"), pinot_prevfile_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), pinot_nextfile_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_scroll_up, MMAIN, N_("Scroll Up"), IFSCHELP(pinot_scrollup_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim"), pinot_verbatim_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(do_scroll_down, MMAIN, N_("Scroll Down"), IFSCHELP(pinot_scrolldown_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_tab, MMAIN, N_("Tab"), pinot_tab_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_enter_void, MMAIN, N_("Enter"), pinot_enter_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_delete, MMAIN, N_("Delete"), pinot_delete_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), pinot_backspace_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(switch_to_prev_buffer_void, MMAIN, _("Previous File"), IFSCHELP(pinot_prevfile_msg), GROUP_TOGETHER, VIEW);
-	add_to_funcs(switch_to_next_buffer_void, MMAIN, N_("Next File"), IFSCHELP(pinot_nextfile_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(do_cut_till_eof, MMAIN, N_("CutTillEnd"), pinot_cut_till_eof_msg, BLANK_AFTER, NOVIEW);
 
-	add_to_funcs(do_verbatim_input, MMAIN, N_("Verbatim Input"), IFSCHELP(pinot_verbatim_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), pinot_wordcount_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_tab, MMAIN, N_("Tab"), IFSCHELP(pinot_tab_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(do_enter_void, MMAIN, N_("Enter"), IFSCHELP(pinot_enter_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(do_delete, MMAIN, N_("Delete"), IFSCHELP(pinot_delete_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(do_backspace, MMAIN, N_("Backspace"), IFSCHELP(pinot_backspace_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(total_refresh, MMAIN, refresh_tag, pinot_refresh_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(do_cut_till_eof, MMAIN, N_("CutTillEnd"), IFSCHELP(pinot_cut_till_eof_msg), BLANK_AFTER, NOVIEW);
+	add_to_funcs(do_suspend_void, MMAIN, N_("Suspend"), pinot_suspend_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_wordlinechar_count, MMAIN, N_("Word Count"), IFSCHELP(pinot_wordcount_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("PrevHstory"), pinot_prev_history_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("NextHstory"), pinot_next_history_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(total_refresh, (MMAIN|MHELP), refresh_msg, IFSCHELP(pinot_refresh_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(gototext_void, MGOTOLINE, N_("Go To Text"), pinot_whereis_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(do_suspend_void, MMAIN, N_("Suspend"), IFSCHELP(pinot_suspend_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(dos_format_void, MWRITEFILE, N_("DOS Format"), pinot_dos_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(mac_format_void, MWRITEFILE, N_("Mac Format"), pinot_mac_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(case_sens_void, (MWHEREIS|MREPLACE), N_("Case Sens"), IFSCHELP(pinot_case_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(append_void, MWRITEFILE, N_("Append"), pinot_append_msg, GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(prepend_void, MWRITEFILE, N_("Prepend"), pinot_prepend_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(backwards_void, (MWHEREIS|MREPLACE), N_("Backwards"), IFSCHELP(pinot_reverse_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(backup_file_void, MWRITEFILE, N_("Backup File"), pinot_backup_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(regexp_void, (MWHEREIS|MREPLACE), N_("Regexp"), IFSCHELP(pinot_regexp_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(toggle_execute_void, MINSERTFILE, N_("Execute Command"), pinot_execute_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(get_history_older_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("PrevHist"), IFSCHELP(pinot_prev_history_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(toggle_execute_void, MEXTCMD, read_file_tag, pinot_insert_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(get_history_newer_void, (MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE), N_("NextHist"), IFSCHELP(pinot_next_history_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), pinot_multibuffer_msg, GROUP_TOGETHER, NOVIEW);
 
-	add_to_funcs(toggle_replace_void, MWHEREIS, N_("Replace"), IFSCHELP(pinot_whereis_msg), GROUP_TOGETHER, VIEW);
-	add_to_funcs(toggle_replace_void, MREPLACE, N_("No Replace"), IFSCHELP(pinot_whereis_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(to_files_void, MWRITEFILE|MINSERTFILE, N_("To Files"), pinot_tofiles_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(gototext_void, MGOTOLINE, N_("Go To Text"), IFSCHELP(pinot_whereis_msg), BLANK_AFTER, VIEW);
+	add_to_funcs(do_page_up, MBROWSER, prev_page_tag, pinot_prevpage_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_page_down, MBROWSER, next_page_tag, pinot_nextpage_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(to_files_void, MINSERTFILE, N_("To Files"), IFSCHELP(pinot_tofiles_msg), GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), N_("First File"), pinot_firstfile_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), N_("Last File"), pinot_lastfile_msg, BLANK_AFTER, VIEW);
 
-	add_to_funcs(dos_format_void, MWRITEFILE, N_("DOS Format"), IFSCHELP(pinot_dos_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(mac_format_void, MWRITEFILE, N_("Mac Format"), IFSCHELP(pinot_mac_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(append_void, MWRITEFILE, N_("Append"), IFSCHELP(pinot_append_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(prepend_void, MWRITEFILE, N_("Prepend"), IFSCHELP(pinot_prepend_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs( backup_file_void, MWRITEFILE, N_("Backup File"), IFSCHELP(pinot_backup_msg), GROUP_TOGETHER, NOVIEW);
+	add_to_funcs(do_research, MBROWSER,	whereis_next_tag, pinot_whereis_next_msg, GROUP_TOGETHER, VIEW);
 
-	add_to_funcs(toggle_execute_void, MINSERTFILE, N_("Execute Command"), IFSCHELP(pinot_execute_msg), GROUP_TOGETHER, NOVIEW);
-	add_to_funcs(toggle_execute_void, MEXTCMD, N_("Read File"), IFSCHELP(pinot_insert_msg), GROUP_TOGETHER, NOVIEW);
-
-	add_to_funcs(new_buffer_void, MINSERTFILE|MEXTCMD, N_("New Buffer"), IFSCHELP(pinot_multibuffer_msg), GROUP_TOGETHER, NOVIEW);
-
-	add_to_funcs(do_insertfile_void, MEXTCMD, insert_file_msg, IFSCHELP(pinot_insert_msg), GROUP_TOGETHER, VIEW);
-
-	add_to_funcs(edit_refresh, MHELP, refresh_msg, pinot_refresh_msg, GROUP_TOGETHER, VIEW);
-
-	add_to_funcs(do_exit, MHELP, exit_msg, IFSCHELP(pinot_exit_msg), GROUP_TOGETHER, VIEW);
-
-	add_to_funcs(do_first_file, (MBROWSER|MWHEREISFILE), N_("First File"), IFSCHELP(pinot_firstfile_msg), GROUP_TOGETHER, VIEW);
-
-	add_to_funcs(do_last_file, (MBROWSER|MWHEREISFILE), N_("Last File"), IFSCHELP(pinot_lastfile_msg), GROUP_TOGETHER, VIEW);
-
-	add_to_funcs(goto_dir_void, MBROWSER, N_("Go To Dir"), IFSCHELP(pinot_gotodir_msg), GROUP_TOGETHER, VIEW);
+	/* TRANSLATORS: Try to keep the next two strings at most 20 characters. */
+	add_to_funcs(do_page_up, MLINTER, N_("Prev Lint Msg"), pinot_prevlint_msg, GROUP_TOGETHER, VIEW);
+	add_to_funcs(do_page_down, MLINTER, N_("Next Lint Msg"), pinot_nextlint_msg, GROUP_TOGETHER, VIEW);
 
 	empty_sclist();
 
 	add_to_sclist(MMOST, "^G", do_help_void);
 	add_to_sclist(MMOST, "F1", do_help_void);
+
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "^X", do_exit);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "F2", do_exit);
-	add_to_sclist(MMAIN, "^_", do_gotolinecolumn_void);
-	add_to_sclist(MMAIN, "F13", do_gotolinecolumn_void);
-	add_to_sclist(MMAIN, "M-G", do_gotolinecolumn_void);
+
 	add_to_sclist(MMAIN, "^O", do_writeout_void);
 	add_to_sclist(MMAIN, "F3", do_writeout_void);
+
 	add_to_sclist(MMAIN, "^R", do_insertfile_void);
 	add_to_sclist(MMAIN, "F5", do_insertfile_void);
 	add_to_sclist(MMAIN, "Insert", do_insertfile_void);
+
 	add_to_sclist(MMAIN|MBROWSER, "^W", do_search);
 	add_to_sclist(MMAIN|MBROWSER, "F6", do_search);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "^Y", do_page_up);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "F7", do_page_up);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "PageUp", do_page_up);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "^V", do_page_down);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "F8", do_page_down);
-	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "PageDown", do_page_down);
+
+	add_to_sclist(MMAIN, "^\\", do_replace);
+	add_to_sclist(MMAIN, "F14", do_replace);
+	add_to_sclist(MMAIN, "M-R", do_replace);
+
 	add_to_sclist(MMOST, "^K", do_cut_text_void);
 	add_to_sclist(MMOST, "F9", do_cut_text_void);
 	add_to_sclist(MMAIN, "^U", do_uncut_text);
 	add_to_sclist(MMAIN, "F10", do_uncut_text);
-	add_to_sclist(MMAIN, "^C", do_cursorpos_void);
-	add_to_sclist(MMAIN, "F11", do_cursorpos_void);
+
 	add_to_sclist(MMAIN, "^T", do_spell);
 	add_to_sclist(MMAIN, "F12", do_spell);
-	add_to_sclist(MMAIN, "^T", do_linter);
-	add_to_sclist(MMAIN, "F12", do_linter);
 	add_to_sclist(MMAIN, "^T", do_formatter);
 	add_to_sclist(MMAIN, "F12", do_formatter);
-	add_to_sclist(MMAIN, "^\\", do_replace);
-	add_to_sclist(MMAIN, "F14", do_replace);
-	add_to_sclist(MMAIN, "M-R", do_replace);
-	add_to_sclist(MWHEREIS|MREPLACE, "^R", toggle_replace_void);
-	add_to_sclist(MWHEREIS, "^T", do_gotolinecolumn_void);
-	add_to_sclist(MMAIN, "^^", do_mark);
-	add_to_sclist(MMAIN, "F15", do_mark);
-	add_to_sclist(MMAIN, "M-A", do_mark);
-	add_to_sclist(MMAIN|MBROWSER, "M-W", do_research);
-	add_to_sclist(MMAIN|MBROWSER, "F16", do_research);
-	add_to_sclist(MMAIN, "M-^", do_copy_text);
-	add_to_sclist(MMAIN, "M-6", do_copy_text);
-	add_to_sclist(MMAIN, "M-}", do_indent_void);
-	add_to_sclist(MMAIN, "M-{", do_unindent);
-	add_to_sclist(MMAIN, "M-U", do_undo);
-	add_to_sclist(MMAIN, "M-E", do_redo);
-	add_to_sclist(MMOST, "^F", do_right);
-	add_to_sclist(MMOST, "Right", do_right);
-	add_to_sclist(MMOST, "^B", do_left);
-	add_to_sclist(MMOST, "Left", do_left);
 
-	add_to_sclist(MMOST, "^@", do_next_word_void);
-	add_to_sclist(MMOST, "M- ", do_prev_word_void);
+	add_to_sclist(MMAIN, "^C", do_cursorpos_void);
+	add_to_sclist(MMAIN, "F11", do_cursorpos_void);
 
-	add_to_sclist(MMAIN, "^Q", xon_complaint);
-	add_to_sclist(MMAIN, "^S", xoff_complaint);
-	add_to_sclist(MMAIN|MHELP|MBROWSER, "^P", do_up_void);
-	add_to_sclist(MMAIN|MHELP|MBROWSER, "Up", do_up_void);
-	add_to_sclist(MMAIN|MHELP|MBROWSER, "^N", do_down_void);
-	add_to_sclist(MMAIN|MHELP|MBROWSER, "Down", do_down_void);
-	add_to_sclist((MMOST & ~MBROWSER), "^A", do_home);
-	add_to_sclist((MMOST & ~MBROWSER), "Home", do_home);
-	add_to_sclist((MMOST & ~MBROWSER), "^E", do_end);
-	add_to_sclist((MMOST & ~MBROWSER), "End", do_end);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^P", get_history_older_void);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Up", get_history_older_void);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^N", get_history_newer_void);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Down", get_history_newer_void);
-	add_to_sclist(MWHEREIS|MREPLACE, "M-C", case_sens_void);
-	add_to_sclist(MWHEREIS|MREPLACE, "M-B", backwards_void);
-	add_to_sclist(MWHEREIS|MREPLACE, "M-R", regexp_void);
+	add_to_sclist(MMAIN, "^_", do_gotolinecolumn_void);
+	add_to_sclist(MMAIN, "F13", do_gotolinecolumn_void);
+	add_to_sclist(MMAIN, "M-G", do_gotolinecolumn_void);
+
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "^Y", do_page_up);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "F7", do_page_up);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "PageUp", do_page_up);
+
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "^V", do_page_down);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "F8", do_page_down);
+	add_to_sclist(MMAIN|MBROWSER|MHELP|MLINTER, "PageDown", do_page_down);
 
 	add_to_sclist(MMAIN|MHELP, "M-\\", do_first_line);
 	add_to_sclist(MMAIN|MHELP, "M-|", do_first_line);
 	add_to_sclist(MMAIN|MHELP, "M-/", do_last_line);
 	add_to_sclist(MMAIN|MHELP, "M-?", do_last_line);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MHELP, "^Y", do_first_line);
-	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MHELP, "^V", do_last_line);
 
-	add_to_sclist(MWHEREISFILE, "^Y", do_first_file);
-	add_to_sclist(MWHEREISFILE, "^V", do_last_file);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "M-\\", do_first_file);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "M-|", do_first_file);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "M-/", do_last_file);
-	add_to_sclist(MBROWSER|MWHEREISFILE, "M-?", do_last_file);
-	add_to_sclist(MBROWSER, "Home", do_first_file);
-	add_to_sclist(MBROWSER, "End", do_last_file);
-	add_to_sclist(MBROWSER, "^_", goto_dir_void);
-	add_to_sclist(MBROWSER, "F13", goto_dir_void);
-	add_to_sclist(MBROWSER, "M-G", goto_dir_void);
+	add_to_sclist(MMAIN|MBROWSER, "M-W", do_research);
+	add_to_sclist(MMAIN|MBROWSER, "F16", do_research);
+
 	add_to_sclist(MMAIN, "M-]", do_find_bracket);
+
+	add_to_sclist(MMAIN, "^^", do_mark);
+	add_to_sclist(MMAIN, "F15", do_mark);
+	add_to_sclist(MMAIN, "M-A", do_mark);
+
+	add_to_sclist(MMAIN, "M-^", do_copy_text);
+	add_to_sclist(MMAIN, "M-6", do_copy_text);
+
+	add_to_sclist(MMAIN, "M-}", do_indent_void);
+	add_to_sclist(MMAIN, "M-{", do_unindent);
+
+	add_to_sclist(MMAIN, "M-U", do_undo);
+	add_to_sclist(MMAIN, "M-E", do_redo);
+
+	add_to_sclist(MMOST, "^B", do_left);
+	add_to_sclist(MMOST, "Left", do_left);
+
+	add_to_sclist(MMOST, "^F", do_right);
+	add_to_sclist(MMOST, "Right", do_right);
+
+	add_to_sclist(MMOST, "^@", do_next_word_void);
+	add_to_sclist(MMOST, "M- ", do_prev_word_void);
+
+	add_to_sclist((MMOST & ~MBROWSER), "^A", do_home);
+	add_to_sclist((MMOST & ~MBROWSER), "Home", do_home);
+	add_to_sclist((MMOST & ~MBROWSER), "^E", do_end);
+	add_to_sclist((MMOST & ~MBROWSER), "End", do_end);
+
+	add_to_sclist(MMAIN|MHELP|MBROWSER, "^P", do_up_void);
+	add_to_sclist(MMAIN|MHELP|MBROWSER, "Up", do_up_void);
+	add_to_sclist(MMAIN|MHELP|MBROWSER, "^N", do_down_void);
+	add_to_sclist(MMAIN|MHELP|MBROWSER, "Down", do_down_void);
+
 	add_to_sclist(MMAIN, "M--", do_scroll_up);
 	add_to_sclist(MMAIN, "M-_", do_scroll_up);
 	add_to_sclist(MMAIN, "M-+", do_scroll_down);
@@ -639,41 +626,98 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-,", switch_to_prev_buffer_void);
 	add_to_sclist(MMAIN, "M->", switch_to_next_buffer_void);
 	add_to_sclist(MMAIN, "M-.", switch_to_next_buffer_void);
+
 	add_to_sclist(MMOST, "M-V", do_verbatim_input);
+
 	add_to_sclist(MMAIN, "M-T", do_cut_till_eof);
+
 	add_to_sclist(MMAIN, "M-D", do_wordlinechar_count);
+
+	add_to_sclist(MMAIN|MHELP, "^L", total_refresh);
+
+	add_to_sclist(MMAIN, "^Z", do_suspend_void);
+
+	/* Group of "Appearance" toggles. */
 	add_to_sclist(MMAIN, "M-X", do_toggle_void, NO_HELP);
 	add_to_sclist(MMAIN, "M-C", do_toggle_void, CONST_UPDATE);
 	add_to_sclist(MMAIN, "M-O", do_toggle_void, MORE_SPACE);
 	add_to_sclist(MMAIN, "M-S", do_toggle_void, SMOOTH_SCROLL);
+	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP);
 	add_to_sclist(MMAIN, "M-P", do_toggle_void, WHITESPACE_DISPLAY);
 	add_to_sclist(MMAIN, "M-Y", do_toggle_void, NO_COLOR_SYNTAX);
+
+	/* Group of "Editing-behavior" toggles. */
 	add_to_sclist(MMAIN, "M-H", do_toggle_void, SMART_HOME);
 	add_to_sclist(MMAIN, "M-I", do_toggle_void, AUTOINDENT);
 	add_to_sclist(MMAIN, "M-K", do_toggle_void, CUT_TO_END);
 	add_to_sclist(MMAIN, "M-L", do_toggle_void, NO_WRAP);
 	add_to_sclist(MMAIN, "M-Q", do_toggle_void, TABS_TO_SPACES);
+
+	/* Group of "Peripheral-feature" toggles. */
 	add_to_sclist(MMAIN, "M-B", do_toggle_void, BACKUP_FILE);
 	add_to_sclist(MMAIN, "M-F", do_toggle_void, MULTIBUFFER);
 	add_to_sclist(MMAIN, "M-N", do_toggle_void, NO_CONVERT);
 	add_to_sclist(MMAIN, "M-Z", do_toggle_void, SUSPEND);
-	add_to_sclist(MMAIN, "M-$", do_toggle_void, SOFTWRAP);
+
+	add_to_sclist(MMAIN, "^Q", xon_complaint);
+	add_to_sclist(MMAIN, "^S", xoff_complaint);
+
+	add_to_sclist(((MMOST & ~MMAIN & ~MBROWSER) | MYESNO), "^C", do_cancel, 0);
+
+	add_to_sclist(MWHEREIS|MREPLACE, "M-B", backwards_void);
+	add_to_sclist(MWHEREIS|MREPLACE, "M-C", case_sens_void);
+	add_to_sclist(MWHEREIS|MREPLACE, "M-R", regexp_void);
+	add_to_sclist(MWHEREIS|MREPLACE, "^R", toggle_replace_void);
+
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE, "^Y", do_first_line);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE, "^V", do_last_line);
+
+	add_to_sclist(MWHEREIS, "^T", do_gotolinecolumn_void);
+	add_to_sclist(MGOTOLINE, "^T", gototext_void);
+
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^P", get_history_older_void);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Up", get_history_older_void);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "^N", get_history_newer_void);
+	add_to_sclist(MWHEREIS|MREPLACE|MREPLACEWITH|MWHEREISFILE, "Down", get_history_newer_void);
+
+	add_to_sclist(MWHEREISFILE, "^Y", do_first_file);
+	add_to_sclist(MWHEREISFILE, "^V", do_last_file);
+
+	add_to_sclist(MBROWSER|MWHEREISFILE, "M-\\", do_first_file);
+	add_to_sclist(MBROWSER|MWHEREISFILE, "M-|", do_first_file);
+	add_to_sclist(MBROWSER|MWHEREISFILE, "M-/", do_last_file);
+	add_to_sclist(MBROWSER|MWHEREISFILE, "M-?", do_last_file);
+
+	add_to_sclist(MBROWSER, "Home", do_first_file);
+	add_to_sclist(MBROWSER, "End", do_last_file);
+	add_to_sclist(MBROWSER, "^_", goto_dir_void);
+	add_to_sclist(MBROWSER, "F13", goto_dir_void);
+	add_to_sclist(MBROWSER, "M-G", goto_dir_void);
+
 	add_to_sclist(MHELP|MBROWSER, "^C", do_exit);
 	add_to_sclist(MHELP, "^G", do_exit);
 	add_to_sclist(MHELP, "Home", do_first_line);
 	add_to_sclist(MHELP, "End", do_last_line);
-	add_to_sclist(MGOTOLINE, "^T",  gototext_void);
-	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F", new_buffer_void);
-	add_to_sclist((MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MWHEREISFILE|MGOTODIR|MYESNO|MLINTER), "^C", do_cancel);
+
 	add_to_sclist(MWRITEFILE, "M-D", dos_format_void);
 	add_to_sclist(MWRITEFILE, "M-M", mac_format_void);
+
 	add_to_sclist(MWRITEFILE, "M-A", append_void);
 	add_to_sclist(MWRITEFILE, "M-P", prepend_void);
+
 	add_to_sclist(MWRITEFILE, "M-B", backup_file_void);
+
 	add_to_sclist(MWRITEFILE|MINSERTFILE, "^T", to_files_void);
+
 	add_to_sclist(MINSERTFILE|MEXTCMD, "^X", toggle_execute_void);
-	add_to_sclist(MMAIN, "^Z", do_suspend_void);
-	add_to_sclist(MMAIN|MHELP, "^L", total_refresh);
+	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F", new_buffer_void);
+
+	add_to_sclist(MHELP|MBROWSER, "^C", do_exit, 0);
+
+	add_to_sclist(MHELP, "^G", do_exit, 0);
+	add_to_sclist(MHELP, "Home", do_first_line, 0);
+	add_to_sclist(MHELP, "End", do_last_line, 0);
+
 	add_to_sclist(MMOST, "Tab", do_tab);
 	add_to_sclist(MMOST, "Enter", do_enter_void);
 	add_to_sclist(MMOST, "KPEnter", do_enter_void);
@@ -1002,9 +1046,9 @@ int strtomenu(std::string input)
 
 #ifdef DEBUG
 /* This function is used to gracefully return all the memory we've used.
- * It should be called just before calling exit().  Practically, the
+ * It should be called just before calling exit(). Practically, the
  * only effect is to cause a segmentation fault if the various data
- * structures got bolloxed earlier.  Thus, we don't bother having this
+ * structures got bolloxed earlier. Thus, we don't bother having this
  * function unless debugging is turned on. */
 void thanks_for_all_the_fish(void)
 {
