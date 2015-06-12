@@ -55,6 +55,14 @@ void do_mark(void)
 	}
 }
 
+/* Return an error message containing the given name. */
+std::string invocation_error(const std::string& name)
+{
+	std::stringstream ss;
+	ss << "Error invoking '" << name << "'";
+	return ss.str();
+}
+
 /* Do deletion of a single character (Delete or Backspace) */
 void do_deletion(UndoType action)
 {
@@ -1564,9 +1572,9 @@ bool do_int_spell_fix(const char *word)
 }
 
 /* Internal (integrated) spell checking using the spell program,
- * filtered through the sort and uniq programs.  Return NULL for normal
+ * filtered through the sort and uniq programs.  Return "" for normal
  * termination, and the error string otherwise. */
-const char *do_int_speller(const char *tempfile_name)
+std::string do_int_speller(const char *tempfile_name)
 {
 	char *read_buff, *read_buff_ptr, *read_buff_word;
 	size_t pipe_buff_size, read_buff_size, read_buff_read, bytesread;
@@ -1739,7 +1747,7 @@ const char *do_int_speller(const char *tempfile_name)
 	}
 
 	/* Otherwise... */
-	return NULL;
+	return "";
 
 close_pipes_and_exit:
 	/* Don't leak any handles. */
@@ -1755,7 +1763,7 @@ close_pipes_and_exit:
 
 /* External (alternate) spell checking.  Return NULL for normal
  * termination, and the error string otherwise. */
-const char *do_alt_speller(char *tempfile_name)
+std::string do_alt_speller(char *tempfile_name)
 {
 	int alt_spell_status;
 	size_t current_x_save = openfile->current_x;
@@ -1787,7 +1795,7 @@ const char *do_alt_speller(char *tempfile_name)
 
 	 /* If the number of bytes to check is zero, get out. */
 	if (spellfileinfo.st_size == 0) {
-		return NULL;
+		return "";
 	}
 
 	if (old_mark_set) {
@@ -1848,15 +1856,10 @@ const char *do_alt_speller(char *tempfile_name)
 	window_init();
 
 	if (!WIFEXITED(alt_spell_status) || WEXITSTATUS(alt_spell_status) != 0) {
-		char *alt_spell_error;
-		char *invoke_error = _("Error invoking \"%s\"");
-
 		/* Turn the mark back on if it was on before. */
 		openfile->mark_set = old_mark_set;
 
-		alt_spell_error = charalloc(strlen(invoke_error) + strlen(alt_speller) + 1);
-		sprintf(alt_spell_error, invoke_error, alt_speller);
-		return alt_spell_error;
+		return invocation_error(alt_speller);
 	}
 
 	if (old_mark_set) {
@@ -1931,7 +1934,7 @@ const char *do_alt_speller(char *tempfile_name)
 	/* Handle a pending SIGWINCH again. */
 	allow_pending_sigwinch(true);
 
-	return NULL;
+	return "";
 }
 
 /* Spell check the current file.  If an alternate spell checker is
@@ -1941,7 +1944,6 @@ void do_spell(void)
 	bool status;
 	FILE *temp_file;
 	char *temp = mallocstrcpy(NULL, safe_tempfile(&temp_file).c_str());
-	const char *spell_msg;
 
 	if (temp == NULL) {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
@@ -1960,7 +1962,7 @@ void do_spell(void)
 	statusbar(_("Invoking spell checker, please wait..."));
 	doupdate();
 
-	spell_msg = (alt_speller != NULL) ? do_alt_speller(temp) : do_int_speller(temp);
+	auto spell_msg = (alt_speller != NULL) ? do_alt_speller(temp) : do_int_speller(temp);
 	unlink(temp);
 	free(temp);
 
@@ -1970,12 +1972,12 @@ void do_spell(void)
 	 * sure that they're cleared off. */
 	total_refresh();
 
-	if (spell_msg != NULL) {
+	if (spell_msg != "") {
 		if (errno == 0) {
 			/* Don't display an error message of "Success". */
-			statusbar(_("Spell checking failed: %s"), spell_msg);
+			statusbar(_("Spell checking failed: %s"), spell_msg.c_str());
 		} else {
-			statusbar(_("Spell checking failed: %s: %s"), spell_msg, strerror(errno));
+			statusbar(_("Spell checking failed: %s: %s"), spell_msg.c_str(), strerror(errno));
 		}
 	} else {
 		statusbar(_("Finished checking spelling"));
@@ -2058,10 +2060,10 @@ void do_linter(void)
 
 		/* Send the linter's standard output + err to the pipe. */
 		if (dup2(lint_fd[1], STDOUT_FILENO) != STDOUT_FILENO) {
-			exit(1);
+			exit(9);
 		}
 		if (dup2(lint_fd[1], STDERR_FILENO) != STDERR_FILENO) {
-			exit(1);
+			exit(9);
 		}
 
 		close(lint_fd[1]);
@@ -2073,7 +2075,7 @@ void do_linter(void)
 		free(lintargs);
 
 		/* This should not be reached if linter is found. */
-		exit(1);
+		exit(9);
 	}
 
 	/* Parent continues here. */
@@ -2172,10 +2174,14 @@ void do_linter(void)
 		read_buff_ptr++;
 	}
 
-	/* Process the end of the linting process.
-	 * XXX: The return value should be checked.
-	 * Will make an invocation-error routine. */
+	/* Process the end of the linting process. */
 	waitpid(pid_lint, &lint_status, 0);
+
+	if (!WIFEXITED(lint_status) || WEXITSTATUS(lint_status) > 2) {
+		statusbar(invocation_error(openfile->syntax->linter).c_str());
+		lint_cleanup();
+		return;
+	}
 
 	free(read_buff);
 
@@ -2289,7 +2295,7 @@ void do_formatter(void)
 	ssize_t current_y_save = openfile->current_y;
 	ssize_t lineno_save = openfile->current->lineno;
 	pid_t pid_format;
-	char *finalstatus = NULL;
+	std::string finalstatus;
 
 	/* Check whether we're using syntax highlighting and formatter option is set */
 	if (!openfile->syntax || openfile->syntax->formatter == "") {
@@ -2369,12 +2375,7 @@ void do_formatter(void)
 	window_init();
 
 	if (!WIFEXITED(format_status) || WEXITSTATUS(format_status) != 0) {
-		char *format_error;
-		char *invoke_error = _("Error invoking \"%s\"");
-
-		format_error = charalloc(strlen(invoke_error) + openfile->syntax->formatter.length() + 1);
-		sprintf(format_error, invoke_error, openfile->syntax->formatter.c_str());
-		finalstatus = format_error;
+		finalstatus = invocation_error(openfile->syntax->formatter);
 	} else {
 		/* Replace the text of the current buffer with the formatted text. */
 		replace_buffer(temp);
@@ -2395,7 +2396,7 @@ void do_formatter(void)
 	 * sure that they're cleared off. */
 	total_refresh();
 
-	statusbar(finalstatus);
+	statusbar(finalstatus.c_str());
 }
 
 /* Our own version of "wc".  Note that its character counts are in
