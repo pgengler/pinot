@@ -662,7 +662,7 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "^Q", xon_complaint);
 	add_to_sclist(MMAIN, "^S", xoff_complaint);
 
-	add_to_sclist(((MMOST & ~MMAIN & ~MBROWSER) | MYESNO), "^C", do_cancel, 0);
+	add_to_sclist(((MMOST & ~MMAIN & ~MBROWSER) | MYESNO), "^C", do_cancel);
 
 	add_to_sclist(MWHEREIS|MREPLACE, "M-B", backwards_void);
 	add_to_sclist(MWHEREIS|MREPLACE, "M-C", case_sens_void);
@@ -712,11 +712,11 @@ void shortcut_init(void)
 	add_to_sclist(MINSERTFILE|MEXTCMD, "^X", toggle_execute_void);
 	add_to_sclist(MINSERTFILE|MEXTCMD, "M-F", new_buffer_void);
 
-	add_to_sclist(MHELP|MBROWSER, "^C", do_exit, 0);
+	add_to_sclist(MHELP|MBROWSER, "^C", do_exit);
 
-	add_to_sclist(MHELP, "^G", do_exit, 0);
-	add_to_sclist(MHELP, "Home", do_first_line, 0);
-	add_to_sclist(MHELP, "End", do_last_line, 0);
+	add_to_sclist(MHELP, "^G", do_exit);
+	add_to_sclist(MHELP, "Home", do_first_line);
+	add_to_sclist(MHELP, "End", do_last_line);
 
 	add_to_sclist(MMOST, "Tab", do_tab);
 	add_to_sclist(MMOST, "Enter", do_enter_void);
