@@ -452,7 +452,7 @@ size_t strlenpt(const char *s);
 void new_magicline(void);
 void remove_magicline(void);
 void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, size_t *bot_x, bool *right_side_up);
-void add_undo(UndoType current_action);
+void add_undo(UndoType _action);
 void update_undo(UndoType action);
 size_t get_totsize(const filestruct *begin, const filestruct *end);
 filestruct *fsfromline(ssize_t lineno);
