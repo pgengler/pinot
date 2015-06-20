@@ -682,9 +682,7 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
 	if (history_list != NULL) {
 		history_reset(*history_list);
 
-		if (magichistory != NULL) {
-			free(magichistory);
-		}
+		free(magichistory);
 	}
 
 
@@ -730,9 +728,7 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 
 	/* prompt has been freed and set to NULL unless the user resized
 	 * while at the statusbar prompt. */
-	if (prompt != NULL) {
-		free(prompt);
-	}
+	free(prompt);
 
 	prompt = charalloc(((COLS - 4) * mb_cur_max()) + 1);
 

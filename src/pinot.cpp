@@ -109,15 +109,10 @@ void unlink_node(const filestruct *fileptr)
 /* Delete a node from the filestruct. */
 void delete_node(filestruct *fileptr)
 {
-	assert(fileptr != NULL && fileptr->data != NULL);
+	assert(fileptr != NULL);
 
-	if (fileptr->data != NULL) {
-		free(fileptr->data);
-	}
-
-	if (fileptr->multidata) {
-		free(fileptr->multidata);
-	}
+	free(fileptr->data);
+	free(fileptr->multidata);
 
 	delete fileptr;
 }

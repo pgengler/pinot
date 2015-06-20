@@ -1056,19 +1056,11 @@ void thanks_for_all_the_fish(void)
 	delwin(edit);
 	delwin(bottomwin);
 
-	if (alt_speller != NULL) {
-		free(alt_speller);
-	}
-	if (cutbuffer != NULL) {
-		free_filestruct(cutbuffer);
-	}
+	free(alt_speller);
+	free_filestruct(cutbuffer);
 	/* Free the search and replace history lists. */
-	if (searchage != NULL) {
-		free_filestruct(searchage);
-	}
-	if (replaceage != NULL) {
-		free_filestruct(replaceage);
-	}
+	free_filestruct(searchage);
+	free_filestruct(replaceage);
 }
 
 #endif /* DEBUG */

@@ -764,9 +764,7 @@ void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool
 			 * since its text has been saved. */
 			fileptr = fileptr->prev;
 			if (fileptr != NULL) {
-				if (fileptr->next != NULL) {
-					free(fileptr->next);
-				}
+				free(fileptr->next);
 			}
 		}
 
