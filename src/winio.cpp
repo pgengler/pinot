@@ -794,7 +794,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 		for (auto tmpcolor : openfile->colorstrings) {
 			int x_start;
 			/* Starting column for mvwaddnstr.  Zero-based. */
-			int paintlen;
+			int paintlen = 0;
 			/* Number of chars to paint on this line.  There are
 			 * COLS characters on a whole line. */
 			size_t index;
@@ -901,7 +901,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 				}
 
 				/* If the found start has been qualified as an end earlier, believe it and skip to the next step. */
-				if (start_line != NULL && start_line->multidata[tmpcolor->id] == CBEGINBEFORE)) {
+				if (start_line != NULL && start_line->multidata[tmpcolor->id] == CBEGINBEFORE) {
 					goto step_two;
 				}
 
@@ -962,6 +962,10 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 						fileptr->multidata[tmpcolor->id] = CBEGINBEFORE;
 					}
 					mvwaddnstr(edit, line, 0, converted, paintlen);
+					/* If the whole line has been painted, don't bother looking for any more starts. */
+					if (paintlen < 0) {
+						continue;
+					}
 step_two:
 					/* Second step, we look for starts on this line. */
 					start_col = 0;
