@@ -473,15 +473,19 @@ void do_undo(void)
 		break;
 	case JOIN:
 		undidmsg = _("line join");
-		t = make_new_node(f);
-		t->data = mallocstrcpy(NULL, u->strdata);
-		data = mallocstrncpy(NULL, f->data, u->mark_begin_x + 1);
-		data[u->mark_begin_x] = '\0';
-		free(f->data);
-		f->data = data;
-		splice_node(f, t, f->next);
-		if (f == openfile->filebot) {
-			openfile->filebot = t;
+		/* When the join was done by a Backspace at the tail of the file,
+		 * don't actually add another line; just position the cursor. */
+		if (f->next != openfile->filebot || u->xflags != UNdel_backspace || ISSET(NO_NEWLINES)) {
+			t = make_new_node(f);
+			t->data = mallocstrcpy(NULL, u->strdata);
+			data = mallocstrncpy(NULL, f->data, u->mark_begin_x + 1);
+			data[u->mark_begin_x] = '\0';
+			free(f->data);
+			f->data = data;
+			splice_node(f, t, f->next);
+			if (f == openfile->filebot) {
+				openfile->filebot = t;
+			}
 		}
 		goto_line_posx(u->lineno, u->begin);
 		break;
@@ -936,6 +940,11 @@ void add_undo(UndoType current_action)
 		return;
 	}
 
+	/* When trying to delete the final newline, don't add an undo for it. */
+	if (current_action == DEL && openfile->current->next == openfile->filebot && openfile->current->data[openfile->current_x] == '\0' && openfile->current_x != 0 && !ISSET(NO_NEWLINES)) {
+		return;
+	}
+
 	/* Blow away the old undo stack if we are starting from the middle */
 	while (fs->undotop != NULL && fs->undotop != fs->current_undo) {
 		undo *u2 = fs->undotop;
@@ -975,6 +984,7 @@ void add_undo(UndoType current_action)
 	case ADD:
 		break;
 	case BACK:
+		u->xflags = UNdel_backspace;
 	case DEL:
 		if (u->begin != strlen(fs->current->data)) {
 			char *char_buf = charalloc(mb_cur_max() + 1);
