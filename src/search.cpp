@@ -414,6 +414,12 @@ void do_research(void)
 	size_t pww_save = openfile->placewewant;
 	bool didfind;
 
+	/* If nothing was searched for yet during this run of pinot, but
+	 * there is a search history, take the most recent item. */
+	if (last_search == "" && searchbot->prev != NULL) {
+		last_search = std::string(searchbot->prev->data);
+	}
+
 	if (last_search != "") {
 		/* Since answer is "", use last_search! */
 		if (ISSET(USE_REGEXP) && !regexp_init(last_search.c_str())) {
