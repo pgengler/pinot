@@ -121,6 +121,7 @@ class Syntax {
 };
 typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
 
+/* Flags that indicate how a multiline regex applies to a line. */
 #define CNONE 		(1<<1)
 /* Yay, regex doesn't apply to this line at all! */
 #define CBEGINBEFORE 	(1<<2)
@@ -131,7 +132,5 @@ typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
 /* whole line engulfed by the regex  start < me, end > me */
 #define CSTARTENDHERE 	(1<<5)
 /* regex starts and ends within this line */
-#define CWTF		(1<<6)
-/* Something else */
 
 extern SyntaxMap syntaxes;
