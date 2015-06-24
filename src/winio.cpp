@@ -901,7 +901,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 				}
 
 				/* If the found start has been qualified as an end earlier, believe it and skip to the next step. */
-				if (start_line != NULL && start_line->multidata[tmpcolor->id] == CBEGINBEFORE) {
+				if (start_line != NULL && start_line->multidata != NULL && start_line->multidata[tmpcolor->id] == CBEGINBEFORE) {
 					goto step_two;
 				}
 
