@@ -314,10 +314,8 @@ void do_indent(ssize_t cols)
 					}
 				}
 
-				/* We've unindented, so set indent_changed to true. */
-				if (!indent_changed) {
-					indent_changed = true;
-				}
+				/* We've unindented, so the indentation changed. */
+				indent_changed = true;
 			}
 		}
 	}
