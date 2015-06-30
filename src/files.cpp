@@ -1588,9 +1588,9 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 			if (backuptemp == "") {
 				statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), _("Too many backup files?"));
 				/* If we can't write to the backup, DONT go on, since
-				   whatever caused the backup file to fail (e.g. disk
-				   full may well cause the real file write to fail, which
-				   means we could lose both the backup and the original! */
+				 * whatever caused the backup file to fail (e.g. disk
+				 * full may well cause the real file write to fail, which
+				 * means we could lose both the backup and the original! */
 				goto cleanup_and_exit;
 			} else {
 				backupname = backuptemp;
@@ -1644,9 +1644,9 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			fclose(backup_file);
 			/* If we can't write to the backup, DONT go on, since
-			   whatever caused the backup file to fail (e.g. disk
-			   full may well cause the real file write to fail, which
-			   means we could lose both the backup and the original! */
+			 * whatever caused the backup file to fail (e.g. disk
+			 * full may well cause the real file write to fail, which
+			 * means we could lose both the backup and the original! */
 			goto cleanup_and_exit;
 		}
 
@@ -1668,9 +1668,9 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 			}
 			statusbar(_("Error writing backup file %s: %s"), backupname.c_str(), strerror(errno));
 			/* If we can't write to the backup, DONT go on, since
-			   whatever caused the backup file to fail (e.g. disk
-			   full may well cause the real file write to fail, which
-			   means we could lose both the backup and the original! */
+			 * whatever caused the backup file to fail (e.g. disk
+			 * full may well cause the real file write to fail, which
+			 * means we could lose both the backup and the original! */
 			goto cleanup_and_exit;
 		}
 	}
