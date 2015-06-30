@@ -557,8 +557,6 @@ void shortcut_init(void)
 
 	add_to_sclist(MMAIN, "^T", do_spell);
 	add_to_sclist(MMAIN, "F12", do_spell);
-	add_to_sclist(MMAIN, "^T", do_formatter);
-	add_to_sclist(MMAIN, "F12", do_formatter);
 
 	add_to_sclist(MMAIN, "^C", do_cursorpos_void);
 	add_to_sclist(MMAIN, "F11", do_cursorpos_void);
