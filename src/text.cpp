@@ -361,7 +361,7 @@ void redo_paste(undo *u)
 	}
 
 	/* Get to where we need to uncut from */
-	if (u->xflags == UNcut_cutline) {
+	if (u->xflags == WAS_WHOLE_LINE) {
 		goto_line_posx(u->mark_begin_lineno, 0);
 	} else {
 		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
@@ -369,7 +369,7 @@ void redo_paste(undo *u)
 
 	copy_from_filestruct(u->cutbuffer);
 
-	if (u->xflags != UNcut_marked_forward && u->type != PASTE) {
+	if (u->xflags != WAS_MARKED_FORWARD && u->type != PASTE) {
 		goto_line_posx(u->mark_begin_lineno, u->mark_begin_x);
 	}
 }
@@ -394,7 +394,7 @@ void undo_paste(undo *u)
 
 	openfile->mark_set = true;
 	openfile->mark_begin = fsfromline(u->mark_begin_lineno);
-	openfile->mark_begin_x = (u->xflags == UNcut_cutline) ? 0 : u->mark_begin_x;
+	openfile->mark_begin_x = (u->xflags == WAS_WHOLE_LINE) ? 0 : u->mark_begin_x;
 
 	do_cut_text(FALSE, FALSE, TRUE);
 
@@ -475,7 +475,7 @@ void do_undo(void)
 		undidmsg = _("line join");
 		/* When the join was done by a Backspace at the tail of the file,
 		 * don't actually add another line; just position the cursor. */
-		if (ISSET(NO_NEWLINES) || u->xflags != SKIP_FINAL_BACKSPACE) {
+		if (ISSET(NO_NEWLINES) || u->xflags != WAS_FINAL_BACKSPACE) {
 			t = make_new_node(f);
 			t->data = mallocstrcpy(NULL, u->strdata);
 			data = mallocstrncpy(NULL, f->data, u->mark_begin_x + 1);
@@ -985,7 +985,7 @@ void add_undo(UndoType action)
 		/* If the next line is the magic line, don't ever undo this
 		 * backspace, as it won't actually have deleted anything. */
 		if (fs->current->next == fs->filebot && fs->current->data[0] != '\0') {
-			u->xflags = SKIP_FINAL_BACKSPACE;
+			u->xflags = WAS_FINAL_BACKSPACE;
 		}
 	case DEL:
 		if (u->begin != strlen(fs->current->data)) {
@@ -1031,7 +1031,7 @@ void add_undo(UndoType action)
 		} else if (!ISSET(CUT_TO_END)) {
 			/* The entire line is being cut regardless of the cursor position. */
 			u->begin = 0;
-			u->xflags = UNcut_cutline;
+			u->xflags = WAS_WHOLE_LINE;
 		}
 		break;
 	case PASTE:
@@ -1140,7 +1140,7 @@ void update_undo(UndoType action)
 				u->lineno = u->mark_begin_lineno;
 				u->mark_begin_lineno = line;
 			} else {
-				u->xflags = UNcut_marked_forward;
+				u->xflags = WAS_MARKED_FORWARD;
 			}
 		} else {
 			/* Compute cutbottom for the uncut using out copy */

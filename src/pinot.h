@@ -195,9 +195,9 @@ enum {
 #define MMOST         (MMAIN|MWHEREIS|MREPLACE|MREPLACEWITH|MGOTOLINE|MWRITEFILE|MINSERTFILE|MEXTCMD|MSPELL|MBROWSER|MWHEREISFILE|MGOTODIR|MLINTER)
 
 /* Extra bits for the undo function */
-#define SKIP_FINAL_BACKSPACE (1<<1)
-#define UNcut_marked_forward (1<<2)
-#define UNcut_cutline        (1<<3)
+#define WAS_FINAL_BACKSPACE (1<<1)
+#define WAS_MARKED_FORWARD  (1<<2)
+#define WAS_WHOLE_LINE      (1<<3)
 
 #define VIEW true
 #define NOVIEW false
