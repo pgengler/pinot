@@ -349,34 +349,25 @@ void open_buffer(std::string filename, bool undoable)
 	}
 }
 
-/* If it's not "", filename is a file to open.  We blow away the text of
- * the current buffer, and then open and read the file, if
- * applicable.  Note that we skip the operating directory test when
- * doing this. */
+
+/* Blow away the text of the current buffer, and then open and read
+ * the specified file into its place. */
 void replace_buffer(const std::string& filename)
 {
 	FILE *f;
-	int rc;
-	/* rc == -2 means that we have a new file.  -1 means that the
-	 * open() failed.  0 means that the open() succeeded. */
+	int descriptor;
 
-	/* If the filename isn't blank, open the file.  Otherwise, treat it
-	 * as a new file. */
-	rc = (filename != "") ? open_file(filename, true, false, &f) : -2;
+	/* Open the file quietly. */
+	descriptor = open_file(filename, true, false, &f) ;
 
 	/* Reinitialize the text of the current buffer. */
 	free_filestruct(openfile->fileage);
 	initialize_buffer_text();
 
 	/* If we have a non-new file, read it in. */
-	if (rc > 0) {
-		read_file(f, rc, filename, false, true);
+	if (descriptor > 0) {
+		read_file(f, descriptor, filename, false, true);
 	}
-
-	/* Move back to the beginning of the first line of the buffer. */
-	openfile->current = openfile->fileage;
-	openfile->current_x = 0;
-	openfile->placewewant = 0;
 }
 
 /* Update the screen to account for the current buffer. */
