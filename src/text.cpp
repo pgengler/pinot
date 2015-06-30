@@ -99,11 +99,6 @@ void do_deletion(UndoType action)
 
 		add_undo(action);
 
-		/* If we're deleting at the end of a line, we need to call edit_refresh(). */
-		if (openfile->current->data[openfile->current_x] == '\0') {
-			edit_refresh_needed = true;
-		}
-
 		openfile->current->data = charealloc(openfile->current->data, strlen(openfile->current->data) + strlen(foo->data) + 1);
 		strcat(openfile->current->data, foo->data);
 		if (openfile->mark_set && openfile->mark_begin == openfile->current->next) {
@@ -118,6 +113,9 @@ void do_deletion(UndoType action)
 		delete_node(foo);
 		renumber(openfile->current);
 		openfile->totsize--;
+
+		/* Two lines were joined, so we need to refresh the screen. */
+		edit_refresh_needed = true;
 
 		/* If the NO_NEWLINES flag isn't set, and text has been added to
 		 * the magicline as a result of deleting at the end of the line
