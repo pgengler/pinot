@@ -34,7 +34,7 @@ std::string canonical_filename(const std::string& filename)
 {
 	std::string current_dir = getcwd();
 	std::string filename_with_dir;
-	if (current_dir != "") {
+	if (current_dir != "" && filename[0] != '/') {
 		filename_with_dir = current_dir + "/" + filename;
 	}
 	std::string canonical_name = realpath(filename_with_dir);
