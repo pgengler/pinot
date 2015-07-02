@@ -1,3 +1,7 @@
+0.0.8
+-----
+* Incorporate various upstream fixes/changes from 'nano'
+
 0.0.7
 -----
 * Underscores are considered part of words when moving forward/backward by words

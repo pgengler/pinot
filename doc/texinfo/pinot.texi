@@ -6,8 +6,8 @@
 
 @smallbook
 @set EDITION 0.2
-@set VERSION 0.0.7
-@set UPDATED 11 August 2014
+@set VERSION 0.0.8
+@set UPDATED 2 July 2015
 
 @dircategory Editors
 @direntry
@@ -21,7 +21,7 @@
 @titlepage
 @title @code{pinot}
 @subtitle a small and friendly text editor.
-@subtitle version 0.0.7
+@subtitle version 0.0.8
 
 @author Phil Gengler
 @page
