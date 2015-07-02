@@ -86,6 +86,10 @@ DIR *opendir(const std::string& name)
 std::string realpath(const std::string& path)
 {
 	char *real_path = realpath(path.c_str(), NULL);
+	if (!real_path) {
+		DEBUG_LOG("Failed to get real path for '" << path << "'; error is: " << strerror(errno));
+		return "";
+	}
 	std::string real_path_str = std::string(real_path);
 	free(real_path);
 
