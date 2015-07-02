@@ -1055,7 +1055,9 @@ void thanks_for_all_the_fish(void)
 	delwin(bottomwin);
 
 	free(alt_speller);
-	free_filestruct(cutbuffer);
+	if (cutbuffer) {
+		free_filestruct(cutbuffer);
+	}
 	/* Free the search and replace history lists. */
 	free_filestruct(searchage);
 	free_filestruct(replaceage);
