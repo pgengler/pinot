@@ -6,7 +6,7 @@
 
 @smallbook
 @set EDITION 0.2
-@set VERSION 0.0.8
+@set VERSION 0.0.9
 @set UPDATED 2 July 2015
 
 @dircategory Editors
