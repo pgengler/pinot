@@ -412,7 +412,8 @@ void do_undo(void)
 	undo *u = openfile->current_undo;
 	filestruct *t = nullptr;
 	size_t len = 0;
-	char *data, *undidmsg = NULL;
+	char *data;
+	const char *undidmsg = NULL;
 	filestruct *oldcutbuffer = cutbuffer, *oldcutbottom = cutbottom;
 
 	if (!u) {
@@ -558,7 +559,8 @@ void do_redo(void)
 {
 	undo *u = openfile->undotop;
 	size_t len = 0;
-	char *data, *redidmsg = NULL;
+	char *data;
+	const char *redidmsg = NULL;
 
 	for (; u != NULL && u->next != openfile->current_undo; u = u->next) {
 		;
