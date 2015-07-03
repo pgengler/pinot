@@ -502,8 +502,6 @@ void empty_sclist(void);
 void print_sclist(void);
 sc *strtosc(std::string input);
 int strtomenu(std::string input);
-void xon_complaint(void);
-void xoff_complaint(void);
 void do_suspend_void(void);
 void set_color(WINDOW *win, ColorPair color);
 void clear_color(WINDOW *win, ColorPair color);

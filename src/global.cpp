@@ -533,17 +533,18 @@ void shortcut_init(void)
 	add_to_sclist(MMOST, "^G", do_help_void);
 	add_to_sclist(MMOST, "F1", do_help_void);
 
-	add_to_sclist(MMAIN|MHELP|MBROWSER, "^X", do_exit);
+	add_to_sclist(MMAIN, "^Q", do_exit);
+	add_to_sclist(MHELP|MBROWSER, "^X", do_exit);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "F2", do_exit);
 
-	add_to_sclist(MMAIN, "^O", do_writeout_void);
+	add_to_sclist(MMAIN, "^S", do_writeout_void);
 	add_to_sclist(MMAIN, "F3", do_writeout_void);
 
-	add_to_sclist(MMAIN, "^R", do_insertfile_void);
+	add_to_sclist(MMAIN, "^O", do_insertfile_void);
 	add_to_sclist(MMAIN, "F5", do_insertfile_void);
 	add_to_sclist(MMAIN, "Insert", do_insertfile_void);
 
-	add_to_sclist(MMAIN|MBROWSER, "^W", do_search);
+	add_to_sclist(MMAIN|MBROWSER, "^F", do_search);
 	add_to_sclist(MMAIN|MBROWSER, "F6", do_search);
 
 	add_to_sclist(MMAIN, "^\\", do_replace);
@@ -599,7 +600,6 @@ void shortcut_init(void)
 	add_to_sclist(MMOST, "^B", do_left);
 	add_to_sclist(MMOST, "Left", do_left);
 
-	add_to_sclist(MMOST, "^F", do_right);
 	add_to_sclist(MMOST, "Right", do_right);
 
 	add_to_sclist(MMOST, "^@", do_next_word_void);
@@ -656,9 +656,6 @@ void shortcut_init(void)
 	add_to_sclist(MMAIN, "M-F", do_toggle_void, MULTIBUFFER);
 	add_to_sclist(MMAIN, "M-N", do_toggle_void, NO_CONVERT);
 	add_to_sclist(MMAIN, "M-Z", do_toggle_void, SUSPEND);
-
-	add_to_sclist(MMAIN, "^Q", xon_complaint);
-	add_to_sclist(MMAIN, "^S", xoff_complaint);
 
 	add_to_sclist(((MMOST & ~MMAIN & ~MBROWSER) | MYESNO), "^C", do_cancel);
 

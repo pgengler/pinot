@@ -1292,16 +1292,6 @@ void do_input(void)
 	}
 }
 
-void xon_complaint(void)
-{
-	statusbar(_("XON ignored, mumble mumble"));
-}
-
-void xoff_complaint(void)
-{
-	statusbar(_("XOFF ignored, mumble mumble"));
-}
-
 void alloc_multidata_if_needed(filestruct *fileptr)
 {
 	if (!fileptr->multidata) {
