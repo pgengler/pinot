@@ -534,7 +534,7 @@ void shortcut_init(void)
 	add_to_sclist(MMOST, "F1", do_help_void);
 
 	add_to_sclist(MMAIN, "^Q", do_exit);
-	add_to_sclist(MHELP|MBROWSER, "^X", do_exit);
+	add_to_sclist(MMAIN|MHELP|MBROWSER, "^X", do_exit);
 	add_to_sclist(MMAIN|MHELP|MBROWSER, "F2", do_exit);
 
 	add_to_sclist(MMAIN, "^S", do_writeout_void);
