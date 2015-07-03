@@ -2333,7 +2333,7 @@ void do_formatter(void)
 		format_args.push_back(arg);
 	}
 	format_args.push_back(temp);
-	char **argbuf;
+	char **argbuf = nullptr;
 
 	/* Start a new process for the formatter. */
 	if ((pid_format = fork()) == 0) {
