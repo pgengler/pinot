@@ -392,7 +392,7 @@ void undo_paste(undo *u)
 	openfile->mark_begin = fsfromline(u->mark_begin_lineno);
 	openfile->mark_begin_x = (u->xflags == WAS_WHOLE_LINE) ? 0 : u->mark_begin_x;
 
-	do_cut_text(FALSE, FALSE, TRUE);
+	do_cut_text(false, false, true);
 
 	openfile->mark_set = false;
 	openfile->mark_begin = NULL;
@@ -2306,8 +2306,8 @@ void do_formatter(void)
 	}
 
 	/* We're not supporting partial formatting, oi vey */
-	openfile->mark_set = FALSE;
-	status = write_file(temp, temp_file, TRUE, OVERWRITE, FALSE);
+	openfile->mark_set = false;
+	status = write_file(temp, temp_file, true, OVERWRITE, false);
 
 	if (!status) {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
@@ -2352,7 +2352,7 @@ void do_formatter(void)
 
 	/* Don't handle a pending SIGWINCH until the alternate format checker
 	 * is finished and we've loaded the format-checked file back in. */
-	allow_pending_sigwinch(FALSE);
+	allow_pending_sigwinch(false);
 
 	/* Wait for the formatter to finish. */
 	wait(&format_status);
@@ -2382,7 +2382,7 @@ void do_formatter(void)
 		set_modified();
 
 		/* Handle a pending SIGWINCH again. */
-		allow_pending_sigwinch(TRUE);
+		allow_pending_sigwinch(true);
 
 		finalstatus = _("Finished formatting");
 	}
