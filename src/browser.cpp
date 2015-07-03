@@ -694,7 +694,7 @@ void do_filesearch(void)
 
 	/* If answer is not "", add this search string to the search history list. */
 	if (answer != "") {
-		update_history(&search_history, answer);
+		search_history.add(answer);
 	}
 
 	findnextfile(answer);

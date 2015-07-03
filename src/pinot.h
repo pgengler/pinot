@@ -31,6 +31,7 @@
 #include <config.h>
 #endif
 
+#include "History.h"
 #include "Keyboard.h"
 #include "OpenFile.h"
 #include "cpputil.h"

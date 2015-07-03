@@ -521,20 +521,18 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 	refresh_func();
 }
 
-/* Get a string of input at the statusbar prompt.  This should only be
- * called from do_prompt(). */
-FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void))
+/* Get a string of input at the statusbar prompt.  This should only be called from do_prompt(). */
+FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, History* history_list, void (*refresh_func)(void))
 {
 	std::shared_ptr<Key> kbinput, last_kbinput;
 	bool ran_func, finished;
 	FunctionPtr func;
 	bool tabbed = false;
 	/* Whether we've pressed Tab. */
-	char *history = NULL;
+	std::string history;
 	/* The current history string. */
-	char *magichistory = NULL;
-	/* The temporary string typed at the bottom of the history, if
-	 * any. */
+	std::string magichistory;
+	/* The temporary string typed at the bottom of the history, if any. */
 	size_t complete_len = 0;
 	/* The length of the original string that we're trying to
 	 * tab complete, if any. */
@@ -583,13 +581,13 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
 		}
 
 		if (func == do_tab) {
-			if (history_list != NULL) {
+			if (history_list) {
 				if (last_kbinput->format() != "Tab") {
 					complete_len = answer.length();
 				}
 
 				if (complete_len > 0) {
-					answer = get_history_completion(history_list, answer, complete_len);
+					answer = history_list->find(answer, complete_len);
 					statusbar_x = answer.length();
 				}
 			} else if (allow_tabs) {
@@ -599,18 +597,18 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
 			update_statusbar_line(answer, statusbar_x);
 		} else {
 			if (func == get_history_older_void) {
-				if (history_list != NULL) {
+				if (history_list) {
 					/* If we're scrolling up at the bottom of the
 					 * history list and answer isn't blank, save answer
 					 * in magichistory. */
-					if ((*history_list)->next == NULL && answer[0] != '\0') {
-						magichistory = mallocstrcpy(magichistory, answer.c_str());
+					if (history_list->at_newest() && answer != "") {
+						magichistory = answer;
 					}
 
 					/* Get the older search from the history list and
 					 * save it in answer.  If there is no older search,
 					 * don't do anything. */
-					if ((history = get_history_older(history_list)) != NULL) {
+					if ((history = history_list->older()) != "") {
 						answer = history;
 						statusbar_x = answer.length();
 					}
@@ -625,11 +623,11 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
 					finished = false;
 				}
 			} else if (func == get_history_newer_void) {
-				if (history_list != NULL) {
+				if (history_list) {
 					/* Get the newer search from the history list and
 					 * save it in answer.  If there is no newer search,
 					 * don't do anything. */
-					if ((history = get_history_newer(history_list)) != NULL) {
+					if ((history = history_list->newer()) != "") {
 						answer = history;
 						statusbar_x = answer.length();
 					}
@@ -638,7 +636,7 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
 					 * the history list, answer is blank, and
 					 * magichistory is set, save magichistory in
 					 * answer. */
-					if ((*history_list)->next == NULL && answer != "" && magichistory != NULL) {
+					if (history_list->at_newest() && answer != "" && magichistory != "") {
 						answer = magichistory;
 						statusbar_x = answer.length();
 					}
@@ -677,15 +675,6 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
 		wnoutrefresh(bottomwin);
 	}
 
-	/* Set the current position in the history list to the bottom and
-	 * free magichistory, if we need to. */
-	if (history_list != NULL) {
-		history_reset(*history_list);
-
-		free(magichistory);
-	}
-
-
 	/* We've finished putting in an answer or run a normal shortcut's
 	 * associated function, so reset statusbar_x and statusbar_pww.  If
 	 * we've finished putting in an answer, reset the statusbar cursor
@@ -720,7 +709,7 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...)
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, History* history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
 	PromptResult retval;

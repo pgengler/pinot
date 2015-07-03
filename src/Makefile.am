@@ -2,6 +2,7 @@ AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -I$(to
 
 bin_PROGRAMS = 	pinot
 pinot_SOURCES =	\
+	History.cpp \
 	Keyboard.cpp \
 	OpenFile.cpp \
 	browser.cpp \

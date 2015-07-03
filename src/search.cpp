@@ -31,8 +31,6 @@
 
 static bool search_last_line = false;
 /* Have we gone past the last line while searching? */
-static bool history_changed = false;
-/* Have any of the history lists changed? */
 static bool regexp_compiled = false;
 /* Have we compiled any regular expressions? */
 
@@ -389,7 +387,7 @@ void do_search(void)
 
 	/* If answer is not "", add this search string to the search history list. */
 	if (answer != "") {
-		update_history(&search_history, answer);
+		search_history.add(answer);
 	}
 
 	findnextstr_wrap_reset();
@@ -416,8 +414,8 @@ void do_research(void)
 
 	/* If nothing was searched for yet during this run of pinot, but
 	 * there is a search history, take the most recent item. */
-	if (last_search == "" && searchbot->prev != NULL) {
-		last_search = std::string(searchbot->prev->data);
+	if (last_search == "" && !search_history.empty()) {
+		last_search = search_history.newest();
 	}
 
 	if (last_search != "") {
@@ -730,7 +728,7 @@ void do_replace(void)
 	/* If answer is not "", add answer to the search history list and
 	 * copy answer into last_search. */
 	if (answer[0] != '\0') {
-		update_history(&search_history, answer);
+		search_history.add(answer);
 		last_search = answer;
 	}
 
@@ -745,7 +743,7 @@ void do_replace(void)
 
 	/*  If the replace string is not "", add it to the replace history list. */
 	if (i == PROMPT_ENTER_PRESSED) {
-		update_history(&replace_history, answer);
+		replace_history.add(answer);
 	}
 
 	if (i != PROMPT_ENTER_PRESSED && i != PROMPT_BLANK_STRING) {
@@ -1083,149 +1081,6 @@ void do_find_bracket(void)
 	free(found_ch);
 }
 
-/* Indicate whether any of the history lists have changed. */
-bool history_has_changed(void)
-{
-	return history_changed;
-}
-
-/* Initialize the search and replace history lists. */
-void history_init(void)
-{
-	search_history = make_new_node(NULL);
-	search_history->data = mallocstrcpy(NULL, "");
-	searchage = search_history;
-	searchbot = search_history;
-
-	replace_history = make_new_node(NULL);
-	replace_history->data = mallocstrcpy(NULL, "");
-	replaceage = replace_history;
-	replacebot = replace_history;
-}
-
-/* Set the current position in the history list h to the bottom. */
-void history_reset(const filestruct *h)
-{
-	if (h == search_history) {
-		search_history = searchbot;
-	} else if (h == replace_history) {
-		replace_history = replacebot;
-	}
-}
-
-/* Return the first node containing the first len characters of the
- * string s in the history list, starting at h_start and ending at
- * h_end, or NULL if there isn't one. */
-filestruct *find_history(const filestruct *h_start, const filestruct *h_end, const char *s, size_t len)
-{
-	const filestruct *p;
-
-	for (p = h_start; p != h_end->next && p != NULL; p = p->next) {
-		if (strncmp(s, p->data, len) == 0) {
-			return (filestruct *)p;
-		}
-	}
-
-	return NULL;
-}
-
-/* Update a history list.  h should be the current position in the list. */
-void update_history(filestruct **h, const std::string& s)
-{
-	update_history(h, s.c_str());
-}
-
-void update_history(filestruct **h, const char *s)
-{
-	filestruct **hage = NULL, **hbot = NULL, *p;
-
-	assert(h != NULL && s != NULL);
-
-	if (*h == search_history) {
-		hage = &searchage;
-		hbot = &searchbot;
-	} else if (*h == replace_history) {
-		hage = &replaceage;
-		hbot = &replacebot;
-	}
-
-	assert(hage != NULL && hbot != NULL);
-
-	/* If this string is already in the history, delete it. */
-	p = find_history(*hage, *hbot, s, strlen(s));
-
-	if (p != NULL) {
-		filestruct *foo, *bar;
-
-		/* If the string is at the beginning, move the beginning down to
-		 * the next string. */
-		if (p == *hage) {
-			*hage = (*hage)->next;
-		}
-
-		/* Delete the string. */
-		foo = p;
-		bar = p->next;
-		unlink_node(foo);
-		delete_node(foo);
-		renumber(bar);
-	}
-
-	/* If the history is full, delete the beginning entry to make room
-	 * for the new entry at the end.  We assume that MAX_SEARCH_HISTORY
-	 * is greater than zero. */
-	if ((*hbot)->lineno == MAX_SEARCH_HISTORY + 1) {
-		filestruct *foo = *hage;
-
-		*hage = (*hage)->next;
-		unlink_node(foo);
-		delete_node(foo);
-		renumber(*hage);
-	}
-
-	/* Add the new entry to the end. */
-	(*hbot)->data = mallocstrcpy((*hbot)->data, s);
-	splice_node(*hbot, make_new_node(*hbot), (*hbot)->next);
-	*hbot = (*hbot)->next;
-	(*hbot)->data = mallocstrcpy(NULL, "");
-
-	/* Indicate that the history's been changed. */
-	history_changed = true;
-
-	/* Set the current position in the list to the bottom. */
-	*h = *hbot;
-}
-
-/* Move h to the string in the history list just before it, and return
- * that string.  If there isn't one, don't move h and return NULL. */
-char *get_history_older(filestruct **h)
-{
-	assert(h != NULL);
-
-	if ((*h)->prev == NULL) {
-		return NULL;
-	}
-
-	*h = (*h)->prev;
-
-	return (*h)->data;
-}
-
-/* Move h to the string in the history list just after it, and return
- * that string.  If there isn't one, don't move h and return NULL. */
-char *get_history_newer(filestruct **h)
-{
-	assert(h != NULL);
-
-	if ((*h)->next == NULL) {
-		return NULL;
-	}
-
-	*h = (*h)->next;
-
-	return (*h)->data;
-}
-
 /* More placeholders */
 void get_history_newer_void(void)
 {
@@ -1234,68 +1089,4 @@ void get_history_newer_void(void)
 void get_history_older_void(void)
 {
 	;
-}
-
-/* Move h to the next string that's a tab completion of the string s,
- * looking at only the first len characters of s, and return that string.
- *  If there isn't one, or if len is 0, don't move h and return s. */
-std::string get_history_completion(filestruct **h, const std::string& s, size_t len)
-{
-	char *result_cstr = get_history_completion(h, s.c_str(), len);
-	std::string result(result_cstr);
-	free(result_cstr);
-
-	return result;
-}
-
-char *get_history_completion(filestruct **h, const char *s, size_t len)
-{
-	assert(s != NULL);
-
-	if (len > 0) {
-		filestruct *hage = NULL, *hbot = NULL, *p;
-
-		assert(h != NULL);
-
-		if (*h == search_history) {
-			hage = searchage;
-			hbot = searchbot;
-		} else if (*h == replace_history) {
-			hage = replaceage;
-			hbot = replacebot;
-		}
-
-		assert(hage != NULL && hbot != NULL);
-
-		/* Search the history list from the current position to the
-		 * bottom for a match of len characters.  Skip over an exact
-		 * match. */
-		p = find_history((*h)->next, hbot, s, len);
-
-		while (p != NULL && strcmp(p->data, s) == 0) {
-			p = find_history(p->next, hbot, s, len);
-		}
-
-		if (p != NULL) {
-			*h = p;
-			return (*h)->data;
-		}
-
-		/* Search the history list from the top to the current position
-		 * for a match of len characters.  Skip over an exact match. */
-		p = find_history(hage, *h, s, len);
-
-		while (p != NULL && strcmp(p->data, s) == 0) {
-			p = find_history(p->next, *h, s, len);
-		}
-
-		if (p != NULL) {
-			*h = p;
-			return (*h)->data;
-		}
-	}
-
-	/* If we're here, we didn't find a match, we didn't find an inexact
-	 * match, or len is 0.  Return s. */
-	return (char *)s;
 }

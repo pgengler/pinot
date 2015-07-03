@@ -1784,7 +1784,6 @@ int main(int argc, char **argv)
 	}
 
 	/* Set up the search/replace history. */
-	history_init();
 	if (!no_rcfiles) {
 		if (ISSET(HISTORYLOG) || ISSET(POS_HISTORY)) {
 			if (check_dotpinot() == 0) {

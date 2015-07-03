@@ -120,18 +120,9 @@ std::list<sc*> sclist;
 std::list<subnfunc*> allfuncs;
 /* New struct for the function list */
 
-filestruct *search_history = NULL;
-/* The search string history list. */
-filestruct *searchage = NULL;
-/* The top of the search string history list. */
-filestruct *searchbot = NULL;
-/* The bottom of the search string history list. */
-filestruct *replace_history = NULL;
-/* The replace string history list. */
-filestruct *replaceage = NULL;
-/* The top of the replace string history list. */
-filestruct *replacebot = NULL;
-/* The bottom of the replace string history list. */
+History search_history;
+History replace_history;
+
 std::list<poshiststruct *> poshistory;
 /* The cursor position history list */
 
@@ -1055,9 +1046,6 @@ void thanks_for_all_the_fish(void)
 	if (cutbuffer) {
 		free_filestruct(cutbuffer);
 	}
-	/* Free the search and replace history lists. */
-	free_filestruct(searchage);
-	free_filestruct(replaceage);
 }
 
 #endif /* DEBUG */

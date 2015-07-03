@@ -73,12 +73,9 @@ extern std::string syntaxstr;
 extern bool edit_refresh_needed;
 extern int currmenu;
 
-extern filestruct *search_history;
-extern filestruct *searchage;
-extern filestruct *searchbot;
-extern filestruct *replace_history;
-extern filestruct *replaceage;
-extern filestruct *replacebot;
+extern History search_history;
+extern History replace_history;
+
 extern std::list<poshiststruct *> poshistory;
 void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos);
 
@@ -221,7 +218,6 @@ std::string tail(const std::string& foo);
 const char *tail(const char *foo);
 std::string histfilename(void);
 void load_history(void);
-bool writehist(std::ostream& hist, filestruct *histhead);
 void save_history(void);
 int check_dotpinot(void);
 void load_poshistory(void);
@@ -332,8 +328,8 @@ void reset_statusbar_cursor(void);
 void update_statusbar_line(const std::string& curranswer, size_t index);
 bool need_statusbar_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
-FunctionPtr get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void));
-PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, filestruct **history_list, void (*refresh_func)(void), const char *msg, ...);
+FunctionPtr get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, History* history_list, void (*refresh_func)(void));
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, History* history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 YesNoPromptResult do_yesno_prompt(bool all, const char *msg);
 
@@ -377,18 +373,8 @@ void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t pos_pww);
 void goto_line_posx(ssize_t line, size_t pos_x);
 bool find_bracket_match(bool reverse, const char *bracket_set);
 void do_find_bracket(void);
-bool history_has_changed(void);
-void history_init(void);
-void history_reset(const filestruct *h);
-filestruct *find_history(const filestruct *h_start, const filestruct *h_end, const char *s, size_t len);
-void update_history(filestruct **h, const std::string& s);
-void update_history(filestruct **h, const char *s);
-char *get_history_older(filestruct **h);
-char *get_history_newer(filestruct **h);
 void get_history_older_void(void);
 void get_history_newer_void(void);
-std::string get_history_completion(filestruct **h, const std::string& s, size_t len);
-char *get_history_completion(filestruct **h, const char *s, size_t len);
 
 /* All functions in text.c. */
 void do_mark(void);

@@ -2576,64 +2576,24 @@ void load_history(void)
 				history_error(N_("Error reading %s: %s"), pinothist.c_str(), strerror(errno));
 			}
 		} else {
-			/* Load a history list (first the search history, then the
-			 * replace history) from the oldest entry to the newest.
-			 * Assume the last history entry is a blank line. */
-			filestruct **history = &search_history;
-			char *line = NULL;
-			size_t buf_len = 0;
-			ssize_t read;
+			hist >> search_history;
+			hist >> replace_history;
 
-			while ((read = getline(&line, &buf_len, hist)) >= 0) {
-				if (read > 0 && line[read - 1] == '\n') {
-					read--;
-					line[read] = '\0';
-				}
-				if (read > 0) {
-					unsunder(line, read);
-					update_history(history, line);
-				} else {
-					history = &replace_history;
-				}
-			}
-
-			free(line);
-			if (search_history->prev != NULL) {
-				last_search = mallocstrcpy(NULL, search_history->prev->data);
-			}
+			last_search = search_history.newest();
 		}
 	}
-}
-
-/* Write the lines of a history list, starting with the line at h, to
- * the open file at hist.  Return true if the write succeeded, and false
- * otherwise. */
-bool writehist(std::ostream& hist, filestruct *h)
-{
-	filestruct *p;
-
-	/* Write a history list from the oldest entry to the newest.  Assume
-	 * the last history entry is a blank line. */
-	for (p = h; p != NULL; p = p->next) {
-		size_t p_len = strlen(p->data);
-
-		sunder(p->data);
-
-		hist.write(p->data, p_len);
-		hist << "\n";
-		if (!hist) {
-			return false;
-		}
-	}
-
-	return true;
 }
 
 /* Save histories to ~/.pinot/search_history. */
 void save_history(void)
 {
-	/* Don't save unchanged or empty histories. */
-	if (!history_has_changed() || (searchbot->lineno == 1 && replacebot->lineno == 1)) {
+	/* Don't save unchanged histories. */
+	if (!search_history.changed() && !replace_history.changed()) {
+		return;
+	}
+
+	/* Don't save empty histories. */
+	if (search_history.empty() && replace_history.empty()) {
 		return;
 	}
 
@@ -2648,9 +2608,8 @@ void save_history(void)
 			/* Make sure no one else can read from or write to the history file. */
 			chmod(pinothist.c_str(), S_IRUSR | S_IWUSR);
 
-			if (!writehist(hist, searchage) || !writehist(hist, replaceage)) {
-				history_error(N_("Error writing %s: %s"), pinothist.c_str(), strerror(errno));
-			}
+			hist << search_history;
+			hist << replace_history;
 		}
 	}
 }
