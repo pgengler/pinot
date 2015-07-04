@@ -276,7 +276,7 @@ void reset_multis_after(filestruct *fileptr, int mindex)
 	filestruct *oof;
 	for (oof = fileptr->next; oof != NULL; oof = oof->next) {
 		alloc_multidata_if_needed(oof);
-		if (oof->multidata == NULL) {
+		if (oof->multidata.empty()) {
 			continue;
 		}
 		if (oof->multidata[mindex] != CNONE) {
@@ -287,7 +287,7 @@ void reset_multis_after(filestruct *fileptr, int mindex)
 	}
 	for (; oof != NULL; oof = oof->next) {
 		alloc_multidata_if_needed(oof);
-		if (oof->multidata == NULL) {
+		if (oof->multidata.empty()) {
 			continue;
 		}
 		if (oof->multidata[mindex] == CNONE) {
@@ -304,7 +304,7 @@ void reset_multis_before(filestruct *fileptr, int mindex)
 	filestruct *oof;
 	for (oof = fileptr->prev; oof != NULL; oof = oof->prev) {
 		alloc_multidata_if_needed(oof);
-		if (oof->multidata == NULL) {
+		if (oof->multidata.empty()) {
 			continue;
 		}
 		if (oof->multidata[mindex] != CNONE) {
@@ -315,7 +315,7 @@ void reset_multis_before(filestruct *fileptr, int mindex)
 	}
 	for (; oof != NULL; oof = oof->prev) {
 		alloc_multidata_if_needed(oof);
-		if (oof->multidata == NULL) {
+		if (oof->multidata.empty()) {
 			continue;
 		}
 		if (oof->multidata[mindex] == CNONE) {
@@ -365,7 +365,7 @@ void reset_multis(filestruct *fileptr, bool force)
 		   things changed drastically for the precalculated multi values */
 		nobegin = regexec(tmpcolor->start, fileptr->data, 1, &startmatch, 0);
 		noend = regexec(tmpcolor->end, fileptr->data, 1, &endmatch, 0);
-		if (fileptr->multidata[tmpcolor->id] ==  CWHOLELINE) {
+		if (fileptr->multidata[tmpcolor->id] == CWHOLELINE) {
 			if (nobegin && noend) {
 				continue;
 			}

@@ -547,7 +547,6 @@ void new_magicline(void)
 	openfile->filebot->next->prev = openfile->filebot;
 	openfile->filebot->next->next = NULL;
 	openfile->filebot->next->lineno = openfile->filebot->lineno + 1;
-	openfile->filebot->next->multidata = NULL;
 	openfile->filebot = openfile->filebot->next;
 	openfile->totsize++;
 }

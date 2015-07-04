@@ -57,8 +57,6 @@ filestruct *make_new_node(filestruct *prevnode)
 	newnode->next = NULL;
 	newnode->lineno = (prevnode != NULL) ? prevnode->lineno + 1 : 1;
 
-	newnode->multidata = NULL;
-
 	return newnode;
 }
 
@@ -75,7 +73,6 @@ filestruct *copy_node(const filestruct *src)
 	dst->next = src->next;
 	dst->prev = src->prev;
 	dst->lineno = src->lineno;
-	dst->multidata = NULL;
 
 	return dst;
 }
@@ -112,7 +109,6 @@ void delete_node(filestruct *fileptr)
 	assert(fileptr != NULL);
 
 	free(fileptr->data);
-	free(fileptr->multidata);
 
 	delete fileptr;
 }
@@ -350,8 +346,6 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 	openfile->fileage = new filestruct;
 	openfile->fileage->data = mallocstrcpy(NULL, "");
 	openfile->filebot = openfile->fileage;
-
-	openfile->fileage->multidata = NULL;
 
 	/* Restore the current line and cursor position.  If the mark begins
 	 * inside the partition, set the beginning of the mark to where the
@@ -1294,8 +1288,10 @@ void do_input(void)
 
 void alloc_multidata_if_needed(filestruct *fileptr)
 {
-	if (!fileptr->multidata) {
-		fileptr->multidata = (short *) nmalloc(openfile->syntax->nmultis * sizeof(short));
+	DEBUG_LOG("alloc_multidata_if_needed");
+	if (fileptr->multidata.empty()) {
+		DEBUG_LOG("Resizing multidata to size " << openfile->syntax->nmultis);
+		fileptr->multidata.resize(openfile->syntax->nmultis);
 	}
 }
 

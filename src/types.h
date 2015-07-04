@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <sys/types.h>
 
@@ -45,7 +46,8 @@ typedef struct filestruct {
 	/* Next node. */
 	struct filestruct *prev;
 	/* Previous node. */
-	short *multidata;		/* Array of which multi-line regexes apply to this line */
+	std::vector<short> multidata;
+	/* Array of which multi-line regexes apply to this line */
 } filestruct;
 
 typedef struct partition {

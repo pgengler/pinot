@@ -90,7 +90,7 @@ void initialize_buffer_text(void)
 	openfile->edittop = openfile->fileage;
 	openfile->current = openfile->fileage;
 
-	openfile->fileage->multidata = NULL;
+	openfile->fileage->multidata.clear();
 
 	openfile->totsize = 0;
 }
@@ -517,7 +517,7 @@ int is_file_writable(const std::string& filename)
  * and put our line after prevnode. */
 filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, size_t buf_len)
 {
-	filestruct *fileptr = (filestruct *)nmalloc(sizeof(filestruct));
+	filestruct *fileptr = new filestruct;
 
 	/* Convert nulls to newlines.  buf_len is the string's real length. */
 	unsunder(buf, buf_len);
@@ -532,7 +532,7 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, siz
 		fileptr->data[buf_len - 1] = '\0';
 	}
 
-	fileptr->multidata = NULL;
+	fileptr->multidata.clear();
 
 	if (*first_line_ins) {
 		/* Special case: We're inserting with the cursor on the first line. */

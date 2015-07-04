@@ -783,13 +783,8 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 	 * them. */
 	if (!openfile->colorstrings.empty() && !ISSET(NO_COLOR_SYNTAX)) {
 		/* Set up multi-line color data for this line if it's not yet calculated  */
-		if (fileptr->multidata == NULL && openfile->syntax && openfile->syntax->nmultis > 0) {
-			int i;
-			fileptr->multidata = (short *) nmalloc(openfile->syntax->nmultis * sizeof(short));
-			for (i = 0; i < openfile->syntax->nmultis; i++) {
-				fileptr->multidata[i] = -1;    /* Assue this applies until we know otherwise */
-			}
-
+		if (fileptr->multidata.empty() && openfile->syntax && openfile->syntax->nmultis > 0) {
+			fileptr->multidata.resize(openfile->syntax->nmultis, -1); // assume that '-1' applies until we know otherwise
 		}
 		for (auto tmpcolor : openfile->colorstrings) {
 			int x_start;
@@ -855,7 +850,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					}
 					k = startmatch.rm_eo;
 				}
-			} else if (fileptr->multidata != NULL && fileptr->multidata[tmpcolor->id] != CNONE) {
+			} else if (!fileptr->multidata.empty() && fileptr->multidata[tmpcolor->id] != CNONE) {
 				/* This is a multi-line regex.  There are two steps.
 				 * First, we have to see if the beginning of the line is
 				 * colored by a start on an earlier line, and an end on
@@ -901,7 +896,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 				}
 
 				/* If the found start has been qualified as an end earlier, believe it and skip to the next step. */
-				if (start_line != NULL && start_line->multidata != NULL && start_line->multidata[tmpcolor->id] == CBEGINBEFORE) {
+				if (start_line != NULL && !start_line->multidata.empty() && start_line->multidata[tmpcolor->id] == CBEGINBEFORE) {
 					goto step_two;
 				}
 
