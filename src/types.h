@@ -38,7 +38,7 @@ typedef enum {
 
 /* Structure types. */
 typedef struct filestruct {
-	char *data;
+	std::string data;
 	/* The text of this line. */
 	ssize_t lineno;
 	/* The number of this line. */

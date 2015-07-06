@@ -480,6 +480,11 @@ size_t xplustabs(void)
 /* Return the index in s of the character displayed at the given column,
  * i.e. the largest value such that strnlenpt(s, actual_x(s, column)) <=
  * column. */
+size_t actual_x(const std::string& s, size_t column)
+{
+	return actual_x(s.c_str(), column);
+}
+
 size_t actual_x(const char *s, size_t column)
 {
 	size_t i = 0;
@@ -534,6 +539,11 @@ size_t strnlenpt(const char *s, size_t maxlen)
 
 /* A strlen() with tabs and multicolumn characters factored in, similar
  * to xplustabs().  How many columns wide is s? */
+size_t strlenpt(const std::string& s)
+{
+	return strlenpt(s.c_str());
+}
+
 size_t strlenpt(const char *s)
 {
 	return strnlenpt(s, (size_t)-1);

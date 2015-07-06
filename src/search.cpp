@@ -1056,7 +1056,7 @@ void do_find_bracket(void)
 		if (find_bracket_match(reverse, bracket_set)) {
 			/* If we found an identical bracket, increment count.  If we
 			 * found a complementary bracket, decrement it. */
-			parse_mbchar(openfile->current->data + openfile->current_x, found_ch, NULL);
+			parse_mbchar(openfile->current->data.c_str() + openfile->current_x, found_ch, NULL);
 			count += (strncmp(found_ch, ch, ch_len) == 0) ? 1 : -1;
 
 			/* If count is zero, we've found a matching bracket.  Update

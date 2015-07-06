@@ -51,6 +51,11 @@ FILE* fopen(const std::string& path, const std::string& mode)
 	return ::fopen(path.c_str(), mode.c_str());
 }
 
+size_t fwrite(const std::string& string, FILE *stream)
+{
+	return fwrite(string.c_str(), sizeof(char), string.length(), stream);
+}
+
 std::string getcwd()
 {
 	char *buf = (char *)malloc((PATH_MAX + 1) * sizeof(char));

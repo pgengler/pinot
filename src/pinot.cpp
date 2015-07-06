@@ -52,7 +52,6 @@ filestruct *make_new_node(filestruct *prevnode)
 {
 	filestruct *newnode = new filestruct;
 
-	newnode->data = NULL;
 	newnode->prev = prevnode;
 	newnode->next = NULL;
 	newnode->lineno = (prevnode != NULL) ? prevnode->lineno + 1 : 1;
@@ -69,7 +68,7 @@ filestruct *copy_node(const filestruct *src)
 
 	dst = new filestruct;
 
-	dst->data = mallocstrcpy(NULL, src->data);
+	dst->data = src->data;
 	dst->next = src->next;
 	dst->prev = src->prev;
 	dst->lineno = src->lineno;
@@ -107,8 +106,6 @@ void unlink_node(const filestruct *fileptr)
 void delete_node(filestruct *fileptr)
 {
 	assert(fileptr != NULL);
-
-	free(fileptr->data);
 
 	delete fileptr;
 }
@@ -201,7 +198,7 @@ partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, 
 	 * top_data. */
 	p->top_prev = top->prev;
 	top->prev = NULL;
-	p->top_data = mallocstrncpy(NULL, top->data, top_x + 1);
+	p->top_data = mallocstrncpy(NULL, top->data.c_str(), top_x + 1);
 	p->top_data[top_x] = '\0';
 
 	/* Save the line below the bottom of the partition, detach the
@@ -209,14 +206,13 @@ partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, 
 	 * bot_data. */
 	p->bot_next = bot->next;
 	bot->next = NULL;
-	p->bot_data = mallocstrcpy(NULL, bot->data + bot_x);
+	p->bot_data = mallocstrcpy(NULL, bot->data.c_str() + bot_x);
 
 	/* Remove all text after bot_x at the bottom of the partition. */
-	null_at(&bot->data, bot_x);
+	bot->data = bot->data.substr(0, bot_x);
 
 	/* Remove all text before top_x at the top of the partition. */
-	charmove(top->data, top->data + top_x, strlen(top->data) - top_x + 1);
-	align(&top->data);
+	top->data = top->data.substr(top_x);
 
 	/* Return the partition. */
 	return p;
@@ -226,23 +222,18 @@ partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, 
  * at (filebot, strlen(filebot->data)) again. */
 void unpartition_filestruct(partition **p)
 {
-	char *tmp;
-
 	assert(p != NULL && openfile->fileage != NULL && openfile->filebot != NULL);
 
 	/* Reattach the line above the top of the partition, and restore the
 	 * text before top_x from top_data.  Free top_data when we're done
 	 * with it. */
-	tmp = mallocstrcpy(NULL, openfile->fileage->data);
+	auto tmp = openfile->fileage->data;
 	openfile->fileage->prev = (*p)->top_prev;
 	if (openfile->fileage->prev != NULL) {
 		openfile->fileage->prev->next = openfile->fileage;
 	}
-	openfile->fileage->data = charealloc(openfile->fileage->data, strlen((*p)->top_data) + strlen(openfile->fileage->data) + 1);
-	strcpy(openfile->fileage->data, (*p)->top_data);
+	openfile->fileage->data = (*p)->top_data + tmp;
 	free((*p)->top_data);
-	strcat(openfile->fileage->data, tmp);
-	free(tmp);
 
 	/* Reattach the line below the bottom of the partition, and restore
 	 * the text after bot_x from bot_data.  Free bot_data when we're
@@ -251,8 +242,7 @@ void unpartition_filestruct(partition **p)
 	if (openfile->filebot->next != NULL) {
 		openfile->filebot->next->prev = openfile->filebot;
 	}
-	openfile->filebot->data = charealloc(openfile->filebot->data, strlen(openfile->filebot->data) + strlen((*p)->bot_data) + 1);
-	strcat(openfile->filebot->data, (*p)->bot_data);
+	openfile->filebot->data += (*p)->bot_data;
 	free((*p)->bot_data);
 
 	/* Restore the top and bottom of the filestruct, if they were
@@ -321,10 +311,8 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 	} else {
 		filestruct *file_bot_save = *file_bot;
 
-		/* Otherwise, tack the text in top onto the text at the end of
-		 * file_bot. */
-		(*file_bot)->data = charealloc((*file_bot)->data, strlen((*file_bot)->data) + strlen(openfile->fileage->data) + 1);
-		strcat((*file_bot)->data, openfile->fileage->data);
+		/* Otherwise, tack the text in top onto the text at the end of file_bot. */
+		(*file_bot)->data += openfile->fileage->data;
 
 		/* Attach the line after top to the line after file_bot.  Then,
 		 * if there's more than one line after top, move file_bot down
@@ -421,7 +409,7 @@ void copy_from_filestruct(filestruct *some_buffer)
 	 * inside the partition, adjust the mark coordinates to compensate
 	 * for the change in the current line. */
 	openfile->current = openfile->filebot;
-	openfile->current_x = strlen(openfile->filebot->data);
+	openfile->current_x = openfile->filebot->data.length();
 	if (openfile->fileage == openfile->filebot) {
 		if (openfile->mark_set) {
 			openfile->mark_begin = openfile->current;
@@ -1358,7 +1346,7 @@ void precalc_multicolorinfo(void)
 								return;
 							}
 						}
-						if (regexec(tmpcolor->end, endptr->data, 1, &endmatch, 0) == 0) {
+						if (regexec(tmpcolor->end, endptr->data.c_str(), 1, &endmatch, 0) == 0) {
 							break;
 						}
 					}
@@ -1415,9 +1403,9 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	char *char_buf = charalloc(mb_cur_max());
 	int char_buf_len;
 
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
-	current_len = strlen(openfile->current->data);
+	current_len = openfile->current->data.length();
 	if (ISSET(SOFTWRAP)) {
 		orig_lenpt = strlenpt(openfile->current->data);
 	}
@@ -1443,8 +1431,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 		i += char_buf_len;
 
-		/* If allow_cntrls is false, filter out an ASCII control
-		 * character. */
+		/* If allow_cntrls is false, filter out an ASCII control character. */
 		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
 			continue;
 		}
@@ -1455,17 +1442,10 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 			new_magicline();
 		}
 
-		/* More dangerousness fun =) */
-		openfile->current->data = charealloc(openfile->current->data, current_len + (char_buf_len * 2));
-
 		assert(openfile->current_x <= current_len);
-
-		charmove(openfile->current->data + openfile->current_x +
-		         char_buf_len, openfile->current->data +
-		         openfile->current_x, current_len - openfile->current_x +
-		         char_buf_len);
-		strncpy(openfile->current->data + openfile->current_x, char_buf, char_buf_len);
+		openfile->current->data = openfile->current->data.substr(0, openfile->current_x) + char_buf + openfile->current->data.substr(openfile->current_x);
 		current_len += char_buf_len;
+
 		openfile->totsize++;
 		set_modified();
 

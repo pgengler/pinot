@@ -56,7 +56,7 @@ void cut_line(void)
 	if (openfile->current != openfile->filebot) {
 		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0, openfile->current->next, 0);
 	} else {
-		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0, openfile->current, strlen(openfile->current->data));
+		move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, 0, openfile->current, openfile->current->data.length());
 	}
 	openfile->placewewant = 0;
 }
@@ -82,7 +82,7 @@ void cut_marked(void)
  * newline used to be. */
 void cut_to_eol(void)
 {
-	size_t data_len = strlen(openfile->current->data);
+	size_t data_len = openfile->current->data.length();
 
 	assert(openfile->current_x <= data_len);
 
@@ -105,7 +105,7 @@ void cut_to_eol(void)
  * file into the cutbuffer. */
 void cut_to_eof(void)
 {
-	move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, openfile->current_x, openfile->filebot, strlen(openfile->filebot->data));
+	move_to_filestruct(&cutbuffer, &cutbottom, openfile->current, openfile->current_x, openfile->filebot, openfile->filebot->data.length());
 }
 
 /* Move text from the current filestruct into the cutbuffer.  If
@@ -121,7 +121,7 @@ void do_cut_text(bool copy_text, bool cut_till_eof, bool undoing)
 	 * before we add text to it.  */
 	bool old_no_newlines = ISSET(NO_NEWLINES);
 
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
 	/* If keep_cutbuffer is false and the cutbuffer isn't empty, blow
 	 * away the text in the cutbuffer. */
@@ -136,7 +136,7 @@ void do_cut_text(bool copy_text, bool cut_till_eof, bool undoing)
 			/* If the cutbuffer isn't empty, save where it currently
 			 * ends.  This is where we'll add the new text. */
 			cb_save = cutbottom;
-			cb_save_len = strlen(cutbottom->data);
+			cb_save_len = cutbottom->data.length();
 		}
 
 		/* Set NO_NEWLINES to true, so that we don't disturb the last
@@ -174,9 +174,10 @@ void do_cut_text(bool copy_text, bool cut_till_eof, bool undoing)
 		 * modified. */
 		if (cutbuffer != NULL) {
 			if (cb_save != NULL) {
-				cb_save->data += cb_save_len;
+				std::string original = cb_save->data;
+				cb_save->data = cb_save->data.substr(cb_save_len);
 				copy_from_filestruct(cb_save);
-				cb_save->data -= cb_save_len;
+				cb_save->data = original;
 			} else {
 				copy_from_filestruct(cutbuffer);
 			}
@@ -245,7 +246,7 @@ void do_cut_till_eof(void)
 /* Copy text from the cutbuffer into the current filestruct. */
 void do_uncut_text(void)
 {
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
 	/* If the cutbuffer is empty, get out. */
 	if (cutbuffer == NULL) {

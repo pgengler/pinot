@@ -363,8 +363,8 @@ void reset_multis(filestruct *fileptr, bool force)
 
 		/* Figure out where the first begin and end are to determine if
 		   things changed drastically for the precalculated multi values */
-		nobegin = regexec(tmpcolor->start, fileptr->data, 1, &startmatch, 0);
-		noend = regexec(tmpcolor->end, fileptr->data, 1, &endmatch, 0);
+		nobegin = regexec(tmpcolor->start, fileptr->data.c_str(), 1, &startmatch, 0);
+		noend = regexec(tmpcolor->end, fileptr->data.c_str(), 1, &endmatch, 0);
 		if (fileptr->multidata[tmpcolor->id] == CWHOLELINE) {
 			if (nobegin && noend) {
 				continue;

@@ -15,6 +15,7 @@ int chown(const std::string& path, uid_t owner, gid_t group);
 std::string dirname(const std::string& path);
 int execvp(const std::string& file, const std::vector<std::string>& argv, char ***buf);
 FILE* fopen(const std::string& path, const std::string& mode);
+size_t fwrite(const std::string& string, FILE *stream);
 std::string getcwd();
 int lstat(const std::string& path, struct stat *buf);
 int mkstemp(std::string& name_template);

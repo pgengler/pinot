@@ -725,8 +725,6 @@ void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool
 		/* If the file we got doesn't end in a newline, tack its last
 		 * line onto the beginning of the line at current. */
 		if (len > 0) {
-			size_t current_len = strlen(openfile->current->data);
-
 			/* Adjust the current x-coordinate to compensate for the
 			 * change in the current line. */
 			if (num_lines == 1) {
@@ -736,9 +734,7 @@ void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool
 			}
 
 			/* Tack the text at fileptr onto the beginning of the text at current. */
-			openfile->current->data = charealloc(openfile->current->data, len + current_len + 1);
-			charmove(openfile->current->data + len, openfile->current->data, current_len + 1);
-			strncpy(openfile->current->data, fileptr->data, len);
+			openfile->current->data = fileptr->data + openfile->current->data;
 
 			/* Don't destroy fileage, edittop, or filebot! */
 			if (fileptr == openfile->fileage) {
@@ -775,7 +771,7 @@ void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool
 	 * the magicline (i.e. a file that doesn't end in a newline has been
 	 * inserted at the end of the current buffer), add a new magicline,
 	 * and move the current line down to it. */
-	if (!ISSET(NO_NEWLINES) && openfile->filebot->data[0] != '\0') {
+	if (!ISSET(NO_NEWLINES) && openfile->filebot->data != "") {
 		new_magicline();
 		openfile->current = openfile->filebot;
 		openfile->current_x = 0;
@@ -1135,7 +1131,7 @@ void do_insertfile(bool execute)
 				 * If the mark begins inside the partition, adjust the
 				 * mark coordinates to compensate for the change in the
 				 * current line. */
-				openfile->current_x = strlen(openfile->filebot->data);
+				openfile->current_x = openfile->filebot->data.length();
 				if (openfile->fileage == openfile->filebot) {
 					if (openfile->mark_set) {
 						openfile->mark_begin = openfile->current;
@@ -1464,7 +1460,7 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 	/* Instead of returning in this function, you should always
 	 * set retval and then goto cleanup_and_exit. */
 	size_t lineswritten = 0;
-	const filestruct *fileptr = openfile->fileage;
+	filestruct *fileptr = openfile->fileage;
 	int fd;
 	/* The file descriptor we use. */
 	mode_t original_umask = 0;
@@ -1774,17 +1770,15 @@ skip_backup:
 	assert(openfile->fileage != NULL && openfile->filebot != NULL);
 
 	while (fileptr != NULL) {
-		size_t data_len = strlen(fileptr->data), size;
-
 		/* Convert newlines to nulls, just before we write to disk. */
 		sunder(fileptr->data);
 
-		size = fwrite(fileptr->data, sizeof(char), data_len, f);
+		size_t size = fwrite(fileptr->data, f);
 
 		/* Convert nulls to newlines.  data_len is the string's real length. */
-		unsunder(fileptr->data, data_len);
+		unsunder(fileptr->data);
 
-		if (size < data_len) {
+		if (size < fileptr->data.length()) {
 			statusbar(_("Error writing %s: %s"), realname.c_str(), strerror(errno));
 			fclose(f);
 			goto cleanup_and_exit;
@@ -1795,7 +1789,7 @@ skip_backup:
 		 * this means that zero bytes are written, in which case we
 		 * don't count the last line in the total lines written. */
 		if (fileptr == openfile->filebot) {
-			if (fileptr->data[0] == '\0') {
+			if (fileptr->data == "") {
 				lineswritten--;
 			}
 		} else {

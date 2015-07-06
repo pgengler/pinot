@@ -39,7 +39,7 @@ void do_first_line(void)
 void do_last_line(void)
 {
 	openfile->current = openfile->filebot;
-	openfile->current_x = strlen(openfile->filebot->data);
+	openfile->current_x = openfile->filebot->data.length();
 	openfile->placewewant = xplustabs();
 	openfile->current_y = editwinrows - 1;
 
@@ -126,14 +126,14 @@ bool do_next_word(bool allow_punct, bool allow_update)
 	int char_mb_len;
 	bool end_line = false, started_on_word = false;
 
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
 	char_mb = charalloc(mb_cur_max());
 
 	/* Move forward until we find the character after the last letter of
 	 * the current word. */
 	while (!end_line) {
-		char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(openfile->current->data.c_str() + openfile->current_x, char_mb, NULL);
 
 		/* If we've found it, stop moving forward through the current line. */
 		if (!is_word_mbchar(char_mb, allow_punct)) {
@@ -158,10 +158,9 @@ bool do_next_word(bool allow_punct, bool allow_update)
 		openfile->current_x += char_mb_len;
 	}
 
-	for (; openfile->current != NULL;
-	        openfile->current = openfile->current->next) {
+	for (; openfile->current != NULL; openfile->current = openfile->current->next) {
 		while (!end_line) {
-			char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(openfile->current->data.c_str() + openfile->current_x, char_mb, NULL);
 
 			/* If we've found it, stop moving forward through the
 			 * current line. */
@@ -226,14 +225,14 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 	int char_mb_len;
 	bool begin_line = false, started_on_word = false;
 
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
 	char_mb = charalloc(mb_cur_max());
 
 	/* Move backward until we find the character before the first letter
 	 * of the current word. */
 	while (!begin_line) {
-		char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
+		char_mb_len = parse_mbchar(openfile->current->data.c_str() + openfile->current_x, char_mb, NULL);
 
 		/* If we've found it, stop moving backward through the current
 		 * line. */
@@ -260,7 +259,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 
 	for (; openfile->current != NULL; openfile->current = openfile->current->prev) {
 		while (!begin_line) {
-			char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(openfile->current->data.c_str() + openfile->current_x, char_mb, NULL);
 
 			/* If we've found it, stop moving backward through the current line. */
 			if (is_word_mbchar(char_mb, allow_punct)) {
@@ -280,17 +279,16 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 
 		if (openfile->current != openfile->fileage) {
 			begin_line = false;
-			openfile->current_x = strlen(openfile->current->prev->data);
+			openfile->current_x = openfile->current->prev->data.length();
 		}
 	}
 
 	/* If we haven't found it, move to the beginning of the file. */
 	if (openfile->current == NULL) {
 		openfile->current = openfile->fileage;
-	}
-	/* If we've found it, move backward until we find the character
-	 * before the first letter of the previous word. */
-	else if (!begin_line) {
+	} else if (!begin_line) {
+		/* If we've found it, move backward until we find the character
+		 * before the first letter of the previous word. */
 		if (openfile->current_x == 0) {
 			begin_line = true;
 		} else {
@@ -298,7 +296,7 @@ bool do_prev_word(bool allow_punct, bool allow_update)
 		}
 
 		while (!begin_line) {
-			char_mb_len = parse_mbchar(openfile->current->data + openfile->current_x, char_mb, NULL);
+			char_mb_len = parse_mbchar(openfile->current->data.c_str() + openfile->current_x, char_mb, NULL);
 
 			/* If we've found it, stop moving backward through the current line. */
 			if (!is_word_mbchar(char_mb, allow_punct)) {
@@ -373,7 +371,7 @@ void do_end(void)
 {
 	size_t pww_save = openfile->placewewant;
 
-	openfile->current_x = strlen(openfile->current->data);
+	openfile->current_x = openfile->current->data.length();
 	openfile->placewewant = xplustabs();
 
 	if (need_screen_update(pww_save)) {
@@ -510,7 +508,7 @@ void do_left(void)
 		openfile->current_x = move_mbleft(openfile->current->data, openfile->current_x);
 	} else if (openfile->current != openfile->fileage) {
 		do_up_void();
-		openfile->current_x = strlen(openfile->current->data);
+		openfile->current_x = openfile->current->data.length();
 	}
 
 	openfile->placewewant = xplustabs();
@@ -525,7 +523,7 @@ void do_right(void)
 {
 	size_t pww_save = openfile->placewewant;
 
-	assert(openfile->current_x <= strlen(openfile->current->data));
+	assert(openfile->current_x <= openfile->current->data.length());
 
 	if (openfile->current->data[openfile->current_x] != '\0') {
 		openfile->current_x = move_mbright(openfile->current->data, openfile->current_x);
