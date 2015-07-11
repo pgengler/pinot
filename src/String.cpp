@@ -80,6 +80,19 @@ namespace pinot {
 
 	}
 
+	string::string(const string& str)
+	: unicode_str(str.unicode_str)
+	{
+
+	}
+
+	string::~string()
+	{
+		if (c_str_buffer) {
+			delete[] c_str_buffer;
+		}
+	}
+
 	string& string::append(const char *str, size_t chars)
 	{
 		unicode_str.append(reinterpret_cast<const UChar*>(str), chars);
@@ -97,9 +110,23 @@ namespace pinot {
 		return substr(pos, len) == str;
 	}
 
+	bool string::starts_with(const string& str) const
+	{
+		return unicode_str.startsWith(str.unicode_str);
+	}
+
 	const char* string::c_str()
 	{
-		return reinterpret_cast<const char *>(unicode_str.getTerminatedBuffer());
+		std::string str;
+		unicode_str.toUTF8String(str);
+		const char *str_c = str.c_str();
+		if (c_str_buffer) {
+			delete[] c_str_buffer;
+		}
+		c_str_buffer = new char[::strlen(str_c) + 1];
+		::strcpy(c_str_buffer, str_c);
+
+		return c_str_buffer;
 	}
 
 	bool string::empty() const
@@ -245,7 +272,7 @@ namespace pinot {
 	{
 		std::string hack;
 		std::getline(stream, hack);
-		str = string(hack);
+		str.unicode_str = icu::UnicodeString::fromUTF8(icu::StringPiece(hack.c_str()));
 		return stream;
 	}
 

@@ -615,15 +615,15 @@ COLORWIDTH color_name_to_value(string colorname, bool *bright, bool *underline)
 	// Convert color name to lowercase so any capitalization will work
 	colorname = colorname.to_lower();
 
-	if (colorname.compare(0, 6, "bright") == 0) {
+	if (colorname.starts_with("bright")) {
 		*bright = true;
 		colorname = colorname.substr(6);
-	} else if (colorname.compare(0, 4, "bold") == 0) {
+	} else if (colorname.starts_with("bold")) {
 		*bright = true;
 		colorname = colorname.substr(4);
 	}
 
-	if (colorname.compare(0, 5, "under") == 0) {
+	if (colorname.starts_with("under")) {
 		*underline = true;
 		colorname = colorname.substr(5);
 	}
@@ -1157,7 +1157,7 @@ void do_rcfile(void)
 	DEBUG_LOG("Parsing file \"" << pinotrc << '"');
 
 	/* Try to open the system-wide pinotrc. */
-	std::ifstream rcstream(pinotrc.str());
+	std::ifstream rcstream(pinotrc.c_str());
 	if (rcstream.is_open()) {
 		parse_rcfile(rcstream, false);
 	}
@@ -1189,7 +1189,7 @@ void do_rcfile(void)
 		}
 
 		/* Try to open the current user's pinotrc. */
-		rcstream.open(pinotrc.str());
+		rcstream.open(pinotrc.c_str());
 		if (!rcstream.is_open()) {
 			/* Don't complain about the file's not existing. */
 			if (errno != ENOENT) {

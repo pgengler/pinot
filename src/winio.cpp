@@ -337,19 +337,12 @@ void titlebar(const char *path)
 	int space = COLS;
 	/* The space we have available for display. */
 	size_t verlen = strlenpt(PACKAGE_STRING) + 1;
-	/* The length of the version message in columns, plus one for
-	 * padding. */
-	const char *prefix;
-	/* "DIR:", "File:", or "New Buffer".  Goes before filename. */
+	/* The length of the version message in columns, plus one for padding. */
 	size_t prefixlen;
-	/* The length of the prefix in columns, plus one for padding. */
-	const char *state;
-	/* "Modified", "View", or "".  Shows the state of this
-	 * buffer. */
-	ssize_t statelen = 0;
-	/* The length of the state in columns, or the length of
-	 * "Modified" if the state is blank and we're not in the file
-	 * browser. */
+	string prefix;
+	/* "DIR:", "File:", or "New Buffer".  Goes before filename. */
+	string state;
+	/* "Modified", "View", or "".  Shows the state of this buffer. */
 	string exppath;
 	/* The filename, expanded for display. */
 	bool newfie = false;
@@ -391,7 +384,7 @@ void titlebar(const char *path)
 		state = openfile->modified ? _("Modified") : ISSET(VIEW_MODE) ? _("View") : "";
 	}
 
-	statelen = strlenpt((*state == '\0' && path == NULL) ? _("Modified") : state);
+	ssize_t statelen = strlenpt((state.empty() && path == NULL) ? _("Modified") : state);
 
 	/* If possible, add a space before state. */
 	if (space > 0 && statelen < space) {
@@ -404,7 +397,7 @@ void titlebar(const char *path)
 	if (path != NULL) {
 		prefix = _("DIR:");
 	} else {
-		if (openfile->filename[0] == '\0') {
+		if (openfile->filename.empty()) {
 			prefix = _("New Buffer");
 			newfie = true;
 		} else {
@@ -412,15 +405,14 @@ void titlebar(const char *path)
 		}
 	}
 
-	prefixlen = strnlenpt(prefix, space - statelen) + 1;
+	prefixlen = strnlenpt(prefix.c_str(), space - statelen) + 1;
 
 	/* If newfie is false, add a space after prefix. */
 	if (!newfie && prefixlen + statelen < space) {
 		prefixlen++;
 	}
 
-	/* If we're not in the file browser, set path to the current
-	 * filename. */
+	/* If we're not in the file browser, set path to the current filename. */
 	if (path == NULL) {
 		path = openfile->filename.c_str();
 	}
@@ -451,10 +443,9 @@ void titlebar(const char *path)
 		exppath = display_string(path, start_col, space, false);
 	}
 
-	/* If dots is true, we will display something like "File:
-	 * ...ename". */
+	/* If dots is true, we will display something like "File: ...ename". */
 	if (dots) {
-		mvwaddnstr(topwin, 0, verlen - 1, prefix, actual_x(prefix, prefixlen));
+		mvwaddnstr(topwin, 0, verlen - 1, prefix.c_str(), actual_x(prefix, prefixlen));
 		if (space <= -3 || newfie) {
 			goto the_end;
 		}
@@ -469,7 +460,7 @@ void titlebar(const char *path)
 		/* The length of the expanded filename. */
 
 		/* There is room for the whole filename, so we center it. */
-		mvwaddnstr(topwin, 0, verlen + ((space - exppathlen) / 3), prefix, actual_x(prefix, prefixlen));
+		mvwaddnstr(topwin, 0, verlen + ((space - exppathlen) / 3), prefix.c_str(), actual_x(prefix, prefixlen));
 		if (!newfie) {
 			waddch(topwin, ' ');
 			waddstr(topwin, exppath.c_str());
@@ -478,13 +469,13 @@ void titlebar(const char *path)
 
 the_end:
 
-	if (state[0] != '\0') {
+	if (!state.empty()) {
 		if (statelen >= COLS - 1) {
-			mvwaddnstr(topwin, 0, 0, state, actual_x(state, COLS));
+			mvwaddnstr(topwin, 0, 0, state.c_str(), actual_x(state, COLS));
 		} else {
 			assert(COLS - statelen - 1 >= 0);
 
-			mvwaddnstr(topwin, 0, COLS - statelen - 1, state, actual_x(state, statelen));
+			mvwaddnstr(topwin, 0, COLS - statelen - 1, state.c_str(), actual_x(state, statelen));
 		}
 	}
 

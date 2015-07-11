@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <istream>
 #include <memory>
 #include <ostream>
@@ -38,6 +39,9 @@ namespace pinot {
 		string(const char *str);
 		string(const icu::UnicodeString& str);
 		string(const std::string& str);
+		string(const string& str);
+
+		virtual ~string();
 
 		string& append(const char *str, size_t chars);
 		string& remove(size_t pos, size_t len=1);
@@ -47,6 +51,7 @@ namespace pinot {
 		const char *c_str();
 		bool empty() const;
 		ssize_t length() const;
+		bool starts_with(const string& str) const;
 		std::string str() const;
 
 		character front() const;
@@ -105,6 +110,7 @@ namespace pinot {
 		static const ssize_t npos = static_cast<ssize_t>(-1);
 	private:
 		icu::UnicodeString unicode_str;
+		char* c_str_buffer = nullptr;
 	};
 
 	string to_string(int i);
