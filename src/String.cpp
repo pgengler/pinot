@@ -189,7 +189,7 @@ namespace pinot {
 		ssize_t first = npos;
 		for (auto ch : other) {
 			auto pos = find(ch);
-			if (pos < first) {
+			if (pos >= 0 && (first == -1 || pos < first)) {
 				first = pos;
 			}
 		}
