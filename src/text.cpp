@@ -665,7 +665,7 @@ void do_enter(bool undoing)
 	filestruct *newnode = make_new_node(openfile->current);
 	size_t extra = 0;
 
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
 	if (!undoing) {
 		add_undo(ENTER);
@@ -680,14 +680,13 @@ void do_enter(bool undoing)
 		if (extra > openfile->current_x) {
 			extra = openfile->current_x;
 		}
-	}
 
-	newnode->data += openfile->current->data.substr(openfile->current_x);
-
-	if (ISSET(AUTOINDENT)) {
 		newnode->data = openfile->current->data.substr(extra);
 		openfile->totsize += extra;
 	}
+
+	newnode->data += openfile->current->data.substr(openfile->current_x);
+	openfile->current->data = openfile->current->data.substr(0, openfile->current_x);
 
 	if (openfile->mark_set && openfile->current == openfile->mark_begin && openfile->current_x < openfile->mark_begin_x) {
 		openfile->mark_begin = newnode;
