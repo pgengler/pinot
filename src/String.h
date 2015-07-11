@@ -43,6 +43,8 @@ namespace pinot {
 
 		virtual ~string();
 
+		string& operator=(const string& str);
+
 		string& append(const char *str, size_t chars);
 		string& remove(size_t pos, size_t len=1);
 		string& replace(size_t pos, char c);
@@ -52,7 +54,7 @@ namespace pinot {
 		bool empty() const;
 		ssize_t length() const;
 		bool starts_with(const string& str) const;
-		std::string str() const;
+		std::string str();
 
 		character front() const;
 		character back() const;

@@ -57,17 +57,15 @@ typedef struct partition {
 	/* The top line of this portion of the file. */
 	filestruct *top_prev;
 	/* The line before the top line of this portion of the file. */
-	char *top_data;
-	/* The text before the beginning of the top line of this portion
-	 * of the file. */
+	string top_data;
+	/* The text before the beginning of the top line of this portion of the file. */
 	filestruct *filebot;
 	/* The bottom line of this portion of the file. */
 	filestruct *bot_next;
 	/* The line after the bottom line of this portion of the
 	 * file. */
-	char *bot_data;
-	/* The text after the end of the bottom line of this portion of
-	 * the file. */
+	string bot_data;
+	/* The text after the end of the bottom line of this portion of the file. */
 } partition;
 
 typedef struct undo {

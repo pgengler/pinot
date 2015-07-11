@@ -172,12 +172,10 @@ void renumber(filestruct *fileptr)
  * (bot, bot_x). */
 partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, size_t bot_x)
 {
-	partition *p;
-
 	assert(top != NULL && bot != NULL && openfile->fileage != NULL && openfile->filebot != NULL);
 
 	/* Initialize the partition. */
-	p = (partition *)nmalloc(sizeof(partition));
+	partition *p = new partition;
 
 	/* If the top and bottom of the partition are different from the top
 	 * and bottom of the filestruct, save the latter and then set them
@@ -208,7 +206,7 @@ partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, 
 	 * bot_data. */
 	p->bot_next = bot->next;
 	bot->next = NULL;
-	p->bot_data = mallocstrcpy(NULL, bot->data.c_str() + bot_x);
+	p->bot_data = bot->data.substr(bot_x);
 
 	/* Remove all text after bot_x at the bottom of the partition. */
 	bot->data = bot->data.substr(0, bot_x);
@@ -235,7 +233,6 @@ void unpartition_filestruct(partition **p)
 		openfile->fileage->prev->next = openfile->fileage;
 	}
 	openfile->fileage->data = (*p)->top_data + tmp;
-	free((*p)->top_data);
 
 	/* Reattach the line below the bottom of the partition, and restore
 	 * the text after bot_x from bot_data.  Free bot_data when we're
@@ -245,7 +242,6 @@ void unpartition_filestruct(partition **p)
 		openfile->filebot->next->prev = openfile->filebot;
 	}
 	openfile->filebot->data += (*p)->bot_data;
-	free((*p)->bot_data);
 
 	/* Restore the top and bottom of the filestruct, if they were
 	 * different from the top and bottom of the partition. */
@@ -257,8 +253,8 @@ void unpartition_filestruct(partition **p)
 	}
 
 	/* Uninitialize the partition. */
-	free(*p);
-	*p = NULL;
+	delete *p;
+	*p = nullptr;
 }
 
 /* Move all the text between (top, top_x) and (bot, bot_x) in the
@@ -334,7 +330,7 @@ void move_to_filestruct(filestruct **file_top, filestruct **file_bot, filestruct
 
 	/* Since the text has now been saved, remove it from the filestruct. */
 	openfile->fileage = new filestruct;
-	openfile->fileage->data = mallocstrcpy(NULL, "");
+	openfile->fileage->data = "";
 	openfile->filebot = openfile->fileage;
 
 	/* Restore the current line and cursor position.  If the mark begins

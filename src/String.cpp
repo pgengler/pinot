@@ -93,6 +93,16 @@ namespace pinot {
 		}
 	}
 
+	string& string::operator=(const string& str)
+	{
+		unicode_str = str.unicode_str;
+		if (c_str_buffer) {
+			delete[] c_str_buffer;
+			c_str_buffer = nullptr;
+		}
+		return *this;
+	}
+
 	string& string::append(const char *str, size_t chars)
 	{
 		unicode_str.append(reinterpret_cast<const UChar*>(str), chars);
@@ -139,9 +149,9 @@ namespace pinot {
 		return unicode_str.length();
 	}
 
-	std::string string::str() const
+	std::string string::str()
 	{
-		return std::string(reinterpret_cast<const char *>(unicode_str.getBuffer()), unicode_str.length());
+		return std::string(c_str());
 	}
 
 	character string::front() const

@@ -59,7 +59,7 @@ void initialize_buffer(void)
 {
 	assert(openfile != openfiles.end());
 
-	openfile->filename = mallocstrcpy(NULL, "");
+	openfile->filename = "";
 
 	initialize_buffer_text();
 
@@ -86,7 +86,7 @@ void initialize_buffer_text(void)
 	assert(openfile != openfiles.end());
 
 	openfile->fileage = make_new_node(NULL);
-	openfile->fileage->data = mallocstrcpy(NULL, "");
+	openfile->fileage->data = "";
 
 	openfile->filebot = openfile->fileage;
 	openfile->edittop = openfile->fileage;
@@ -753,7 +753,7 @@ void read_file(FILE *f, int fd, string filename, bool undoable, bool checkwritab
 			 * since its text has been saved. */
 			fileptr = fileptr->prev;
 			if (fileptr != NULL) {
-				free(fileptr->next);
+				delete fileptr->next;
 			}
 		}
 
@@ -2749,7 +2749,7 @@ void load_poshistory(void)
 				xno = atoi(xptr);
 
 				auto pos = new poshiststruct;
-				pos->filename = mallocstrcpy(NULL, line);
+				pos->filename = line;
 				pos->lineno   = lineno;
 				pos->xno      = xno;
 				poshistory.push_back(pos);

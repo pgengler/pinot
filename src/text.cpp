@@ -928,7 +928,7 @@ void add_undo(UndoType action)
 	}
 
 	/* Allocate and initialize a new undo type */
-	u = (undo *) nmalloc(sizeof(undo));
+	u = new undo;
 	u->type = action;
 	u->lineno = fs->current->lineno;
 	u->begin = fs->current_x;
@@ -956,12 +956,12 @@ void add_undo(UndoType action)
 	case BACK:
 		/* If the next line is the magic line, don't ever undo this
 		 * backspace, as it won't actually have deleted anything. */
-		if (fs->current->next == fs->filebot && fs->current->data[0] != '\0') {
+		if (fs->current->next == fs->filebot && !fs->current->data.empty()) {
 			u->xflags = WAS_FINAL_BACKSPACE;
 		}
 	case DEL:
 		if (u->begin != fs->current->data.length()) {
-			u->strdata = fs->current->data[u->begin];
+			u->strdata = fs->current->data.substr(u->begin, 1);
 			if (u->type == BACK) {
 				u->mark_begin_x++;
 			}

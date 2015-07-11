@@ -555,7 +555,7 @@ size_t strlenpt(const char *s)
 void new_magicline(void)
 {
 	openfile->filebot->next = new filestruct;
-	openfile->filebot->next->data = mallocstrcpy(NULL, "");
+	openfile->filebot->next->data = "";
 	openfile->filebot->next->prev = openfile->filebot;
 	openfile->filebot->next->next = NULL;
 	openfile->filebot->next->lineno = openfile->filebot->lineno + 1;
@@ -568,7 +568,7 @@ void new_magicline(void)
  * filebot. */
 void remove_magicline(void)
 {
-	if (openfile->filebot->data[0] == '\0' && openfile->filebot != openfile->fileage) {
+	if (openfile->filebot->data.empty() && openfile->filebot != openfile->fileage) {
 		assert(openfile->filebot != openfile->edittop && openfile->filebot != openfile->current);
 
 		openfile->filebot = openfile->filebot->prev;
