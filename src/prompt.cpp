@@ -26,6 +26,8 @@
 #include <stdarg.h>
 #include <string.h>
 
+using pinot::string;
+
 static char *prompt = NULL;
 /* The prompt string used for statusbar questions. */
 static size_t statusbar_x = (size_t)-1;
@@ -108,7 +110,7 @@ Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void
 			*finished = true;
 		}
 	} else {
-		do_statusbar_output(std::string(input), false);
+		do_statusbar_output(string(input), false);
 	}
 
 	return input;
@@ -116,7 +118,7 @@ Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void
 
 /* The user typed output_len multibyte characters.  Add them to thestatusbar prompt,
  * filtering out all ASCII control characters if allow_cntrls is true. */
-void do_statusbar_output(std::string output, bool allow_cntrls)
+void do_statusbar_output(string output, bool allow_cntrls)
 {
 	char *out = mallocstrcpy(NULL, output.c_str());
 	do_statusbar_output(out, output.length(), allow_cntrls);
@@ -440,7 +442,7 @@ bool do_statusbar_prev_word(bool allow_punct)
 /* Get verbatim input. */
 void do_statusbar_verbatim_input(void)
 {
-	std::string kbinput = get_verbatim_kbinput(bottomwin);
+	string kbinput = get_verbatim_kbinput(bottomwin);
 	do_statusbar_output(kbinput, true);
 }
 
@@ -478,7 +480,7 @@ void reset_statusbar_cursor(void)
 /* Repaint the statusbar when getting a character in
  * get_prompt_string().  The statusbar text line will be displayed
  * starting with curranswer[index]. */
-void update_statusbar_line(const std::string& curranswer, size_t index)
+void update_statusbar_line(string curranswer, size_t index)
 {
 	size_t start_col, page_start;
 
@@ -496,7 +498,7 @@ void update_statusbar_line(const std::string& curranswer, size_t index)
 	waddch(bottomwin, ':');
 	waddch(bottomwin, (page_start == 0) ? ' ' : '$');
 
-	std::string expanded = display_string(curranswer, page_start, COLS - start_col - 1, false);
+	string expanded = display_string(curranswer, page_start, COLS - start_col - 1, false);
 	waddstr(bottomwin, expanded.c_str());
 
 	clear_color(bottomwin, interface_colors[TITLE_BAR]);
@@ -522,16 +524,16 @@ void total_statusbar_refresh(void (*refresh_func)(void))
 }
 
 /* Get a string of input at the statusbar prompt.  This should only be called from do_prompt(). */
-FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, History* history_list, void (*refresh_func)(void))
+FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, bool allow_files, bool *list, const string& curranswer, History* history_list, void (*refresh_func)(void))
 {
 	std::shared_ptr<Key> kbinput, last_kbinput;
 	bool ran_func, finished;
 	FunctionPtr func;
 	bool tabbed = false;
 	/* Whether we've pressed Tab. */
-	std::string history;
+	string history;
 	/* The current history string. */
-	std::string magichistory;
+	string magichistory;
 	/* The temporary string typed at the bottom of the history, if any. */
 	size_t complete_len = 0;
 	/* The length of the original string that we're trying to
@@ -709,7 +711,7 @@ FunctionPtr get_prompt_string(std::shared_ptr<Key>& actual, bool allow_tabs, boo
  * interpreted.  The allow_files parameter indicates whether we should
  * allow all files (as opposed to just directories) to be tab
  * completed. */
-PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, History* history_list, void (*refresh_func)(void), const char *msg, ...)
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const string& curranswer, History* history_list, void (*refresh_func)(void), const char *msg, ...)
 {
 	va_list ap;
 	PromptResult retval;
@@ -841,7 +843,7 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 		currmenu = MYESNO;
 		Key kbinput = get_kbinput(bottomwin);
 		auto func = func_from_key(kbinput);
-		std::string input(kbinput);
+		string input(kbinput);
 
 		if (func == do_cancel) {
 			ok = YESNO_PROMPT_ABORTED;
@@ -850,11 +852,11 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg)
 			continue;
 		} else {
 			/* Look for the kbinput in the Yes, No and (optionally) All strings. */
-			if (input.find_first_of(yesstr) != std::string::npos) {
+			if (input.find_first_of(yesstr) != string::npos) {
 				ok = YESNO_PROMPT_YES;
-			} else if (input.find_first_of(nostr) != std::string::npos) {
+			} else if (input.find_first_of(nostr) != string::npos) {
 				ok = YESNO_PROMPT_NO;
-			} else if (all && input.find_first_of(allstr) != std::string::npos) {
+			} else if (all && input.find_first_of(allstr) != string::npos) {
 				ok = YESNO_PROMPT_ALL;
 			}
 		}

@@ -34,6 +34,8 @@
 #include <ctype.h>
 #include <pwd.h>
 
+using pinot::string;
+
 /* Add an entry to the list of open files. This should only be called from open_buffer(). */
 void make_new_buffer(void)
 {
@@ -106,7 +108,7 @@ void initialize_buffer_text(void)
 
    Returns: 1 on success, 0 on failure (but continue loading), -1 on failure and abort
  */
-int write_lockfile(const std::string& lockfilename, const std::string& origfilename, bool modified)
+int write_lockfile(string lockfilename, string origfilename, bool modified)
 {
 	int cflags, fd;
 	FILE *filestream;
@@ -216,9 +218,9 @@ int write_lockfile(const std::string& lockfilename, const std::string& origfilen
 /* Less exciting, delete the lock file.
    Return -1 if successful and complain on the statusbar, 1 otherwite
  */
-int delete_lockfile(const std::string& lockfilename)
+int delete_lockfile(string lockfilename)
 {
-	if (unlink(lockfilename.c_str()) < 0 && errno != ENOENT) {
+	if (unlink(lockfilename) < 0 && errno != ENOENT) {
 		statusbar(_("Error deleting lock file %s: %s"), lockfilename.c_str(), strerror(errno));
 		return -1;
 	}
@@ -231,15 +233,15 @@ int delete_lockfile(const std::string& lockfilename)
    we were not successful on creating the lockfile but we should
    continue to load the file and complain to the user.
  */
-int do_lockfile(const std::string& filename)
+int do_lockfile(string filename)
 {
-	std::string lockdir = dirname(filename);
-	std::string lockbase = basename(filename.c_str());
+	string lockdir = dirname(filename);
+	string lockbase = basename(filename);
 	char lockprog[11], lockuser[17];
 	struct stat fileinfo;
 	int lockfd, lockpid;
 
-	std::string lockfilename = lockdir + "/" + locking_prefix + lockbase + locking_suffix;
+	string lockfilename = lockdir + "/" + locking_prefix + lockbase + locking_suffix;
 	DEBUG_LOG("lock file name is " << lockfilename);
 	if (stat(lockfilename, &fileinfo) != -1) {
 		ssize_t readtot = 0;
@@ -276,7 +278,7 @@ int do_lockfile(const std::string& filename)
 			return -1;
 		}
 	} else {
-		std::string lockfile_dir = dirname(lockfilename);
+		string lockfile_dir = dirname(lockfilename);
 		if (stat(lockfile_dir.c_str(), &fileinfo) == -1) {
 			statusbar(_("Error writing lock file: Directory \'%s\' doesn't exist"), lockfile_dir.c_str());
 			return 0;
@@ -288,7 +290,7 @@ int do_lockfile(const std::string& filename)
 
 /* If it's not "", filename is a file to open.  We make a new buffer, if
  * necessary, and then open and read the file, if applicable. */
-void open_buffer(std::string filename, bool undoable)
+void open_buffer(string filename, bool undoable)
 {
 	bool quiet = false;
 	bool new_buffer = (openfiles.size() == 0 || ISSET(MULTIBUFFER));
@@ -352,7 +354,7 @@ void open_buffer(std::string filename, bool undoable)
 
 /* Blow away the text of the current buffer, and then open and read
  * the specified file into its place. */
-void replace_buffer(const std::string& filename)
+void replace_buffer(const string& filename)
 {
 	FILE *f;
 	int descriptor;
@@ -480,7 +482,7 @@ bool close_buffer(bool quiet)
  * (reporting true when it might be wrong) to not fluster users
  * editing on odd filesystems by printing incorrect warnings.
  */
-int is_file_writable(const std::string& filename)
+int is_file_writable(const string& filename)
 {
 	struct stat fileinfo, fileinfo2;
 	int fd;
@@ -524,12 +526,12 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, siz
 
 	assert(openfile->fileage != NULL && strlen(buf) == buf_len);
 
-	fileptr->data = mallocstrcpy(NULL, buf);
+	fileptr->data = buf;
 
 	/* If it's a DOS file ("\r\n"), and file conversion isn't disabled,
 	 * strip the '\r' part from fileptr->data. */
 	if (!ISSET(NO_CONVERT) && buf_len > 0 && buf[buf_len - 1] == '\r') {
-		fileptr->data[buf_len - 1] = '\0';
+		fileptr->data = fileptr->data.substr(buf_len - 1);
 	}
 
 	fileptr->multidata.clear();
@@ -566,7 +568,7 @@ filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, siz
  * undoable  means do we want to create undo records to try and undo this.
  * Will also attempt to check file writability if fd > 0 and checkwritable == true
  */
-void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool checkwritable)
+void read_file(FILE *f, int fd, string filename, bool undoable, bool checkwritable)
 {
 	size_t num_lines = 0;
 	/* The number of lines in the file. */
@@ -832,11 +834,11 @@ void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool
  * Return -2 if we say "New File", -1 if the file isn't opened, and the
  * fd opened otherwise.  The file might still have an error while reading
  * with a 0 return value.  *f is set to the opened file. */
-int open_file(const std::string& filename, bool newfie, bool quiet, FILE **f)
+int open_file(string filename, bool newfie, bool quiet, FILE **f)
 {
 	struct stat fileinfo, fileinfo2;
 	int fd;
-	std::string full_filename;
+	string full_filename;
 
 	assert(f != NULL);
 
@@ -896,11 +898,11 @@ int open_file(const std::string& filename, bool newfie, bool quiet, FILE **f)
  * of a filename (starting with [name][suffix], then [name][suffix].1,
  * etc.).  Memory is allocated for the return value.  If no writable
  * extension exists, we return "". */
-std::string get_next_filename(const std::string& name, const std::string& suffix)
+string get_next_filename(const string& name, const string& suffix)
 {
 	unsigned long i = 0;
 
-	std::string buf = name + suffix;
+	string buf = name + suffix;
 
 	while (true) {
 		struct stat fs;
@@ -913,7 +915,7 @@ std::string get_next_filename(const std::string& name, const std::string& suffix
 			break;
 		}
 
-		buf = name + suffix + "." + std::to_string(i);
+		buf = name + suffix + "." + pinot::to_string(i);
 	}
 
 	/* We get here only if there is no possible save file. */
@@ -929,7 +931,7 @@ void do_execute_command()
 	std::shared_ptr<Key> key;
 	char statusbartext[50];
 	const char *msg;
-	std::string ans;
+	string ans;
 	currmenu = MEXTCMD;
 
 	while (true) {
@@ -947,7 +949,7 @@ void do_execute_command()
 			auto func = func_from_key(*key);
 
 			if (func == to_files_void) {
-				std::string tmp = do_browse_from(answer);
+				string tmp = do_browse_from(answer);
 
 				if (tmp == "") {
 					continue;
@@ -996,7 +998,7 @@ void do_execute_command()
 void do_insertfile(bool execute)
 {
 	const char *msg;
-	std::string ans;
+	string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	filestruct *edittop_save = openfile->edittop;
 	size_t current_x_save = openfile->current_x;
@@ -1039,7 +1041,7 @@ void do_insertfile(bool execute)
 					execute = !execute;
 					continue;
 				} else if (func == to_files_void) {
-					std::string tmp = do_browse_from(answer);
+					string tmp = do_browse_from(answer);
 
 					if (tmp == "") {
 						continue;
@@ -1201,7 +1203,7 @@ void do_insertfile_void(void)
  * path does, since the file could exist in memory but not yet on disk).
  * Don't do this if the relative path doesn't exist, since we won't be
  * able to go there. */
-std::string get_full_path(const std::string& origpath)
+string get_full_path(const string& origpath)
 {
 	if (origpath == "") {
 		return "";
@@ -1209,7 +1211,7 @@ std::string get_full_path(const std::string& origpath)
 
 	struct stat fileinfo;
 	bool path_only;
-	std::string d_there_file;
+	string d_there_file;
 
 	/* Get the current directory.  If it doesn't exist, back up and try
 	 * again until we get a directory that does, and use that as the
@@ -1250,7 +1252,7 @@ std::string get_full_path(const std::string& origpath)
 	auto last_slash = d_there.rfind('/');
 
 	/* If we didn't find one, then make sure the answer is in the format "d_here/d_there". */
-	if (last_slash == std::string::npos) {
+	if (last_slash == string::npos) {
 		assert(!path_only);
 
 		d_there_file = d_there;
@@ -1306,9 +1308,9 @@ std::string get_full_path(const std::string& origpath)
 /* Return the full version of path, as returned by get_full_path().  On
  * error, if path doesn't reference a directory, or if the directory
  * isn't writable, return "". */
-std::string check_writable_directory(const std::string& path)
+string check_writable_directory(const string& path)
 {
-	std::string full_path = get_full_path(path);
+	string full_path = get_full_path(path);
 
 	/* If get_full_path() fails, return "". */
 	if (full_path == "") {
@@ -1328,9 +1330,9 @@ std::string check_writable_directory(const std::string& path)
  * On success, it returns the malloc()ed filename and corresponding FILE
  * stream, opened in "r+b" mode.  On error, it returns "" for the
  * filename and leaves the FILE stream unchanged. */
-std::string safe_tempfile(FILE **f)
+string safe_tempfile(FILE **f)
 {
-	std::string full_tempdir;
+	string full_tempdir;
 	const char *tmpdir_env;
 	int fd;
 	mode_t original_umask = 0;
@@ -1378,10 +1380,10 @@ std::string safe_tempfile(FILE **f)
  * and I'm blanket allowing insecure file writing operations.
  */
 
-int prompt_failed_backupwrite(const std::string& filename)
+int prompt_failed_backupwrite(const string& filename)
 {
 	static int i;
-	static std::string prevfile;; /* What was the last file we were paased so we don't keep asking this? though maybe we should.... */
+	static string prevfile;; /* What was the last file we were paased so we don't keep asking this? though maybe we should.... */
 	if (prevfile == "" || filename != prevfile) {
 		i = do_yesno_prompt(false, _("Failed to write backup file, continue saving? (Say N if unsure) "));
 		prevfile = filename;
@@ -1454,7 +1456,7 @@ int copy_file(FILE *inn, FILE *out)
  * or we're prepending.
  *
  * Return true on success or false on error. */
-bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType append, bool nonamechange)
+bool write_file(const string& name, FILE *f_open, bool tmp, AppendType append, bool nonamechange)
 {
 	bool retval = false;
 	/* Instead of returning in this function, you should always
@@ -1476,11 +1478,11 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 	 * is a link. */
 	struct stat lst;
 	/* The status fields filled in by lstat(). */
-	std::string realname;
+	string realname;
 	/* name after tilde expansion. */
 	FILE *f = NULL;
 	/* The actual file, realname, we are writing to. */
-	std::string tempname;
+	string tempname;
 	/* The temp file name we write to on prepend. */
 
 	if (name == "") {
@@ -1532,7 +1534,7 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 	if (ISSET(BACKUP_FILE) && !tmp && realexists && ((append != OVERWRITE || openfile->mark_set) || (openfile->current_stat && openfile->current_stat->st_mtime == st.st_mtime))) {
 		int backup_fd;
 		FILE *backup_file;
-		std::string backupname;
+		string backupname;
 		struct utimbuf filetime;
 		int copy_status;
 		int backup_cflags;
@@ -1574,7 +1576,7 @@ bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType appe
 			} else {
 				for (size_t i = 0; backuptemp[i] != '\0'; i++) {
 					if (backuptemp[i] == '/') {
-						backuptemp[i] = '!';
+						backuptemp.replace(i, '!');
 					}
 				}
 			}
@@ -1880,7 +1882,7 @@ cleanup_and_exit:
 
 /* Write a marked selection from a file out to disk.  Return true on
  * success or false on error. */
-bool write_marked_file(const std::string& name, FILE *f_open, bool tmp, AppendType append)
+bool write_marked_file(const string& name, FILE *f_open, bool tmp, AppendType append)
 {
 	bool retval;
 	bool old_modified = openfile->modified;
@@ -1928,7 +1930,7 @@ bool write_marked_file(const std::string& name, FILE *f_open, bool tmp, AppendTy
 bool do_writeout(bool exiting)
 {
 	AppendType append = OVERWRITE;
-	std::string ans;
+	string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	bool retval = false;
 
@@ -1982,7 +1984,7 @@ bool do_writeout(bool exiting)
 			auto func = func_from_key(*key);
 
 			if (func == to_files_void) {
-				std::string tmp = do_browse_from(answer);
+				string tmp = do_browse_from(answer);
 
 				if (tmp == "") {
 					continue;
@@ -2015,14 +2017,14 @@ bool do_writeout(bool exiting)
 
 			if (append == OVERWRITE) {
 				bool name_exists, do_warning;
-				std::string full_answer;
+				string full_answer;
 				struct stat st;
 
 				/* Convert newlines to nulls, just before we get the full path. */
 				sunder(answer);
 
 				full_answer = get_full_path(answer);
-				std::string full_filename = get_full_path(openfile->filename);
+				string full_filename = get_full_path(openfile->filename);
 				name_exists = (stat((full_answer == "") ? answer : full_answer, &st) != -1);
 				if (openfile->filename.front() == '\0') {
 					do_warning = name_exists;
@@ -2084,13 +2086,44 @@ void do_writeout_void(void)
 
 /* Return a malloc()ed string containing the actual directory, used to
  * convert ~user/ and ~/ notation. */
-std::string real_dir_from_tilde(const std::string& buf)
+string real_dir_from_tilde(const string& buf)
 {
-	char *dir = real_dir_from_tilde(buf.c_str());
-	std::string result(dir);
-	free(dir);
+	string retval;
 
-	return result;
+	if (buf.front() == '~') {
+		size_t i = 1;
+		string tilde_dir;
+
+		/* Figure out how much of the string we need to compare. */
+		for (; buf[i] != '/' && i < buf.length(); i++) {
+			;
+		}
+
+		/* Get the home directory. */
+		if (i == 1) {
+			get_homedir();
+			tilde_dir = homedir;
+		} else {
+			const struct passwd *userdata;
+
+			tilde_dir = buf.substr(0, i + 1);
+			auto username = tilde_dir.substr(1);
+
+			do {
+				userdata = getpwent();
+			} while (userdata != NULL && username != userdata->pw_name);
+			endpwent();
+			if (userdata != NULL) {
+				tilde_dir = string(userdata->pw_dir);
+			}
+		}
+
+		retval = tilde_dir + buf.substr(i);
+	} else {
+		retval = buf;
+	}
+
+	return retval;
 }
 
 char *real_dir_from_tilde(const char *buf)
@@ -2140,7 +2173,7 @@ char *real_dir_from_tilde(const char *buf)
 
 /* Our sort routine for file listings.  Sort alphabetically and
  * case-insensitively, and sort directories before filenames. */
-bool sort_directories(const std::string& a, const std::string& b)
+bool sort_directories(const string& a, const string& b)
 {
 	struct stat fileinfo;
 	bool a_is_dir = (stat(a, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
@@ -2197,10 +2230,10 @@ bool is_dir(const char *buf)
  * This code may safely be consumed by a BSD or GPL license. */
 
 /* We consider the first buf_len characters of buf for ~username tab completion. */
-std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len)
+std::vector<string> username_tab_completion(const char *buf, size_t buf_len)
 {
 	const struct passwd *userdata;
-	std::vector<std::string> matches;
+	std::vector<string> matches;
 
 	assert(buf != NULL && buf_len > 0);
 
@@ -2209,7 +2242,7 @@ std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len
 			/* Cool, found a match.  Add it to the list.  This makes a
 			 * lot more sense to me (Chris) this way... */
 
-			matches.push_back(std::string("~") + std::string(userdata->pw_name));
+			matches.push_back(string("~") + string(userdata->pw_name));
 		}
 	}
 	endpwent();
@@ -2218,13 +2251,13 @@ std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len
 }
 
 /* We consider the first buf_len characters of buf for filename tab completion. */
-std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len)
+std::vector<string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len)
 {
 	char *dirname = mallocstrcpy(NULL, buf), *filename;
 	size_t filenamelen;
 	DIR *dir;
 	const struct dirent *nextdir;
-	std::vector<std::string> matches;
+	std::vector<string> matches;
 
 	assert(dirname != NULL);
 
@@ -2285,7 +2318,7 @@ std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, s
 				continue;
 			}
 
-			matches.push_back(std::string(nextdir->d_name));
+			matches.push_back(string(nextdir->d_name));
 		}
 	}
 
@@ -2299,10 +2332,10 @@ std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, s
 /* Do tab completion.  place refers to how much the statusbar cursor
  * position should be advanced.  refresh_func is the function we will
  * call to refresh the edit window. */
-std::string input_tab(const std::string& buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
+string input_tab(string buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
 {
 	char *str = mallocstrcpy(NULL, buf.c_str());
-	std::string result = input_tab(str, allow_files, place, lastwastab, refresh_func, list);
+	string result = input_tab(str, allow_files, place, lastwastab, refresh_func, list);
 	free(str);
 
 	return result;
@@ -2311,7 +2344,7 @@ std::string input_tab(const std::string& buf, bool allow_files, size_t *place, b
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
 {
 	size_t buf_len;
-	std::vector<std::string> matches;
+	std::vector<string> matches;
 
 	assert(buf != NULL && place != NULL && *place <= strlen(buf) && lastwastab != NULL && refresh_func != NULL && list != NULL);
 
@@ -2438,8 +2471,6 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			curs_set(0);
 
 			for (size_t match = 0; match < matches.size(); match++) {
-				char *disp;
-
 				wmove(edit, editline, (longest_name + 2) * (match % ncols));
 
 				if (match % ncols == 0 && editline == editwinrows - 1 && matches.size() - match > ncols) {
@@ -2447,9 +2478,8 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 					break;
 				}
 
-				disp = display_string(matches[match].c_str(), 0, longest_name, false);
-				waddstr(edit, disp);
-				free(disp);
+				auto disp = display_string(matches[match].c_str(), 0, longest_name, false);
+				waddstr(edit, disp.c_str());
 
 				if ((match + 1) % ncols == 0) {
 					editline++;
@@ -2476,9 +2506,9 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 }
 
 /* Only print the last part of a path.  Isn't there a shell command for this? */
-std::string tail(const std::string& foo)
+string tail(string foo)
 {
-	return std::string(tail(foo.c_str()));
+	return string(tail(foo.c_str()));
 }
 
 const char *tail(const char *foo)
@@ -2495,9 +2525,9 @@ const char *tail(const char *foo)
 }
 
 /* Return the constructed dotfile path, or empty if we can't find the home directory. */
-std::string construct_filename(const std::string& str)
+string construct_filename(const string& str)
 {
-	std::string newstr;
+	string newstr;
 
 	if (homedir != "") {
 		newstr = homedir + str;
@@ -2506,12 +2536,12 @@ std::string construct_filename(const std::string& str)
 	return newstr;
 }
 
-std::string histfilename(void)
+string histfilename(void)
 {
 	return construct_filename("/.pinot/search_history");
 }
 
-std::string poshistfilename(void)
+string poshistfilename(void)
 {
 	return construct_filename("/.pinot/filepos_history");
 }
@@ -2540,7 +2570,7 @@ void history_error(const char *msg, ...)
 int check_dotpinot(void)
 {
 	struct stat dirstat;
-	std::string pinotdir = construct_filename("/.pinot");
+	string pinotdir = construct_filename("/.pinot");
 
 	if (stat(pinotdir, &dirstat) == -1) {
 		if (mkdir(pinotdir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
@@ -2557,11 +2587,11 @@ int check_dotpinot(void)
 /* Load search histories from file. */
 void load_history(void)
 {
-	std::string pinothist = histfilename();
+	string pinothist = histfilename();
 
 	/* Assume do_rcfile() has reported a missing home directory. */
 	if (pinothist != "") {
-		std::ifstream hist(pinothist, std::ifstream::binary);
+		std::ifstream hist(pinothist.c_str(), std::ifstream::binary);
 
 		if (!hist) {
 			if (errno != ENOENT) {
@@ -2591,10 +2621,10 @@ void save_history(void)
 		return;
 	}
 
-	std::string pinothist = histfilename();
+	string pinothist = histfilename();
 
 	if (pinothist != "") {
-		std::ofstream hist(pinothist, std::ofstream::binary);
+		std::ofstream hist(pinothist.c_str(), std::ofstream::binary);
 
 		if (!hist) {
 			history_error(N_("Error writing %s: %s"), pinothist.c_str(), strerror(errno));
@@ -2614,10 +2644,10 @@ void save_poshistory(void)
 {
 	char *statusstr = NULL;
 
-	std::string poshist = poshistfilename();
+	string poshist = poshistfilename();
 
 	if (poshist != "") {
-		std::ofstream hist(poshist, std::ofstream::binary);
+		std::ofstream hist(poshist.c_str(), std::ofstream::binary);
 
 		if (!hist) {
 			history_error(N_("Error writing %s: %s"), poshist.c_str(), strerror(errno));
@@ -2640,9 +2670,9 @@ void save_poshistory(void)
 /* Update the POS history, given a filename line and column.
  * If no entry is found, add a new entry on the end
  */
-void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos)
+void update_poshistory(const string& filename, ssize_t lineno, ssize_t xpos)
 {
-	std::string fullpath = get_full_path(filename);
+	string fullpath = get_full_path(filename);
 
 	for (auto pos : poshistory) {
 		if (pos->filename == fullpath) {
@@ -2666,7 +2696,7 @@ void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos
  * an existing entry.  If so return 1 and set line and column
  * to the right values  Otherwise return 0
  */
-int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column)
+int check_poshistory(const string& file, ssize_t *line, ssize_t *column)
 {
 	auto fullpath = get_full_path(file);
 
@@ -2687,11 +2717,11 @@ int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column)
 /* Load position histories from file. */
 void load_poshistory(void)
 {
-	std::string pinothist = poshistfilename();
+	string pinothist = poshistfilename();
 
 	/* Assume do_rcfile() has reported a missing home directory. */
 	if (pinothist != "") {
-		std::ifstream hist(pinothist, std::ifstream::binary);
+		std::ifstream hist(pinothist.c_str(), std::ifstream::binary);
 
 		if (!hist) {
 			if (errno != ENOENT) {

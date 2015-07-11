@@ -174,7 +174,7 @@ void do_cut_text(bool copy_text, bool cut_till_eof, bool undoing)
 		 * modified. */
 		if (cutbuffer != NULL) {
 			if (cb_save != NULL) {
-				std::string original = cb_save->data;
+				auto original = cb_save->data;
 				cb_save->data = cb_save->data.substr(cb_save_len);
 				copy_from_filestruct(cb_save);
 				cb_save->data = original;

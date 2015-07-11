@@ -30,7 +30,9 @@
 #include <unistd.h>
 #include <errno.h>
 
-std::vector<std::string> filelist;
+using pinot::string;
+
+std::vector<string> filelist;
 /* The list of files to display in the file browser. */
 static int width = 0;
 /* The number of files that we can display per line. */
@@ -42,13 +44,13 @@ static size_t selected = 0;
 
 /* Our main file browser function.  path is the tilde-expanded path we
  * start browsing from. */
-std::string do_browser(std::string path, DIR *dir)
+string do_browser(string path, DIR *dir)
 {
-	std::string retval;
+	string retval;
 	bool old_const_update = ISSET(CONST_UPDATE);
-	std::string prev_dir;
+	string prev_dir;
 	/* The directory we were in before backing up to "..". */
-	std::string ans;
+	string ans;
 	/* The last answer the user typed at the statusbar prompt. */
 	size_t old_selected;
 	/* The selected file we had before the current selected file. */
@@ -93,7 +95,7 @@ change_browser_directory:
 		struct stat st;
 		size_t fileline = selected / width;
 		/* The line number the selected file is on. */
-		std::string new_path;
+		string new_path;
 		/* The path we switch to at the "Go to Directory" prompt. */
 
 		if (kbinput) {
@@ -281,12 +283,12 @@ change_browser_directory:
 /* The file browser front end.  We check to see if inpath has a
  * directory in it.  If it does, we start do_browser() from there.
  * Otherwise, we start do_browser() from the current directory. */
-std::string do_browse_from(const std::string& inpath)
+string do_browse_from(const string& inpath)
 {
 	struct stat st;
 	DIR *dir = NULL;
 
-	std::string path = real_dir_from_tilde(inpath);
+	string path = real_dir_from_tilde(inpath);
 
 	/* Perhaps path is a directory.  If so, we'll pass it to
 	 * do_browser().  Or perhaps path is a directory / a file.  If so,
@@ -309,7 +311,7 @@ std::string do_browse_from(const std::string& inpath)
 	/* If we can't open the path, get out. */
 	if (dir == NULL) {
 		beep();
-		return NULL;
+		return "";
 	}
 
 	return do_browser(path, dir);
@@ -321,7 +323,7 @@ std::string do_browse_from(const std::string& inpath)
  * we can display per line.  longest needs to be at least 15 columns in
  * order to display ".. (parent dir)", as Pico does.  Assume path exists
  * and is a directory. */
-void browser_init(const std::string& path, DIR *dir)
+void browser_init(const string& path, DIR *dir)
 {
 	const struct dirent *nextdir;
 	int col = 0;
@@ -366,7 +368,7 @@ void browser_init(const std::string& path, DIR *dir)
 			continue;
 		}
 
-		filelist.push_back(std::string(path) + std::string(nextdir->d_name));
+		filelist.push_back(string(path) + string(nextdir->d_name));
 	}
 
 	closedir(dir);
@@ -421,7 +423,7 @@ void browser_refresh(void)
 	/* The maximum number of columns that the filenames will take up. */
 	int line = 0;
 	/* The maximum number of lines that the filenames will take up. */
-	std::string foo;
+	string foo;
 	/* The file information that we'll display. */
 
 	blank_edit();
@@ -432,7 +434,7 @@ void browser_refresh(void)
 
 	for (; i < filelist.size() && line < editwinrows; i++) {
 		struct stat st;
-		std::string filetail = tail(filelist[i]);
+		string filetail = tail(filelist[i]);
 		/* The filename we display, minus the path. */
 		int foomaxlen = 7;
 		/* The maximum length of the file information in
@@ -443,7 +445,7 @@ void browser_refresh(void)
 		 * this to true if we have fewer than 15 columns (i.e.
 		 * one column for padding, plus seven columns for a
 		 * filename other than ".."). */
-		std::string disp = display_string(filetail, dots ? filetail.length() - longest + foomaxlen + 4 : 0, longest, false);
+		string disp = display_string(filetail, dots ? filetail.length() - longest + foomaxlen + 4 : 0, longest, false);
 		/* If we put an ellipsis before the filename, reserve one column
 		 * for padding, plus seven columns for "--", "(dir)", or the file
 		 * size, plus three columns for the ellipsis. */
@@ -512,7 +514,7 @@ void browser_refresh(void)
 			if (st.st_size < (1 << 40) || (1 << 40) == 0) {
 				char buf[8];
 				snprintf(buf, 8, "%4lu %cB", result, modifier);
-				foo = std::string(buf);
+				foo = string(buf);
 			} else {
 				foo = _("(huge)");
 			}
@@ -549,7 +551,7 @@ void browser_refresh(void)
 /* Look for needle.  If we find it, set selected to its location.  Note
  * that needle must be an exact match for a file in the list.  The
  * return value specifies whether we found anything. */
-bool browser_select_filename(const std::string& needle)
+bool browser_select_filename(const string& needle)
 {
 	size_t currselected;
 	bool found = false;
@@ -573,10 +575,10 @@ bool browser_select_filename(const std::string& needle)
  * return 0 when we have a string, and return true when some function was run. */
 bool filesearch_init(void)
 {
-	std::string buf;
+	string buf;
 
 	if (last_search != "") {
-		std::string disp = display_string(last_search, 0, COLS / 3, false);
+		string disp = display_string(last_search, 0, COLS / 3, false);
 
 		buf = " [" + disp + ((last_search.length() > COLS / 3) ? "..." : "") + "]";
 		/* We use (COLS / 3) here because we need to see more on the line. */
@@ -602,7 +604,7 @@ bool filesearch_init(void)
 }
 
 /* Look for the given needle in the list of files. */
-void findnextfile(const std::string& needle)
+void findnextfile(const string& needle)
 {
 	size_t currselected = selected;
 	/* The location in the current file list of the match we find. */
@@ -610,36 +612,23 @@ void findnextfile(const std::string& needle)
 	bool came_full_circle = false;
 	/* Have we reached the starting file again? */
 
-	std::string filetail = tail(filelist[currselected]);
+	string filetail = tail(filelist[currselected]);
 	/* The filename we display, minus the path. */
-
-	const char *rev_start = filetail.c_str(), *found = NULL;
-
-	unsigned stash[sizeof(flags) / sizeof(flags[0])];
-	/* A storage place for the current flag settings. */
-
-	/* Save the settings of all flags. */
-	memcpy(stash, flags, sizeof(flags));
-
-	/* Search forward, case insensitive and without regexes. */
-	UNSET(BACKWARDS_SEARCH);
-	UNSET(CASE_SENSITIVE);
-	UNSET(USE_REGEXP);
 
 	/* Step through each filename in the list until a match is found or
 	 * we've come back to the point where we started. */
 	while (true) {
-		found = strstrwrapper(filetail.c_str(), needle.c_str(), rev_start);
+		bool found = (filetail.find(needle) != string::npos);
 
 		/* If we've found a potential match and we're not allowed to find
 		 * a match on the same filename we started on and this potential
 		 * match is that filename, continue searching. */
-		if (found != NULL && currselected != selected) {
+		if (found && currselected != selected) {
 			break;
 		}
 
 		/* If we've found a match and we're back at the beginning, then it's the only occurrence. */
-		if (found != NULL && came_full_circle) {
+		if (found && came_full_circle) {
 			statusbar(_("This is the only occurrence"));
 			break;
 		}
@@ -665,12 +654,7 @@ void findnextfile(const std::string& needle)
 		}
 
 		filetail = tail(filelist[currselected]);
-
-		rev_start = filetail.c_str();
 	}
-
-	/* Restore the settings of all flags. */
-	memcpy(flags, stash, sizeof(flags));
 
 	/* Select the one we've found. */
 	selected = currselected;
@@ -725,11 +709,8 @@ void do_last_file(void)
 }
 
 /* Strip one directory from the end of path, and return the stripped path. */
-std::string striponedir(const std::string& path)
+string striponedir(const string& path)
 {
 	auto pos = path.rfind("/");
-	if (pos == std::string::npos) {
-		return path;
-	}
 	return path.substr(0, pos);
 }

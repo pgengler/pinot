@@ -31,6 +31,8 @@
 #include <ctype.h>
 #include <errno.h>
 
+using pinot::string;
+
 /* Return the user's home directory.  We use $HOME, and if that fails,
  * we fall back on the home directory of the effective user ID. */
 void get_homedir(void)
@@ -45,7 +47,7 @@ void get_homedir(void)
 				homenv = userage->pw_dir;
 			}
 		}
-		homedir = std::string(homenv);
+		homedir = string(homenv);
 	}
 }
 
@@ -79,7 +81,7 @@ bool parse_num(const char *str, ssize_t *val)
 /* Read two ssize_t's, separated by a comma, from str, and store them in
  * *line and *column (if they're not both NULL).  Return false on error,
  * or true otherwise. */
-bool parse_line_column(const std::string& str, ssize_t *line, ssize_t *column)
+bool parse_line_column(string str, ssize_t *line, ssize_t *column)
 {
 	return parse_line_column(str.c_str(), line, column);
 }
@@ -138,7 +140,7 @@ void null_at(char **data, size_t index)
 
 /* For non-null-terminated lines.  A line, by definition, shouldn't
  * normally have newlines in it, so encode its nulls as newlines. */
-void unsunder(std::string& str)
+void unsunder(string& str)
 {
 	std::replace(str.begin(), str.end(), '\0', '\n');
 }
@@ -156,7 +158,7 @@ void unsunder(char *str, size_t true_len)
 
 /* For non-null-terminated lines.  A line, by definition, shouldn't
  * normally have newlines in it, so decode its newlines as nulls. */
-void sunder(std::string& str)
+void sunder(string& str)
 {
 	std::replace(str.begin(), str.end(), '\n', '\0');
 }
@@ -471,7 +473,7 @@ size_t get_page_start(size_t column)
 size_t xplustabs(void)
 {
 	if (openfile->current) {
-		return strnlenpt(openfile->current->data, openfile->current_x);
+		return strnlenpt(openfile->current->data.c_str(), openfile->current_x);
 	} else {
 		return 0;
 	}
@@ -480,7 +482,7 @@ size_t xplustabs(void)
 /* Return the index in s of the character displayed at the given column,
  * i.e. the largest value such that strnlenpt(s, actual_x(s, column)) <=
  * column. */
-size_t actual_x(const std::string& s, size_t column)
+size_t actual_x(string s, size_t column)
 {
 	return actual_x(s.c_str(), column);
 }
@@ -539,7 +541,7 @@ size_t strnlenpt(const char *s, size_t maxlen)
 
 /* A strlen() with tabs and multicolumn characters factored in, similar
  * to xplustabs().  How many columns wide is s? */
-size_t strlenpt(const std::string& s)
+size_t strlenpt(string s)
 {
 	return strlenpt(s.c_str());
 }
@@ -613,7 +615,7 @@ size_t get_totsize(const filestruct *begin, const filestruct *end)
 	/* Go through the lines from begin to end->prev, if we can. */
 	for (f = begin; f != end && f != NULL; f = f->next) {
 		/* Count the number of characters on this line. */
-		totsize += mbstrlen(f->data);
+		totsize += f->data.length();
 
 		/* Count the newline if we have one. */
 		if (f->next != NULL) {
@@ -624,7 +626,7 @@ size_t get_totsize(const filestruct *begin, const filestruct *end)
 	/* Go through the line at end, if we can. */
 	if (f != NULL) {
 		/* Count the number of characters on this line. */
-		totsize += mbstrlen(f->data);
+		totsize += f->data.length();
 
 		/* Count the newline if we have one. */
 		if (f->next != NULL) {

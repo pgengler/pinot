@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+using pinot::string;
+
 std::vector<rcoption> rcopts = {
 	{"boldtext", BOLD_TEXT, false},
 	{"const", CONST_UPDATE, false},
@@ -84,7 +86,7 @@ static bool errors = false;
 /* Whether we got any errors while parsing an rcfile. */
 static size_t lineno = 0;
 /* If we did, the line number where the last error occurred. */
-static std::string pinotrc;
+static string pinotrc;
 /* The path to the rcfile we're parsing. */
 static Syntax *new_syntax = NULL;
 /* current syntax being processed */
@@ -227,7 +229,8 @@ bool nregcomp(const char *regex, int cflags)
  * global list of color syntaxes. */
 void parse_syntax(char *ptr)
 {
-	const char *fileregptr = NULL, *nameptr = NULL;
+	const char *fileregptr = NULL;
+	string name;
 
 	assert(ptr != NULL);
 
@@ -243,7 +246,7 @@ void parse_syntax(char *ptr)
 
 	ptr++;
 
-	nameptr = ptr;
+	name = string(ptr);
 	ptr = parse_next_regex(ptr);
 
 	if (ptr == NULL) {
@@ -252,16 +255,16 @@ void parse_syntax(char *ptr)
 
 	/* Search for a duplicate syntax name.  If we find one, free it, so
 	 * that we always use the last syntax with a given name. */
-	auto existing_syntax = syntaxes[nameptr];
+	auto existing_syntax = syntaxes[name];
 	if (existing_syntax) {
-		DEBUG_LOG("Found existing syntax with name \"" << nameptr << "\"; overriding with new definition");
+		DEBUG_LOG("Found existing syntax with name \"" << name << "\"; overriding with new definition");
 		delete existing_syntax;
 		existing_syntax = nullptr;
 	}
 
-	new_syntax = new Syntax(nameptr);
+	new_syntax = new Syntax(name);
 
-	DEBUG_LOG("Starting a new syntax type: \"" << nameptr << '"');
+	DEBUG_LOG("Starting a new syntax type: \"" << name << '"');
 
 	/* The "none" syntax is the same as not having a syntax at all, so
 	 * we can't assign any extensions or colors to it. */
@@ -301,7 +304,7 @@ void parse_syntax(char *ptr)
 		}
 	}
 
-	syntaxes[nameptr] = new_syntax;
+	syntaxes[name] = new_syntax;
 }
 
 /* Parse an optional "extends" line in a syntax. */
@@ -572,7 +575,7 @@ void parse_include_file(char *filename)
 void parse_include(char *ptr)
 {
 	char *option, *expanded;
-	std::string pinotrc_save = pinotrc;
+	string pinotrc_save = pinotrc;
 	size_t lineno_save = lineno;
 	glob_t files;
 
@@ -603,14 +606,14 @@ void parse_include(char *ptr)
 
 /* Return the numeric value corresponding to the color named in colorname,
  * and set bright to true if that color is bright (similarly for underline). */
-COLORWIDTH color_name_to_value(std::string colorname, bool *bright, bool *underline)
+COLORWIDTH color_name_to_value(string colorname, bool *bright, bool *underline)
 {
 	COLORWIDTH mcolor = -1;
 
 	assert(bright != NULL && underline != NULL);
 
 	// Convert color name to lowercase so any capitalization will work
-	std::transform(colorname.begin(), colorname.end(), colorname.begin(), ::tolower);
+	colorname = colorname.to_lower();
 
 	if (colorname.compare(0, 6, "bright") == 0) {
 		*bright = true;
@@ -682,7 +685,7 @@ void parse_colors(char *ptr, bool icase)
 	fgstr = ptr;
 	ptr = parse_next_word(ptr);
 
-	if (!parse_color_names(std::string(fgstr), &fg, &bg, &bright, &underline)) {
+	if (!parse_color_names(string(fgstr), &fg, &bg, &bright, &underline)) {
 		return;
 	}
 
@@ -782,15 +785,15 @@ void parse_colors(char *ptr, bool icase)
 }
 
 /* Parse the color name, or pair of color names, in combostr. */
-bool parse_color_names(const std::string& combostr, short *fg, short *bg, bool *bright, bool *underline)
+bool parse_color_names(const string& combostr, short *fg, short *bg, bool *bright, bool *underline)
 {
-	std::string fg_color_name, bg_color_name;
+	string fg_color_name, bg_color_name;
 
 	if (combostr == "") {
 		return false;
 	}
 
-	if (combostr.find(',') != std::string::npos) {
+	if (combostr.find(',') != string::npos) {
 		fg_color_name = combostr.substr(0, combostr.find(','));
 		bg_color_name = combostr.substr(combostr.find(',') + 1);
 
@@ -885,7 +888,7 @@ void parse_linter(char *ptr)
 		return;
 	}
 
-	new_syntax->linter = std::string(ptr);
+	new_syntax->linter = string(ptr);
 }
 
 void parse_formatter(char *ptr)
@@ -902,7 +905,7 @@ void parse_formatter(char *ptr)
 		return;
 	}
 
-	new_syntax->formatter = std::string(ptr);
+	new_syntax->formatter = string(ptr);
 }
 
 /* Check whether the user has unmapped every shortcut for a
@@ -929,12 +932,12 @@ static void check_vitals_mapped(void)
 	}
 }
 
-std::string rest(std::stringstream& stream)
+string rest(std::stringstream& stream)
 {
 	// Eliminate leading whitespace
 	while (!stream.eof() && isspace(stream.peek())) stream.get();
 
-	std::string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
+	string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
 	return remaining;
 }
 
@@ -943,9 +946,9 @@ std::string rest(std::stringstream& stream)
  * to contain color syntax commands: syntax, color, and icolor. */
 void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 {
-	std::string line;
+	string line;
 
-	while (!std::getline(rcstream, line).eof()) {
+	while (!getline(rcstream, line).eof()) {
 		lineno++;
 
 		if (line.empty() || line[0] == '#') {
@@ -956,7 +959,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		linestream << line;
 
 		// Read keyword
-		std::string keyword;
+		string keyword;
 		linestream >> keyword;
 
 		// --------
@@ -1038,7 +1041,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 			continue;
 		}
 
-		std::string option;
+		string option;
 		linestream >> option;
 
 		bool found = false;
@@ -1058,7 +1061,7 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 						if (*value == '"') value++;
 						ptr = parse_argument(ptr);
 
-						std::string argument = std::string(value);
+						string argument = string(value);
 						if (argument.empty()) {
 							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
 							break;
@@ -1142,7 +1145,7 @@ void do_rcfile(void)
 {
 	struct stat rcinfo;
 
-	pinotrc = std::string(SYSCONFDIR) + "/pinotrc";
+	pinotrc = string(SYSCONFDIR) + "/pinotrc";
 
 	/* Don't open directories, character files, or block files. */
 	if (stat(pinotrc, &rcinfo) != -1) {
@@ -1154,7 +1157,7 @@ void do_rcfile(void)
 	DEBUG_LOG("Parsing file \"" << pinotrc << '"');
 
 	/* Try to open the system-wide pinotrc. */
-	std::ifstream rcstream(pinotrc);
+	std::ifstream rcstream(pinotrc.str());
 	if (rcstream.is_open()) {
 		parse_rcfile(rcstream, false);
 	}
@@ -1186,7 +1189,7 @@ void do_rcfile(void)
 		}
 
 		/* Try to open the current user's pinotrc. */
-		rcstream.open(pinotrc);
+		rcstream.open(pinotrc.str());
 		if (!rcstream.is_open()) {
 			/* Don't complain about the file's not existing. */
 			if (errno != ENOENT) {

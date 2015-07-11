@@ -367,6 +367,9 @@ if test x$ac_cv_header_pcreposix_h = xno; then
     AC_MSG_ERROR([*** The header file pcreposix.h was not found.])
 fi
 
+# Check for libicu...
+PKG_CHECK_MODULES(libicu, [icu-io icu-i18n icu-uc], [have_libicu=yes], [have_libicu=no])
+
 AS_IF([test "x$enable_libmagic" != "xno"], [
 	AC_CHECK_HEADERS_ONCE([magic.h])
 	AC_CHECK_LIB(magic, magic_open)

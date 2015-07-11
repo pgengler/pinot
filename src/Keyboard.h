@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 // include ncurses for ESCDELAY
 #include <ncurses.h>
 
@@ -10,19 +8,22 @@
 #include "termkey-internal.h"
 #include "termkey.h"
 
+#include "String.h"
+using pinot::string;
+
 class Key
 {
 	public:
 		Key(TermKey* termkey, TermKeyKey key);
 
-		std::string format();
-		operator std::string();
-		std::string verbatim();
+		string format();
+		operator string();
+		string verbatim();
 
 		bool has_control_key();
 		bool has_meta_key();
 	private:
-		std::string control_char(char c) const;
+		string control_char(char c) const;
 
 		TermKey *termkey;
 		TermKeyKey key;

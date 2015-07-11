@@ -1,11 +1,13 @@
 #pragma once
 
-#include <string>
 #include <vector>
 
 #include <sys/types.h>
 
 #include "syntax.h"
+
+#include "String.h"
+using pinot::string;
 
 /* Enumeration types. */
 typedef enum {
@@ -38,7 +40,7 @@ typedef enum {
 
 /* Structure types. */
 typedef struct filestruct {
-	std::string data;
+	string data;
 	/* The text of this line. */
 	ssize_t lineno;
 	/* The number of this line. */
@@ -74,7 +76,7 @@ typedef struct undo {
 	/* What type of undo was this */
 	size_t begin;
 	/* Where did this  action begin or end */
-	char *strdata;
+	string strdata;
 	/* String type data we will use for ccopying the affected line back */
 	int xflags;
 	/* Some flag data we need */
@@ -95,7 +97,7 @@ typedef struct undo {
 
 
 typedef struct poshiststruct {
-	std::string filename;
+	string filename;
 	/* The file. */
 	ssize_t lineno;
 	/* Line number we left off on */
@@ -104,7 +106,7 @@ typedef struct poshiststruct {
 } poshiststruct;
 
 typedef struct rcoption {
-	std::string name;
+	string name;
 	/* The name of the rcfile option. */
 	long flag;
 	/* The flag associated with it, if any. */
@@ -113,7 +115,7 @@ typedef struct rcoption {
 } rcoption;
 
 typedef struct sc {
-	std::string keystr;
+	string keystr;
 	/* The shortcut key for a function, ASCII version */
 	int menu;
 	/* What list does this apply to */
@@ -128,9 +130,9 @@ typedef struct subnfunc {
 	/* What function is this */
 	int menus;
 	/* In what menus does this function apply */
-	std::string desc;
+	string desc;
 	/* The function's description, e.g. "Page Up". */
-	std::string help;
+	string help;
 	/* The help file entry text for this function. */
 	bool blank_after;
 	/* Whether there should be a blank line after the help entry

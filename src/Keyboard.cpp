@@ -27,30 +27,30 @@ Key::Key(TermKey* termkey, TermKeyKey key)
 
 }
 
-std::string Key::format()
+string Key::format()
 {
 	char keybuffer[50];
 	TermKeyFormat format = static_cast<TermKeyFormat>(TERMKEY_FORMAT_ALTISMETA | TERMKEY_FORMAT_CARETCTRL);
 	termkey_strfkey(termkey, keybuffer, sizeof(keybuffer), &key, format);
 
-	return std::string(keybuffer);
+	return string(keybuffer);
 }
 
-Key::operator std::string()
+Key::operator string()
 {
 	if (key.type == TERMKEY_TYPE_UNICODE) {
-		return std::string(key.utf8);
+		return string(key.utf8);
 	}
 	return "";
 }
 
-std::string Key::verbatim()
+string Key::verbatim()
 {
 	if (key.type == TERMKEY_TYPE_UNICODE) {
 		if (has_control_key()) {
 			return control_char(key.code.codepoint);
 		} else {
-			return std::string(key.utf8);
+			return string(key.utf8);
 		}
 	}
 	return "";
@@ -66,8 +66,8 @@ bool Key::has_meta_key()
 	return (key.modifiers & TERMKEY_KEYMOD_ALT);
 }
 
-std::string Key::control_char(char c) const
+string Key::control_char(char c) const
 {
 	char control_char = (tolower(c) - 'a') + 1;
-	return std::string(&control_char, 1);
+	return string(control_char);
 }

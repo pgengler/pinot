@@ -31,6 +31,8 @@
 #include <wctype.h>
 #endif
 
+using pinot::string;
+
 static bool use_utf8 = false;
 /* Whether we've enabled UTF-8 support. */
 static const wchar_t bad_wchar = 0xFFFD;
@@ -39,17 +41,6 @@ static const wchar_t bad_wchar = 0xFFFD;
  * for a match to it. */
 static const char *const bad_mbchar = "\xEF\xBF\xBD";
 static const int bad_mbchar_len = 3;
-
-/* Concatenate two allocated strings. */
-char *addstrings(char *str1, size_t len1, char *str2, size_t len2)
-{
-	str1 = charealloc(str1, len1 + len2 + 1);
-	str1[len1] = '\0';
-	strncat(&str1[len1], str2, len2);
-	free(str2);
-
-	return str1;
-}
 
 /* Enable UTF-8 support. */
 void utf8_init(void)
@@ -457,7 +448,7 @@ int parse_mbchar(const char *buf, char *chr, size_t *col)
 
 /* Return the index in buf of the beginning of the multibyte character
  * before the one at pos. */
-size_t move_mbleft(const std::string& str, size_t pos)
+size_t move_mbleft(string str, size_t pos)
 {
 	return move_mbleft(str.c_str(), pos);
 }
@@ -486,7 +477,7 @@ size_t move_mbleft(const char *buf, size_t pos)
 
 /* Return the index in buf of the beginning of the multibyte character
  * after the one at pos. */
-size_t move_mbright(const std::string& str, size_t pos)
+size_t move_mbright(string str, size_t pos)
 {
 	return move_mbright(str.c_str(), pos);
 }

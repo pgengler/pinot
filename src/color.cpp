@@ -30,14 +30,16 @@
 #include <magic.h>
 #endif
 
-std::string canonical_filename(const std::string& filename)
+using pinot::string;
+
+string canonical_filename(const string& filename)
 {
-	std::string current_dir = getcwd();
-	std::string filename_with_dir;
+	string current_dir = getcwd();
+	string filename_with_dir;
 	if (current_dir != "" && filename[0] != '/') {
 		filename_with_dir = current_dir + "/" + filename;
 	}
-	std::string canonical_name = realpath(filename_with_dir);
+	string canonical_name = realpath(filename_with_dir);
 	return (canonical_name != "") ? canonical_name : filename;
 }
 
@@ -165,7 +167,7 @@ void color_update(void)
 	if (openfile->colorstrings.empty()) {
 
 		// Get the canonical name for the file, not the user-provided one
-		std::string canonical_name = canonical_filename(openfile->filename);
+		string canonical_name = canonical_filename(openfile->filename);
 
 		for (auto pair : syntaxes) {
 			auto tmpsyntax = pair.second;

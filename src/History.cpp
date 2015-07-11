@@ -7,7 +7,7 @@ History::History()
 	position = search_marker = 0;
 }
 
-void History::add(const std::string& entry)
+void History::add(const string& entry)
 {
 	DEBUG_LOG("Adding '" << entry << "' to history");
 	// If the list already includes this entry, remove it
@@ -29,7 +29,7 @@ void History::add(const std::string& entry)
 	has_changed = true;
 }
 
-void History::add_raw(const std::string& entry)
+void History::add_raw(const string& entry)
 {
 	lines.push_back(entry);
 }
@@ -49,7 +49,7 @@ bool History::empty() const
 	return lines.empty();
 }
 
-const std::string& History::find(const std::string& s, ssize_t len)
+const string& History::find(const string& s, ssize_t len)
 {
 	if (s == "" || empty()) {
 		return s;
@@ -74,7 +74,7 @@ const std::string& History::find(const std::string& s, ssize_t len)
 	return s;
 }
 
-std::string History::newer()
+string History::newer()
 {
 	if (position == 0) {
 		return "";
@@ -82,12 +82,12 @@ std::string History::newer()
 	return lines[--position];
 }
 
-const std::string& History::newest() const
+const string& History::newest() const
 {
 	return lines.front();
 }
 
-std::string History::older()
+string History::older()
 {
 	if (position == lines.size()) {
 		return "";
@@ -97,9 +97,9 @@ std::string History::older()
 
 std::istream& operator>> (std::istream& stream, History& history)
 {
-	std::string line;
+	string line;
 	while (stream) {
-		std::getline(stream, line);
+		getline(stream, line);
 		if (line != "") {
 			history.add_raw(line);
 		} else {

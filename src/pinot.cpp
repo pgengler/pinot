@@ -39,6 +39,8 @@
 #endif
 #include <sys/ioctl.h>
 
+using pinot::string;
+
 static bool no_rcfiles = false;
 /* Should we ignore all rcfiles? */
 static struct termios oldterm;
@@ -545,7 +547,7 @@ void die(const char *msg, ...)
 
 /* Save the current file under the name spacified in die_filename, which
  * is modified to be unique if necessary. */
-void die_save_file(std::string die_filename, struct stat *die_stat)
+void die_save_file(string die_filename, struct stat *die_stat)
 {
 	bool failed = true;
 
@@ -554,7 +556,7 @@ void die_save_file(std::string die_filename, struct stat *die_stat)
 		die_filename = "pinot";
 	}
 
-	std::string retval = get_next_filename(die_filename, ".save");
+	string retval = get_next_filename(die_filename, ".save");
 	if (retval != "") {
 		failed = !write_file(retval.c_str(), NULL, true, OVERWRITE, true);
 	}
@@ -1321,14 +1323,14 @@ void precalc_multicolorinfo(void)
 					}
 				}
 
-				while ((nostart = regexec(tmpcolor->start, &fileptr->data[startx], 1, &startmatch, (startx == 0) ? 0 : REG_NOTBOL)) == 0) {
+				while ((nostart = regexec(tmpcolor->start, fileptr->data.substr(startx).c_str(), 1, &startmatch, (startx == 0) ? 0 : REG_NOTBOL)) == 0) {
 					/* Look for end and start marking how many lines are encompassed
 					   whcih should speed up rendering later */
 					startx += startmatch.rm_eo;
 					DEBUG_LOG("match found at pos " << startx);
 
 					/* Look on this line first for end */
-					if (regexec(tmpcolor->end, &fileptr->data[startx], 1, &endmatch, (startx == 0) ? 0 : REG_NOTBOL) == 0) {
+					if (regexec(tmpcolor->end, fileptr->data.substr(startx).c_str(), 1, &endmatch, (startx == 0) ? 0 : REG_NOTBOL) == 0) {
 						startx += endmatch.rm_eo;
 						fileptr->multidata[tmpcolor->id] |= CSTARTENDHERE;
 						DEBUG_LOG("end found on this line");
@@ -1390,7 +1392,7 @@ void precalc_multicolorinfo(void)
 /* The user typed output_len multibyte characters.  Add them to the edit
  * buffer, filtering out all ASCII control characters if allow_cntrls is
  * true. */
-void do_output(const std::string& output, bool allow_cntrls)
+void do_output(string output, bool allow_cntrls)
 {
 	char *str = mallocstrcpy(NULL, output.c_str());
 	do_output(str, output.length(), allow_cntrls);
@@ -1636,7 +1638,7 @@ int main(int argc, char **argv)
 			SET(WORD_BOUNDS);
 			break;
 		case 'Y':
-			syntaxstr = std::string(optarg);
+			syntaxstr = string(optarg);
 			break;
 		case 'c':
 			SET(CONST_UPDATE);

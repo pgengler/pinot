@@ -2,29 +2,31 @@
 
 #include <istream>
 #include <ostream>
-#include <string>
 #include <vector>
+
+#include "String.h"
+using pinot::string;
 
 class History {
 	public:
 		History();
 
-		void add(const std::string& entry);
+		void add(const string& entry);
 		bool at_newest() const;
 		bool changed() const;
 		bool empty() const;
-		const std::string& find(const std::string& s, ssize_t len);
-		std::string newer();
-		const std::string& newest() const;
-		std::string older();
+		const string& find(const string& s, ssize_t len);
+		string newer();
+		const string& newest() const;
+		string older();
 
-		friend std::istream& operator>> (std::istream& strean, History& history);
+		friend std::istream& operator>> (std::istream& stream, History& history);
 		friend std::ostream& operator<< (std::ostream& stream, const History& history);
 
 	private:
-		void add_raw(const std::string& entry);
+		void add_raw(const string& entry);
 		bool has_changed = false;
 
-		std::vector<std::string> lines;
+		std::vector<string> lines;
 		ssize_t position, search_marker;
 };

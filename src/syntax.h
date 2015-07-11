@@ -2,12 +2,14 @@
 
 #include <list>
 #include <memory>
-#include <string>
 #include <unordered_map>
 
 #include <pcreposix.h>
 
 #include "macros.h"
+#include "String.h"
+
+using pinot::string;
 
 #define COLORWIDTH short
 typedef struct colortype {
@@ -58,10 +60,10 @@ struct ColorPair {
 };
 
 struct LintMessage {
-	ssize_t lineno;       // line number of the message
-	ssize_t colno;        // column number of the message
-	std::string text;     // message text
-	std::string filename; // filename
+	ssize_t lineno;  // line number of the message
+	ssize_t colno;   // column number of the message
+	string text;     // message text
+	string filename; // filename
 };
 typedef std::list<LintMessage> LintMessages;
 
@@ -70,12 +72,12 @@ class SyntaxMatch {
 		SyntaxMatch(const char*);
 		virtual ~SyntaxMatch();
 
-		bool matches(const std::string& str) const;
+		bool matches(string str) const;
 		bool matches(const char*) const;
 	private:
 		void compile();
 
-		std::string ext_regex;
+		string ext_regex;
 		/* The extensions that match this syntax. */
 
 		regex_t *ext;
@@ -85,9 +87,9 @@ typedef std::list<SyntaxMatch *> SyntaxMatchList;
 
 class Syntax {
 	public:
-		Syntax(const char *desc);
+		Syntax(const string& desc);
 
-		std::string desc;
+		string desc;
 		/* The name of this syntax. */
 
 		SyntaxMatchList extensions;
@@ -99,16 +101,16 @@ class Syntax {
 		SyntaxMatchList magics;
 		/* Regexes to match libmagic results */
 
-		std::string linter;
+		string linter;
 		/* Command to 'lint' this type of file */
 
-		std::string formatter;
+		string formatter;
 		/* Command to format files of this type (e.g., gofmt) */
 
 		int nmultis;
 		/* How many multi line strings this syntax has */
 
-		std::list<std::string> extends;
+		std::list<string> extends;
 		/* Names of other syntaxes which this one extends */
 
 		ColorList colors() const;
@@ -119,7 +121,7 @@ class Syntax {
 		ColorList _colors;
 		/* The colors used in this syntax. */
 };
-typedef std::unordered_map<std::string, Syntax *> SyntaxMap;
+typedef std::unordered_map<string, Syntax *> SyntaxMap;
 
 /* Flags that indicate how a multiline regex applies to a line. */
 #define CNONE 		(1<<1)

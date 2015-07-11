@@ -30,6 +30,8 @@
 #include <unistd.h>
 #include <ctype.h>
 
+using pinot::string;
+
 static int statusblank = 0;
 /* The number of keystrokes left after we call statusbar(),
  * before we actually blank the statusbar. */
@@ -51,13 +53,13 @@ Key get_kbinput(WINDOW *win)
 	return key;
 }
 
-std::string get_verbatim_kbinput(WINDOW *win)
+string get_verbatim_kbinput(WINDOW *win)
 {
 	/* Turn off flow control characters if necessary so that we can type them in verbatim */
 	if (ISSET(PRESERVE)) {
 		disable_flow_control();
 	}
-	std::string result = get_kbinput(win).verbatim();
+	string result = get_kbinput(win).verbatim();
 
 	/* Turn flow control characters back on if necessary */
 	if (ISSET(PRESERVE)) {
@@ -75,7 +77,7 @@ std::string get_verbatim_kbinput(WINDOW *win)
  * will return the control key corresponding to that function. */
 const sc *get_shortcut(Key kbinput)
 {
-	std::string key = kbinput.format();
+	string key = kbinput.format();
 
 	DEBUG_LOG("get_shortcut(): key is " << key);
 
@@ -172,27 +174,19 @@ void check_statusblank(void)
  * string is dynamically allocated, and should be freed.  If dollars is
  * true, the caller might put "$" at the beginning or end of the line if
  * it's too long. */
-std::string display_string(const std::string& buf, size_t start_col, size_t len, bool dollars)
+string display_string(string buf, size_t start_col, size_t len, bool dollars)
 {
-	char *foo = display_string(buf.c_str(), start_col, len, dollars);
-	std::string result(foo);
-	free(foo);
-
-	return result;
+	return display_string(buf.c_str(), start_col, len, dollars);
 }
 
-char *display_string(const char *buf, size_t start_col, size_t len, bool dollars)
+string display_string(const char *buf, size_t start_col, size_t len, bool dollars)
 {
 	size_t start_index;
 	/* Index in buf of the first character shown. */
 	size_t column;
 	/* Screen column that start_index corresponds to. */
-	size_t alloc_len;
-	/* The length of memory allocated for converted. */
-	char *converted;
+	string converted;
 	/* The string we return. */
-	size_t index;
-	/* Current position in converted. */
 	char *buf_mb;
 	int buf_mb_len;
 
@@ -213,24 +207,6 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 
 	assert(column <= start_col);
 
-	/* Make sure there's enough room for the initial character, whether
-	 * it's a multibyte control character, a non-control multibyte
-	 * character, a tab character, or a null terminator.  Rationale:
-	 *
-	 * multibyte control character followed by a null terminator:
-	 *     1 byte ('^') + mb_cur_max() bytes + 1 byte ('\0')
-	 * multibyte non-control character followed by a null terminator:
-	 *     mb_cur_max() bytes + 1 byte ('\0')
-	 * tab character followed by a null terminator:
-	 *     mb_cur_max() bytes + (tabsize - 1) bytes + 1 byte ('\0')
-	 *
-	 * Since tabsize has a minimum value of 1, it can substitute for 1
-	 * byte above. */
-	alloc_len = (mb_cur_max() + tabsize + 1) * MAX_BUF_SIZE;
-	converted = charalloc(alloc_len);
-
-	index = 0;
-
 	if (buf[start_index] != '\0' && buf[start_index] != '\t' && (column < start_col || (dollars && column > 0))) {
 		/* We don't display all of buf[start_index] since it starts to
 		 * the left of the screen. */
@@ -244,7 +220,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 				ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb, &ctrl_buf_mb_len);
 
 				for (i = 0; i < ctrl_buf_mb_len; i++) {
-					converted[index++] = ctrl_buf_mb[i];
+					converted += ctrl_buf_mb[i];
 				}
 
 				start_col += mbwidth(ctrl_buf_mb);
@@ -255,11 +231,11 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 			}
 		} else if (using_utf8() && mbwidth(buf_mb) == 2) {
 			if (column >= start_col) {
-				converted[index++] = ' ';
+				converted += ' ';
 				start_col++;
 			}
 
-			converted[index++] = ' ';
+			converted += ' ';
 			start_col++;
 
 			start_index += buf_mb_len;
@@ -269,28 +245,20 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 	while (buf[start_index] != '\0') {
 		buf_mb_len = parse_mbchar(buf + start_index, buf_mb, NULL);
 
-		/* Make sure there's enough room for the next character, whether
-		 * it's a multibyte control character, a non-control multibyte
-		 * character, a tab character, or a null terminator. */
-		if (index + mb_cur_max() + tabsize + 1 >= alloc_len - 1) {
-			alloc_len += (mb_cur_max() + tabsize + 1) * MAX_BUF_SIZE;
-			converted = charealloc(converted, alloc_len);
-		}
-
 		/* If buf contains a tab character, interpret it. */
 		if (*buf_mb == '\t') {
 			if (ISSET(WHITESPACE_DISPLAY)) {
 				int i;
 
 				for (i = 0; i < whitespace_len[0]; i++) {
-					converted[index++] = whitespace[i];
+					converted += whitespace[i];
 				}
 			} else {
-				converted[index++] = ' ';
+				converted += ' ';
 			}
 			start_col++;
 			while (start_col % tabsize != 0) {
-				converted[index++] = ' ';
+				converted += ' ';
 				start_col++;
 			}
 		} else if (is_cntrl_mbchar(buf_mb)) {
@@ -298,13 +266,13 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 			char *ctrl_buf_mb = charalloc(mb_cur_max());
 			int ctrl_buf_mb_len, i;
 
-			converted[index++] = '^';
+			converted += '^';
 			start_col++;
 
 			ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb, &ctrl_buf_mb_len);
 
 			for (i = 0; i < ctrl_buf_mb_len; i++) {
-				converted[index++] = ctrl_buf_mb[i];
+				converted += ctrl_buf_mb[i];
 			}
 
 			start_col += mbwidth(ctrl_buf_mb);
@@ -316,10 +284,10 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 				int i;
 
 				for (i = whitespace_len[0]; i < whitespace_len[0] + whitespace_len[1]; i++) {
-					converted[index++] = whitespace[i];
+					converted += whitespace[i];
 				}
 			} else {
-				converted[index++] = ' ';
+				converted += ' ';
 			}
 			start_col++;
 		} else {
@@ -336,7 +304,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 			nctrl_buf_mb = mbrep(buf_mb, nctrl_buf_mb, &nctrl_buf_mb_len);
 
 			for (i = 0; i < nctrl_buf_mb_len; i++) {
-				converted[index++] = nctrl_buf_mb[i];
+				converted += nctrl_buf_mb[i];
 			}
 
 			start_col += mbwidth(nctrl_buf_mb);
@@ -349,16 +317,8 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
 
 	free(buf_mb);
 
-	assert(alloc_len >= index + 1);
-
-	/* Null-terminate converted. */
-	converted[index] = '\0';
-
 	/* Make sure converted takes up no more than len columns. */
-	index = actual_x(converted, len);
-	null_at(&converted, index);
-
-	return converted;
+	return converted.substr(len);
 }
 
 /* If path is NULL, we're in normal editing mode, so display the current
@@ -367,7 +327,7 @@ char *display_string(const char *buf, size_t start_col, size_t len, bool dollars
  * file browser, and path contains the directory to start the file
  * browser in, so display the current version of pinot and the contents
  * of path on the titlebar. */
-void titlebar(const std::string& path)
+void titlebar(string path)
 {
 	titlebar(path.c_str());
 }
@@ -390,7 +350,7 @@ void titlebar(const char *path)
 	/* The length of the state in columns, or the length of
 	 * "Modified" if the state is blank and we're not in the file
 	 * browser. */
-	char *exppath = NULL;
+	string exppath;
 	/* The filename, expanded for display. */
 	bool newfie = false;
 	/* Do we say "New Buffer"? */
@@ -503,7 +463,7 @@ void titlebar(const char *path)
 		if (space <= 0) {
 			goto the_end;
 		}
-		waddstr(topwin, exppath);
+		waddstr(topwin, exppath.c_str());
 	} else {
 		size_t exppathlen = newfie ? 0 : strlenpt(exppath);
 		/* The length of the expanded filename. */
@@ -512,12 +472,11 @@ void titlebar(const char *path)
 		mvwaddnstr(topwin, 0, verlen + ((space - exppathlen) / 3), prefix, actual_x(prefix, prefixlen));
 		if (!newfie) {
 			waddch(topwin, ' ');
-			waddstr(topwin, exppath);
+			waddstr(topwin, exppath.c_str());
 		}
 	}
 
 the_end:
-	free(exppath);
 
 	if (state[0] != '\0') {
 		if (statelen >= COLS - 1) {
@@ -563,7 +522,8 @@ void set_modified(void)
 void statusbar(const char *msg, ...)
 {
 	va_list ap;
-	char *bar, *foo;
+	char *bar;
+	string foo;
 	size_t start_x;
 	bool old_whitespace;
 
@@ -594,8 +554,7 @@ void statusbar(const char *msg, ...)
 	wmove(bottomwin, 0, start_x);
 	set_color(bottomwin, interface_colors[STATUS_BAR]);
 	waddstr(bottomwin, "[ ");
-	waddstr(bottomwin, foo);
-	free(foo);
+	waddstr(bottomwin, foo.c_str());
 	waddstr(bottomwin, " ]");
 	clear_color(bottomwin, interface_colors[STATUS_BAR]);
 	wnoutrefresh(bottomwin);
@@ -684,7 +643,7 @@ void bottombars(int menu)
  * to write at most len characters, even if len is very small and
  * keystroke and desc are long.  Note that waddnstr(,,(size_t)-1) adds
  * the whole string!  We do not bother padding the entry with blanks. */
-void onekey(const std::string& keystroke, const std::string& desc, size_t len)
+void onekey(string keystroke, string desc, size_t len)
 {
 	size_t keystroke_len = keystroke.length() + 1;
 
@@ -824,7 +783,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					 * unless k is zero.  If regexec() returns
 					 * REG_NOMATCH, there are no more matches in the
 					 * line. */
-					if (regexec(tmpcolor->start, &fileptr->data[k], 1, &startmatch, (k == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
+					if (regexec(tmpcolor->start, fileptr->data.substr(k).c_str(), 1, &startmatch, (k == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
 						break;
 					}
 
@@ -838,11 +797,11 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					if (startmatch.rm_so == startmatch.rm_eo) {
 						startmatch.rm_eo++;
 					} else if (startmatch.rm_so < endpos && startmatch.rm_eo > startpos) {
-						x_start = (startmatch.rm_so <= startpos) ? 0 : strnlenpt(fileptr->data, startmatch.rm_so) - start;
+						x_start = (startmatch.rm_so <= startpos) ? 0 : strnlenpt(fileptr->data.c_str(), startmatch.rm_so) - start;
 
 						index = actual_x(converted, x_start);
 
-						paintlen = actual_x(converted + index, strnlenpt(fileptr->data, startmatch.rm_eo) - start - x_start);
+						paintlen = actual_x(converted + index, strnlenpt(fileptr->data.c_str(), startmatch.rm_eo) - start - x_start);
 
 						assert(0 <= x_start && 0 <= paintlen);
 
@@ -862,11 +821,11 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 				 * line after start_line matching the end.  If that line
 				 * is not before fileptr, then paint the beginning of
 				 * this line. */
-				const filestruct *start_line = fileptr->prev;
+				filestruct *start_line = fileptr->prev;
 				/* The first line before fileptr matching start. */
 				regoff_t start_col;
 				/* Where it starts in that line. */
-				const filestruct *end_line;
+				filestruct *end_line;
 				short md = fileptr->multidata[tmpcolor->id];
 
 				if (md == -1) {
@@ -879,17 +838,17 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					unset_formatting(tmpcolor);
 					continue;
 				} else if (md == CBEGINBEFORE) {
-					regexec(tmpcolor->end, fileptr->data, 1, &endmatch, 0);
-					paintlen = actual_x(converted, strnlenpt(fileptr->data, endmatch.rm_eo) - start);
+					regexec(tmpcolor->end, fileptr->data.c_str(), 1, &endmatch, 0);
+					paintlen = actual_x(converted, strnlenpt(fileptr->data.c_str(), endmatch.rm_eo) - start);
 					mvwaddnstr(edit, line, 0, converted, paintlen);
 					unset_formatting(tmpcolor);
 					continue;
 				}
 
-				while (start_line != NULL && regexec(tmpcolor->start, start_line->data, 1, &startmatch, 0) == REG_NOMATCH) {
+				while (start_line != NULL && regexec(tmpcolor->start, start_line->data.c_str(), 1, &startmatch, 0) == REG_NOMATCH) {
 					/* If there is an end on this line, there is no need
 					 * to look for starts on earlier lines. */
-					if (regexec(tmpcolor->end, start_line->data, 0, NULL, 0) == 0) {
+					if (regexec(tmpcolor->end, start_line->data.c_str(), 0, NULL, 0) == 0) {
 						goto step_two;
 					}
 					start_line = start_line->prev;
@@ -915,12 +874,12 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					while (true) {
 						start_col += startmatch.rm_so;
 						startmatch.rm_eo -= startmatch.rm_so;
-						if (regexec(tmpcolor->end, start_line->data + start_col + startmatch.rm_eo, 0, NULL, (start_col + startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
+						if (regexec(tmpcolor->end, start_line->data.substr(start_col + startmatch.rm_eo).c_str(), 0, NULL, (start_col + startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH) {
 							/* No end found after this start. */
 							break;
 						}
 						start_col++;
-						if (regexec(tmpcolor->start, start_line->data + start_col, 1, &startmatch, REG_NOTBOL) == REG_NOMATCH) {
+						if (regexec(tmpcolor->start, start_line->data.substr(start_col).c_str(), 1, &startmatch, REG_NOTBOL) == REG_NOMATCH) {
 							/* No later start on this line. */
 							goto step_two;
 						}
@@ -933,7 +892,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 					 * end after the start at all?  We don't paint
 					 * unterminated starts. */
 					end_line = fileptr;
-					while (end_line != NULL && regexec(tmpcolor->end, end_line->data, 1, &endmatch, 0) == REG_NOMATCH) {
+					while (end_line != NULL && regexec(tmpcolor->end, end_line->data.c_str(), 1, &endmatch, 0) == REG_NOMATCH) {
 						end_line = end_line->next;
 					}
 
@@ -953,7 +912,7 @@ void edit_draw(filestruct *fileptr, const char *converted, int line, size_t star
 						paintlen = -1;
 						fileptr->multidata[tmpcolor->id] = CWHOLELINE;
 					} else {
-						paintlen = actual_x(converted, strnlenpt(fileptr->data, endmatch.rm_eo) - start);
+						paintlen = actual_x(converted, strnlenpt(fileptr->data.c_str(), endmatch.rm_eo) - start);
 						fileptr->multidata[tmpcolor->id] = CBEGINBEFORE;
 					}
 					mvwaddnstr(edit, line, 0, converted, paintlen);
@@ -966,7 +925,7 @@ step_two:
 					start_col = 0;
 
 					while (start_col < endpos) {
-						if (regexec(tmpcolor->start, fileptr->data + start_col, 1, &startmatch, (start_col == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH || start_col + startmatch.rm_so >= endpos) {
+						if (regexec(tmpcolor->start, fileptr->data.substr(start_col).c_str(), 1, &startmatch, (start_col == 0) ? 0 : REG_NOTBOL) == REG_NOMATCH || start_col + startmatch.rm_so >= endpos) {
 							/* No more starts on this line. */
 							break;
 						}
@@ -975,11 +934,11 @@ step_two:
 						startmatch.rm_so += start_col;
 						startmatch.rm_eo += start_col;
 
-						x_start = (startmatch.rm_so <= startpos) ? 0 : strnlenpt(fileptr->data, startmatch.rm_so) - start;
+						x_start = (startmatch.rm_so <= startpos) ? 0 : strnlenpt(fileptr->data.c_str(), startmatch.rm_so) - start;
 
 						index = actual_x(converted, x_start);
 
-						if (regexec(tmpcolor->end, fileptr->data + startmatch.rm_eo, 1, &endmatch, (startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == 0) {
+						if (regexec(tmpcolor->end, fileptr->data.substr(startmatch.rm_eo).c_str(), 1, &endmatch, (startmatch.rm_eo == 0) ? 0 : REG_NOTBOL) == 0) {
 							/* Translate the end match to be relative to the beginning of the line. */
 							endmatch.rm_so += startmatch.rm_eo;
 							endmatch.rm_eo += startmatch.rm_eo;
@@ -987,7 +946,7 @@ step_two:
 							 * it appear on this page, and is the match
 							 * more than zero characters long? */
 							if (endmatch.rm_eo > startpos && endmatch.rm_eo > startmatch.rm_so) {
-								paintlen = actual_x(converted + index, strnlenpt(fileptr->data, endmatch.rm_eo) - start - x_start);
+								paintlen = actual_x(converted + index, strnlenpt(fileptr->data.c_str(), endmatch.rm_eo) - start - x_start);
 
 								assert(0 <= x_start && x_start < COLS);
 
@@ -1003,7 +962,7 @@ step_two:
 							 * lines. */
 							end_line = fileptr->next;
 
-							while (end_line != NULL && regexec(tmpcolor->end, end_line->data, 0, NULL, 0) == REG_NOMATCH) {
+							while (end_line != NULL && regexec(tmpcolor->end, end_line->data.c_str(), 0, NULL, 0) == REG_NOMATCH) {
 								end_line = end_line->next;
 							}
 
@@ -1062,7 +1021,7 @@ step_two:
 
 			/* x_start is the expanded location of the beginning of the
 			 * mark minus the beginning of the page. */
-			x_start = strnlenpt(fileptr->data, top_x) - start;
+			x_start = strnlenpt(fileptr->data.c_str(), top_x) - start;
 
 			/* If the end of the mark is off the page, paintlen is -1,
 			 * meaning that everything on the line gets painted.
@@ -1072,7 +1031,7 @@ step_two:
 			if (bot_x >= endpos) {
 				paintlen = -1;
 			} else
-				paintlen = strnlenpt(fileptr->data, bot_x) - (x_start + start);
+				paintlen = strnlenpt(fileptr->data.c_str(), bot_x) - (x_start + start);
 
 			/* If x_start is before the beginning of the page, shift
 			 * paintlen x_start characters to compensate, and put
@@ -1107,9 +1066,8 @@ int update_line(filestruct *fileptr, size_t index)
 	int line = 0;
 	int extralinesused = 0;
 	/* The line in the edit window that we want to update. */
-	char *converted;
-	/* fileptr->data converted to have tabs and control characters
-	 * expanded. */
+	string converted;
+	/* fileptr->data converted to have tabs and control characters expanded. */
 	size_t page_start;
 	filestruct *tmp;
 
@@ -1135,24 +1093,23 @@ int update_line(filestruct *fileptr, size_t index)
 	if (ISSET(SOFTWRAP)) {
 		index = 0;
 	} else {
-		index = strnlenpt(fileptr->data, index);
+		index = strnlenpt(fileptr->data.c_str(), index);
 	}
 	page_start = get_page_start(index);
 
 	/* Expand the line, replacing tabs with spaces, and control
 	 * characters with their displayed forms. */
-	converted = display_string(fileptr->data, page_start, COLS, !ISSET(SOFTWRAP));
+	converted = display_string(fileptr->data.c_str(), page_start, COLS, !ISSET(SOFTWRAP));
 
 #ifdef DEBUG
 	if (ISSET(SOFTWRAP) && strlen(converted) >= COLS - 2) {
-		fprintf(stderr, "update_line(): converted(1) line = %s\n", converted);
+		DEBUG_LOG("update_line(): converted(1) line = " << converted);
 	}
 #endif
 
 
 	/* Paint the line. */
-	edit_draw(fileptr, converted, line, page_start);
-	free(converted);
+	edit_draw(fileptr, converted.c_str(), line, page_start);
 
 	if (!ISSET(SOFTWRAP)) {
 		if (page_start > 0) {
@@ -1170,14 +1127,13 @@ int update_line(filestruct *fileptr, size_t index)
 
 			/* Expand the line, replacing tabs with spaces, and control
 			 * characters with their displayed forms. */
-			converted = display_string(fileptr->data, index, COLS, !ISSET(SOFTWRAP));
-			if (ISSET(SOFTWRAP) && strlen(converted) >= COLS - 2) {
+			converted = display_string(fileptr->data.c_str(), index, COLS, !ISSET(SOFTWRAP));
+			if (ISSET(SOFTWRAP) && converted.length() >= COLS - 2) {
 				DEBUG_LOG("update_line(): converted(2) line == " << converted);
 			}
 
 			/* Paint the line. */
-			edit_draw(fileptr, converted, line, index);
-			free(converted);
+			edit_draw(fileptr, converted.c_str(), line, index);
 			extralinesused++;
 		}
 	}
@@ -1534,7 +1490,6 @@ void display_main_list(void)
 void do_cursorpos(bool constant)
 {
 	filestruct *f;
-	char c;
 	size_t i, cur_xpt = xplustabs() + 1;
 	size_t cur_lenpt = strlenpt(openfile->current->data) + 1;
 	int linepct, colpct, charpct;
@@ -1542,14 +1497,15 @@ void do_cursorpos(bool constant)
 	assert(openfile->fileage != NULL && openfile->current != NULL);
 
 	f = openfile->current->next;
-	c = openfile->current->data[openfile->current_x];
 
 	openfile->current->next = NULL;
-	openfile->current->data[openfile->current_x] = '\0';
+
+	auto saved_data = openfile->current->data;
+	openfile->current->data = openfile->current->data.substr(0, openfile->current_x);
 
 	i = get_totsize(openfile->fileage, openfile->current);
 
-	openfile->current->data[openfile->current_x] = c;
+	openfile->current->data = saved_data;
 	openfile->current->next = f;
 
 	if (constant && disable_cursorpos) {

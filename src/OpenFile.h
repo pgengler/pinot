@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
-using std::string;
+#include "String.h"
 
 #include "types.h"
+
+using pinot::string;
 
 class OpenFile
 {

@@ -24,6 +24,8 @@
 
 #include "pinot.h"
 
+using pinot::string;
+
 /* All external variables.  See global.c for their descriptions. */
 extern sigjmp_buf jump_buf;
 extern bool jump_buf_set;
@@ -33,8 +35,8 @@ extern Keyboard *keyboard;
 extern ssize_t fill;
 extern ssize_t wrap_at;
 
-extern std::string last_search;
-extern std::string last_replace;
+extern string last_search;
+extern string last_replace;
 
 extern unsigned flags[4];
 extern WINDOW *topwin;
@@ -51,24 +53,24 @@ extern std::list<OpenFile>::iterator openfile;
 
 extern char *matchbrackets;
 
-extern std::string whitespace;
+extern string whitespace;
 extern int whitespace_len[2];
 
 extern bool nodelay_mode;
-extern std::string answer;
+extern string answer;
 
 extern ssize_t tabsize;
 
-extern std::string backup_dir;
-extern const std::string locking_prefix;
-extern const std::string locking_suffix;
+extern string backup_dir;
+extern const string locking_prefix;
+extern const string locking_suffix;
 
 extern char *alt_speller;
 
 extern std::list<sc*> sclist;
 extern std::list<subnfunc*> allfuncs;
 extern SyntaxMap syntaxes;
-extern std::string syntaxstr;
+extern string syntaxstr;
 
 extern bool edit_refresh_needed;
 extern int currmenu;
@@ -77,34 +79,33 @@ extern History search_history;
 extern History replace_history;
 
 extern std::list<poshiststruct *> poshistory;
-void update_poshistory(const std::string& filename, ssize_t lineno, ssize_t xpos);
+void update_poshistory(const string& filename, ssize_t lineno, ssize_t xpos);
 
 extern regex_t search_regexp;
 extern regmatch_t regmatches[10];
 
 extern int highlight_attribute;
-extern std::string specified_color_combo[NUMBER_OF_ELEMENTS];
+extern string specified_color_combo[NUMBER_OF_ELEMENTS];
 extern ColorPair interface_colors[NUMBER_OF_ELEMENTS];
 
-extern std::string homedir;
+extern string homedir;
 
 /* All functions in browser.c. */
-std::string do_browser(std::string path, DIR *dir);
-std::string do_browse_from(const std::string& inpath);
-void browser_init(const std::string& path, DIR *dir);
+string do_browser(string path, DIR *dir);
+string do_browse_from(const string& inpath);
+void browser_init(const string& path, DIR *dir);
 void browser_refresh(void);
-bool browser_select_filename(const std::string& needle);
+bool browser_select_filename(const string& needle);
 bool filesearch_init(void);
-void findnextfile(const std::string& needle);
+void findnextfile(const string& needle);
 void filesearch_abort(void);
 void do_filesearch(void);
 void do_fileresearch(void);
 void do_first_file(void);
 void do_last_file(void);
-std::string striponedir(const std::string& path);
+string striponedir(const string& path);
 
 /* All functions in chars.c. */
-char *addstrings(char *str1, size_t len1, char *str2, size_t len2);
 void utf8_init(void);
 bool using_utf8(void);
 #ifndef HAVE_ISBLANK
@@ -130,9 +131,9 @@ int mbwidth(const char *c);
 int mb_cur_max(void);
 char *make_mbchar(long chr, int *chr_mb_len);
 int parse_mbchar(const char *buf, char *chr, size_t *col);
-size_t move_mbleft(const std::string& str, size_t pos);
+size_t move_mbleft(string str, size_t pos);
 size_t move_mbleft(const char *buf, size_t pos);
-size_t move_mbright(const std::string& str, size_t pos);
+size_t move_mbright(string str, size_t pos);
 size_t move_mbright(const char *buf, size_t pos);
 #ifndef HAVE_STRNCASECMP
 int nstrncasecmp(const char *s1, const char *s2, size_t n);
@@ -181,48 +182,48 @@ void do_uncut_text(void);
 void make_new_buffer(void);
 void initialize_buffer(void);
 void initialize_buffer_text(void);
-void open_buffer(std::string filename, bool undoable);
-void replace_buffer(const std::string& filename);
+void open_buffer(string filename, bool undoable);
+void replace_buffer(const string& filename);
 void display_buffer(void);
 std::list<OpenFile>::iterator switch_to_prevnext_buffer(bool next, bool quiet=false);
 void switch_to_prev_buffer_void(void);
 void switch_to_next_buffer_void(void);
 bool close_buffer(bool quiet);
 filestruct *read_line(char *buf, filestruct *prevnode, bool *first_line_ins, size_t buf_len);
-void read_file(FILE *f, int fd, const std::string& filename, bool undoable, bool checkwritable);
-int open_file(const std::string& filename, bool newfie, bool quiet, FILE **f);
-std::string get_next_filename(const std::string& name, const std::string& suffix);
+void read_file(FILE *f, int fd, string filename, bool undoable, bool checkwritable);
+int open_file(string filename, bool newfie, bool quiet, FILE **f);
+string get_next_filename(const string& name, const string& suffix);
 void do_insertfile(bool execute);
 void do_insertfile_void(void);
 void do_execute_command();
-std::string get_full_path(const std::string& origpath);
-std::string check_writable_directory(const std::string& path);
-std::string safe_tempfile(FILE **f);
+string get_full_path(const string& origpath);
+string check_writable_directory(const string& path);
+string safe_tempfile(FILE **f);
 void init_backup_dir(void);
-int delete_lockfile(const std::string& lockfilename);
-int write_lockfile(const std::string& lockfilename, const std::string& origfilename, bool modified);
+int delete_lockfile(string lockfilename);
+int write_lockfile(string lockfilename, string origfilename, bool modified);
 int copy_file(FILE *inn, FILE *out);
-bool write_file(const std::string& name, FILE *f_open, bool tmp, AppendType append, bool nonamechange);
-bool write_marked_file(const std::string& name, FILE *f_open, bool tmp, AppendType append);
+bool write_file(const string& name, FILE *f_open, bool tmp, AppendType append, bool nonamechange);
+bool write_marked_file(const string& name, FILE *f_open, bool tmp, AppendType append);
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
-std::string real_dir_from_tilde(const std::string& buf);
+string real_dir_from_tilde(const string& buf);
 char *real_dir_from_tilde(const char *buf);
-bool sort_directories(const std::string& a, const std::string& b);
+bool sort_directories(const string& a, const string& b);
 bool is_dir(const char *buf);
-std::vector<std::string> username_tab_completion(const char *buf, size_t buf_len);
-std::vector<std::string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
-std::string input_tab(const std::string& buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
+std::vector<string> username_tab_completion(const char *buf, size_t buf_len);
+std::vector<string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
+string input_tab(string buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
-std::string tail(const std::string& foo);
+string tail(string foo);
 const char *tail(const char *foo);
-std::string histfilename(void);
+string histfilename(void);
 void load_history(void);
 void save_history(void);
 int check_dotpinot(void);
 void load_poshistory(void);
 void save_poshistory(void);
-int check_poshistory(const std::string& file, ssize_t *line, ssize_t *column);
+int check_poshistory(const string& file, ssize_t *line, ssize_t *column);
 
 /* All functions in global.c. */
 size_t length_of_list(int menu);
@@ -275,7 +276,7 @@ void copy_from_filestruct(filestruct *some_buffer);
 void print_view_warning(void);
 void finish(void);
 void die(const char *msg, ...);
-void die_save_file(std::string die_filename, struct stat *die_stat);
+void die_save_file(string die_filename, struct stat *die_stat);
 void window_init(void);
 void print_opt_full(const char *shortflag
 #ifdef HAVE_GETOPT_LONG
@@ -305,12 +306,12 @@ void disable_flow_control(void);
 void enable_flow_control(void);
 void terminal_init(void);
 void do_input(void);
-void do_output(const std::string& output, bool allow_cntrls);
+void do_output(string output, bool allow_cntrls);
 void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
 Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void));
-void do_statusbar_output(std::string output, bool allow_cntrls);
+void do_statusbar_output(string output, bool allow_cntrls);
 void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls);
 void do_statusbar_home(void);
 void do_statusbar_end(void);
@@ -325,11 +326,11 @@ void do_statusbar_verbatim_input(void);
 size_t statusbar_xplustabs(void);
 size_t get_statusbar_page_start(size_t start_col, size_t column);
 void reset_statusbar_cursor(void);
-void update_statusbar_line(const std::string& curranswer, size_t index);
+void update_statusbar_line(string curranswer, size_t index);
 bool need_statusbar_update(size_t pww_save);
 void total_statusbar_refresh(void (*refresh_func)(void));
-FunctionPtr get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, bool *list, const std::string& curranswer, History* history_list, void (*refresh_func)(void));
-PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const std::string& curranswer, History* history_list, void (*refresh_func)(void), const char *msg, ...);
+FunctionPtr get_prompt_string(std::shared_ptr<Key>& value, bool allow_tabs, bool allow_files, bool *list, const string& curranswer, History* history_list, void (*refresh_func)(void));
+PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_ptr<Key>& key, const string& curranswer, History* history_list, void (*refresh_func)(void), const char *msg, ...);
 void do_prompt_abort(void);
 YesNoPromptResult do_yesno_prompt(bool all, const char *msg);
 
@@ -343,9 +344,9 @@ void parse_syntax(char *ptr);
 void parse_extends(char *ptr);
 void parse_magic_syntax(char *ptr);
 void parse_include(char *ptr);
-COLORWIDTH color_name_to_value(std::string colorname, bool *bright, bool *underline);
+COLORWIDTH color_name_to_value(string colorname, bool *bright, bool *underline);
 void parse_colors(char *ptr, bool icase);
-bool parse_color_names(const std::string& combostr, short *fg, short *bg, bool *bright, bool *underline);
+bool parse_color_names(const string& combostr, short *fg, short *bg, bool *bright, bool *underline);
 void reset_multis(filestruct *fileptr, bool force);
 void alloc_multidata_if_needed(filestruct *fileptr);
 void parse_rcfile(std::ifstream &rcstream, bool syntax_only);
@@ -354,11 +355,11 @@ void do_rcfile(void);
 /* All functions in search.c. */
 bool regexp_init(const char *regexp);
 void regexp_cleanup(void);
-void not_found_msg(const std::string& str);
+void not_found_msg(string str);
 void not_found_msg(const char *str);
 void search_replace_abort(void);
 int search_init(bool replacing, bool use_answer);
-bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len);
+bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, string needle, size_t *needle_len);
 bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, const char *needle, size_t *needle_len);
 void findnextstr_wrap_reset(void);
 void do_search(void);
@@ -389,15 +390,15 @@ void do_redo(void);
 void do_enter(bool undoing);
 void do_enter_void(void);
 void cancel_command(int signal);
-bool execute_command(const std::string& command);
-int execute_command_silently(const std::string& command);
+bool execute_command(string command);
+int execute_command_silently(string command);
 void wrap_reset(void);
 bool do_wrap(filestruct *line);
 ssize_t break_line(const char *line, ssize_t goal, bool newln);
-size_t indent_length(const std::string& line);
+size_t indent_length(const string& line);
 bool do_int_spell_fix(const char *word);
-std::string do_int_speller(const char *tempfile_name);
-std::string do_alt_speller(char *tempfile_name);
+string do_int_speller(const char *tempfile_name);
+string do_alt_speller(char *tempfile_name);
 void do_spell(void);
 void do_linter(void);
 void do_formatter(void);
@@ -407,13 +408,13 @@ void do_verbatim_input(void);
 /* All functions in utils.c. */
 void get_homedir(void);
 bool parse_num(const char *str, ssize_t *val);
-bool parse_line_column(const std::string& str, ssize_t *line, ssize_t *column);
+bool parse_line_column(string str, ssize_t *line, ssize_t *column);
 bool parse_line_column(const char *str, ssize_t *line, ssize_t *column);
 void align(char **str);
 void null_at(char **data, size_t index);
-void unsunder(std::string& str);
+void unsunder(string& str);
 void unsunder(char *str, size_t true_len);
-void sunder(std::string& str);
+void sunder(string& str);
 void sunder(char *str);
 #ifndef HAVE_GETLINE
 ssize_t ngetline(char **lineptr, size_t *n, FILE *stream);
@@ -433,10 +434,10 @@ char *mallocstrcpy(char *dest, const char *src);
 size_t get_page_start(size_t column);
 size_t xplustabs(void);
 size_t actual_x(const char *s, size_t column);
-size_t actual_x(const std::string& s, size_t column);
+size_t actual_x(string s, size_t column);
 size_t strnlenpt(const char *s, size_t maxlen);
 size_t strlenpt(const char *s);
-size_t strlenpt(const std::string& s);
+size_t strlenpt(string s);
 void new_magicline(void);
 void remove_magicline(void);
 void mark_order(const filestruct **top, size_t *top_x, const filestruct **bot, size_t *bot_x, bool *right_side_up);
@@ -451,7 +452,7 @@ void dump_filestruct_reverse(void);
 
 /* All functions in winio.c. */
 Key get_kbinput(WINDOW *win);
-std::string get_verbatim_kbinput(WINDOW *win);
+string get_verbatim_kbinput(WINDOW *win);
 const sc *get_shortcut(Key kbinput);
 const sc *first_sc_for(int menu, void (*func)(void));
 void blank_line(WINDOW *win, int y, int x, int n);
@@ -461,14 +462,14 @@ void blank_edit(void);
 void blank_statusbar(void);
 void blank_bottombars(void);
 void check_statusblank(void);
-std::string display_string(const std::string& buf, size_t start_col, size_t len, bool dollars);
-char *display_string(const char *buf, size_t start_col, size_t len, bool dollars);
-void titlebar(const std::string& path);
+string display_string(string buf, size_t start_col, size_t len, bool dollars);
+string display_string(const char *buf, size_t start_col, size_t len, bool dollars);
+void titlebar(string path);
 void titlebar(const char *path);
 void set_modified(void);
 void statusbar(const char *msg, ...);
 void bottombars(int menu);
-void onekey(const std::string& keystroke, const std::string& desc, size_t len);
+void onekey(string keystroke, string desc, size_t len);
 void reset_cursor(void);
 void edit_draw(filestruct *fileptr, const char *converted, int line, size_t start);
 int update_line(filestruct *fileptr, size_t index);
@@ -488,8 +489,8 @@ const subnfunc *sctofunc(sc *s);
 FunctionPtr func_from_key(const Key& kbinput);
 void empty_sclist(void);
 void print_sclist(void);
-sc *strtosc(std::string input);
-int strtomenu(std::string input);
+sc *strtosc(string input);
+int strtomenu(string input);
 void do_suspend_void(void);
 void set_color(WINDOW *win, ColorPair color);
 void clear_color(WINDOW *win, ColorPair color);

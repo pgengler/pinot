@@ -29,6 +29,8 @@
 #include <errno.h>
 #include <time.h>
 
+using pinot::string;
+
 static bool search_last_line = false;
 /* Have we gone past the last line while searching? */
 static bool regexp_compiled = false;
@@ -72,24 +74,19 @@ void regexp_cleanup(void)
 
 /* Indicate on the statusbar that the string at str was not found by the
  * last search. */
-void not_found_msg(const std::string& str)
+void not_found_msg(string str)
 {
 	not_found_msg(str.c_str());
 }
 
 void not_found_msg(const char *str)
 {
-	char *disp;
-	int numchars;
-
 	assert(str != NULL);
 
-	disp = display_string(str, 0, (COLS / 2) + 1, false);
-	numchars = actual_x(disp, mbstrnlen(disp, COLS / 2));
+	auto disp = display_string(str, 0, (COLS / 2) + 1, false);
+	int numchars = actual_x(disp, mbstrnlen(disp.c_str(), COLS / 2));
 
-	statusbar(_("\"%.*s%s\" not found"), numchars, disp, (disp[numchars] == '\0') ? "" : "...");
-
-	free(disp);
+	statusbar(_("\"%.*s%s\" not found"), numchars, disp.c_str(), (disp.length() == numchars) ? "" : "...");
 }
 
 /* Abort the current search or replace.  Clean up by displaying the main
@@ -118,7 +115,7 @@ int search_init(bool replacing, bool use_answer)
 {
 	std::shared_ptr<Key> key;
 	char *buf;
-	static std::string backupstring;
+	static string backupstring;
 	/* The search string we'll be using. */
 
 	/* If use_answer is true, set backupstring to answer and get out. */
@@ -205,7 +202,7 @@ int search_init(bool replacing, bool use_answer)
  * where we first started searching, at column begin_x.  The return
  * value specifies whether we found anything.  If we did, set needle_len
  * to the length of the string we found if it isn't NULL. */
-bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, const std::string& needle, size_t *needle_len)
+bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, string needle, size_t *needle_len)
 {
 	return findnextstr(whole_word_only, begin, begin_x, needle.c_str(), needle_len);
 }
@@ -218,7 +215,8 @@ bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, 
 	/* The location in the current line of the match we find. */
 	ssize_t current_y_find = openfile->current_y;
 	filestruct *fileptr = openfile->current;
-	const char *rev_start = fileptr->data, *found = NULL;
+	const char *fileptr_data = fileptr->data.c_str();
+	const char *rev_start = fileptr_data, *found = NULL;
 	time_t lastkbcheck = time(NULL);
 
 	/* rev_start might end up 1 character before the start or after the
@@ -227,9 +225,9 @@ bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, 
 	 * rev_start will be properly set when the search continues on the
 	 * previous or next line. */
 	if (ISSET(BACKWARDS_SEARCH)) {
-		rev_start += ((openfile->current_x == 0) ? -1 : move_mbleft(fileptr->data, openfile->current_x));
+		rev_start += ((openfile->current_x == 0) ? -1 : move_mbleft(fileptr_data, openfile->current_x));
 	} else {
-		rev_start += move_mbright(fileptr->data, openfile->current_x);
+		rev_start += move_mbright(fileptr_data, openfile->current_x);
 	}
 
 	/* Look for needle in the current line we're searching. */
@@ -246,7 +244,7 @@ bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, 
 			}
 		}
 
-		found = strstrwrapper(fileptr->data, needle, rev_start);
+		found = strstrwrapper(fileptr_data, needle, rev_start);
 
 		/* We've found a potential match. */
 		if (found != NULL) {
@@ -265,7 +263,7 @@ bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, 
 				char *word = mallocstrncpy(NULL, found, found_len + 1);
 				word[found_len] = '\0';
 
-				found_whole = is_whole_word(found - fileptr->data, fileptr->data, word);
+				found_whole = is_whole_word(found - fileptr_data, fileptr_data, word);
 				free(word);
 			}
 
@@ -311,14 +309,14 @@ bool findnextstr(bool whole_word_only, const filestruct *begin, size_t begin_x, 
 			search_last_line = true;
 		}
 
-		rev_start = fileptr->data;
+		rev_start = fileptr_data;
 		if (ISSET(BACKWARDS_SEARCH)) {
-			rev_start += strlen(fileptr->data);
+			rev_start += strlen(fileptr_data);
 		}
 	}
 
 	/* We found an instance. */
-	current_x_find = found - fileptr->data;
+	current_x_find = found - fileptr_data;
 
 	/* Ensure we haven't wrapped around again! */
 	if (search_last_line &&
@@ -449,7 +447,7 @@ int replace_regexp(char *string, bool create)
 
 	const char *c = last_replace.c_str();
 	size_t search_match_count = regmatches[0].rm_eo - regmatches[0].rm_so;
-	size_t new_line_size = strlen(openfile->current->data) + 1 - search_match_count;
+	size_t new_line_size = openfile->current->data.length() + 1 - search_match_count;
 
 	/* Iterate through the replacement text to handle subexpression
 	 * replacement using \1, \2, \3, etc. */
@@ -474,7 +472,7 @@ int replace_regexp(char *string, bool create)
 			/* And if create is true, append the result of the
 			 * subexpression match to the new line. */
 			if (create) {
-				strncpy(string, openfile->current->data + openfile->current_x + regmatches[num].rm_so, i);
+				strncpy(string, openfile->current->data.c_str() + openfile->current_x + regmatches[num].rm_so, i);
 				string += i;
 			}
 		}
@@ -498,14 +496,14 @@ char *replace_line(const char *needle)
 		new_line_size = replace_regexp(NULL, false);
 	} else {
 		search_match_count = strlen(needle);
-		new_line_size = strlen(openfile->current->data) - search_match_count + answer.length() + 1;
+		new_line_size = openfile->current->data.length() - search_match_count + answer.length() + 1;
 	}
 
 	/* Create the buffer. */
 	copy = charalloc(new_line_size);
 
 	/* The head of the original line. */
-	strncpy(copy, openfile->current->data, openfile->current_x);
+	strncpy(copy, openfile->current->data.c_str(), openfile->current_x);
 
 	/* The replacement text. */
 	if (ISSET(USE_REGEXP)) {
@@ -514,9 +512,9 @@ char *replace_line(const char *needle)
 		strcpy(copy + openfile->current_x, answer.c_str());
 
 	/* The tail of the original line. */
-	assert(openfile->current_x + search_match_count <= strlen(openfile->current->data));
+	assert(openfile->current_x + search_match_count <= openfile->current->data.length());
 
-	strcat(copy, openfile->current->data + openfile->current_x + search_match_count);
+	strcat(copy, openfile->current->data.c_str() + openfile->current_x + search_match_count);
 
 	return copy;
 }
@@ -581,19 +579,17 @@ ssize_t do_replace_loop(bool whole_word_only, bool *canceled, const filestruct *
 
 		if (!replaceall) {
 			size_t xpt = xplustabs();
-			char *exp_word = display_string(openfile->current->data, xpt, strnlenpt(openfile->current->data, openfile->current_x + match_len) - xpt, false);
+			auto exp_word = display_string(openfile->current->data.c_str(), xpt, strnlenpt(openfile->current->data.c_str(), openfile->current_x + match_len) - xpt, false);
 
 			edit_refresh();
 
 			curs_set(0);
 
-			do_replace_highlight(true, exp_word);
+			do_replace_highlight(true, exp_word.c_str());
 
 			i = do_yesno_prompt(true, _("Replace this instance?"));
 
-			do_replace_highlight(false, exp_word);
-
-			free(exp_word);
+			do_replace_highlight(false, exp_word.c_str());
 
 			curs_set(1);
 
@@ -617,7 +613,7 @@ ssize_t do_replace_loop(bool whole_word_only, bool *canceled, const filestruct *
 
 			copy = replace_line(needle);
 
-			length_change = strlen(copy) - strlen(openfile->current->data);
+			length_change = strlen(copy) - openfile->current->data.length();
 
 			/* If the mark was on and (mark_begin, mark_begin_x) was the
 			 * top of it, don't change mark_begin_x. */
@@ -654,8 +650,7 @@ ssize_t do_replace_loop(bool whole_word_only, bool *canceled, const filestruct *
 			}
 
 			/* Cleanup. */
-			openfile->totsize += mbstrlen(copy) - mbstrlen(openfile->current->data);
-			free(openfile->current->data);
+			openfile->totsize += mbstrlen(copy) - mbstrlen(openfile->current->data.c_str());
 			openfile->current->data = copy;
 
 			/* Reset the precalculated multiline-regex hints only when the first replacement has been made. */
@@ -913,6 +908,7 @@ bool find_bracket_match(bool reverse, const char *bracket_set)
 	filestruct *fileptr = openfile->current;
 	const char *rev_start = NULL, *found = NULL;
 	ssize_t current_y_find = openfile->current_y;
+	const char *fileptr_data = fileptr->data.c_str();
 
 	assert(mbstrlen(bracket_set) == 2);
 
@@ -920,15 +916,15 @@ bool find_bracket_match(bool reverse, const char *bracket_set)
 	 * end of the line.  This won't be a problem because we'll skip over
 	 * it below in that case, and rev_start will be properly set when
 	 * the search continues on the previous or next line. */
-	rev_start = reverse ? fileptr->data + (openfile->current_x - 1) : fileptr->data + (openfile->current_x + 1);
+	rev_start = reverse ? fileptr_data + (openfile->current_x - 1) : fileptr_data + (openfile->current_x + 1);
 
 	/* Look for either of the two characters in bracket_set.  rev_start
 	 * can be 1 character before the start or after the end of the line.
 	 * In either case, just act as though no match is found. */
 	while (true) {
-		found = ((rev_start > fileptr->data && *(rev_start - 1) ==
-		          '\0') || rev_start < fileptr->data) ? NULL : (reverse ?
-		                  mbrevstrpbrk(fileptr->data, bracket_set, rev_start) :
+		found = ((rev_start > fileptr_data && *(rev_start - 1) ==
+		          '\0') || rev_start < fileptr_data) ? NULL : (reverse ?
+		                  mbrevstrpbrk(fileptr_data, bracket_set, rev_start) :
 		                  mbstrpbrk(rev_start, bracket_set));
 
 		if (found != NULL) {
@@ -949,15 +945,15 @@ bool find_bracket_match(bool reverse, const char *bracket_set)
 			return false;
 		}
 
-		rev_start = fileptr->data;
+		rev_start = fileptr_data;
 		if (reverse) {
-			rev_start += strlen(fileptr->data);
+			rev_start += strlen(fileptr_data);
 		}
 	}
 
 	/* We've definitely found something. */
 	openfile->current = fileptr;
-	openfile->current_x = found - fileptr->data;
+	openfile->current_x = found - fileptr_data;
 	openfile->placewewant = xplustabs();
 	openfile->current_y = current_y_find;
 
@@ -999,7 +995,7 @@ void do_find_bracket(void)
 
 	assert(mbstrlen(matchbrackets) % 2 == 0);
 
-	ch = openfile->current->data + openfile->current_x;
+	ch = openfile->current->data.c_str() + openfile->current_x;
 
 	if (*ch == '\0' || (ch = mbstrchr(matchbrackets, ch)) == NULL) {
 		statusbar(_("Not a bracket"));

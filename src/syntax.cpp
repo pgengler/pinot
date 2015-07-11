@@ -20,7 +20,7 @@ void SyntaxMatch::compile()
 	regcomp(ext, ext_regex.c_str(), REG_EXTENDED);
 }
 
-bool SyntaxMatch::matches(const std::string& str) const
+bool SyntaxMatch::matches(string str) const
 {
 	return matches(str.c_str());
 }
@@ -34,10 +34,10 @@ bool SyntaxMatch::matches(const char *str) const
 
 /***********************************/
 
-Syntax::Syntax(const char *desc)
-: nmultis(0)
+Syntax::Syntax(const string& desc)
+: nmultis(0), desc(desc)
 {
-	this->desc = std::string(desc);
+
 }
 
 void Syntax::add_color(ColorPtr color)

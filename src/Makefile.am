@@ -5,6 +5,7 @@ pinot_SOURCES =	\
 	History.cpp \
 	Keyboard.cpp \
 	OpenFile.cpp \
+	String.cpp \
 	browser.cpp \
 	chars.cpp \
 	color.cpp \
@@ -26,4 +27,4 @@ pinot_SOURCES =	\
 	utils.cpp \
 	winio.cpp
 
-pinot_LDADD = @GLIB_LIBS@ @LIBINTL@ $(top_builddir)/libtermkey-0.17/libtermkey.la
+pinot_LDADD = @GLIB_LIBS@ @LIBINTL@ @libicu_LIBS@ $(top_builddir)/libtermkey-0.17/libtermkey.la

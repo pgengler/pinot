@@ -29,6 +29,8 @@
 #include <strings.h>
 #include "assert.h"
 
+using pinot::string;
+
 /* Global variables. */
 bool jump_buf_set = false;
 sigjmp_buf jump_buf;
@@ -43,9 +45,9 @@ ssize_t wrap_at = -CHARS_FROM_EOL;
  * if it's greater than zero, and equal to (COLS + this) if it
  * isn't. */
 
-std::string last_search = "";
+string last_search = "";
 /* The last string we searched for. */
-std::string last_replace = "";
+string last_replace = "";
 /* The last replacement string we searched for. */
 
 unsigned flags[4] = {0, 0, 0, 0};
@@ -78,7 +80,7 @@ char *matchbrackets = NULL;
 /* The opening and closing brackets that can be found by bracket
  * searches. */
 
-std::string whitespace;
+string whitespace;
 /* The characters used when displaying the first characters of
  * tabs and spaces. */
 int whitespace_len[2];
@@ -87,18 +89,18 @@ int whitespace_len[2];
 bool nodelay_mode = false;
 /* Are we in nodelay mode (checking for a cancel wile doing something */
 
-std::string answer;
+string answer;
 /* The answer string used by the statusbar prompt. */
 
 ssize_t tabsize = -1;
 /* The width of a tab in spaces. The default value is set in
  * main(). */
 
-std::string backup_dir = "";
+string backup_dir = "";
 /* The directory where we store backup files. */
-const std::string locking_prefix = ".";
+const string locking_prefix = ".";
 /* Prefix of how to store the vim-style lock file */
-const std::string locking_suffix = ".swp";
+const string locking_suffix = ".swp";
 /* Suffix of the vim-style lock file */
 
 char *alt_speller = NULL;
@@ -106,7 +108,7 @@ char *alt_speller = NULL;
 
 SyntaxMap syntaxes;
 /* The global list of color syntaxes. */
-std::string syntaxstr;
+string syntaxstr;
 /* The color syntax name specified on the command line. */
 
 bool edit_refresh_needed = false;
@@ -135,12 +137,12 @@ regmatch_t regmatches[10];
 
 int highlight_attribute = A_REVERSE;
 /* The curses attribute we use for highlighting text (reverse video). */
-std::string specified_color_combo[] = { };
+string specified_color_combo[] = { };
 /* The color combinations as specified in the rcfile. */
 ColorPair interface_colors[] = { };
 /* The processed color pairs for the interface elements. */
 
-std::string homedir = "";
+string homedir = "";
 /* The user's home directory, from $HOME or /etc/passwd. */
 
 /* Return the number of entries in the shortcut list s for a given menu. */
@@ -231,7 +233,7 @@ const sc *first_sc_for(int menu, void (*func)(void))
 
 
 /* Add a key combo to the shortcut list. */
-void add_to_sclist(int menu, const std::string& scstring, void (*func)(void), int toggle=0)
+void add_to_sclist(int menu, const string& scstring, void (*func)(void), int toggle=0)
 {
 	auto shortcut = new sc;
 	shortcut->keystr = scstring;
@@ -790,12 +792,12 @@ const char *flagtostr(int flag)
 
 /* Interpret the string given by the rc file and return a
     shortcut struct with the corresponding function filled in. */
-sc *strtosc(std::string input)
+sc *strtosc(string input)
 {
 	sc *s = new sc;
 
 	// Convert input to lowercase for case-insensitive comparisons
-	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+	input = input.to_lower();
 
 	if (input == "help") {
 		s->scfunc = do_help_void;
@@ -989,10 +991,10 @@ sc *strtosc(std::string input)
 }
 
 /* Same thing as abnove but for the menu */
-int strtomenu(std::string input)
+int strtomenu(string input)
 {
 	// Convert input to lowercase for case-insensitive comparisons
-	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+	input = input.to_lower();
 
 	if (input == "all") {
 		return MMOST;

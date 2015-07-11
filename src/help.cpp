@@ -26,6 +26,8 @@
 #include <string.h>
 #include <ctype.h>
 
+using pinot::string;
+
 static char *help_text = NULL;
 /* The text displayed in the help window. */
 
@@ -114,7 +116,7 @@ void do_help(void (*refresh_func)(void))
 		old_line = line;
 
 		Key kbinput = get_kbinput(edit);
-		std::string key(kbinput);
+		string key(kbinput);
 
 		auto func = func_from_key(kbinput);
 
