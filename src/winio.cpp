@@ -1102,7 +1102,7 @@ int update_line(filestruct *fileptr, size_t index)
 	converted = display_string(fileptr->data.c_str(), page_start, COLS, !ISSET(SOFTWRAP));
 
 #ifdef DEBUG
-	if (ISSET(SOFTWRAP) && strlen(converted) >= COLS - 2) {
+	if (ISSET(SOFTWRAP) && converted.length() >= COLS - 2) {
 		DEBUG_LOG("update_line(): converted(1) line = " << converted);
 	}
 #endif

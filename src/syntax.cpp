@@ -35,7 +35,7 @@ bool SyntaxMatch::matches(const char *str) const
 /***********************************/
 
 Syntax::Syntax(const string& desc)
-: nmultis(0), desc(desc)
+: desc(desc), nmultis(0)
 {
 
 }
