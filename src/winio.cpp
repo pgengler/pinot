@@ -197,7 +197,7 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 	}
 
 	if (len == 0) {
-		return mallocstrcpy(NULL, "");
+		return "";
 	}
 
 	buf_mb = charalloc(mb_cur_max());
@@ -318,7 +318,7 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 	free(buf_mb);
 
 	/* Make sure converted takes up no more than len columns. */
-	return converted.substr(len);
+	return converted.substr(0, len);
 }
 
 /* If path is NULL, we're in normal editing mode, so display the current
