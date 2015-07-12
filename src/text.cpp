@@ -195,7 +195,7 @@ void do_indent(ssize_t cols)
 	filestruct *top, *bot, *f;
 	size_t top_x, bot_x;
 
-	assert(openfile->current != NULL && openfile->current->data != NULL);
+	assert(openfile->current != NULL);
 
 	/* If cols is zero, get out. */
 	if (cols == 0) {
@@ -913,7 +913,7 @@ void add_undo(UndoType action)
 	}
 
 	/* When trying to delete the final newline, don't add an undo for it. */
-	if (action == DEL && openfile->current->next == openfile->filebot && openfile->current->data[openfile->current_x] == '\0' && openfile->current_x != 0 && !ISSET(NO_NEWLINES)) {
+	if (action == DEL && openfile->current->next == openfile->filebot && openfile->current->data.length() == openfile->current_x && openfile->current_x != 0 && !ISSET(NO_NEWLINES)) {
 		return;
 	}
 
@@ -1177,7 +1177,7 @@ bool do_wrap(filestruct *line)
 	 * of the line while trying to find one, we should return without
 	 * wrapping.  Note that if autoindent is turned on, we don't break
 	 * at the end of it! */
-	assert(line != NULL && line->data != NULL);
+	assert(line != NULL);
 
 	/* Save the length of the line. */
 	line_len = line->data.length();
@@ -1187,7 +1187,7 @@ bool do_wrap(filestruct *line)
 
 	/* If we couldn't break the line, or we've reached the end of it, we
 	 * don't wrap. */
-	if (wrap_loc == -1 || line->data[wrap_loc] == '\0') {
+	if (wrap_loc == -1 || line->data.length() == wrap_loc) {
 		return false;
 	}
 
@@ -1195,7 +1195,7 @@ bool do_wrap(filestruct *line)
 	wrap_loc += move_mbright(line->data + wrap_loc, 0);
 
 	/* If we've reached the end of the line, we don't wrap. */
-	if (line->data[wrap_loc] == '\0') {
+	if (line->data.length() == wrap_loc) {
 		return false;
 	}
 
@@ -1205,7 +1205,7 @@ bool do_wrap(filestruct *line)
 		/* Get the indentation of this line. */
 		indent_string = line->data;
 
-		if (wrap_loc == indent_string.length()) {
+		if (indent_string.length() == wrap_loc) {
 			return false;
 		}
 	}

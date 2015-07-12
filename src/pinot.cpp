@@ -198,8 +198,7 @@ partition *partition_filestruct(filestruct *top, size_t top_x, filestruct *bot, 
 	 * top_data. */
 	p->top_prev = top->prev;
 	top->prev = NULL;
-	p->top_data = mallocstrncpy(NULL, top->data.c_str(), top_x + 1);
-	p->top_data[top_x] = '\0';
+	p->top_data = top->data.substr(0, top_x + 1);
 
 	/* Save the line below the bottom of the partition, detach the
 	 * bottom of the partition from it, and save the text after bot_x in
