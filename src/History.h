@@ -4,7 +4,7 @@
 #include <ostream>
 #include <vector>
 
-#include "String.h"
+#include "PinotString.h"
 using pinot::string;
 
 class History {

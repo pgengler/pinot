@@ -5,7 +5,7 @@ pinot_SOURCES =	\
 	History.cpp \
 	Keyboard.cpp \
 	OpenFile.cpp \
-	String.cpp \
+	PinotString.cpp \
 	browser.cpp \
 	chars.cpp \
 	color.cpp \

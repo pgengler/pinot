@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#include "String.h"
+#include "PinotString.h"
 using pinot::string;
 
 int access(string pathname, int amode);

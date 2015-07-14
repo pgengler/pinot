@@ -7,7 +7,7 @@
 #include <pcreposix.h>
 
 #include "macros.h"
-#include "String.h"
+#include "PinotString.h"
 
 using pinot::string;
 

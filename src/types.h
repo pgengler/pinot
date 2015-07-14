@@ -6,7 +6,7 @@
 
 #include "syntax.h"
 
-#include "String.h"
+#include "PinotString.h"
 using pinot::string;
 
 /* Enumeration types. */

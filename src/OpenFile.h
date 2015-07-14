@@ -1,6 +1,6 @@
 #pragma once
 
-#include "String.h"
+#include "PinotString.h"
 
 #include "types.h"
 

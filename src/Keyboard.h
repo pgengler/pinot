@@ -8,7 +8,7 @@
 #include "termkey-internal.h"
 #include "termkey.h"
 
-#include "String.h"
+#include "PinotString.h"
 using pinot::string;
 
 class Key
