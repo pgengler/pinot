@@ -368,7 +368,7 @@ if test x$ac_cv_header_pcreposix_h = xno; then
 fi
 
 # Check for libicu...
-PKG_CHECK_MODULES(libicu, [icu-io icu-i18n icu-uc], [have_libicu=yes], [have_libicu=no])
+PKG_CHECK_MODULES(libicu, [icu-io icu-i18n icu-uc], [have_libicu=yes])
 
 AS_IF([test "x$enable_libmagic" != "xno"], [
 	AC_CHECK_HEADERS_ONCE([magic.h])
