@@ -3,7 +3,7 @@ sudo: false
 addons:
   apt:
     packages:
-    - autpoint
+    - autopoint
     - texinfo
     - libicu-dev
 compiler:
