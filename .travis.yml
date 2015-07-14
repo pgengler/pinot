@@ -1,6 +1,6 @@
 language: cpp
 before_install:
-  sudo apt-get install autopoint texinfo
+  sudo apt-get install autopoint texinfo libicu52 libicu-dev
 compiler:
   - gcc
   - clang
