@@ -1,0 +1,32 @@
+syntax tt2-html
+filename /\.html\.tt2$/
+
+# Template Toolkit keywords
+color 9 /(?<=\[%)\s+(BLOCK|ELSE|END|FOREACH|IF|INCLUDE|INSERT|PROCESS|SET|UNLESS|USE|WRAPPER)/
+
+# Template Toolkit tags ([% and %])
+color blue /(\[%|%\])/
+
+# HTML entities (e.g., &amp;)
+color red /&[^;\s]*;/
+
+# Strings (single- or double-quoted)
+color yellow /(["']).*?\1/
+
+# HTML tag attributes
+color 130 /(action|alt|class|colspan|data-(.+?)|for|href|id|method|name|rel|rowspan|selected|src|title|type|value)(?==)/
+
+# HTML tag names
+color 94 /(?<=<)(.+?)(?=(>|\s))/
+
+# HTML comments
+color blue start=/<!--/ end=/-->/
+
+syntax tt2-csv
+filename /\.csv\.tt2$/
+
+# Template Toolkit keywords
+color 9 /(?<=\[%)\s+(BLOCK|ELSE|END|FOREACH|IF|IN(CLUDE)?|PROCESS|UNLESS|WRAPPER)/
+
+# Template Toolkit tags ([% and %])
+color blue /(\[%|%\])/

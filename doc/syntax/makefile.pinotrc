@@ -8,3 +8,4 @@ color magenta /\b(if|ifeq|else|endif)\b/
 color blue /\$+[{(][a-zA-Z0-9_-]+[})]/
 color brightblue /^[^ 	]+:/
 color green /#.*$/
+color yellow /[A-Za-z]+:/
