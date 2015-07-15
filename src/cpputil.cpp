@@ -35,17 +35,15 @@ string dirname(string path)
 	return string(::dirname(path.c_str()));
 }
 
-int execvp(string file, const std::vector<string>& argv, char ***buf)
+int execvp(string file, const std::vector<string>& argv)
 {
-	*buf = (char **)malloc((argv.size() + 1) * sizeof(char *));
-	char **args = *buf;
-	size_t pos = 0;
+	std::vector<const char *> args;
 	for (auto arg : argv) {
-		args[pos++] = mallocstrcpy(NULL, arg.c_str());
+		args.push_back(arg.c_str());
 	}
-	args[pos] = NULL;
+	args.push_back(NULL);
 
-	return execvp(file.c_str(), args);
+	return execvp(file.c_str(), (char* const *)&args[0]);
 }
 
 FILE* fopen(string path, string mode)
@@ -60,11 +58,11 @@ size_t fwrite(string string, FILE *stream)
 
 string getcwd()
 {
-	char *buf = (char *)malloc((PATH_MAX + 1) * sizeof(char));
+	char *buf = new char[PATH_MAX + 1];
 	buf = getcwd(buf, PATH_MAX + 1);
 
 	string cwd(buf);
-	free(buf);
+	delete[] buf;
 
 	return cwd;
 }
@@ -76,12 +74,12 @@ int lstat(string path, struct stat *buf)
 
 int mkstemp(string& name_template)
 {
-	char *buffer = (char *)malloc((name_template.length() + 1) * sizeof(char));
+	char *buffer = new char[name_template.length() + 1];
 	::strncpy(buffer, name_template.c_str(), name_template.length());
 	buffer[ name_template.length() ] = '\0';
 	int fd = mkstemp(buffer);
 	name_template = buffer;
-	free(buffer);
+	delete[] buffer;
 	return fd;
 }
 

@@ -34,6 +34,9 @@ using pinot::string;
 
 string canonical_filename(const string& filename)
 {
+	if (filename == "") {
+		return "";
+	}
 	string current_dir = getcwd();
 	string filename_with_dir;
 	if (current_dir != "" && filename[0] != '/') {
@@ -165,10 +168,8 @@ void color_update(void)
 	* there was no syntax by that name, get the syntax based on the
 	* file extension, then try the headerline, and then try magic. */
 	if (openfile->colorstrings.empty()) {
-
 		// Get the canonical name for the file, not the user-provided one
 		string canonical_name = canonical_filename(openfile->filename);
-
 		for (auto pair : syntaxes) {
 			auto tmpsyntax = pair.second;
 
@@ -261,12 +262,12 @@ void color_update(void)
 		 * regexes if we haven't already. */
 		if (tmpcolor->start == NULL) {
 			tmpcolor->start = new regex_t;
-			regcomp(tmpcolor->start, tmpcolor->start_regex, REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
+			regcomp(tmpcolor->start, tmpcolor->start_regex.c_str(), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 
 		if (tmpcolor->end_regex != NULL && tmpcolor->end == NULL) {
 			tmpcolor->end = new regex_t;
-			regcomp(tmpcolor->end, tmpcolor->end_regex, REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
+			regcomp(tmpcolor->end, tmpcolor->end_regex.c_str(), REG_EXTENDED | (tmpcolor->icase ? REG_ICASE : 0));
 		}
 	}
 }

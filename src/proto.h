@@ -51,7 +51,7 @@ extern partition *filepart;
 extern std::list<OpenFile> openfiles;
 extern std::list<OpenFile>::iterator openfile;
 
-extern char *matchbrackets;
+extern string matchbrackets;
 
 extern string whitespace;
 extern int whitespace_len[2];
@@ -65,7 +65,7 @@ extern string backup_dir;
 extern const string locking_prefix;
 extern const string locking_suffix;
 
-extern char *alt_speller;
+extern string alt_speller;
 
 extern std::list<sc*> sclist;
 extern std::list<subnfunc*> allfuncs;
@@ -152,9 +152,6 @@ size_t nstrnlen(const char *s, size_t maxlen);
 #endif
 size_t mbstrnlen(const char *s, size_t maxlen);
 char *mbstrchr(const char *s, const char *c);
-char *mbstrpbrk(const char *s, const char *accept);
-char *revstrpbrk(const char *s, const char *accept, const char *rev_start);
-char *mbrevstrpbrk(const char *s, const char *accept, const char *rev_start);
 bool has_blank_chars(const char *s);
 bool has_blank_mbchars(const char *s);
 bool is_valid_unicode(wchar_t wc);
@@ -336,9 +333,6 @@ YesNoPromptResult do_yesno_prompt(bool all, const char *msg);
 
 /* All functions in rcfile.c. */
 void rcfile_error(const char *msg, ...);
-char *parse_next_word(char *ptr);
-char *parse_argument(char *ptr);
-char *parse_next_regex(char *ptr);
 bool nregcomp(const char *regex, int cflags);
 void parse_syntax(char *ptr);
 void parse_extends(char *ptr);
@@ -372,7 +366,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool inter
 void do_gotolinecolumn_void(void);
 void do_gotopos(ssize_t pos_line, size_t pos_x, ssize_t pos_y, size_t pos_pww);
 void goto_line_posx(ssize_t line, size_t pos_x);
-bool find_bracket_match(bool reverse, const char *bracket_set);
+bool find_bracket_match(bool reverse, const string& bracket_set);
 void do_find_bracket(void);
 void get_history_older_void(void);
 void get_history_newer_void(void);

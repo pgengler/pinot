@@ -1707,9 +1707,6 @@ string do_alt_speller(char *tempfile_name)
 	struct stat spellfileinfo;
 	time_t timestamp;
 	pid_t pid_spell;
-	char *ptr;
-	static int arglen = 3;
-	static char **spellargs = NULL;
 	bool old_mark_set = openfile->mark_set;
 	bool added_magicline = false;
 	/* Whether we added a magicline after filebot. */
@@ -1743,18 +1740,8 @@ string do_alt_speller(char *tempfile_name)
 	endwin();
 
 	/* Set up an argument list to pass to execvp(). */
-	if (spellargs == NULL) {
-		spellargs = (char **)nmalloc(arglen * sizeof(char *));
-
-		spellargs[0] = strtok(alt_speller, " ");
-		while ((ptr = strtok(NULL, " ")) != NULL) {
-			arglen++;
-			spellargs = (char **)nrealloc(spellargs, arglen * sizeof(char *));
-			spellargs[arglen - 3] = ptr;
-		}
-		spellargs[arglen - 1] = NULL;
-	}
-	spellargs[arglen - 2] = tempfile_name;
+	auto spellargs = alt_speller.split(" ");
+	spellargs.push_back(tempfile_name);
 
 	/* Start a new process for the alternate speller. */
 	if ((pid_spell = fork()) == 0) {
@@ -2272,12 +2259,11 @@ void do_formatter(void)
 		format_args.push_back(arg);
 	}
 	format_args.push_back(temp);
-	char **argbuf = nullptr;
 
 	/* Start a new process for the formatter. */
 	if ((pid_format = fork()) == 0) {
 		/* Start the formatting program; we are using $PATH. */
-		execvp(format_args[0], format_args, &argbuf);
+		execvp(format_args[0], format_args);
 
 		/* Should not be reached, if formatter is found! */
 		exit(1);
@@ -2295,7 +2281,6 @@ void do_formatter(void)
 
 	/* Wait for the formatter to finish. */
 	wait(&format_status);
-	free(argbuf);
 
 	/* Reenter curses mode. */
 	doupdate();

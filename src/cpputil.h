@@ -14,7 +14,7 @@ int chdir(string path);
 int chmod(string path, mode_t mode);
 int chown(string path, uid_t owner, gid_t group);
 string dirname(string path);
-int execvp(string file, const std::vector<string>& argv, char ***buf);
+int execvp(string file, const std::vector<string>& argv);
 FILE* fopen(string path, string mode);
 size_t fwrite(string string, FILE *stream);
 string getcwd();

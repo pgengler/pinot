@@ -1492,7 +1492,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	}
 }
 
-int main(int argc, char **argv)
+void real_main(int argc, char **argv)
 {
 	int optchr;
 	ssize_t startline = 0, startcol = 0;
@@ -1665,7 +1665,7 @@ int main(int argc, char **argv)
 			fill_used = true;
 			break;
 		case 's':
-			alt_speller = mallocstrcpy(alt_speller, optarg);
+			alt_speller = optarg;
 			break;
 		case 't':
 			SET(TEMP_FILE);
@@ -1705,14 +1705,14 @@ int main(int argc, char **argv)
 	 * haven't changed afterward, restore the backed-up values. */
 	if (!no_rcfiles) {
 		ssize_t wrap_at_cpy = wrap_at;
-		char *alt_speller_cpy = alt_speller;
+		string alt_speller_cpy = alt_speller;
 		ssize_t tabsize_cpy = tabsize;
 		unsigned flags_cpy[sizeof(flags) / sizeof(flags[0])];
 		size_t i;
 
 		memcpy(flags_cpy, flags, sizeof(flags_cpy));
 
-		alt_speller = NULL;
+		alt_speller = "";
 
 		do_rcfile();
 
@@ -1724,8 +1724,7 @@ int main(int argc, char **argv)
 		if (fill_used) {
 			wrap_at = wrap_at_cpy;
 		}
-		if (alt_speller_cpy != NULL) {
-			free(alt_speller);
+		if (alt_speller_cpy != "") {
 			alt_speller = alt_speller_cpy;
 		}
 		if (tabsize_cpy != -1) {
@@ -1786,8 +1785,8 @@ int main(int argc, char **argv)
 	}
 
 	/* If matchbrackets wasn't specified, set its default value. */
-	if (matchbrackets == NULL) {
-		matchbrackets = mallocstrcpy(NULL, "(<[{)>]}");
+	if (matchbrackets == "") {
+		matchbrackets = "(<[{)>]}";
 	}
 
 	/* If whitespace wasn't specified, set its default value. */
@@ -1955,4 +1954,16 @@ int main(int argc, char **argv)
 
 	/* We should never get here. */
 	assert(false);
+}
+
+int main(int argc, char **argv)
+{
+	try {
+		real_main(argc, argv);
+	}
+	catch (const char *ex) {
+		std::cerr << "ERROR: " << ex << std::endl;
+	}
+
+	return 1;
 }

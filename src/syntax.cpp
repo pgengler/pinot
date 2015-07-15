@@ -1,6 +1,6 @@
 #include "syntax.h"
 
-SyntaxMatch::SyntaxMatch(const char *str)
+SyntaxMatch::SyntaxMatch(const string& str)
 : ext_regex(str), ext(NULL)
 {
 	compile();
@@ -37,7 +37,7 @@ bool SyntaxMatch::matches(const char *str) const
 Syntax::Syntax(const string& desc)
 : desc(desc), nmultis(0)
 {
-
+	DEBUG_LOG("constructing new Syntax (" << (void*)this << ") from desc='" << desc << "'");
 }
 
 void Syntax::add_color(ColorPtr color)

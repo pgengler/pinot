@@ -76,9 +76,8 @@ std::list<OpenFile> openfiles;
 /* The list of all open file buffers. */
 std::list<OpenFile>::iterator openfile; // the current open file
 
-char *matchbrackets = NULL;
-/* The opening and closing brackets that can be found by bracket
- * searches. */
+string matchbrackets;
+/* The opening and closing brackets that can be found by bracket searches. */
 
 string whitespace;
 /* The characters used when displaying the first characters of
@@ -103,7 +102,7 @@ const string locking_prefix = ".";
 const string locking_suffix = ".swp";
 /* Suffix of the vim-style lock file */
 
-char *alt_speller = NULL;
+string alt_speller;
 /* The command to use for the alternate spell checker. */
 
 SyntaxMap syntaxes;
@@ -1044,7 +1043,6 @@ void thanks_for_all_the_fish(void)
 	delwin(edit);
 	delwin(bottomwin);
 
-	free(alt_speller);
 	if (cutbuffer) {
 		free_filestruct(cutbuffer);
 	}

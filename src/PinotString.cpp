@@ -4,6 +4,11 @@
 
 namespace pinot
 {
+	character::character()
+	{
+
+	}
+
 	character::character(char ch)
 	: str(&ch, 1)
 	{
@@ -28,6 +33,11 @@ namespace pinot
 		return s[0] == ch;
 	}
 
+	bool character::operator==(const character& ch)
+	{
+		return str == ch.str;
+	}
+
 	bool character::operator!=(char ch)
 	{
 		std::string s;
@@ -39,6 +49,13 @@ namespace pinot
 	{
 		stream << ch.str;
 		return stream;
+	}
+
+	string operator+(const character& a, const character& b)
+	{
+		string s = a;
+		s += b;
+		return s;
 	}
 }
 
@@ -144,6 +161,16 @@ namespace pinot {
 		return length() == 0;
 	}
 
+	bool string::has_blank_chars() const
+	{
+		for (auto ch : *this) {
+			if (ch.is_blank()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	ssize_t string::length() const
 	{
 		return unicode_str.length();
@@ -164,6 +191,22 @@ namespace pinot {
 		return operator[](length()-1);
 	}
 
+	std::vector<string> string::split(string at) const
+	{
+		std::vector<string> vec;
+		string source = *this;
+		ssize_t pos;
+		while ((pos = source.find(at)) != npos) {
+			auto bit = source.substr(0, pos);
+			source = source.substr(pos);
+			vec.push_back(bit);
+		}
+		if (!source.empty()) {
+			vec.push_back(source);
+		}
+		return vec;
+	}
+
 	string string::substr(size_t pos, size_t len) const
 	{
 		if (len == npos) {
@@ -177,6 +220,13 @@ namespace pinot {
 	{
 		auto new_str = unicode_str;
 		new_str.toLower();
+		return string(new_str);
+	}
+
+	string string::trim() const
+	{
+		auto new_str = unicode_str;
+		new_str.trim();
 		return string(new_str);
 	}
 
@@ -204,6 +254,18 @@ namespace pinot {
 			}
 		}
 		return first;
+	}
+
+	ssize_t string::find_last_of(const string& other) const
+	{
+		ssize_t last = -1;
+		for (auto ch : other) {
+			auto pos = find(ch);
+			if (pos != npos && pos > last) {
+				last = pos;
+			}
+		}
+		return last;
 	}
 
 	//-----------------------------
@@ -363,6 +425,11 @@ namespace pinot {
 	}
 
 	//-----------------------------
+
+	int stoi(string s)
+	{
+		return std::stoi(s.str());
+	}
 
 	string to_string(int i)
 	{

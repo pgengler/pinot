@@ -33,13 +33,13 @@ typedef struct colortype {
 	int pairnum;
 	/* The color pair number used for this foreground color and  background color. */
 
-	char *start_regex;
+	string start_regex;
 	/* The start (or all) of the regex string. */
 
 	regex_t *start;
 	/* The compiled start (or all) of the regex string. */
 
-	char *end_regex;
+	string end_regex;
 	/* The end (if any) of the regex string. */
 
 	regex_t *end;
@@ -69,7 +69,7 @@ typedef std::list<LintMessage> LintMessages;
 
 class SyntaxMatch {
 	public:
-		SyntaxMatch(const char*);
+		SyntaxMatch(const string& str);
 		virtual ~SyntaxMatch();
 
 		bool matches(string str) const;

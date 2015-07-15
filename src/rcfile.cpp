@@ -88,7 +88,7 @@ static size_t lineno = 0;
 /* If we did, the line number where the last error occurred. */
 static string pinotrc;
 /* The path to the rcfile we're parsing. */
-static Syntax *new_syntax = NULL;
+static Syntax *current_syntax = nullptr;
 /* current syntax being processed */
 
 /* We have an error in some part of the rcfile.  Print the error message
@@ -114,110 +114,19 @@ void rcfile_error(const char *msg, ...)
 	fprintf(stderr, "\n");
 }
 
-/* Parse the next word from the string, null-terminate it, and return
- * a pointer to the first character after the null terminator.  The
- * returned pointer will point to '\0' if we hit the end of the line. */
-char *parse_next_word(char *ptr)
-{
-	while (!isblank(*ptr) && *ptr != '\0') {
-		ptr++;
-	}
-
-	if (*ptr == '\0') {
-		return ptr;
-	}
-
-	/* Null-terminate and advance ptr. */
-	*ptr++ = '\0';
-
-	while (isblank(*ptr)) {
-		ptr++;
-	}
-
-	return ptr;
-}
-
-/* Parse an argument, with optional quotes, after a keyword that takes
- * one.  If the next word starts with a ", we say that it ends with the
- * last " of the line.  Otherwise, we interpret it as usual, so that the
- * arguments can contain "'s too. */
-char *parse_argument(char *ptr)
-{
-	const char *ptr_save = ptr;
-	char *last_quote = NULL;
-
-	assert(ptr != NULL);
-
-	if (*ptr != '"') {
-		return parse_next_word(ptr);
-	}
-
-	do {
-		ptr++;
-		if (*ptr == '"') {
-			last_quote = ptr;
-		}
-	} while (*ptr != '\0');
-
-	if (last_quote == NULL) {
-		if (*ptr == '\0') {
-			ptr = NULL;
-		} else {
-			*ptr++ = '\0';
-		}
-		rcfile_error(N_("Argument '%s' has an unterminated \""), ptr_save);
-	} else {
-		*last_quote = '\0';
-		ptr = last_quote + 1;
-	}
-	if (ptr != NULL)
-		while (isblank(*ptr)) {
-			ptr++;
-		}
-	return ptr;
-}
-
-/* Parse the next regex string from the line at ptr, and return it. */
-char *parse_next_regex(char *ptr)
-{
-	assert(ptr != NULL);
-
-	/* Continue until the end of the line, or a " followed by a space, a
-	 * blank character, or \0. */
-	while ((*ptr != '"' || (!isblank(*(ptr + 1)) && *(ptr + 1) != '\0')) && *ptr != '\0') {
-		ptr++;
-	}
-
-	assert(*ptr == '"' || *ptr == '\0');
-
-	if (*ptr == '\0') {
-		rcfile_error(N_("Regex strings must begin and end with a \" character"));
-		return NULL;
-	}
-
-	/* Null-terminate and advance ptr. */
-	*ptr++ = '\0';
-
-	while (isblank(*ptr)) {
-		ptr++;
-	}
-
-	return ptr;
-}
-
 /* Compile the regular expression regex to see if it's valid.  Return
  * true if it is, or false otherwise. */
-bool nregcomp(const char *regex, int cflags)
+bool nregcomp(string regex, int cflags)
 {
 	regex_t preg;
-	int rc = regcomp(&preg, regex, REG_EXTENDED | cflags);
+	int rc = regcomp(&preg, regex.c_str(), REG_EXTENDED | cflags);
 
 	if (rc != 0) {
 		size_t len = regerror(rc, &preg, NULL, 0);
 		char *str = charalloc(len);
 
 		regerror(rc, &preg, str, len);
-		rcfile_error(N_("Bad regex \"%s\": %s"), regex, str);
+		rcfile_error(N_("Bad regex \"%s\": %s"), regex.c_str(), str);
 		free(str);
 	}
 
@@ -225,36 +134,60 @@ bool nregcomp(const char *regex, int cflags)
 	return (rc == 0);
 }
 
-/* Parse the next syntax string from the line at ptr, and add it to the
- * global list of color syntaxes. */
-void parse_syntax(char *ptr)
+void skip_whitespace(std::stringstream& stream)
 {
-	const char *fileregptr = NULL;
+	// Eliminate leading whitespace
+	while (!stream.eof() && isspace(stream.peek())) {
+		stream.get();
+	}
+}
+
+std::stringstream rest(std::stringstream& stream)
+{
+	skip_whitespace(stream);
+
+	string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
+	std::stringstream s;
+	s << remaining;
+	return s;
+}
+
+string parse_regex(std::stringstream& line)
+{
+	string regex;
+
+	if (line.peek() != '/') {
+		rcfile_error(N_("Regular expressions must start with a /"));
+		return "";
+	}
+	// Throw away opening slash
+	line.get();
+
+	char last_char = '\0';
+	while (line.good() && (last_char != '\\' && line.peek() != '/')) {
+		regex += line.get();
+	}
+	if (line.peek() == '/') {
+		// Throw away trailing slash
+		line.get();
+	}
+
+	return regex;
+}
+
+/* Parse the next syntax string from the line and add it to the global list of color syntaxes. */
+void parse_syntax(std::stringstream& line)
+{
 	string name;
+	line >> name;
+	name = name.trim();
 
-	assert(ptr != NULL);
-
-	if (*ptr == '\0') {
+	if (name.empty()) {
 		rcfile_error(N_("Missing syntax name"));
 		return;
 	}
 
-	if (*ptr != '"') {
-		rcfile_error(N_("Regex strings must begin and end with a \" character"));
-		return;
-	}
-
-	ptr++;
-
-	name = string(ptr);
-	ptr = parse_next_regex(ptr);
-
-	if (ptr == NULL) {
-		return;
-	}
-
-	/* Search for a duplicate syntax name.  If we find one, free it, so
-	 * that we always use the last syntax with a given name. */
+	// Check for existing syntax with this name
 	auto existing_syntax = syntaxes[name];
 	if (existing_syntax) {
 		DEBUG_LOG("Found existing syntax with name \"" << name << "\"; overriding with new definition");
@@ -262,130 +195,61 @@ void parse_syntax(char *ptr)
 		existing_syntax = nullptr;
 	}
 
-	new_syntax = new Syntax(name);
+	current_syntax = new Syntax(name);
 
 	DEBUG_LOG("Starting a new syntax type: \"" << name << '"');
 
 	/* The "none" syntax is the same as not having a syntax at all, so
 	 * we can't assign any extensions or colors to it. */
-	if (new_syntax->desc == "none") {
+	if (current_syntax->desc == "none") {
 		rcfile_error(N_("The \"none\" syntax is reserved"));
 		return;
 	}
 
-	/* The default syntax should have no associated extensions. */
-	if (new_syntax->desc == "default" && *ptr != '\0') {
-		rcfile_error(N_("The \"default\" syntax must take no extensions"));
-		return;
-	}
-
-	/* Now load the extensions into their part of the struct. */
-	while (*ptr != '\0') {
-		while (*ptr != '"' && *ptr != '\0') {
-			ptr++;
-		}
-
-		if (*ptr == '\0') {
-			return;
-		}
-
-		ptr++;
-
-		fileregptr = ptr;
-		ptr = parse_next_regex(ptr);
-		if (ptr == NULL) {
-			break;
-		}
-
-		/* Save the extension regex if it's valid. */
-		if (nregcomp(fileregptr, REG_NOSUB)) {
-			auto newext = new SyntaxMatch(fileregptr);
-			new_syntax->extensions.push_back(newext);
-		}
-	}
-
-	syntaxes[name] = new_syntax;
+	syntaxes[name] = current_syntax;
 }
 
 /* Parse an optional "extends" line in a syntax. */
-void parse_extends(char *ptr)
+void parse_extends(std::stringstream& line)
 {
-	assert(ptr != NULL);
-
-	if (syntaxes.empty()) {
+	if (!current_syntax) {
 		rcfile_error(N_("Cannot use 'extends' command without a 'syntax' command"));
 		return;
 	}
 
-	if (*ptr == '\0') {
-		rcfile_error(N_("Missing name of syntax to extend"));
-	}
+	string syntax_name;
+	line >> syntax_name;
+	syntax_name = syntax_name.trim();
 
-	if (*ptr != '"') {
-		rcfile_error(N_("'extend' names must begin and end with a \" character"));
+	if (syntax_name.empty()) {
+		rcfile_error(N_("Missing name of syntax to extend"));
 		return;
 	}
 
-	char *syntax_name = ptr;
-	if (*syntax_name == '"') {
-		syntax_name++;
-	}
-	ptr = parse_argument(ptr);
-
-	DEBUG_LOG("Reading a new 'extends': \"" << syntax_name << '"');
-
-	new_syntax->extends.push_back(syntax_name);
+	current_syntax->extends.push_back(syntax_name);
 }
 
 #ifdef HAVE_LIBMAGIC
-/* Parse the next syntax string from the line at ptr, and add it to the
- * global list of color syntaxes. */
-void parse_magictype(char *ptr)
+void parse_magic(std::stringstream& line)
 {
-	const char *fileregptr = NULL;
-
-	assert(ptr != NULL);
-
-	if (syntaxes.empty()) {
+	if (!current_syntax) {
 		rcfile_error(N_("Cannot add a magic string regex without a syntax command"));
 		return;
 	}
 
-	if (*ptr == '\0') {
+	string regex = parse_regex(line);
+
+	if (regex.empty()) {
 		rcfile_error(N_("Missing magic string name"));
 		return;
 	}
 
-	if (*ptr != '"') {
-		rcfile_error(N_("Regex strings must begin and end with a \" character"));
-		return;
-	}
+	DEBUG_LOG("Starting a magic type: \"" << regex << '"');
 
-	DEBUG_LOG("Starting a magic type: \"" << ptr << '"');
-
-	/* Now load the extensions into their part of the struct. */
-	while (*ptr != '\0') {
-		while (*ptr != '"' && *ptr != '\0') {
-			ptr++;
-		}
-
-		if (*ptr == '\0') {
-			return;
-		}
-
-		ptr++;
-
-		fileregptr = ptr;
-		ptr = parse_next_regex(ptr);
-		if (ptr == NULL) {
-			break;
-		}
-
-		/* Save the regex if it's valid. */
-		if (nregcomp(fileregptr, REG_NOSUB)) {
-			auto newext = new SyntaxMatch(fileregptr);
-			new_syntax->magics.push_back(newext);
-		}
+	/* Save the regex if it's valid. */
+	if (nregcomp(regex, REG_NOSUB)) {
+		auto newext = new SyntaxMatch(regex);
+		current_syntax->magics.push_back(newext);
 	}
 }
 #endif /* HAVE_LIBMAGIC */
@@ -400,58 +264,50 @@ bool is_universal_function(void (*func)(void))
 	return false;
 }
 
-void parse_keybinding(char *ptr)
+void parse_keybinding(std::stringstream& line)
 {
-	char *keyptr = NULL, *keycopy = NULL, *funcptr = NULL, *menuptr = NULL;
-	sc *newsc;
-	int menu;
+	string key_name;
+	line >> key_name;
 
-	assert(ptr != NULL);
-
-	if (*ptr == '\0') {
+	if (key_name.empty()) {
 		rcfile_error(N_("Missing key name"));
 		return;
 	}
 
-	keyptr = ptr;
-	ptr = parse_next_word(ptr);
-	keycopy = mallocstrcpy(NULL, keyptr);
-
-	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F') {
+	if (key_name[0] != 'M' && key_name[0] != '^' && key_name[0] != 'F') {
 		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
 		return;
 	}
 
-	funcptr = ptr;
-	ptr = parse_next_word(ptr);
+	string func_name;
+	line >> func_name;
 
-	if (!strcmp(funcptr, "")) {
+	if (func_name.empty()) {
 		rcfile_error(N_("Must specify function to bind key to"));
 		return;
 	}
 
-	menuptr = ptr;
-	ptr = parse_next_word(ptr);
+	string menu_name;
+	line >> menu_name;
 
-	if (!strcmp(menuptr, "")) {
+	if (menu_name.empty()) {
 		/* Note to translators, do not translate the word "all"
 		   in the sentence below, everything else is fine */
 		rcfile_error(N_("Must specify menu to bind key to (or \"all\")"));
 		return;
 	}
 
-	menu = strtomenu(menuptr);
-	newsc = strtosc(funcptr);
-	if (newsc == NULL) {
-		rcfile_error(N_("Could not map name \"%s\" to a function"), funcptr);
+	auto menu = strtomenu(menu_name);
+	auto newsc = strtosc(func_name);
+	if (!newsc) {
+		rcfile_error(N_("Could not map name \"%s\" to a function"), func_name.c_str());
 		return;
 	}
 
 	if (menu < 1) {
-		rcfile_error(N_("Could not map name \"%s\" to a menu"), menuptr);
+		rcfile_error(N_("Could not map name \"%s\" to a menu"), menu_name.c_str());
 		return;
 	}
-
 
 	DEBUG_LOG("newsc now address " << static_cast<void *>(&newsc) << ", menu func assigned = " << newsc->scfunc << ", menu = " << menu);
 
@@ -469,12 +325,12 @@ void parse_keybinding(char *ptr)
 	}
 
 	if (!menu) {
-		rcfile_error(N_("Function '%s' does not exist in menu '%s'"), funcptr, menuptr);
+		rcfile_error(N_("Function '%s' does not exist in menu '%s'"), func_name.c_str(), menu_name.c_str());
 		free(newsc);
 		return;
 	}
 
-	newsc->keystr = keycopy;
+	newsc->keystr = key_name;
 	newsc->menu = menu;
 	DEBUG_LOG("s->keystr = \"" << newsc->keystr << '"');
 
@@ -489,56 +345,48 @@ void parse_keybinding(char *ptr)
 }
 
 /* Let user unbind a sequence from a given (or all) menus */
-void parse_unbinding(char *ptr)
+void parse_unbinding(std::stringstream& line)
 {
-	char *keyptr = NULL, *keycopy = NULL, *menuptr = NULL;
-	int menu;
-
-	assert(ptr != NULL);
-
-	if (*ptr == '\0') {
+	string key_name;
+	line >> key_name;
+	if (key_name.empty()) {
 		rcfile_error(N_("Missing key name"));
 		return;
 	}
 
-	keyptr = ptr;
-	ptr = parse_next_word(ptr);
-	keycopy = mallocstrcpy(NULL, keyptr);
-
 	DEBUG_LOG("Starting unbinding code");
 
-	if (keycopy[0] != 'M' && keycopy[0] != '^' && keycopy[0] != 'F' && keycopy[0] != 'K') {
+	if (key_name[0] != 'M' && key_name[0] != '^' && key_name[0] != 'F') {
 		rcfile_error(N_("keybindings must begin with \"^\", \"M\", or \"F\""));
 		return;
 	}
 
-	menuptr = ptr;
-	ptr = parse_next_word(ptr);
+	string menu_name;
+	line >> menu_name;
 
-	if (!strcmp(menuptr, "")) {
+	if (menu_name.empty()) {
 		/* Note to translators, do not translate the word "all"
 		   in the sentence below, everything else is fine */
 		rcfile_error(N_("Must specify menu to bind key to (or \"all\")"));
 		return;
 	}
 
-	menu = strtomenu(menuptr);
+	auto menu = strtomenu(menu_name);
 	if (menu < 1) {
-		rcfile_error(N_("Could not map name \"%s\" to a menu"), menuptr);
+		rcfile_error(N_("Could not map name \"%s\" to a menu"), menu_name.c_str());
 		return;
 	}
 
-	DEBUG_LOG("unbinding \"" << keycopy << "\" from menu = " << menu);
+	DEBUG_LOG("unbinding \"" << key_name << "\" from menu = " << menu);
 
 	/* Now find the apropriate entries in the menu to delete */
 	for (auto s : sclist) {
-		if (((s->menu & menu)) && s->keystr == keycopy) {
+		if (((s->menu & menu)) && s->keystr == key_name) {
 			s->menu &= ~menu;
 			DEBUG_LOG("deleted menu entry " << s->menu);
 		}
 	}
 }
-
 
 /* Read and parse additional syntax files. */
 void parse_include_file(char *filename)
@@ -572,31 +420,25 @@ void parse_include_file(char *filename)
 	parse_rcfile(rcstream, true);
 }
 
-void parse_include(char *ptr)
+void parse_include(std::stringstream& line)
 {
-	char *option, *expanded;
 	string pinotrc_save = pinotrc;
 	size_t lineno_save = lineno;
 	glob_t files;
 
-	option = ptr;
-	if (*option == '"') {
-		option++;
-	}
-	ptr = parse_argument(ptr);
+	string option = rest(line).str();
 
 	/* Expand tildes first, then the globs. */
-	expanded = real_dir_from_tilde(option);
+	auto expanded = real_dir_from_tilde(option);
 
-	if (glob(expanded, GLOB_ERR|GLOB_NOSORT, NULL, &files) == 0) {
+	if (glob(expanded.c_str(), GLOB_ERR|GLOB_NOSORT, NULL, &files) == 0) {
 		for (int i = 0; i < files.gl_pathc; ++i) {
 			parse_include_file(files.gl_pathv[i]);
 		}
 	} else {
-		rcfile_error(_("Error expanding %s: %s"), option, strerror(errno));
+		rcfile_error(_("Error expanding %s: %s"), option.c_str(), strerror(errno));
 	}
 	globfree(&files);
-	free(expanded);
 
 	/* We're done with the new syntax file.  Restore the original
 	 * filename and line number position. */
@@ -662,124 +504,89 @@ COLORWIDTH color_name_to_value(string colorname, bool *bright, bool *underline)
 }
 
 /* Parse the color string in the line at ptr, and add it to the current
- * file's associated colors.  If icase is true, treat the color string
- * as case insensitive. */
-void parse_colors(char *ptr, bool icase)
+ * file's associated colors.  If case_senstive is true, treat the color string
+ * as case sensitive. */
+void parse_colors(std::stringstream& line, bool case_sensitive)
 {
 	COLORWIDTH fg, bg;
 	bool bright = false, underline = false;
-	char *fgstr;
 
-	assert(ptr != NULL);
-
-	if (syntaxes.empty()) {
+	if (!current_syntax) {
 		rcfile_error(N_("Cannot add a color command without a syntax command"));
 		return;
 	}
 
-	if (*ptr == '\0') {
+	string colors;
+	line >> colors;
+
+	if (colors.empty()) {
 		rcfile_error(N_("Missing color name"));
 		return;
 	}
 
-	fgstr = ptr;
-	ptr = parse_next_word(ptr);
-
-	if (!parse_color_names(string(fgstr), &fg, &bg, &bright, &underline)) {
+	if (!parse_color_names(colors, &fg, &bg, &bright, &underline)) {
 		return;
 	}
 
-	if (*ptr == '\0') {
-		rcfile_error(N_("Missing regex string"));
+	bool cancelled = false;  // The start expression was bad.
+	bool expect_end = false; // Do we expect an end= line?
+
+	// Does the next bit start with 'start='? If so, skip ahead to what's after the equal sign
+	char buf[7];
+	line.get(buf, 7);
+	string regex;
+	if (string(buf) == "start=") {
+		regex = parse_regex(line);
+		expect_end = true;
+	} else {
+		line.seekg(-6, line.cur);
+		regex = parse_regex(line);
+	}
+
+	if (regex.empty()) {
+		rcfile_error(N_("Missing regex"));
 		return;
 	}
 
-	/* Now for the fun part.  Start adding regexes to individual strings
-	 * in the colorstrings array, woo! */
-	while (ptr != NULL && *ptr != '\0') {
-		/* The new color structure. */
-		bool cancelled = false;
-		/* The start expression was bad. */
-		bool expectend = false;
-		/* Do we expect an end= line? */
+	auto newcolor = ColorPtr(new colortype);
 
-		if (strncasecmp(ptr, "start=", 6) == 0) {
-			ptr += 6;
-			expectend = true;
+	/* Save the starting regex string if it's valid, and set up the color information. */
+	if (nregcomp(regex, case_sensitive ? 0 : REG_ICASE)) {
+		newcolor->fg = fg;
+		newcolor->bg = bg;
+		newcolor->bright = bright;
+		newcolor->underline = underline;
+		newcolor->icase = !case_sensitive;
+
+		newcolor->start_regex = regex;
+		newcolor->start = NULL;
+		newcolor->end = NULL;
+
+		current_syntax->add_color(newcolor);
+		DEBUG_LOG("Adding new entry for fg " << fg << ", bg " << bg);
+	} else {
+		cancelled = true;
+	}
+
+	if (expect_end) {
+		skip_whitespace(line);
+
+		line.get(buf, 5);
+		if (line.eof() || string(buf) != "end=") {
+			rcfile_error(N_("\"start=\" requires a corresponding \"end=\""));
+			return;
 		}
 
-		if (*ptr != '"') {
-			rcfile_error(N_("Regex strings must begin and end with a \" character"));
-			ptr = parse_next_regex(ptr);
-			continue;
-		}
+		regex = parse_regex(line);
 
-		ptr++;
-
-		fgstr = ptr;
-		ptr = parse_next_regex(ptr);
-		if (ptr == NULL) {
-			break;
-		}
-
-		auto newcolor = ColorPtr(new colortype);
-
-		/* Save the starting regex string if it's valid, and set up the color information. */
-		if (nregcomp(fgstr, icase ? REG_ICASE : 0)) {
-			newcolor->fg = fg;
-			newcolor->bg = bg;
-			newcolor->bright = bright;
-			newcolor->underline = underline;
-			newcolor->icase = icase;
-
-			newcolor->start_regex = mallocstrcpy(NULL, fgstr);
-			newcolor->start = NULL;
-
-			newcolor->end_regex = NULL;
-			newcolor->end = NULL;
-
-			new_syntax->add_color(newcolor);
-#ifdef DEBUG
-			if (new_syntax->own_colors().empty()) {
-				DEBUG_LOG("Starting a new colorstring for fg " << fg << ", bg " << bg);
-			} else {
-				DEBUG_LOG("Adding new entry for fg " << fg << ", bg " << bg);
-			}
-#endif
-		} else {
-			cancelled = true;
-		}
-
-		if (expectend) {
-			if (ptr == NULL || strncasecmp(ptr, "end=", 4) != 0) {
-				rcfile_error(N_("\"start=\" requires a corresponding \"end=\""));
-				return;
-			}
-			ptr += 4;
-			if (*ptr != '"') {
-				rcfile_error(N_("Regex strings must begin and end with a \" character"));
-				continue;
-			}
-
-			ptr++;
-
-			fgstr = ptr;
-			ptr = parse_next_regex(ptr);
-			if (ptr == NULL) {
-				break;
-			}
-
-			/* If the start regex was invalid, skip past the end regex to stay in sync. */
-			if (cancelled) {
-				continue;
-			}
-
+		/* If the start regex was invalid, skip past the end regex to stay in sync. */
+		if (!cancelled) {
 			/* Save the ending regex string if it's valid. */
-			newcolor->end_regex = (nregcomp(fgstr, icase ? REG_ICASE : 0)) ? mallocstrcpy(NULL, fgstr) : NULL;
+			newcolor->end_regex = (nregcomp(regex, case_sensitive ? 0 : REG_ICASE)) ? regex : "";
 
 			/* Lame way to skip another static counter */
-			newcolor->id = new_syntax->nmultis;
-			new_syntax->nmultis++;
+			newcolor->id = current_syntax->nmultis;
+			current_syntax->nmultis++;
 		}
 	}
 }
@@ -826,86 +633,96 @@ bool parse_color_names(const string& combostr, short *fg, short *bg, bool *brigh
 	return true;
 }
 
-
 /* Parse the headers (1st line) of the file which may influence the regex used. */
-void parse_headers(char *ptr)
+void parse_header(std::stringstream& line)
 {
-	char *regstr;
-
-	assert(ptr != NULL);
-
-	if (syntaxes.empty()) {
+	if (!current_syntax) {
 		rcfile_error(N_("Cannot add a header regex without a syntax command"));
 		return;
 	}
 
-	if (*ptr == '\0') {
+	// Everything to the end of the line is the regular expression
+	string regex = parse_regex(line);
+
+	if (regex.empty()) {
 		rcfile_error(N_("Missing regex string"));
 		return;
 	}
 
-	/* Now for the fun part.  Start adding regexes to individual strings
-	 * in the colorstrings array, woo! */
-	while (ptr != NULL && *ptr != '\0') {
-		if (*ptr != '"') {
-			rcfile_error(N_("Regex strings must begin and end with a \" character"));
-			ptr = parse_next_regex(ptr);
-			continue;
-		}
+	/* Save the regex string if it's valid */
+	if (nregcomp(regex, 0)) {
+		auto newheader = new SyntaxMatch(regex);
 
-		ptr++;
+		DEBUG_LOG("Starting a new header entry: " << regex);
 
-		regstr = ptr;
-		ptr = parse_next_regex(ptr);
-		if (ptr == NULL) {
-			break;
-		}
+		current_syntax->headers.push_back(newheader);
+	}
+}
 
+// Read in a regular expression to match the filename for the current syntax
+void parse_filename_regex(std::stringstream& line)
+{
+	if (!current_syntax) {
+		rcfile_error(N_("Cannot add a regex without a syntax command"));
+		return;
+	}
 
-		/* Save the regex string if it's valid */
-		if (nregcomp(regstr, 0)) {
-			auto newheader = new SyntaxMatch(regstr);
+	// Everything after the token to the end of the line is the regex
+	string regex = parse_regex(line);
 
-			DEBUG_LOG("Starting a new header entry: " << regstr);
+	if (regex.empty()) {
+		rcfile_error(N_("Missing regex"));
+		return;
+	}
 
-			new_syntax->headers.push_back(newheader);
-		}
+	if (current_syntax->desc == "default") {
+		rcfile_error(N_("The \"default\" syntax must take no regular expressions"));
+		return;
+	}
+
+	// Try compiling the regular expression to make sure it's valid
+	if (nregcomp(regex, REG_NOSUB)) {
+		auto new_match = new SyntaxMatch(regex);
+		current_syntax->extensions.push_back(new_match);
 	}
 }
 
 /* Parse the linter requested for this syntax.  Simple? */
-void parse_linter(char *ptr)
+void parse_linter(std::stringstream& line)
 {
-	assert(ptr != NULL);
-
-	if (syntaxes.empty()) {
+	if (!current_syntax) {
 		rcfile_error(N_("Cannot add a linter without a syntax command"));
 		return;
 	}
+	// Everything to the end of the line is the command to execute
+	string command = line.str();
+	command = command.trim();
 
-	if (*ptr == '\0') {
+	if (command.empty()) {
 		rcfile_error(N_("Missing linter command"));
 		return;
 	}
 
-	new_syntax->linter = string(ptr);
+	current_syntax->linter = command;
 }
 
-void parse_formatter(char *ptr)
+void parse_formatter(std::stringstream& line)
 {
-	assert(ptr != NULL);
-
-	if (syntaxes.empty()) {
+	if (!current_syntax) {
 		rcfile_error(N_("Cannot add a formatter without a syntax command"));
 		return;
 	}
 
-	if (*ptr == '\0') {
+	// Everything after the 'formatter' token on the line is the command
+	string command = line.str();
+	command = command.trim();
+
+	if (command.empty()) {
 		rcfile_error(N_("Missing formatter command"));
 		return;
 	}
 
-	new_syntax->formatter = string(ptr);
+	current_syntax->formatter = command;
 }
 
 /* Check whether the user has unmapped every shortcut for a
@@ -932,25 +749,110 @@ static void check_vitals_mapped(void)
 	}
 }
 
-string rest(std::stringstream& stream)
+void parse_set(std::stringstream& line)
 {
-	// Eliminate leading whitespace
-	while (!stream.eof() && isspace(stream.peek())) stream.get();
+	string option;
+	line >> option;
+	line = rest(line);
 
-	string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
-	return remaining;
+	for (auto rcopt : rcopts) {
+		if (rcopt.name == option) {
+			DEBUG_LOG("parse_set(): name = \"" << rcopt.name << '"');
+
+			if (rcopt.flag != 0) {
+				/* This option has a flag, so it doesn't take an argument. */
+				SET(rcopt.flag);
+				return;
+			}
+
+			/* This option doesn't have a flag, so it takes an argument. */
+
+			// The argument is whatever's left over on the line
+			string argument = line.str();
+			argument = argument.trim();
+			if (argument.empty()) {
+				rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
+				break;
+			}
+			DEBUG_LOG("argument = \"" << argument << '"');
+
+			if (rcopt.name == "titlecolor") {
+				specified_color_combo[TITLE_BAR] = argument;
+			} else if (rcopt.name == "statuscolor") {
+				specified_color_combo[STATUS_BAR] = argument;
+			} else if (rcopt.name == "keycolor") {
+				specified_color_combo[KEY_COMBO] = argument;
+			} else if (rcopt.name == "functioncolor") {
+				specified_color_combo[FUNCTION_TAG] = argument;
+			} else if (rcopt.name == "fill") {
+				if (!parse_num(argument.c_str(), &wrap_at)) {
+					rcfile_error(N_("Requested fill size \"%s\" is invalid"), argument.c_str());
+					wrap_at = -CHARS_FROM_EOL;
+				}
+			} else if (rcopt.name == "matchbrackets") {
+				if (argument.has_blank_chars()) {
+					rcfile_error(N_("Non-blank characters required"));
+				} else {
+					matchbrackets = argument;
+				}
+			} else if (rcopt.name == "whitespace") {
+				whitespace = argument;
+				if (mbstrlen(whitespace.c_str()) != 2 || strlenpt(whitespace.c_str()) != 2) {
+					rcfile_error(N_("Two single-column characters required"));
+					whitespace = "";
+				} else {
+					whitespace_len[0] = parse_mbchar(whitespace.c_str(), NULL, NULL);
+					whitespace_len[1] = parse_mbchar(whitespace.c_str() + whitespace_len[0], NULL, NULL);
+				}
+			} else if (rcopt.name == "backupdir") {
+				backup_dir = argument;
+			} else if (rcopt.name == "speller") {
+				alt_speller = argument;
+			} else if (rcopt.name == "tabsize") {
+				if (!parse_num(argument.c_str(), &tabsize) || tabsize <= 0) {
+					rcfile_error(N_("Requested tab size \"%s\" is invalid"), argument.c_str());
+					tabsize = -1;
+				}
+			}
+			return;
+		}
+	}
+
+	rcfile_error(N_("Unknown flag \"%s\""), option.c_str());
+}
+
+void parse_unset(std::stringstream& line)
+{
+	string option;
+	line >> option;
+
+	for (auto rcopt : rcopts) {
+		if (rcopt.name == option) {
+			DEBUG_LOG("parse_unset(): name = \"" << rcopt.name << '"');
+
+			if (rcopt.flag != 0) {
+				UNSET(rcopt.flag);
+			} else {
+				rcfile_error(N_("Cannot unset flag \"%s\""), rcopt.name.c_str());
+			}
+			return;
+		}
+	}
+
+	rcfile_error(N_("Unknown flag \"%s\""), option.c_str());
 }
 
 /* Parse the rcfile, once it has been opened successfully at rcstream,
  * and close it afterwards.  If syntax_only is true, only allow the file
  * to contain color syntax commands: syntax, color, and icolor. */
-void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
+void parse_rcfile(std::ifstream& rcstream, bool syntax_only)
 {
 	string line;
 
 	while (!getline(rcstream, line).eof()) {
 		lineno++;
 
+		// Skip empty lines and lines that begin with '#' (comments)
 		if (line.empty() || line[0] == '#') {
 			continue;
 		}
@@ -961,176 +863,57 @@ void parse_rcfile(std::ifstream &rcstream, bool syntax_only)
 		// Read keyword
 		string keyword;
 		linestream >> keyword;
+		linestream = rest(linestream);
 
-		// --------
-
-		char *ptr = NULL;
-		int set = 0;
-
-		/* Try to parse the keyword. */
 		if (keyword == "set") {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				set = 1;
+				parse_set(linestream);
 			}
 		} else if (keyword == "unset") {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				set = -1;
+				parse_unset(linestream);
 			}
-		}	else if (keyword == "include") {
+		} else if (keyword == "include") {
 			if (syntax_only) {
 				rcfile_error(N_("Command \"%s\" not allowed in included file"), keyword.c_str());
 			} else {
-				ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-				parse_include(ptr);
-				free(ptr);
+				parse_include(linestream);
 			}
 		} else if (keyword == "syntax") {
-			if (new_syntax != NULL && new_syntax->own_colors().empty()) {
-				rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
-			}
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_syntax(ptr);
-			free(ptr);
+			parse_syntax(linestream);
 		} else if (keyword == "extends") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_extends(ptr);
-			free(ptr);
+			parse_extends(linestream);
+		} else if (keyword == "filename") {
+			parse_filename_regex(linestream);
 		} else if (keyword == "magic") {
 #ifdef HAVE_LIBMAGIC
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_magictype(ptr);
-			free(ptr);
+			parse_magic(linestream);
 #endif
 		} else if (keyword == "header") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_headers(ptr);
-			free(ptr);
+			parse_header(linestream);
 		} else if (keyword == "color") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_colors(ptr, false);
-			free(ptr);
+			parse_colors(linestream, true);
 		} else if (keyword == "icolor") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_colors(ptr, true);
-			free(ptr);
+			parse_colors(linestream, false);
 		} else if (keyword == "bind") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_keybinding(ptr);
-			free(ptr);
+			parse_keybinding(linestream);
 		} else if (keyword == "unbind") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_unbinding(ptr);
-			free(ptr);
+			parse_unbinding(linestream);
 		} else if (keyword == "linter") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_linter(ptr);
-			free(ptr);
+			parse_linter(linestream);
 		} else if (keyword == "formatter") {
-			ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-			parse_formatter(ptr);
-			free(ptr);
+			parse_formatter(linestream);
 		} else {
 			rcfile_error(N_("Command \"%s\" not understood"), keyword.c_str());
 		}
-
-		if (set == 0) {
-			continue;
-		}
-
-		string option;
-		linestream >> option;
-
-		bool found = false;
-		for (auto rcopt : rcopts) {
-			if (rcopt.name == option) {
-				found = true;
-				DEBUG_LOG("parse_rcfile(): name = \"" << rcopt.name << '"');
-				if (set == 1) {
-					if (rcopt.flag != 0) {
-						/* This option has a flag, so it doesn't take an argument. */
-						SET(rcopt.flag);
-					} else {
-						/* This option doesn't have a flag, so it takes an argument. */
-						ptr = mallocstrcpy(ptr, rest(linestream).c_str());
-						char *value = ptr;
-						// Skip leading '"' character at front of string
-						if (*value == '"') value++;
-						ptr = parse_argument(ptr);
-
-						string argument = string(value);
-						if (argument.empty()) {
-							rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
-							break;
-						}
-						DEBUG_LOG("argument = \"" << argument << '"');
-
-						/* Make sure option is a valid multibyte string. */
-						if (!is_valid_mbstring(argument.c_str())) {
-							rcfile_error(N_("Option is not a valid multibyte string"));
-							break;
-						}
-
-						if (rcopt.name == "titlecolor") {
-							specified_color_combo[TITLE_BAR] = argument;
-						} else if (rcopt.name == "statuscolor") {
-							specified_color_combo[STATUS_BAR] = argument;
-						} else if (rcopt.name == "keycolor") {
-							specified_color_combo[KEY_COMBO] = argument;
-						} else if (rcopt.name == "functioncolor") {
-							specified_color_combo[FUNCTION_TAG] = argument;
-						} else if (rcopt.name == "fill") {
-							if (!parse_num(argument.c_str(), &wrap_at)) {
-								rcfile_error(N_("Requested fill size \"%s\" is invalid"), argument.c_str());
-								wrap_at = -CHARS_FROM_EOL;
-							}
-						} else if (rcopt.name == "matchbrackets") {
-							matchbrackets = mallocstrcpy(matchbrackets, argument.c_str());
-							if (has_blank_mbchars(matchbrackets)) {
-								rcfile_error(N_("Non-blank characters required"));
-								matchbrackets = NULL;
-							}
-						} else if (rcopt.name == "whitespace") {
-							whitespace = argument;
-							if (mbstrlen(whitespace.c_str()) != 2 || strlenpt(whitespace.c_str()) != 2) {
-								rcfile_error(N_("Two single-column characters required"));
-								whitespace = "";
-							} else {
-								whitespace_len[0] = parse_mbchar(whitespace.c_str(), NULL, NULL);
-								whitespace_len[1] = parse_mbchar(whitespace.c_str() + whitespace_len[0], NULL, NULL);
-							}
-						} else if (rcopt.name == "backupdir") {
-							backup_dir = argument;
-						} else if (rcopt.name == "speller") {
-							alt_speller = mallocstrcpy(alt_speller, argument.c_str());
-						} else if (rcopt.name == "tabsize") {
-							if (!parse_num(argument.c_str(), &tabsize) || tabsize <= 0) {
-								rcfile_error(N_("Requested tab size \"%s\" is invalid"), argument.c_str());
-								tabsize = -1;
-							}
-						} else {
-							assert(false);
-						}
-					}
-					DEBUG_LOG("flag = " << rcopt.flag);
-				} else if (rcopt.flag != 0) {
-					UNSET(rcopt.flag);
-				} else {
-					rcfile_error(N_("Cannot unset flag \"%s\""), rcopt.name.c_str());
-				}
-				break;
-			}
-		}
-		if (!found) {
-			rcfile_error(N_("Unknown flag \"%s\""), option.c_str());
-		}
 	}
 
-	if (new_syntax != NULL && new_syntax->own_colors().empty()) {
-		rcfile_error(N_("Syntax \"%s\" has no color commands"), new_syntax->desc.c_str());
+	if (current_syntax != NULL && current_syntax->own_colors().empty()) {
+		rcfile_error(N_("Syntax \"%s\" has no color commands"), current_syntax->desc.c_str());
 	}
 
 	lineno = 0;

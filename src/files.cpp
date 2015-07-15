@@ -302,6 +302,7 @@ void open_buffer(string filename, bool undoable)
 
 	/* If we're loading into a new buffer, add a new entry to openfile. */
 	if (new_buffer) {
+DEBUG_LOG("about to make_new_buffer()");
 		make_new_buffer();
 
 		if (ISSET(LOCKING) && filename != "") {
@@ -2720,42 +2721,30 @@ void load_poshistory(void)
 	string pinothist = poshistfilename();
 
 	/* Assume do_rcfile() has reported a missing home directory. */
-	if (pinothist != "") {
-		std::ifstream hist(pinothist.c_str(), std::ifstream::binary);
+	if (pinothist == "") {
+		return;
+	}
 
-		if (!hist) {
-			if (errno != ENOENT) {
-				/* Don't save history when we quit. */
-				UNSET(POS_HISTORY);
-				history_error(N_("Error reading %s: %s"), pinothist.c_str(), strerror(errno));
-			}
-		} else {
-			char *line = NULL, *lineptr, *xptr;
-			size_t buf_len = 0;
-			ssize_t read, lineno, xno;
+	std::ifstream hist(pinothist.c_str());
 
-			/* See if we can find the file we're currently editing */
-			while ((read = getline(&line, &buf_len, hist)) >= 0) {
-				if (read > 0 && line[read - 1] == '\n') {
-					read--;
-					line[read] = '\0';
-				}
-				if (read > 0) {
-					unsunder(line, read);
-				}
-				lineptr = parse_next_word(line);
-				xptr = parse_next_word(lineptr);
-				lineno = atoi(lineptr);
-				xno = atoi(xptr);
-
-				auto pos = new poshiststruct;
-				pos->filename = line;
-				pos->lineno   = lineno;
-				pos->xno      = xno;
-				poshistory.push_back(pos);
-			}
-
-			free(line);
+	if (!hist) {
+		if (errno != ENOENT) {
+			/* Don't save history when we quit. */
+			UNSET(POS_HISTORY);
+			history_error(N_("Error reading %s: %s"), pinothist.c_str(), strerror(errno));
 		}
+		return;
+	}
+	string line;
+
+	/* See if we can find the file we're currently editing */
+	while (getline(hist, line)) {
+		auto pieces = line.split(" ");
+
+		auto pos = new poshiststruct;
+		pos->filename = pieces[0];
+		pos->lineno   = pinot::stoi(pieces[1]);
+		pos->xno      = pinot::stoi(pieces[2]);
+		poshistory.push_back(pos);
 	}
 }

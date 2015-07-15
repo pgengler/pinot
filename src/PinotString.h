@@ -5,6 +5,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include <unicode/unistr.h>
 #include <unicode/ustream.h>
@@ -16,16 +17,19 @@ namespace pinot {
 	class character
 	{
 	public:
+		character();
 		character(char ch);
 		character(const icu::UnicodeString& s);
 
 		bool operator==(char ch);
+		bool operator==(const character& ch);
 		bool operator!=(char ch);
 
 		bool is_blank() const;
 
 		friend class string;
 		friend std::ostream& operator<<(std::ostream& stream, const character& ch);
+		friend string operator+(const character& a, const character& b);
 	private:
 		icu::UnicodeString str;
 	};
@@ -52,6 +56,7 @@ namespace pinot {
 		bool compare(size_t pos, size_t len, const string& str) const;
 		const char *c_str();
 		bool empty() const;
+		bool has_blank_chars() const;
 		ssize_t length() const;
 		bool starts_with(const string& str) const;
 		std::string str();
@@ -59,14 +64,17 @@ namespace pinot {
 		character front() const;
 		character back() const;
 
+		std::vector<string> split(string at) const;
 		string substr(size_t pos=0, size_t len=npos) const;
 
 		string to_lower() const;
+		string trim() const;
 
 		ssize_t find(const string& other) const;
 		ssize_t rfind(const string& other) const;
 
 		ssize_t find_first_of(const string& other) const;
+		ssize_t find_last_of(const string& other) const;
 
 		character operator[](size_t index) const;
 
@@ -115,6 +123,7 @@ namespace pinot {
 		char* c_str_buffer = nullptr;
 	};
 
+	int stoi(string s);
 	string to_string(int i);
 	string to_string(unsigned long i);
 };

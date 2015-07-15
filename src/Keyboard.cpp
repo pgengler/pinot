@@ -3,6 +3,11 @@
 Keyboard::Keyboard()
 {
 	termkey = termkey_new(0, TERMKEY_FLAG_NOTERMIOS|TERMKEY_FLAG_CONVERTKP);
+	if (!termkey) {
+		string s = "termkey_new failed: ";
+		s += strerror(errno);
+		throw s.c_str();
+	}
 	termkey_set_canonflags(termkey, termkey_get_canonflags(termkey) | TERMKEY_CANON_DELBS);
 	termkey_set_waittime(termkey, ESCDELAY);
 }
