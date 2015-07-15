@@ -1,27 +1,31 @@
 ## Here is an example for Python.
 
-syntax "python" "\.py$"
-header "^#!.*python[-0-9._]*"
+syntax python
+filename /\.py$/
+header /^#!.*python[-0-9._]*/
 linter pyflakes
 
 # Function definitions.
-icolor brightblue "def [0-9A-Z_]+"
+icolor brightblue /def [0-9A-Z_]+/
+
 # Keywords.
-color brightcyan "\b(and|as|assert|break|class|continue|def|del|elif|else|except|exec|finally|for|from|global|if|import|in|is|lambda|not|or|pass|print|raise|return|try|while|with|yield)\b"
+color brightcyan /\b(and|as|assert|break|class|continue|def|del|elif|else|except|exec|finally|for|from|global|if|import|in|is|lambda|not|or|pass|print|raise|return|try|while|with|yield)\b/
 
 # Strings.
-color brightgreen "['][^']*[^\\][']" "[']{3}.*[^\\][']{3}"
-color brightgreen "["][^"]*[^\\]["]" "["]{3}.*[^\\]["]{3}"
+color brightgreen /['][^']*[^\\][']/
+color brightgreen /[']{3}.*[^\\][']{3}/
+color brightgreen /["][^"]*[^\\]["]/
+color brightgreen /["]{3}.*[^\\]["]{3}/
 
 # Comments.
-color brightred "(^|[[:blank:]])#.*$"
+color brightred /(^|[[:blank:]])#.*$/
 
 # Multiline strings.
-color brightgreen start="\"\"\"[^"),]" end="(^|[^(])\"\"\""
-color brightgreen    start="'''[^'),]" end="(^|[^(])'''"
+color brightgreen start=/\"\"\"[^"),]/ end=/(^|[^(])\"\"\"/
+color brightgreen    start=/'''[^'),]/ end=/(^|[^(])'''/
 
 # Reminders.
-color ,yellow "(FIXME|TODO|XXX)"
+color ,yellow /(FIXME|TODO|XXX)/
 
 # Trailing whitespace.
-color ,green "\s+$"
+color ,green /\s+$/

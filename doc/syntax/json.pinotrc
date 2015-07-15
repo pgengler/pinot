@@ -4,29 +4,40 @@
 # Original author:  Aapo Rantalainen
 # License:  GPLv3 or newer
 
-syntax "json" "\.json$"
+syntax json
+filename /\.json$/
 
 # Numbers (used as value).
-color green ":\s*\-?(0|[1-9][0-9]*)(\.[0-9]+)?([Ee]?[-+]?[0-9]+)?"
+color green /:\s*\-?(0|[1-9][0-9]*)(\.[0-9]+)?([Ee]?[-+]?[0-9]+)?/
+
 # Values (well, any string).
-color brightmagenta "\".+\""
+color brightmagenta /\".+\"/
+
 # Hex numbers (used as value).
-color green ":\s*\"#[0-9abcdefABCDEF]+\""
+color green /:\s*\"#[0-9abcdefABCDEF]+\"/
+
 # Escapes.
-color green "\\\\" "\\\"" "\\[bfnrt]" "\\u[0-9abcdefABCDEF]{4})"
+color green /\\\\/
+color green /\\\"/
+color green /\\[bfnrt]/
+color green /\\u[0-9abcdefABCDEF]{4})/
+
 # Special words.
-color green "(true|false|null)"
+color green /(true|false|null)/
 
 # Names (very unlikely to contain a quote).
-color brightblue "\"[^"]+\"\s*:"
+color brightblue /\"[^"]+\"\s*:/
 
 # Brackets, braces, and separators.
-color brightblue "\[" "\]"
-color brightred "\{" "\}"
-color brightred "," ":"
+color brightblue /\[/
+color brightblue /\]/
+color brightred /\{/
+color brightred /\}/
+color brightred /,/
+color brightred /:/
 
 # Comments.
-color cyan "(^|\s+)(//|#).*$"
+color cyan /(^|\s+)(\/\/|#).*$/
 
 # Trailing whitespace.
-color ,green "\s+$"
+color ,green /\s+$/

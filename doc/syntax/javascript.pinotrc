@@ -1,27 +1,39 @@
 ##
 ## JavaScript
 ##
-syntax "javascript" "\.js$"
+syntax javascript
+filename /\.js$/
+
 # Function names
-icolor blue "(?<=function)\s+[0-9A-Z_]+"
+icolor blue /(?<=function)\s+[0-9A-Z_]+/
+
 # Builtins
-color 166 "\b(parseFloat|parseInt)\b"
+color 166 /\b(parseFloat|parseInt)\b/
+
 # Keywords
-color bold136 "\b(break|case|catch|continue|default|do|else|for|function|if|in|new|return|switch|throw|try|typeof|while)\b"
+color bold136 /\b(break|case|catch|continue|default|do|else|for|function|if|in|new|return|switch|throw|try|typeof|while)\b/
+
 # Common global variables
-color 166 "\b(document|window)\b"
+color 166 /\b(document|window)\b/
+
 # 'var'
-color cyan "\b(var)\b"
+color cyan /\b(var)\b/
+
 # Constant values
-color bold136 "\b(false|null|true|undefined)\b"
+color bold136 /\b(false|null|true|undefined)\b/
+
 # Builtin objects
-color green "\b(Array|Date|Math|Object|String)\b"
+color green /\b(Array|Date|Math|Object|String)\b/
+
 # Strings (single and double quotes)
-color red ""([^"]*)"|'([^']*)'"
+color red /"([^"]*)"|'([^']*)'/
+
 # Comments
-color 69 "\/\/.*"
-color 69 start="\/\*" end="\*\/"
+color 69 /\/\/.*/
+color 69 start=/\/\*/ end=/\*\//
+
 # Make FIXME/TODO more visible
-color ,yellow "\b(FIXME|TODO)\b"
+color ,yellow /\b(FIXME|TODO)\b/
+
 # Trailing whitespace
-color ,green "\s+$"
+color ,green /\s+$/

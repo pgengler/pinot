@@ -1,31 +1,33 @@
 ## Here is an example for PHP
 ##
-syntax "php" "\.php[2345s~]?$"
-magic "PHP script text"
+syntax php
+filename /\.php[2345s~]?$/
+magic /PHP script text/
 
 ## php markings
-color brightgreen "(<\?(php)?|\?>)"
+color brightgreen /(<\?(php)?|\?>)/
 
 ## functions
-color white "\b[a-z_]*\("
+color white /\b[a-z_]*\(/
 
 ## types
-color green "\b(var|float|global|double|bool|char|int|enum|const)\b"
+color green /\b(var|float|global|double|bool|char|int|enum|const)\b/
 
 ## structure
-color brightyellow "\b(class|new|private|public|function|for|foreach|if|while|do|else|elseif|case|default|switch)\b"
+color brightyellow /\b(class|new|private|public|function|for|foreach|if|while|do|else|elseif|case|default|switch)\b/
 
 ## control flow
-color magenta "\b(goto|continue|break|return)\b"
+color magenta /\b(goto|continue|break|return)\b/
 
 ## strings
-color brightyellow "<[^=       ]*>" ""(\.|[^"])*""
+color brightyellow /<[^=       ]*>/
+color brightyellow /"(\.|[^"])*"/
 
 ## comments
-color brightblue "//.*"
-color brightblue start="/\*" end="\*/"
-#color blue start="<" end=">"
-#color red "&[^;\s]*;"
+color brightblue /\/\/.*/
+color brightblue start=/\/\*/ end=/\*\//
+#color blue start=/</ end=/>/
+#color red /&[^;\s]*;/
 
 ## Trailing whitespace
-color ,green "\s+$"
+color ,green /\s+$/

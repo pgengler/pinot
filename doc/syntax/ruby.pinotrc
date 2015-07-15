@@ -1,58 +1,77 @@
 ##
 ## Ruby
 ##
-syntax "ruby" "\.rb$"
-header "^#!.*ruby[-0-9._]*"
+syntax ruby
+filename /\.rb$/
+header /^#!.*ruby[-0-9._]*/
 linter ruby -w -c
 
 # Function names
-icolor blue "(class|def) [0-9A-Z_]+"
+icolor blue /(class|def) [0-9A-Z_]+/
 
 # Asciibetical list of reserved words
-color yellow "\b(BEGIN|END|alias|and|begin|break|case|class|def|defined\?|do|else|elsif|end|ensure|false|for|if|in|module|next|nil|not|or|redo|require|xrescue|retry|return|self|super|then|true|undef|unless|until|when|while|yield)\b"
+color yellow /\b(BEGIN|END|alias|and|begin|break|case|class|def|defined\?|do|else|elsif|end|ensure|false|for|if|in|module|next|nil|not|or|redo|require|xrescue|retry|return|self|super|then|true|undef|unless|until|when|while|yield)\b/
 
 # Constants
-#color green "(\$|@|@@)?\b[A-Z]+[0-9A-Z_a-z]*"
+#color green /(\$|@|@@)?\b[A-Z]+[0-9A-Z_a-z]*/
 
 # Ruby "symbols"
-icolor magenta "(\s|^):[0-9A-Z_]+\b"
+icolor magenta /(\s|^):[0-9A-Z_]+\b/
 
 # Instance variables
-icolor cyan "@[A-Z_][0-9A-Z_]+"
+icolor cyan /@[A-Z_][0-9A-Z_]+/
 
 # Other vars
-icolor cyan "\$[0-9A-Z_]+"
+icolor cyan /\$[0-9A-Z_]+/
 
 # Some unique things we want to stand out
-color yellow "\b(__FILE__|__LINE__)\b"
+color yellow /\b(__FILE__|__LINE__)\b/
 
 # Regular expressions
-color magenta "/([^/]|(\\/))*/[iomx]*" "%r\{([^}]|(\\}))*\}[iomx]*"
+color magenta /\/([^\/]|(\\\/))*\/[iomx]*/
+color magebta /%r\{([^}]|(\\}))*\}[iomx]*/
 
 # Shell command expansion is in `backticks` or like %x{this}.  These are "double-quotish" (to use a perlism).
-color red "`[^`]*`" "%x\{[^}]*\}"
+color red /`[^`]*`/
+color red /%x\{[^}]*\}/
 
 # Strings, double-quoted
-color red ""([^"]|(\\"))*"" "%[QW]?\{[^}]*\}" "%[QW]?\([^)]*\)" "%[QW]?<[^>]*>" "%[QW]?\[[^]]*\]" "%[QW]?\$[^$]*\$" "%[QW]?\^[^^]*\^" "%[QW]?![^!]*!"
+color red ?"([^"]|(\\"))*"/
+color red /%[QW]?\{[^}]*\}/
+color red /%[QW]?\([^)]*\)/
+color red /%[QW]?<[^>]*>/
+color red /%[QW]?\[[^]]*\]/
+color red /%[QW]?\$[^$]*\$/
+color red /%[QW]?\^[^^]*\^/
+color red /%[QW]?![^!]*!/
 
 # Expression substitution.  These go inside double-quoted strings, "like #{this}".
-color cyan "#\{[^}]*\}"
+color cyan /#\{[^}]*\}/
 
 # Strings, single-quoted
-color red "'([^']|(\\'))*'" "%[qw]\{[^}]*\}" "%[qw]\([^)]*\)" "%[qw]<[^>]*>" "%[qw]\[[^]]*\]" "%[qw]\$[^$]*\$" "%[qw]\^[^^]*\^" "%[qw]![^!]*!"
+color red /'([^']|(\\'))*'/
+color red /%[qw]\{[^}]*\}/
+color red /%[qw]\([^)]*\)/
+color red /%[qw]<[^>]*>/
+color red /%[qw]\[[^]]*\]/
+color red /%[qw]\$[^$]*\$/
+color red /%[qw]\^[^^]*\^/
+color red /"%[qw]![^!]*!/
 
 # Comments
-color blue "#[^{].*$" "#$"
-color blue "##[^{].*$" "##$"
+color blue /#[^{].*$/
+color blue /#$/
+color blue /##[^{].*$/
+color blue /##$/
 
 # "Here" docs
-color green start="<<-?'?EOT'?" end="^EOT"
+color green start=/<<-?'?EOT'?/ end=/^EOT/
 
 # Make FIXME and TODO comments stand out  more
-color ,yellow "\b(FIXME|TODO)\b"
+color ,yellow /\b(FIXME|TODO)\b/
 
 # Shebangs
-color magenta "#!.*"
+color magenta /#!.*/
 
 # Trailing whitespace
-color ,green "\s+$"
+color ,green /\s+$/

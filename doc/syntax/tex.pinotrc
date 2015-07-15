@@ -1,8 +1,9 @@
 ## Here is a short example for TeX files.
 ##
-syntax "tex" "\.tex$"
+syntax tex
+filename /\.tex$/
 linter chktex -v0 -q -I
 
-icolor green "\\.|\\[A-Z]*"
-color magenta "[{}]"
-color blue "(^|[^\])%.*"
+icolor green /\\.|\\[A-Z]*/
+color magenta /[{}]/
+color blue /(^|[^\])%.*/

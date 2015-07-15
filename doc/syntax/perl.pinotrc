@@ -1,78 +1,79 @@
 ##
 ## Perl
 ##
-syntax "perl" "\.(pl|pm|psgi|cgi)$"
-header "^#!.*perl[-0-9._]*"
+syntax"perl
+filename /\.(pl|pm|psgi|cgi)$/
+header /^#!.*perl[-0-9._]*/
 
 # Subroutine names
-icolor bold27 "(?<=sub)\s+[0-9A-Z_]+"
+icolor bold27 /(?<=sub)\s+[0-9A-Z_]+/
 
 # Constants (all-caps barewords)
-color 205 "(?<!->)\b[A-Z_][0-9A-Z_]+\b(?!:)"
+color 205 /(?<!->)\b[A-Z_][0-9A-Z_]+\b(?!:)/
 
 # BEGIN
-color boldblack "BEGIN"
+color boldblack /BEGIN/
 
 # 'require'/'no'/'use' statements
-icolor boldmagenta "\b(no|require|use)\s+[0-9A-Z_+:]+"
+icolor boldmagenta /\b(no|require|use)\s+[0-9A-Z_+:]+/
 
 # 'package' statements
-icolor boldgreen "^package\s+[0-9A-Z_:]+"
+icolor boldgreen /^package\s+[0-9A-Z_:]+/
 
 # Builtin functions
-color 166 "\b(accept|alarm|atan2|bin(d|mode)|bless|c(aller|h(dir|mod|omp|op|own|r|root)|lose(dir)?|onnect|os|rypt)|d(bm(close|open)|efined|elete|ie|o|ump)|e(ach|of|val|x(ec|ists|it|p))|f(cntl|ileno|lock|ork))\b"
-color 166 "\b(get(c|login|peername|pgrp|ppid|priority|pwnam|(host|net|proto|serv)byname|pwuid|grgid|(host|net)byaddr|protobynumber|servbyport)|([gs]et|end)(pw|gr|host|net|proto|serv)ent|getsock(name|opt)|gmtime|goto|grep|hex|index|int|ioctl|join)\b"
-color 166 "\b(keys|kill|last|[lu]c|length|link|listen|local(time)?|log|lstat|m|map|mkdir|msg(ctl|get|snd|rcv)|next|not|oct|open(dir)?|ord|pack|pipe|pop|printf?|push|q|qq|qr|qw|qx|rand|re(ad(dir|link)?|cv|do|f|name|set|verse|winddir)|rindex|rmdir|s|say|scalar|seek(dir)?)\b"
-color 166 "\b(se(lect|mctl|mget|mop|nd|tpgrp|tpriority|tsockopt)|shift|shm(ctl|get|read|write)|shutdown|sin|sleep|socket(pair)?|sort|spli(ce|t)|sprintf|sqrt|srand|stat|study|substr|symlink|sys(call|read|tem|write)|tell(dir)?|time|tr(y)?|truncate|umask)\b"
-color 166 "\b(un(def|link|pack|shift)|utime|values|vec|wait(pid)?|wantarray|warn|write)\b"
+color 166 /\b(accept|alarm|atan2|bin(d|mode)|bless|c(aller|h(dir|mod|omp|op|own|r|root)|lose(dir)?|onnect|os|rypt)|d(bm(close|open)|efined|elete|ie|o|ump)|e(ach|of|val|x(ec|ists|it|p))|f(cntl|ileno|lock|ork))\b/
+color 166 /\b(get(c|login|peername|pgrp|ppid|priority|pwnam|(host|net|proto|serv)byname|pwuid|grgid|(host|net)byaddr|protobynumber|servbyport)|([gs]et|end)(pw|gr|host|net|proto|serv)ent|getsock(name|opt)|gmtime|goto|grep|hex|index|int|ioctl|join)\b/
+color 166 /\b(keys|kill|last|[lu]c|length|link|listen|local(time)?|log|lstat|m|map|mkdir|msg(ctl|get|snd|rcv)|next|not|oct|open(dir)?|ord|pack|pipe|pop|printf?|push|q|qq|qr|qw|qx|rand|re(ad(dir|link)?|cv|do|f|name|set|verse|winddir)|rindex|rmdir|s|say|scalar|seek(dir)?)\b/
+color 166 /\b(se(lect|mctl|mget|mop|nd|tpgrp|tpriority|tsockopt)|shift|shm(ctl|get|read|write)|shutdown|sin|sleep|socket(pair)?|sort|spli(ce|t)|sprintf|sqrt|srand|stat|study|substr|symlink|sys(call|read|tem|write)|tell(dir)?|time|tr(y)?|truncate|umask)\b/
+color 166 /\b(un(def|link|pack|shift)|utime|values|vec|wait(pid)?|wantarray|warn|write)\b/
 
 # Keywords and operators
-color bold136 "\b(continue|else|elsif|do|for|foreach|if|unless|until|while|eq|ne|lt|gt|le|ge|cmp|x|my|our|sub|return|(no|require|use)( (base|constant|feature|lib|overload|parent|strict|warnings))?|package|can|isa)\b"
+color bold136 /\b(continue|else|elsif|do|for|foreach|if|unless|until|while|eq|ne|lt|gt|le|ge|cmp|x|my|our|sub|return|(no|require|use)( (base|constant|feature|lib|overload|parent|strict|warnings))?|package|can|isa)\b/
 
 # Old-style function calls
-icolor green "&[0-9A-Z_:]+"
+icolor green /&[0-9A-Z_:]+/
 
 # ->
-color 87 "->"
+color 87 /->/
 
 # Variables
-icolor 28 "[$@%][0-9A-Z_:$@%]([0-9A-Z_:])*"
+icolor 28 /[$@%][0-9A-Z_:$@%]([0-9A-Z_:])*/
 
 # Strings (single and double quotes)
-color red "(["']).*?\1"
+color red /(["']).*?\1/
 
 # q~ ~ AND qq~ ~
-color red start="qq?~" end="~"
+color red start=/qq?~/ end=/~/
 
 # q() AND qq( )
-color red start="qq?\(" end="\)"
+color red start=/qq?\(/ end=/\)/
 
 # quoted hash keys
-color magenta "[^$](["'])[^\1,{]*?\1\s*=>"
-color magenta "(?<=\{)\s*[^$](["'])[^\1,=]*?\1\s*(?=})"
+color magenta /[^$](["'])[^\1,{]*?\1\s*=>/
+color magenta /(?<=\{)\s*[^$](["'])[^\1,=]*?\1\s*(?=})/
 # non-quoted hash keys
-color magenta "(?<=[^$]\{)\s*\w*?\s*(?=})"
-color 240 "=>"
+color magenta /(?<=[^$]\{)\s*\w*?\s*(?=})/
+color 240 /=>/
 
 # qw/ /
-color green start="qw\/" end="\/"
+color green start=/qw\// end=/\//
 
 # m/ / and s/ / /
-color red "[sm]/.*/"
+color red /[sm]\/.*\//
 
 # Ternary operator (? and :)
-color 240 " [?:] "
+color 240 / [?:] /
 
 # Comments
-color 69 "#.*"
+color 69 /#.*/
 
 # Make "TODO" et al more visible
-color black,yellow "(TODO|FIXME|(END |/)?HACK)"
+color black,yellow /(TODO|FIXME|(END |\/)?HACK)/
 
 # Shebang lines
-color boldmagenta "^#!.*"
+color boldmagenta /^#!.*/
 
-color yellow start="<< 'STOP'" end="STOP"
+color yellow start=/<< 'STOP'/ end=/STOP/
 
 # Trailing whitespace
-color ,green "\s+$"
+color ,green /\s+$/

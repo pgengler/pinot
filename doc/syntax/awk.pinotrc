@@ -1,39 +1,48 @@
 ## Here is an example for awk.
 ##
-syntax "awk" "\.awk$"
-magic "awk.*script text"
+syntax awk
+filename /\.awk$/
+magic /awk.*script text/
+
 ## records
-icolor brightred "\$[0-9A-Z_!@#$*?-]+"
+icolor brightred /\$[0-9A-Z_!@#$*?-]+/
+
 ## awk-set variables
-color red "\b(ARGC|ARGIND|ARGV|BINMODE|CONVFMT|ENVIRON|ERRNO|FIELDWIDTHS)\b"
-color red "\b(FILENAME|FNR|FS|IGNORECASE|LINT|NF|NR|OFMT|OFS|ORS)\b"
-color red "\b(PROCINFO|RS|RT|RSTART|RLENGTH|SUBSEP|TEXTDOMAIN)\b"
+color red /\b(ARGC|ARGIND|ARGV|BINMODE|CONVFMT|ENVIRON|ERRNO|FIELDWIDTHS)\b/
+color red /\b(FILENAME|FNR|FS|IGNORECASE|LINT|NF|NR|OFMT|OFS|ORS)\b/
+color red /\b(PROCINFO|RS|RT|RSTART|RLENGTH|SUBSEP|TEXTDOMAIN)\b/
+
 ## function declarations and special patterns
-color brightgreen "\b(function|extension|BEGIN|END)\b"
+color brightgreen /\b(function|extension|BEGIN|END)\b/
+
 ## operators
-color green "(\{|\}|\(|\)|\;|\]|\[|\\|<|>|!|=|&|\+|-|\*|%|/|\?:|\^|\|)"
+color green /(\{|\}|\(|\)|\;|\]|\[|\\|<|>|!|=|&|\+|-|\*|%|\/|\?:|\^|\|)/
+
 ## flow control
-color brightyellow "\b(for|if|while|do|else|in|delete|exit)\b"
-color brightyellow "\b(break|continue|return)\b"
+color brightyellow /\b(for|if|while|do|else|in|delete|exit)\b/
+color brightyellow /\b(break|continue|return)\b/
+
 ## I/O statements
-color brightgreen "\b(close|getline|next|nextfile|print|printf)\b"
-color brightgreen "\b(system|fflush)\b"
+color brightgreen /\b(close|getline|next|nextfile|print|printf)\b/
+color brightgreen /\b(system|fflush)\b/
+
 ## standard functions
-color magenta "\b(atan2|cos|exp|int|log|rand|sin|sqrt|srand)\b"
-color magenta "\b(asort|asorti|gensub|gsub|index|length|match)\b"
-color magenta "\b(split|sprintf|strtonum|sub|substr|tolower|toupper)\b"
-color magenta "\b(mktime|strftime|systime)\b"
-color magenta "\b(and|compl|lshift|or|rshift|xor)\b"
-color magenta "\b(bindtextdomain|dcgettext|dcngettext)\b"
+color magenta /\b(atan2|cos|exp|int|log|rand|sin|sqrt|srand)\b/
+color magenta /\b(asort|asorti|gensub|gsub|index|length|match)\b/
+color magenta /\b(split|sprintf|strtonum|sub|substr|tolower|toupper)\b/
+color magenta /\b(mktime|strftime|systime)\b/
+color magenta /\b(and|compl|lshift|or|rshift|xor)\b/
+color magenta /\b(bindtextdomain|dcgettext|dcngettext)\b/
 
 ##
 ## String highlighting.  You will in general want your comments and
 ## strings to come last, because syntax highlighting rules will be
 ## applied in the order they are read in.
-color brightyellow "<[^= 	]*>" ""(\\.|[^"])*""
+color brightyellow /<[^= 	]*>/
+color brightyellow /"(\\.|[^"])*"/
 
 ## Comment highlighting
-color brightblue "(^|\s)#.*$"
+color brightblue /(^|\s)#.*$/
 
 ## Trailing whitespace
-color ,green "\s+$"
+color ,green /\s+$/

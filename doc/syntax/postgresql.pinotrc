@@ -1,75 +1,92 @@
 ## Here is an example for PostgreSQL.
 
-syntax "sql" "\.sql[2345s~]?$"
-magic "PostgreSQL script text"
+syntax sql
+filename /\.sql[2345s~]?$/
+magic /PostgreSQL script text/
 
 # Functions.
-color white "\b[a-z_]*\("
+color white /\b[a-z_]*\(/
 
 # Types.
-color green "\b(int2|smallint|int4|int|integer|int8|bigint|decimal|numeric|real|double precision|(small|big)?serial)\b"
-color green "\b(bit( varying)?|boolean|bytea|enum|money|tsvector|uuid)\b"
-color green "\b(char|varchar|character( varying)?|text)\b"
-color green "\b(date|interval|time(stamp)?( with time zone| without time zone)?)\b"
-color green "\b(point|line|lseg|path|box|polygon|circle)\b"
-color green "\b(cidr|inet|macaddr)\b"
-color green "\b(daterange|int4range|int8range|numrange|tsrange|tstzrange)\b"
+color green /\b(int2|smallint|int4|int|integer|int8|bigint|decimal|numeric|real|double precision|(small|big)?serial)\b/
+color green /\b(bit( varying)?|boolean|bytea|enum|money|tsvector|uuid)\b/
+color green /\b(char|varchar|character( varying)?|text)\b/
+color green /\b(date|interval|time(stamp)?( with time zone| without time zone)?)\b/
+color green /\b(point|line|lseg|path|box|polygon|circle)\b/
+color green /\b(cidr|inet|macaddr)\b/
+color green /\b(daterange|int4range|int8range|numrange|tsrange|tstzrange)\b/
 
 # Structure.
-color brightyellow "\b(CASE|CLASS|DEFAULT|DO|ELSE|ELSEIF|FOR|FOREACH|FUNCTION|IF|IS NULL)\b"
-color brightyellow "\b(NEW|PRIVATE|PUBLIC|RETURN|RETURNS|SETOF|SWITCH|THEN|WHEN|WHILE)>"
+color brightyellow /\b(CASE|CLASS|DEFAULT|DO|ELSE|ELSEIF|FOR|FOREACH|FUNCTION|IF|IS NULL)\b/
+color brightyellow /\b(NEW|PRIVATE|PUBLIC|RETURN|RETURNS|SETOF|SWITCH|THEN|WHEN|WHILE)>/
 
 # Control flow.
-color magenta "\b(EXCEPTION|NOTICE|RAISE|RETURN)\b"
+color magenta /\b(EXCEPTION|NOTICE|RAISE|RETURN)\b/
 
 # SQL keywords.
-color blue "\b(ABORT|AGGREGATE|ALTER|ANALYZE|AND|AS|AUTHORIZATION|BEGIN|CAST|CHECKPOINT|CLASS|CLOSE)\b"
-color blue "\b(CLUSTER|COLLATION|COMMENT|COMMIT|CONFIGURATION|CONSTRAINTS|CONVERSION|COPY|CREATE)\b"
-color blue "\b(DATA|DATABASE|DEALLOCATE|DECLARE|DEFAULT|DELETE|DICTIONARY|DISCARD|DO|DOMAIN|DROP)\b"
-color blue "\b(END|EVENT|EXECUTE|EXPLAIN|EXTENSION|FAMILY|FETCH|FOREIGN|FROM|FUNCTION)\b"
-color blue "\b(GRANT|GROUP|IF NOT EXISTS|IMMUTABLE|INDEX|INSERT|INTO|LABEL|LANGUAGE|LARGE|LOAD|LOCK)\b"
-color blue "\b(MAPPING FOR|MATERIALIZED|MOVE|NOTIFY|OBJECT|OPERATOR|OPTIONS|OWNED|OWNER)\b"
-color blue "\b(PARSER|PREPARED?|PRIVILEGES|REASSIGN|REFRESH|RELEASE|RESET|REVOKE|ROLE|ROLLBACK|RULE)\b"
-color blue "\b(SAVEPOINT|SCHEMA|SEARCH|SECURITY|SELECT|SEQUENCE|SERVER|SESSION|SET|SHOW|SPACE|START|SYSTEM)\b"
-color blue "\b(TABLE|TEXT|TO|TRANSACTION|TYPE|UPDATE|USER|VACUUM|VALUES|VIEW|WHERE|WITH|WRAPPER)\b"
+color blue /\b(ABORT|AGGREGATE|ALTER|ANALYZE|AND|AS|AUTHORIZATION|BEGIN|CAST|CHECKPOINT|CLASS|CLOSE)\b/
+color blue /\b(CLUSTER|COLLATION|COMMENT|COMMIT|CONFIGURATION|CONSTRAINTS|CONVERSION|COPY|CREATE)\b/
+color blue /\b(DATA|DATABASE|DEALLOCATE|DECLARE|DEFAULT|DELETE|DICTIONARY|DISCARD|DO|DOMAIN|DROP)\b/
+color blue /\b(END|EVENT|EXECUTE|EXPLAIN|EXTENSION|FAMILY|FETCH|FOREIGN|FROM|FUNCTION)\b/
+color blue /\b(GRANT|GROUP|IF NOT EXISTS|IMMUTABLE|INDEX|INSERT|INTO|LABEL|LANGUAGE|LARGE|LOAD|LOCK)\b/
+color blue /\b(MAPPING FOR|MATERIALIZED|MOVE|NOTIFY|OBJECT|OPERATOR|OPTIONS|OWNED|OWNER)\b/
+color blue /\b(PARSER|PREPARED?|PRIVILEGES|REASSIGN|REFRESH|RELEASE|RESET|REVOKE|ROLE|ROLLBACK|RULE)\b/
+color blue /\b(SAVEPOINT|SCHEMA|SEARCH|SECURITY|SELECT|SEQUENCE|SERVER|SESSION|SET|SHOW|SPACE|START|SYSTEM)\b/
+color blue /\b(TABLE|TEXT|TO|TRANSACTION|TYPE|UPDATE|USER|VACUUM|VALUES|VIEW|WHERE|WITH|WRAPPER)\b/
 
 # Strings.
-color brightyellow "<[^=       ]*>" ""(\.|[^"])*""
+color brightyellow /<[^=       ]*>/
+color brightyellow /"(\.|[^"])*"/
 
 # Trailing whitespace.
-color ,green "\s+$"
+color ,green /\s+$/
 
 # Regular expressions.
-color brightmagenta "/([^/]|(\\/))*/[iomx]*" "%r\{([^}]|(\\}))*\}[iomx]*"
+color brightmagenta /\/([^\/]|(\\\/))*\/[iomx]*/
+color brightmagenta /%r\{([^}]|(\\}))*\}[iomx]*/
 
 # Shell command expansion is in `backticks` or like %x{this}.  These are
 # "double-quotish" (to use a perlism).
-color brightblue "`[^`]*`" "%x\{[^}]*\}"
+color brightblue /`[^`]*`/
+color brightblue /%x\{[^}]*\}/
 
 # Strings, double-quoted.
-color green ""([^"]|(\\"))*"" "%[QW]?\{[^}]*\}" "%[QW]?\([^)]*\)" "%[QW]?<[^>]*>"
-color green "%[QW]?\[[^]]*\]" "%[QW]?\$[^$]*\$" "%[QW]?\^[^^]*\^" "%[QW]?![^!]*!"
+color green /"([^"]|(\\"))*"/
+color green /%[QW]?\{[^}]*\}/
+color green /%[QW]?\([^)]*\)/
+color green /%[QW]?<[^>]*>/
+color green /%[QW]?\[[^]]*\]/
+color green /%[QW]?\$[^$]*\$/
+color green /%[QW]?\^[^^]*\^/
+color green /%[QW]?![^!]*!/
 
 # Expression substitution.  These go inside double-quoted strings,
 # "like #{this}".
-color brightgreen "#\{[^}]*\}"
+color brightgreen /#\{[^}]*\}/
 
 # Strings, single-quoted.
-color green "'([^']|(\\'))*'" "%[qw]\{[^}]*\}" "%[qw]\([^)]*\)" "%[qw]<[^>]*>"
-color green "%[qw]\[[^]]*\]" "%[qw]\$[^$]*\$" "%[qw]\^[^^]*\^" "%[qw]![^!]*!"
+color green /'([^']|(\\'))*'/
+color green /%[qw]\{[^}]*\}/
+color green /%[qw]\([^)]*\)/
+color green /%[qw]<[^>]*>/
+color green /%[qw]\[[^]]*\]/
+color green /%[qw]\$[^$]*\$/
+color green /%[qw]\^[^^]*\^/
+color green /%[qw]![^!]*!/
 
 # Comments.
-color red "#[^{].*$" "#$"
-color red "--[^{].*$" "#$"
-color red "##[^{].*$" "##$"
-color brightblue "//.*"
-color brightblue start="/\*" end="\*/"
+color red /#[^{].*$/
+color red /#$/
+color red /--[^{].*$/
+color red /##[^{].*$/
+color brightblue /\/\/.*/
+color brightblue start=/\/\*/ end=/\*\//
 
 # PostgreSQL markings.
-color red "(--)"
+color red /(--)/
 
 # PostgreSQL default schemas.
-color brightred "(pg_catalog|public)"
+color brightred /(pg_catalog|public)/
 
 # PostgreSQL PLs.
-color brightblue "(pljava|plperlu?|plpgsql|plpy|plpythonu?|plr|plruby|plsh|pltcl|plscheme)"
+color brightblue /(pljava|plperlu?|plpgsql|plpy|plpythonu?|plr|plruby|plsh|pltcl|plscheme)/
