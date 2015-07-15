@@ -6,6 +6,7 @@ pkgdata_DATA = \
 		css.pinotrc \
 		debian.pinotrc \
 		elisp.pinotrc \
+		erb.pinotrc \
 		fortran.pinotrc \
 		gentoo.pinotrc \
 		go.pinotrc \
@@ -33,6 +34,7 @@ pkgdata_DATA = \
 		sh.pinotrc \
 		spec.pinotrc \
 		tcl.pinotrc \
+		templatetoolkit.pinotrc \
 		tex.pinotrc \
 		texinfo.pinotrc \
 		xml.pinotrc
