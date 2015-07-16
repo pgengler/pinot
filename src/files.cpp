@@ -2127,51 +2127,6 @@ string real_dir_from_tilde(const string& buf)
 	return retval;
 }
 
-char *real_dir_from_tilde(const char *buf)
-{
-	char *retval;
-
-	assert(buf != NULL);
-
-	if (*buf == '~') {
-		size_t i = 1;
-		char *tilde_dir;
-
-		/* Figure out how much of the string we need to compare. */
-		for (; buf[i] != '/' && buf[i] != '\0'; i++) {
-			;
-		}
-
-		/* Get the home directory. */
-		if (i == 1) {
-			get_homedir();
-			tilde_dir = mallocstrcpy(NULL, homedir.c_str());
-		} else {
-			const struct passwd *userdata;
-
-			tilde_dir = mallocstrncpy(NULL, buf, i + 1);
-			tilde_dir[i] = '\0';
-
-			do {
-				userdata = getpwent();
-			} while (userdata != NULL && strcmp(userdata->pw_name, tilde_dir + 1) != 0);
-			endpwent();
-			if (userdata != NULL) {
-				tilde_dir = mallocstrcpy(tilde_dir, userdata->pw_dir);
-			}
-		}
-
-		retval = charalloc(strlen(tilde_dir) + strlen(buf + i) + 1);
-		sprintf(retval, "%s%s", tilde_dir, buf + i);
-
-		free(tilde_dir);
-	} else {
-		retval = mallocstrcpy(NULL, buf);
-	}
-
-	return retval;
-}
-
 /* Our sort routine for file listings.  Sort alphabetically and
  * case-insensitively, and sort directories before filenames. */
 bool sort_directories(const string& a, const string& b)
@@ -2195,21 +2150,15 @@ bool sort_directories(const string& a, const string& b)
 }
 
 /* Is the given path a directory? */
-bool is_dir(const char *buf)
+bool is_dir(const string& buf)
 {
-	char *dirptr;
 	struct stat fileinfo;
-	bool retval;
 
-	assert(buf != NULL);
+	assert(buf != "");
 
-	dirptr = real_dir_from_tilde(buf);
+	auto dir_name = real_dir_from_tilde(buf);
 
-	retval = (stat(dirptr, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
-
-	free(dirptr);
-
-	return retval;
+	return (stat(dir_name, &fileinfo) != -1 && S_ISDIR(fileinfo.st_mode));
 }
 
 /* These functions, username_tab_completion(), cwd_tab_completion()
@@ -2252,80 +2201,60 @@ std::vector<string> username_tab_completion(const char *buf, size_t buf_len)
 }
 
 /* We consider the first buf_len characters of buf for filename tab completion. */
-std::vector<string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len)
+std::vector<string> cwd_tab_completion(string buf, bool allow_files, size_t buf_len)
 {
-	char *dirname = mallocstrcpy(NULL, buf), *filename;
-	size_t filenamelen;
 	DIR *dir;
 	const struct dirent *nextdir;
 	std::vector<string> matches;
+	string filename;
 
-	assert(dirname != NULL);
-
-	null_at(&dirname, buf_len);
+	assert(buf != "");
+	auto dirname = buf.substr(0, buf_len);
 
 	/* Okie, if there's a / in the buffer, strip out the directory part. */
-	filename = strrchr(dirname, '/');
-	if (filename != NULL) {
-		char *tmpdirname = filename + 1;
+	auto pos = dirname.rfind('/');
 
-		filename = mallocstrcpy(NULL, tmpdirname);
-		*tmpdirname = '\0';
-		tmpdirname = dirname;
+	if (pos != string::npos) {
+		filename = dirname.substr(pos + 1);
+
 		dirname = real_dir_from_tilde(dirname);
-		free(tmpdirname);
 	} else {
 		filename = dirname;
-		dirname = mallocstrcpy(NULL, "./");
+		dirname = "./";
 	}
 
-	assert(dirname[strlen(dirname) - 1] == '/');
+	assert(dirname.back() == '/');
 
 	dir = opendir(dirname);
 
 	if (dir == NULL) {
 		/* Don't print an error, just shut up and return. */
 		beep();
-		free(filename);
-		free(dirname);
 		return matches;
 	}
 
-	filenamelen = strlen(filename);
-
 	while ((nextdir = readdir(dir)) != NULL) {
-		bool skip_match = false;
+		string nextdir_name = nextdir->d_name;
 
-		DEBUG_LOG("Comparing name '" << nextdir->d_name << "' against given partial filname '" << buf << "'");
+		DEBUG_LOG("Comparing name '" << nextdir_name << "' against given partial filename '" << buf << "'");
 		/* See if this matches. */
-		if (strncmp(nextdir->d_name, filename, filenamelen) == 0 &&
-		        (*filename == '.' || (strcmp(nextdir->d_name, ".") !=
-		                              0 && strcmp(nextdir->d_name, "..") != 0))) {
+		if (nextdir_name.starts_with(filename) && (filename.front() == '.' || (nextdir_name != "." && nextdir_name != ".."))) {
 			/* Cool, found a match.  Add it to the list.  This makes a
 			 * lot more sense to me (Chris) this way... */
 
-			char *tmp = charalloc(strlen(dirname) + strlen(nextdir->d_name) + 1);
-			sprintf(tmp, "%s%s", dirname, nextdir->d_name);
+			auto tmp = dirname + nextdir_name;
 
 			/* ...unless the match isn't a directory and allow_files
 			 * isn't set, in which case just go to the next match. */
 			if (!allow_files && !is_dir(tmp)) {
-				skip_match = true;
-			}
-
-			free(tmp);
-
-			if (skip_match) {
 				continue;
 			}
 
-			matches.push_back(string(nextdir->d_name));
+			matches.push_back(string(nextdir_name));
 		}
 	}
 
 	closedir(dir);
-	free(dirname);
-	free(filename);
 
 	return matches;
 }

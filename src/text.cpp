@@ -2026,13 +2026,13 @@ void do_linter(void)
 			*read_buff_ptr = '\0';
 			if (read_buff_word != read_buff_ptr) {
 				char *filename = NULL, *linestr = NULL, *maybecol = NULL;
-				char *message = mallocstrcpy(NULL, read_buff_word);
+				string message = read_buff_word;
 
 				/* At the moment we're assuming the following formats:
 				 * filenameorcategory:line:column:message (e.g. splint)
 				 * filenameorcategory:line:message        (e.g. pyflakes)
 				 * filenameorcategory:line,col:message    (e.g. pylint)
-				 * This could be turnes into some scanf() based parser but ugh.
+				 * This could be turned into some scanf() based parser but ugh.
 			  */
 				if ((filename = strtok(read_buff_word, ":")) != NULL) {
 					if ((linestr = strtok(NULL, ":")) != NULL) {
@@ -2043,7 +2043,6 @@ void do_linter(void)
 							tmplineno = strtol(linestr, NULL, 10);
 							if (tmplineno <= 0) {
 								read_buff_ptr++;
-								free(message);
 								continue;
 							}
 
@@ -2061,15 +2060,13 @@ void do_linter(void)
 							/* Nice we have a lint message we can use */
 							parsesuccess++;
 							LintMessage lint;
-							lint.text     = string(message);
+							lint.text     = message;
 							lint.lineno   = tmplineno;
 							lint.colno    = tmpcolno;
 							lint.filename = string(filename);
 							lints.push_back(lint);
 						}
 					}
-				} else {
-					free(message);
 				}
 			}
 			read_buff_word = read_buff_ptr + 1;

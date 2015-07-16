@@ -205,11 +205,10 @@ bool write_marked_file(const string& name, FILE *f_open, bool tmp, AppendType ap
 bool do_writeout(bool exiting);
 void do_writeout_void(void);
 string real_dir_from_tilde(const string& buf);
-char *real_dir_from_tilde(const char *buf);
 bool sort_directories(const string& a, const string& b);
-bool is_dir(const char *buf);
+bool is_dir(const string& buf);
 std::vector<string> username_tab_completion(const char *buf, size_t buf_len);
-std::vector<string> cwd_tab_completion(const char *buf, bool allow_files, size_t buf_len);
+std::vector<string> cwd_tab_completion(string buf, bool allow_files, size_t buf_len);
 string input_tab(string buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list);
 string tail(string foo);
