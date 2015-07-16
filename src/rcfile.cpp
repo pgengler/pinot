@@ -164,15 +164,31 @@ string parse_regex(std::stringstream& line)
 	line.get();
 
 	char last_char = '\0';
-	while (line.good() && (last_char != '\\' && line.peek() != '/')) {
-		regex += line.get();
-	}
-	if (line.peek() == '/') {
-		// Throw away trailing slash
-		line.get();
+	bool read_double_backslash = false;
+	while (line.good()) {
+		if (!read_double_backslash && last_char == '\\' && line.peek() == '/') {
+			// Allow internal slashes to be escaped, but don't save the escaping backslash
+			regex = regex.substr(0, regex.length() - 1);
+		} else if (line.peek() == '/') {
+			// Throw away trailing slash and return since we've reached the end
+			line.get();
+			return regex;
+		}
+		last_char = line.get();
+		// If we find a double-backslash treat it as a whole escape; don't allow the
+		// second backslash to escape a forward slash
+		if (last_char == '\\' && regex.back() == '\\' && !read_double_backslash) {
+			read_double_backslash = true;
+		} else {
+			read_double_backslash = false;
+		}
+		regex += last_char;
 	}
 
-	return regex;
+	// If we got here we reached the end of the line without finding a terminating slash
+	rcfile_error(N_("Regular expressions must end with a /"));
+
+	return "";
 }
 
 /* Parse the next syntax string from the line and add it to the global list of color syntaxes. */
@@ -528,6 +544,8 @@ void parse_colors(std::stringstream& line, bool case_sensitive)
 		return;
 	}
 
+	skip_whitespace(line);
+
 	bool cancelled = false;  // The start expression was bad.
 	bool expect_end = false; // Do we expect an end= line?
 
@@ -539,7 +557,10 @@ void parse_colors(std::stringstream& line, bool case_sensitive)
 		regex = parse_regex(line);
 		expect_end = true;
 	} else {
-		line.seekg(-6, line.cur);
+		if (line.gcount() != 6) {
+			line.clear();
+		}
+		line.seekg(-line.gcount(), line.cur);
 		regex = parse_regex(line);
 	}
 
