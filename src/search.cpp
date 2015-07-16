@@ -114,7 +114,7 @@ void search_replace_abort(void)
 int search_init(bool replacing, bool use_answer)
 {
 	std::shared_ptr<Key> key;
-	char *buf;
+	string buf;
 	static string backupstring;
 	/* The search string we'll be using. */
 
@@ -132,11 +132,9 @@ int search_init(bool replacing, bool use_answer)
 	if (last_search != "") {
 		auto disp = display_string(last_search, 0, COLS / 3, false);
 
-		buf = charalloc(disp.length() + 7);
 		/* We use (COLS / 3) here because we need to see more on the line. */
-		sprintf(buf, " [%s%s]", disp.c_str(), (last_search.length() > COLS / 3) ? "..." : "");
-	} else {
-		buf = mallocstrcpy(NULL, "");
+		string optional_ellipsis = (last_search.length() > COLS / 3) ? "..." : "";
+		buf = " [" + disp + optional_ellipsis + "]";
 	}
 
 	/* This is now one simple call.  It just does a lot. */
@@ -150,12 +148,9 @@ int search_init(bool replacing, bool use_answer)
 	              /* TRANSLATORS: This string is just a modifier for the search prompt; no grammar is implied. */
 	              ISSET(USE_REGEXP) ? _(" [Regexp]") : "",
 	              /* TRANSLATORS: This string is just a modifier for the search prompt; no grammar is implied. */
-	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "", replacing ? (openfile->mark_set ? _(" (to replace) in selection") : _(" (to replace)")) : "", buf);
+	              ISSET(BACKWARDS_SEARCH) ? _(" [Backwards]") : "", replacing ? (openfile->mark_set ? _(" (to replace) in selection") : _(" (to replace)")) : "", buf.c_str());
 
 	fflush(stderr);
-
-	/* Release buf now that we don't need it anymore. */
-	free(buf);
 
 	backupstring = "";
 
@@ -797,17 +792,13 @@ void goto_line_posx(ssize_t line, size_t pos_x)
 void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer, bool interactive, bool save_pos, bool allow_update)
 {
 	if (interactive) {
-		char *ans = mallocstrcpy(NULL, answer.c_str());
-
 		/* Ask for the line and column. */
 		std::shared_ptr<Key> key;
 		PromptResult i = do_prompt(false,
 		                  true,
-		                  MGOTOLINE, key, use_answer ? ans : "",
+		                  MGOTOLINE, key, use_answer ? answer.c_str() : "",
 		                  NULL,
 		                  edit_refresh, _("Enter line number, column number"));
-
-		free(ans);
 
 		/* Cancel, or Enter with blank string. */
 		if (i == PROMPT_BLANK_STRING || i == PROMPT_ABORTED) {

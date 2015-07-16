@@ -1509,7 +1509,7 @@ bool do_int_spell_fix(const char *word)
 /* Internal (integrated) spell checking using the spell program,
  * filtered through the sort and uniq programs.  Return "" for normal
  * termination, and the error string otherwise. */
-string do_int_speller(const char *tempfile_name)
+string do_int_speller(string tempfile_name)
 {
 	char *read_buff, *read_buff_ptr, *read_buff_word;
 	size_t pipe_buff_size, read_buff_size, read_buff_read, bytesread;
@@ -1530,7 +1530,7 @@ string do_int_speller(const char *tempfile_name)
 		close(spell_fd[0]);
 
 		/* Replace the standard input with the temp file. */
-		if ((tempfile_fd = open(tempfile_name, O_RDONLY)) == -1) {
+		if ((tempfile_fd = open(tempfile_name.c_str(), O_RDONLY)) == -1) {
 			goto close_pipes_and_exit;
 		}
 
@@ -1696,9 +1696,9 @@ close_pipes_and_exit:
 	exit(1);
 }
 
-/* External (alternate) spell checking.  Return NULL for normal
+/* External (alternate) spell checking.  Return "" for normal
  * termination, and the error string otherwise. */
-string do_alt_speller(char *tempfile_name)
+string do_alt_speller(string tempfile_name)
 {
 	int alt_spell_status;
 	size_t current_x_save = openfile->current_x;
@@ -1865,9 +1865,9 @@ void do_spell(void)
 {
 	bool status;
 	FILE *temp_file;
-	char *temp = mallocstrcpy(NULL, safe_tempfile(&temp_file).c_str());
+	string temp = safe_tempfile(&temp_file);
 
-	if (temp == NULL) {
+	if (temp == "") {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
 		return;
 	}
@@ -1876,7 +1876,6 @@ void do_spell(void)
 
 	if (!status) {
 		statusbar(_("Error writing temp file: %s"), strerror(errno));
-		free(temp);
 		return;
 	}
 
@@ -1886,7 +1885,6 @@ void do_spell(void)
 
 	auto spell_msg = (alt_speller != NULL) ? do_alt_speller(temp) : do_int_speller(temp);
 	unlink(temp);
-	free(temp);
 
 	currmenu = MMAIN;
 
@@ -1916,15 +1914,12 @@ void lint_cleanup(void)
  * termination, and the error string otherwise. */
 void do_linter(void)
 {
-	char *read_buff, *read_buff_ptr, *read_buff_word, *ptr;
+	char *read_buff, *read_buff_ptr, *read_buff_word;
 	size_t pipe_buff_size, read_buff_size, read_buff_read, bytesread;
 	size_t parsesuccess = 0;
 	int lint_fd[2];
 	pid_t pid_lint;
 	int lint_status;
-	static int arglen = 3;
-	static char **lintargs = NULL;
-	char *lintcopy;
 	char *convendptr = NULL;
 	LintMessages lints;
 
@@ -1948,7 +1943,6 @@ void do_linter(void)
 		}
 	}
 
-	lintcopy = mallocstrcpy(NULL, openfile->syntax->linter.c_str());
 	/* Create pipe up front. */
 	if (pipe(lint_fd) == -1) {
 		statusbar(_("Could not create pipe"));
@@ -1961,18 +1955,8 @@ void do_linter(void)
 	doupdate();
 
 	/* Set up an argument list to pass to execvp(). */
-	if (lintargs == NULL) {
-		lintargs = (char **)nmalloc(arglen * sizeof(char *));
-
-		lintargs[0] = strtok(lintcopy, " ");
-		while ((ptr = strtok(NULL, " ")) != NULL) {
-			arglen++;
-			lintargs = (char **)nrealloc(lintargs, arglen * sizeof(char *));
-			lintargs[arglen - 3] = ptr;
-		}
-		lintargs[arglen - 1] = NULL;
-	}
-	lintargs[arglen - 2] = mallocstrcpy(NULL, openfile->filename.c_str());
+	std::vector<string> lintargs = openfile->syntax->linter.split(" ");
+	lintargs.push_back(openfile->filename);
 
 	/* A new process to run the linter in. */
 	if ((pid_lint = fork()) == 0) {
@@ -1992,9 +1976,6 @@ void do_linter(void)
 
 		/* Start the linter program; we are using $PATH. */
 		execvp(lintargs[0], lintargs);
-
-		free(lintargs[arglen - 2]);
-		free(lintargs);
 
 		/* This should not be reached if linter is found. */
 		exit(9);
