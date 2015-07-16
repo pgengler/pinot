@@ -1777,11 +1777,8 @@ void real_main(int argc, char **argv)
 
 	/* If we don't have an alternative spell checker after reading the
 	 * command line and/or rcfile(s), check $SPELL for one, as Pico does */
-	if (alt_speller == NULL) {
-		char *spellenv = getenv("SPELL");
-		if (spellenv != NULL) {
-			alt_speller = mallocstrcpy(NULL, spellenv);
-		}
+	if (alt_speller == "") {
+		alt_speller = getenv("SPELL");
 	}
 
 	/* If matchbrackets wasn't specified, set its default value. */
