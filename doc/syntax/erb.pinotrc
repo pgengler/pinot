@@ -1,4 +1,4 @@
-syntax /erb-html/
+syntax erb-html
 filename /\.html\.erb$/
 
 # ERB tags (<% and %>)
