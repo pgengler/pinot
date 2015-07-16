@@ -23,11 +23,11 @@ color brightred /\$\{[#!]?([-@*#?$!]|[0-9]+|[[:alpha:]_][[:alnum:]_]*)(\[(\d|@)+
 color red /\b(EAPI|ARCH|HOMEPAGE|DESCRIPTION|IUSE|SRC_URI|LICENSE|SLOT|KEYWORDS|[HPR]?DEPEND|PROVIDE|PROPERTIES|REQUIRED_USE|RESTRICT|USERLAND)\b/
 color red /\b(S|E?D|T|PV|PF|P|PN|PR|PVR|A|CATEGORY|DISTDIR|FILESDIR|EPREFIX|E?ROOT|WORKDIR)\b/
 color red /\b(AS|C(PP|XX)?|LD)FLAGS\b/
-color red /\bC(HOST|TARGET|BUILD)\b"
+color red /\bC(HOST|TARGET|BUILD)\b/
 color red /\b(MERGE_TYPE|REPLACING_VERSIONS|REPLACED_BY_VERSION)\b/
 color red /\bEBUILD_PHASE(_FUNC)?\b/
 color red /\bQA_((TEXTRELS|EXECSTACK|WX_LOAD)(_[a-zA-Z_0-9]+)?|DT_HASH|PRESTRIPPED)\b/
-color red /\b(PATCHES|(HTML_)?DOCS)\b"
+color red /\b(PATCHES|(HTML_)?DOCS)\b/
 color red /\bWANT_(AUTO(CONF|MAKE)|LIBTOOL)\b/
 color red /\bAT_M4DIR\b/
 

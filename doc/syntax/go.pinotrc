@@ -1,7 +1,7 @@
 ## Here is an example for Go.
 ##
 syntax go
-filenamne /\.go$/
+filename /\.go$/
 formatter gofmt -w
 
 icolor brightblue /def [0-9A-Z_]+/
@@ -19,4 +19,4 @@ color brightyellow start=/"(\\.|[^"])*\\\s*$/ end=/^(\\.|[^"])*"/
 
 ## Comment highlighting
 color brightblue /\/\/.*/
-color brightblue start=//\*/ end=/\*\//
+color brightblue start=/\/*/ end=/\*\//

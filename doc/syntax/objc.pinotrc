@@ -27,7 +27,7 @@ color white /\[[^][:space:]]*\]/
 ## String highlighting.  You will in general want your comments and
 ## strings to come last, because syntax highlighting rules will be
 ## applied in the order they are read in.
-color brightblack /'([^'\]|(\\["'abfnrtv\\]))'/
+color brightblack /'([^']|(\["'abfnrtv\]))'/
 color brightblack /'\\(([0-3]?[0-7]{1,2}))'/
 color brightblack /'\\x[0-9A-Fa-f]{1,2}'/
 color brightblack /<[^= 	]*>/

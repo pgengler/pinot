@@ -8,7 +8,7 @@ magic /XML.*document text/
 color green  start=/</ end=/>/
 
 # The start and the end of the tag:
-color cyan /<[^> ]+
+color cyan /<[^> ]+/
 color cyan />/
 
 # The strings inside the tag:

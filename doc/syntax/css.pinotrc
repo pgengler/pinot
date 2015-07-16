@@ -5,7 +5,7 @@ syntax css/
 filename /\.css$/
 
 # CSS rules
-color green start=/\{/" end=/\}/
+color green start=/\{/ end=/\}/
 
 # CSS values
 color blue   start=/:/ end=/([;^\{]|$)/

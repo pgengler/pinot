@@ -35,8 +35,8 @@ color brightred /\b(t|nil)\b/
 color blue /:(\w|[?-])+/
 
 # Strings
-color yellow start=/^[[:blank:]]+\"/ end=/[^\]\"/
-color yellow /"(\\.|[^"])*"/
+color yellow start=/^[[:blank:]]+\"/ end=/"/
+color yellow /"(\.|[^"])*"/
 
 # Comments
 color cyan /(^|\s);.*$/

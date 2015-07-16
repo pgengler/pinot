@@ -26,8 +26,8 @@ color brightred /\b[A-Z_][0-9A-Z_]+\b/
 # Key sequences.
 color brightblue /\^[A-Z]/
 color brightblue /\<M-./
-color /\<F1?[0-9]/
-color /(\^|M-)Space/
+color brightblue /\<F1?[0-9]/
+color brightblue /(\^|M-)Space/
 
 # Changed files.
 color magenta start=/^(	| {8})\* / end=/(:( |$)|^$)/

@@ -6,4 +6,4 @@ linter chktex -v0 -q -I
 
 icolor green /\\.|\\[A-Z]*/
 color magenta /[{}]/
-color blue /(^|[^\])%.*/
+#color blue /(^|[^\])%.*/

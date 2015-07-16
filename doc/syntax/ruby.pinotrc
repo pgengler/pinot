@@ -29,14 +29,14 @@ color yellow /\b(__FILE__|__LINE__)\b/
 
 # Regular expressions
 color magenta /\/([^\/]|(\\\/))*\/[iomx]*/
-color magebta /%r\{([^}]|(\\}))*\}[iomx]*/
+color magenta /%r\{([^}]|(\\}))*\}[iomx]*/
 
 # Shell command expansion is in `backticks` or like %x{this}.  These are "double-quotish" (to use a perlism).
 color red /`[^`]*`/
 color red /%x\{[^}]*\}/
 
 # Strings, double-quoted
-color red ?"([^"]|(\\"))*"/
+color red /"([^"]|(\\"))*"/
 color red /%[QW]?\{[^}]*\}/
 color red /%[QW]?\([^)]*\)/
 color red /%[QW]?<[^>]*>/

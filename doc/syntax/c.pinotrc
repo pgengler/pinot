@@ -15,7 +15,7 @@ color brightyellow /\b(for|if|while|do|else|case|default|switch)\b/
 color brightyellow /\b(try|throw|catch|operator|new|delete)\b/
 color magenta /\b(goto|continue|break|return)\b/
 color brightcyan /^\s*#\s*(define|include(_next)?|(un|ifn?)def|endif|el(if|se)|if|warning|error|pragma)/
-color brightmagenta /'([^'\]|(\\["'abfnrtv\\]))'/
+color brightmagenta /'([^']|(\["'abfnrtv\]))'/
 color brightmagenta /'\\(([0-3]?[0-7]{1,2}))'/
 color brightmagenta /'\\x[0-9A-Fa-f]{1,2}'/
 ##

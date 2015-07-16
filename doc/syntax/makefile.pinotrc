@@ -1,7 +1,7 @@
 # unattributed syntax highlighting example from wiki.linuxhelp.net/
 
 syntax makefile
-filename /Makefile[^/]*$/
+filename /Makefile[^\/]*$/
 
 color red /[:=]/
 color magenta /\b(if|ifeq|else|endif)\b/

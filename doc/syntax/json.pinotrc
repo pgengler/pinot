@@ -20,7 +20,7 @@ color green /:\s*\"#[0-9abcdefABCDEF]+\"/
 color green /\\\\/
 color green /\\\"/
 color green /\\[bfnrt]/
-color green /\\u[0-9abcdefABCDEF]{4})/
+color green /\\u[0-9abcdefABCDEF]{4}/
 
 # Special words.
 color green /(true|false|null)/

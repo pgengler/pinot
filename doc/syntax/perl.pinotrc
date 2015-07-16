@@ -1,7 +1,7 @@
 ##
 ## Perl
 ##
-syntax"perl
+syntax perl
 filename /\.(pl|pm|psgi|cgi)$/
 header /^#!.*perl[-0-9._]*/
 

@@ -1,7 +1,7 @@
 ## Here is an example for Bourne shell scripts.
 ##
 syntax sh
-filename \.sh$
+filename /\.sh$/
 magic /(POSIX|Bourne.*) shell script text/
 header /^#!.*((ba|da|k|pdk)?sh[-0-9_]*|openrc-run|runscript)/
 linter dash -n

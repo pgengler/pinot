@@ -16,7 +16,7 @@ icolor green /^\s*((un)?(bind|set)|include|syntax|filename|header|magic|extends|
 
 ## Colors
 icolor yellow /^\s*i?color\s*(bright)?(white|black|red|blue|green|yellow|magenta|cyan)?(,(white|black|red|blue|green|yellow|magenta|cyan))?\b/
-icolor magenta /^\s*i?color\b"
+icolor magenta /^\s*i?color\b/
 icolor magenta /\b(start|end)=/
 
 ## Strings
