@@ -28,7 +28,7 @@
 
 using pinot::string;
 
-static char *prompt = NULL;
+static string prompt;
 /* The prompt string used for statusbar questions. */
 static size_t statusbar_x = (size_t)-1;
 /* The cursor position in answer. */
@@ -494,7 +494,7 @@ void update_statusbar_line(string curranswer, size_t index)
 
 	blank_statusbar();
 
-	mvwaddnstr(bottomwin, 0, 0, prompt, actual_x(prompt, COLS - 2));
+	mvwaddnstr(bottomwin, 0, 0, prompt.c_str(), actual_x(prompt, COLS - 2));
 	waddch(bottomwin, ':');
 	waddch(bottomwin, (page_start == 0) ? ' ' : '$');
 
@@ -717,23 +717,20 @@ PromptResult do_prompt(bool allow_tabs, bool allow_files, int menu, std::shared_
 	PromptResult retval;
 	bool list = false;
 
-	/* prompt has been freed and set to NULL unless the user resized
-	 * while at the statusbar prompt. */
-	free(prompt);
-
-	prompt = charalloc(((COLS - 4) * mb_cur_max()) + 1);
+	char *new_prompt = new char[((COLS - 4) * mb_cur_max()) + 1];
 
 	bottombars(menu);
 
 	va_start(ap, msg);
-	vsnprintf(prompt, (COLS - 4) * mb_cur_max(), msg, ap);
+	vsnprintf(new_prompt, (COLS - 4) * mb_cur_max(), msg, ap);
 	va_end(ap);
-	null_at(&prompt, actual_x(prompt, COLS - 4));
+	null_at(&new_prompt, actual_x(prompt, COLS - 4));
+	prompt = string(new_prompt);
+	delete[] new_prompt;
 
 	auto func = get_prompt_string(key, allow_tabs, allow_files, &list, curranswer, history_list, refresh_func);
 
-	free(prompt);
-	prompt = NULL;
+	prompt = "";
 
 	/* We're done with the prompt, so save the statusbar cursor position. */
 	old_statusbar_x = statusbar_x;
