@@ -82,7 +82,7 @@ void wctomb_reset(void)
 }
 
 /* This function is equivalent to isalnum() for multibyte characters. */
-bool a(const char *c)
+bool is_alnum_mbchar(const char *c)
 {
 	assert(c != NULL);
 
