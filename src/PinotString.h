@@ -25,6 +25,7 @@ namespace pinot {
 		bool operator==(const character& ch);
 		bool operator!=(char ch);
 
+		bool is_ascii_control() const;
 		bool is_blank() const;
 
 		friend class string;

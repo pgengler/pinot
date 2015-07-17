@@ -21,6 +21,11 @@ namespace pinot
 
 	}
 
+	bool character::is_ascii_control() const
+	{
+		return u_iscntrl(str[0]);
+	}
+
 	bool character::is_blank() const
 	{
 		return u_isblank(str[0]);

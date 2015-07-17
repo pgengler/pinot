@@ -302,7 +302,6 @@ void enable_flow_control(void);
 void terminal_init(void);
 void do_input(void);
 void do_output(string output, bool allow_cntrls);
-void do_output(char *output, size_t output_len, bool allow_cntrls);
 
 /* All functions in prompt.c. */
 Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void));

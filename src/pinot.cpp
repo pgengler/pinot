@@ -1384,21 +1384,11 @@ void precalc_multicolorinfo(void)
 	}
 }
 
-/* The user typed output_len multibyte characters.  Add them to the edit
- * buffer, filtering out all ASCII control characters if allow_cntrls is
- * true. */
+/* The user typed output_len multibyte characters.  Add them to the edit buffer,
+ * filtering out all ASCII control characters if allow_cntrls is true. */
 void do_output(string output, bool allow_cntrls)
 {
-	char *str = mallocstrcpy(NULL, output.c_str());
-	do_output(str, output.length(), allow_cntrls);
-	free(str);
-}
-
-void do_output(char *output, size_t output_len, bool allow_cntrls)
-{
-	size_t current_len, orig_lenpt = 0, i = 0;
-	char *char_buf = charalloc(mb_cur_max());
-	int char_buf_len;
+	size_t current_len, orig_lenpt = 0;
 
 	assert(openfile->current != NULL);
 
@@ -1407,29 +1397,18 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		orig_lenpt = strlenpt(openfile->current->data);
 	}
 
-	while (i < output_len) {
-		/* If allow_cntrls is true, convert nulls and newlines
-		 * properly. */
+	for (auto ch : output) {
+		/* If allow_cntrls is true, convert nulls and newlines properly. */
 		if (allow_cntrls) {
-			/* Null to newline, if needed. */
-			if (output[i] == '\0') {
-				output[i] = '\n';
-			}
-			/* Newline to Enter, if needed. */
-			else if (output[i] == '\n') {
+			if (ch == '\n') {
+				/* Newline to Enter, if needed. */
 				do_enter(false);
-				i++;
 				continue;
 			}
 		}
 
-		/* Interpret the next multibyte character. */
-		char_buf_len = parse_mbchar(output + i, char_buf, NULL);
-
-		i += char_buf_len;
-
 		/* If allow_cntrls is false, filter out an ASCII control character. */
-		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
+		if (!allow_cntrls && ch.is_ascii_control()) {
 			continue;
 		}
 
@@ -1440,8 +1419,8 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		}
 
 		assert(openfile->current_x <= current_len);
-		openfile->current->data = openfile->current->data.substr(0, openfile->current_x) + char_buf + openfile->current->data.substr(openfile->current_x);
-		current_len += char_buf_len;
+		openfile->current->data = openfile->current->data.substr(0, openfile->current_x) + ch + openfile->current->data.substr(openfile->current_x);
+		current_len++;
 
 		openfile->totsize++;
 		set_modified();
@@ -1450,10 +1429,10 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 
 		/* Note that current_x has not yet been incremented. */
 		if (openfile->mark_set && openfile->current == openfile->mark_begin && openfile->current_x < openfile->mark_begin_x) {
-			openfile->mark_begin_x += char_buf_len;
+			openfile->mark_begin_x++;
 		}
 
-		openfile->current_x += char_buf_len;
+		openfile->current_x++;
 
 		update_undo(ADD);
 
@@ -1478,10 +1457,7 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 		}
 	}
 
-	free(char_buf);
-
 	openfile->placewewant = xplustabs();
-
 
 	reset_multis(openfile->current, false);
 	if (edit_refresh_needed == true) {

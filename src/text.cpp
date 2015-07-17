@@ -156,7 +156,7 @@ void do_backspace(void)
 void do_tab(void)
 {
 	if (ISSET(TABS_TO_SPACES)) {
-		char *output;
+		string output;
 		size_t output_len = 0, new_pww = xplustabs();
 
 		do {
@@ -164,16 +164,13 @@ void do_tab(void)
 			output_len++;
 		} while (new_pww % tabsize != 0);
 
-		output = charalloc(output_len + 1);
+		for (int i = 0; i < output_len; i++) {
+			output += ' ';
+		}
 
-		charset(output, ' ', output_len);
-		output[output_len] = '\0';
-
-		do_output(output, output_len, true);
-
-		free(output);
+		do_output(output, true);
 	} else {
-		do_output((char *) "\t", 1, true);
+		do_output(string("\t"), true);
 	}
 }
 
