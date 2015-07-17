@@ -126,13 +126,6 @@ bool is_blank_mbchar(const char *c)
 	}
 }
 
-/* This function is equivalent to iscntrl(), except in that it only
- * handles non-high-bit control characters. */
-bool is_ascii_cntrl_char(int c)
-{
-	return (0 <= c && c < 32);
-}
-
 /* This function is equivalent to iscntrl(), except in that it also
  * handles high-bit control characters. */
 bool is_cntrl_char(int c)
