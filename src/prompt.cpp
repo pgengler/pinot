@@ -120,43 +120,18 @@ Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void
  * filtering out all ASCII control characters if allow_cntrls is true. */
 void do_statusbar_output(string output, bool allow_cntrls)
 {
-	char *out = mallocstrcpy(NULL, output.c_str());
-	do_statusbar_output(out, output.length(), allow_cntrls);
-	free(out);
-}
-
-void do_statusbar_output(char *output, size_t output_len, bool allow_cntrls)
-{
 	size_t i = 0;
-	char *char_buf = charalloc(mb_cur_max());
-	int char_buf_len;
 
-	while (i < output_len) {
-		/* If allow_cntrls is true, convert nulls and newlines
-		 * properly. */
-		if (allow_cntrls) {
-			/* Null to newline, if needed. */
-			if (output[i] == '\0') {
-				output[i] = '\n';
-			}
-		}
-
-		/* Interpret the next multibyte character. */
-		char_buf_len = parse_mbchar(output + i, char_buf, NULL);
-
-		i += char_buf_len;
-
+	for (auto ch : output) {
 		/* If allow_cntrls is false, filter out an ASCII control character. */
-		if (!allow_cntrls && is_ascii_cntrl_char(*(output + i - char_buf_len))) {
+		if (!allow_cntrls && ch.is_ascii_control()) {
 			continue;
 		}
 
-		answer.append(char_buf, char_buf_len);
+		answer += ch;
 
-		statusbar_x += char_buf_len;
+		statusbar_x++;
 	}
-
-	free(char_buf);
 
 	statusbar_pww = statusbar_xplustabs();
 
