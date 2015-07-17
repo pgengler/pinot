@@ -445,13 +445,6 @@ char *mallocstrncpy(char *dest, const char *src, size_t n)
 	return dest;
 }
 
-/* Copy one malloc()ed string to another pointer.  Should be used as:
- * "dest = mallocstrcpy(dest, src);". */
-char *mallocstrcpy(char *dest, const char *src)
-{
-	return mallocstrncpy(dest, src, (src == NULL) ? 1 : strlen(src) + 1);
-}
-
 /* pinot scrolls horizontally within a line in chunks.  Return the column
  * number of the first character displayed in the edit window when the
  * cursor is at the given column.  Note that (0 <= column -

@@ -420,7 +420,6 @@ void nperror(const char *s);
 void *nmalloc(size_t howmuch);
 void *nrealloc(void *ptr, size_t howmuch);
 char *mallocstrncpy(char *dest, const char *src, size_t n);
-char *mallocstrcpy(char *dest, const char *src);
 size_t get_page_start(size_t column);
 size_t xplustabs(void);
 size_t actual_x(const char *s, size_t column);
