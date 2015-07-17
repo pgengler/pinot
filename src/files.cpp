@@ -2180,19 +2180,17 @@ bool is_dir(const string& buf)
  * This code may safely be consumed by a BSD or GPL license. */
 
 /* We consider the first buf_len characters of buf for ~username tab completion. */
-std::vector<string> username_tab_completion(const char *buf, size_t buf_len)
+std::vector<string> username_tab_completion(const string& buf, size_t buf_len)
 {
 	const struct passwd *userdata;
 	std::vector<string> matches;
 
-	assert(buf != NULL && buf_len > 0);
+	assert(buf.length() > 0);
 
 	while ((userdata = getpwent()) != NULL) {
-		if (strncmp(userdata->pw_name, buf + 1, buf_len - 1) == 0) {
-			/* Cool, found a match.  Add it to the list.  This makes a
-			 * lot more sense to me (Chris) this way... */
-
-			matches.push_back(string("~") + string(userdata->pw_name));
+		auto username = string(userdata->pw_name);
+		if (username == buf.substr(1, buf_len - 1)) {
+			matches.push_back(string("~") + username);
 		}
 	}
 	endpwent();
@@ -2262,30 +2260,24 @@ std::vector<string> cwd_tab_completion(string buf, bool allow_files, size_t buf_
 /* Do tab completion.  place refers to how much the statusbar cursor
  * position should be advanced.  refresh_func is the function we will
  * call to refresh the edit window. */
+/* Do tab completion.  place refers to how much the statusbar cursor
+ * position should be advanced.  refresh_func is the function we will
+ * call to refresh the edit window. */
+
 string input_tab(string buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
 {
-	char *str = mallocstrcpy(NULL, buf.c_str());
-	string result = input_tab(str, allow_files, place, lastwastab, refresh_func, list);
-	free(str);
-
-	return result;
-}
-
-char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, void (*refresh_func)(void), bool *list)
-{
-	size_t buf_len;
 	std::vector<string> matches;
 
-	assert(buf != NULL && place != NULL && *place <= strlen(buf) && lastwastab != NULL && refresh_func != NULL && list != NULL);
+	assert(place != NULL && *place <= buf.length() && lastwastab != NULL && refresh_func != NULL && list != NULL);
 
 	*list = false;
 
 	/* If the word starts with `~' and there is no slash in the word,
 	 * then try completing this word as a username. */
-	if (*place > 0 && *buf == '~') {
-		const char *bob = strchr(buf, '/');
+	if (*place > 0 && buf.starts_with("~")) {
+		auto pos = buf.find('/');
 
-		if (bob == NULL || bob >= buf + *place) {
+		if (pos == string::npos || pos >= *place) {
 			matches = username_tab_completion(buf, *place);
 		}
 	}
@@ -2295,55 +2287,42 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 		matches = cwd_tab_completion(buf, allow_files, *place);
 	}
 
-	buf_len = strlen(buf);
-
-	if (matches.size() == 0 || *place != buf_len) {
+	if (matches.size() == 0 || *place != buf.length()) {
 		beep();
 	} else {
 		size_t common_len = 0;
-		char *mzero;
-		const char *lastslash = revstrstr(buf, "/", buf + *place);
-		size_t lastslash_len = (lastslash == NULL) ? 0 : lastslash - buf + 1;
-		char *match1_mb = charalloc(mb_cur_max() + 1);
-		char *match2_mb = charalloc(mb_cur_max() + 1);
-		int match1_mb_len, match2_mb_len;
+		auto lastslash_len = buf.substr(0, *place).rfind("/");
+		if (lastslash_len == string::npos) {
+			lastslash_len = 0;
+		}
 
 		while (true) {
 			size_t match;
+			auto match1 = matches[0].substr(0, common_len);
 			for (match = 1; match < matches.size(); match++) {
 				/* Get the number of single-byte characters that all the
 				 * matches have in common. */
-				match1_mb_len = parse_mbchar(matches[0].c_str() + common_len, match1_mb, NULL);
-				match2_mb_len = parse_mbchar(matches[match].c_str() + common_len, match2_mb, NULL);
-				match1_mb[match1_mb_len] = '\0';
-				match2_mb[match2_mb_len] = '\0';
-				if (strcmp(match1_mb, match2_mb) != 0) {
+				auto match2 = matches[match].substr(0, common_len);
+				if (match1 != match2) {
 					break;
 				}
 			}
 
-			if (match < matches.size() || matches[0][common_len] == '\0') {
+			if (match < matches.size() || matches[0].length() == common_len) {
 				break;
 			}
 
-			common_len += parse_mbchar(buf + common_len, NULL, NULL);
+			common_len++;
 		}
 
-		free(match1_mb);
-		free(match2_mb);
-
-		mzero = charalloc(lastslash_len + common_len + 1);
-
-		strncpy(mzero, buf, lastslash_len);
-		strncpy(mzero + lastslash_len, matches[0].c_str(), common_len);
+		string mzero = buf.substr(0, lastslash_len) + matches[0].substr(0, common_len);
 
 		common_len += lastslash_len;
-		mzero[common_len] = '\0';
 
 		assert(common_len >= *place);
 
 		if (matches.size() == 1 && is_dir(mzero)) {
-			mzero[common_len++] = '/';
+			mzero += '/';
 
 			assert(common_len > *place);
 		}
@@ -2352,15 +2331,12 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			beep();
 		}
 
-		/* If there is more of a match to display on the statusbar, show
-		 * it.  We reset lastwastab to false: it requires pressing Tab
-		 * twice in succession with no statusbar changes to see a match
-		 * list. */
+		/* If there is more of a match to display on the statusbar, show it.
+		 * We reset lastwastab to false: it requires pressing Tab twice in
+		 * succession with no statusbar changes to see a match list. */
 		if (common_len != *place) {
 			*lastwastab = false;
-			buf = charealloc(buf, common_len + buf_len - *place + 1);
-			charmove(buf + common_len, buf + *place, buf_len - *place + 1);
-			strncpy(buf, mzero, common_len);
+			buf = mzero.substr(0, common_len) + buf.substr(*place, buf.length() - *place + 1);
 			*place = common_len;
 		} else if (!*lastwastab || matches.size() < 2) {
 			*lastwastab = true;
@@ -2419,8 +2395,6 @@ char *input_tab(char *buf, bool allow_files, size_t *place, bool *lastwastab, vo
 			wnoutrefresh(edit);
 			*list = true;
 		}
-
-		free(mzero);
 	}
 
 	/* Only refresh the edit window if we don't have a list of filename
