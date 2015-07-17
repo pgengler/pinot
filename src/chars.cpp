@@ -82,7 +82,7 @@ void wctomb_reset(void)
 }
 
 /* This function is equivalent to isalnum() for multibyte characters. */
-bool is_alnum_mbchar(const char *c)
+bool a(const char *c)
 {
 	assert(c != NULL);
 
@@ -707,95 +707,6 @@ size_t mbstrnlen(const char *s, size_t maxlen)
 	}
 }
 
-/* This function is equivalent to strchr() for multibyte strings. */
-char *mbstrchr(const char *s, const char *c)
-{
-	assert(s != NULL && c != NULL);
-
-	if (use_utf8) {
-		bool bad_s_mb = false, bad_c_mb = false;
-		char *s_mb = charalloc(MB_CUR_MAX);
-		const char *q = s;
-		wchar_t ws, wc;
-		int c_mb_len = mbtowc(&wc, c, MB_CUR_MAX);
-
-		if (c_mb_len < 0) {
-			mbtowc_reset();
-			wc = (unsigned char)*c;
-			bad_c_mb = true;
-		}
-
-		while (*s != '\0') {
-			int s_mb_len = parse_mbchar(s, s_mb, NULL);
-
-			if (mbtowc(&ws, s_mb, s_mb_len) < 0) {
-				mbtowc_reset();
-				ws = (unsigned char)*s;
-				bad_s_mb = true;
-			}
-
-			if (bad_s_mb == bad_c_mb && ws == wc) {
-				break;
-			}
-
-			s += s_mb_len;
-			q += s_mb_len;
-		}
-
-		free(s_mb);
-
-		if (*s == '\0') {
-			q = NULL;
-		}
-
-		return (char *)q;
-	} else {
-		return (char *) strchr(s, *c);
-	}
-}
-
-/* Return true if the string s contains one or more blank characters,
- * and false otherwise. */
-bool has_blank_chars(const char *s)
-{
-	assert(s != NULL);
-
-	for (; *s != '\0'; s++) {
-		if (isblank(*s)) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/* Return true if the multibyte string s contains one or more blank
- * multibyte characters, and false otherwise. */
-bool has_blank_mbchars(const char *s)
-{
-	assert(s != NULL);
-
-	if (use_utf8) {
-		bool retval = false;
-		char *chr_mb = charalloc(MB_CUR_MAX);
-
-		for (; *s != '\0'; s += move_mbright(s, 0)) {
-			parse_mbchar(s, chr_mb, NULL);
-
-			if (is_blank_mbchar(chr_mb)) {
-				retval = true;
-				break;
-			}
-		}
-
-		free(chr_mb);
-
-		return retval;
-	} else {
-		return has_blank_chars(s);
-	}
-}
-
 /* Return true if wc is valid Unicode, and false otherwise. */
 bool is_valid_unicode(wchar_t wc)
 {
@@ -804,13 +715,4 @@ bool is_valid_unicode(wchar_t wc)
 		&& (wc <= 0xD7FF || 0xE000 <= wc)
 		&& (wc <= 0xFDCF || 0xFDF0 <= wc)
 		&& ((wc & 0xFFFF) <= 0xFFFD));
-}
-
-/* Check if the string s is a valid multibyte string.  Return true if it
- * is, and false otherwise. */
-bool is_valid_mbstring(const char *s)
-{
-	assert(s != NULL);
-
-	return use_utf8 ? (mbstowcs(NULL, s, 0) != (size_t)-1) : true;
 }

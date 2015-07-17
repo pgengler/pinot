@@ -148,11 +148,7 @@ size_t mbstrlen(const char *s);
 size_t nstrnlen(const char *s, size_t maxlen);
 #endif
 size_t mbstrnlen(const char *s, size_t maxlen);
-char *mbstrchr(const char *s, const char *c);
-bool has_blank_chars(const char *s);
-bool has_blank_mbchars(const char *s);
 bool is_valid_unicode(wchar_t wc);
-bool is_valid_mbstring(const char *s);
 
 /* All functions in color.c. */
 void set_colorpairs(void);
