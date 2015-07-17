@@ -114,7 +114,6 @@ bool nisblank(int c);
 #ifndef HAVE_ISWBLANK
 bool niswblank(wchar_t wc);
 #endif
-bool is_byte(int c);
 bool is_alnum_mbchar(const char *c);
 bool is_blank_mbchar(const char *c);
 bool is_cntrl_char(int c);

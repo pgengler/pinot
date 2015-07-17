@@ -71,13 +71,6 @@ bool niswblank(wchar_t wc)
 }
 #endif
 
-/* Return true if the value of c is in byte range, and false
- * otherwise. */
-bool is_byte(int c)
-{
-	return ((unsigned int)c == (unsigned char)c);
-}
-
 void mbtowc_reset(void)
 {
 	IGNORE_CALL_RESULT(mbtowc(NULL, NULL, 0));
