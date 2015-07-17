@@ -129,7 +129,6 @@ char *control_mbrep(const char *c, char *crep, int *crep_len);
 char *mbrep(const char *c, char *crep, int *crep_len);
 int mbwidth(const char *c);
 int mb_cur_max(void);
-char *make_mbchar(long chr, int *chr_mb_len);
 int parse_mbchar(const char *buf, char *chr, size_t *col);
 size_t move_mbleft(string str, size_t pos);
 size_t move_mbleft(const char *buf, size_t pos);

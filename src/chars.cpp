@@ -326,34 +326,6 @@ int mb_cur_max(void)
 	return use_utf8 ? MB_CUR_MAX : 1;
 }
 
-/* Convert the Unicode value in chr to a multibyte character with the
- * same wide character value as chr, if possible.  If the conversion
- * succeeds, return the (dynamically allocated) multibyte character and
- * its length.  Otherwise, return an undefined (dynamically allocated)
- * multibyte character and a length of zero. */
-char *make_mbchar(long chr, int *chr_mb_len)
-{
-	char *chr_mb;
-
-	assert(chr_mb_len != NULL);
-
-	if (use_utf8) {
-		chr_mb = charalloc(MB_CUR_MAX);
-		*chr_mb_len = wctomb(chr_mb, (wchar_t)chr);
-
-		/* Reject invalid Unicode characters. */
-		if (*chr_mb_len < 0 || !is_valid_unicode((wchar_t)chr)) {
-			wctomb_reset();
-			*chr_mb_len = 0;
-		}
-	} else {
-		*chr_mb_len = 1;
-		chr_mb = mallocstrncpy(NULL, (char *)&chr, 1);
-	}
-
-	return chr_mb;
-}
-
 /* Parse a multibyte character from buf.  Return the number of bytes
  * used.  If chr isn't NULL, store the multibyte character in it.  If
  * col isn't NULL, store the new display width in it.  If *buf is '\t',
