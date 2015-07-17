@@ -116,12 +116,10 @@ Key do_statusbar_input(bool *ran_func, bool *finished, void (*refresh_func)(void
 	return input;
 }
 
-/* The user typed output_len multibyte characters.  Add them to thestatusbar prompt,
+/* The user typed output_len multibyte characters.  Add them to the statusbar prompt,
  * filtering out all ASCII control characters if allow_cntrls is true. */
 void do_statusbar_output(string output, bool allow_cntrls)
 {
-	size_t i = 0;
-
 	for (auto ch : output) {
 		/* If allow_cntrls is false, filter out an ASCII control character. */
 		if (!allow_cntrls && ch.is_ascii_control()) {
