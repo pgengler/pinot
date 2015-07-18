@@ -21,14 +21,66 @@ namespace pinot
 
 	}
 
-	bool character::is_ascii_control() const
+	ssize_t character::character_width(UChar uc)
 	{
-		return u_iscntrl(str[0]);
+		ssize_t width;
+
+		width = wcwidth(uc);
+
+		if (width == -1) {
+			width = 1;
+		}
+
+		return width;
+	}
+
+	UChar character::display_char(UChar uc)
+	{
+		if (uc == '\n') {
+			return '@';
+		} else if (uc == 127) {
+			return '?';
+		}
+		return uc + 64;
+	}
+
+	ssize_t character::display_width(size_t col) const
+	{
+		size_t width = 0;
+
+		if (str[0] == '\t') {
+			/* If we have a tab, get its width in columns using the
+			* current value of col. */
+			width = tabsize - (col % tabsize);
+		} else if (is_control()) {
+			/* If we have a control character, get its width using one
+			* column for the "^" that will be displayed in front of it,
+			* and the width in columns of its visible equivalent. */
+			width = character_width(display_char(str[0])) + 1;
+		} else {
+			/* If we have a normal character, get its width in columns normally. */
+			width = character_width(str[0]);
+		}
+
+		return width;
+	}
+
+	character character::for_display() const
+	{
+		if (is_control()) {
+			return character(display_char(str[0]));
+		}
+		return *this;
 	}
 
 	bool character::is_blank() const
 	{
 		return u_isblank(str[0]);
+	}
+
+	bool character::is_control() const
+	{
+		return u_iscntrl(str[0]);
 	}
 
 	bool character::operator==(char ch)
@@ -159,6 +211,17 @@ namespace pinot {
 		::strcpy(c_str_buffer, str_c);
 
 		return c_str_buffer;
+	}
+
+	size_t string::display_width(size_t col) const
+	{
+		size_t len = 0;
+		for (auto ch : *this) {
+			auto width = ch.display_width(col);
+			len += width;
+			col += width;
+		}
+		return len;
 	}
 
 	bool string::empty() const

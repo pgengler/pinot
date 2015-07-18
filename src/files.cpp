@@ -377,7 +377,7 @@ void replace_buffer(const string& filename)
 void display_buffer(void)
 {
 	/* Update the titlebar, since the filename may have changed. */
-	titlebar(NULL);
+	titlebar("");
 
 	/* Make sure we're using the buffer's associated colors, if
 	 * applicable. */
@@ -1495,7 +1495,7 @@ bool write_file(const string& name, FILE *f_open, bool tmp, AppendType append, b
 	}
 
 	if (!tmp) {
-		titlebar(NULL);
+		titlebar("");
 	}
 
 	realname = real_dir_from_tilde(name);
@@ -1872,7 +1872,7 @@ skip_backup:
 
 		statusbar(P_("Wrote %lu line", "Wrote %lu lines", (unsigned long)lineswritten), (unsigned long)lineswritten);
 		openfile->modified = false;
-		titlebar(NULL);
+		titlebar("");
 	}
 
 	retval = true;

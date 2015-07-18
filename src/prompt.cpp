@@ -122,7 +122,7 @@ void do_statusbar_output(string output, bool allow_cntrls)
 {
 	for (auto ch : output) {
 		/* If allow_cntrls is false, filter out an ASCII control character. */
-		if (!allow_cntrls && ch.is_ascii_control()) {
+		if (!allow_cntrls && ch.is_control()) {
 			continue;
 		}
 

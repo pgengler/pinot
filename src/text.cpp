@@ -2146,7 +2146,7 @@ void do_linter(void)
 				}
 			}
 			do_gotolinecolumn(curr_lint->lineno, tmpcol, false, false, false, false);
-			titlebar(NULL);
+			titlebar("");
 			edit_refresh();
 			statusbar(curr_lint->text.c_str());
 			bottombars(MLINTER);

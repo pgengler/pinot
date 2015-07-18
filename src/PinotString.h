@@ -11,6 +11,8 @@
 #include <unicode/ustream.h>
 #include <unicode/brkiter.h>
 
+extern ssize_t tabsize;
+
 namespace pinot {
 	class string;
 
@@ -25,13 +27,18 @@ namespace pinot {
 		bool operator==(const character& ch);
 		bool operator!=(char ch);
 
-		bool is_ascii_control() const;
+		ssize_t display_width(size_t col=0) const;
+		character for_display() const;
+
 		bool is_blank() const;
+		bool is_control() const;
 
 		friend class string;
 		friend std::ostream& operator<<(std::ostream& stream, const character& ch);
 		friend string operator+(const character& a, const character& b);
 	private:
+		static ssize_t character_width(UChar uc);
+		static UChar display_char(UChar uc);
 		icu::UnicodeString str;
 	};
 
@@ -56,6 +63,7 @@ namespace pinot {
 
 		bool compare(size_t pos, size_t len, const string& str) const;
 		const char *c_str();
+		size_t display_width(size_t col=0) const;
 		bool empty() const;
 		bool has_blank_chars() const;
 		ssize_t length() const;

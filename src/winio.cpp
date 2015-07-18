@@ -174,12 +174,7 @@ void check_statusblank(void)
  * string is dynamically allocated, and should be freed.  If dollars is
  * true, the caller might put "$" at the beginning or end of the line if
  * it's too long. */
-string display_string(string buf, size_t start_col, size_t len, bool dollars)
-{
-	return display_string(buf.c_str(), start_col, len, dollars);
-}
-
-string display_string(const char *buf, size_t start_col, size_t len, bool dollars)
+string display_string(const string& buf, size_t start_col, size_t len, bool dollars)
 {
 	size_t start_index;
 	/* Index in buf of the first character shown. */
@@ -187,12 +182,9 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 	/* Screen column that start_index corresponds to. */
 	string converted;
 	/* The string we return. */
-	char *buf_mb;
-	int buf_mb_len;
 
-	/* If dollars is true, make room for the "$" at the end of the
-	 * line. */
-	if (dollars && len > 0 && strlenpt(buf) > start_col + len) {
+	/* If dollars is true, make room for the "$" at the end of the line. */
+	if (dollars && len > 0 && buf.display_width() > start_col + len) {
 		len--;
 	}
 
@@ -200,36 +192,23 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 		return "";
 	}
 
-	buf_mb = charalloc(mb_cur_max());
-
 	start_index = actual_x(buf, start_col);
-	column = strnlenpt(buf, start_index);
+	column = buf.substr(0, start_index).display_width();
 
 	assert(column <= start_col);
 
-	if (buf[start_index] != '\0' && buf[start_index] != '\t' && (column < start_col || (dollars && column > 0))) {
-		/* We don't display all of buf[start_index] since it starts to
-		 * the left of the screen. */
-		buf_mb_len = parse_mbchar(buf + start_index, buf_mb, NULL);
+	if (buf.length() != start_index && buf[start_index] != '\t' && (column < start_col || (dollars && column > 0))) {
+		/* We don't display all of buf[start_index] since it starts to the left of the screen. */
+		auto ch = buf[start_index];
 
-		if (is_cntrl_mbchar(buf_mb)) {
+		if (ch.is_control()) {
 			if (column < start_col) {
-				char *ctrl_buf_mb = charalloc(mb_cur_max());
-				int ctrl_buf_mb_len, i;
+				converted += ch.for_display();
+				start_col += ch.display_width();
 
-				ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb, &ctrl_buf_mb_len);
-
-				for (i = 0; i < ctrl_buf_mb_len; i++) {
-					converted += ctrl_buf_mb[i];
-				}
-
-				start_col += mbwidth(ctrl_buf_mb);
-
-				free(ctrl_buf_mb);
-
-				start_index += buf_mb_len;
+				start_index++;
 			}
-		} else if (using_utf8() && mbwidth(buf_mb) == 2) {
+		} else if (using_utf8() && ch.display_width() == 2) {
 			if (column >= start_col) {
 				converted += ' ';
 				start_col++;
@@ -238,19 +217,17 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 			converted += ' ';
 			start_col++;
 
-			start_index += buf_mb_len;
+			start_index++;
 		}
 	}
 
 	while (buf[start_index] != '\0') {
-		buf_mb_len = parse_mbchar(buf + start_index, buf_mb, NULL);
+		auto ch = buf[start_index];
 
 		/* If buf contains a tab character, interpret it. */
-		if (*buf_mb == '\t') {
+		if (ch == '\t') {
 			if (ISSET(WHITESPACE_DISPLAY)) {
-				int i;
-
-				for (i = 0; i < whitespace_len[0]; i++) {
+				for (int i = 0; i < whitespace_len[0]; i++) {
 					converted += whitespace[i];
 				}
 			} else {
@@ -261,29 +238,17 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 				converted += ' ';
 				start_col++;
 			}
-		} else if (is_cntrl_mbchar(buf_mb)) {
+		} else if (ch.is_control()) {
 			/* If buf contains a control character, interpret it. */
-			char *ctrl_buf_mb = charalloc(mb_cur_max());
-			int ctrl_buf_mb_len, i;
-
 			converted += '^';
 			start_col++;
 
-			ctrl_buf_mb = control_mbrep(buf_mb, ctrl_buf_mb, &ctrl_buf_mb_len);
-
-			for (i = 0; i < ctrl_buf_mb_len; i++) {
-				converted += ctrl_buf_mb[i];
-			}
-
-			start_col += mbwidth(ctrl_buf_mb);
-
-			free(ctrl_buf_mb);
+			converted += ch.for_display();
+			start_col += ch.display_width();
+		} else if (ch == ' ') {
 			/* If buf contains a space character, interpret it. */
-		} else if (*buf_mb == ' ') {
 			if (ISSET(WHITESPACE_DISPLAY)) {
-				int i;
-
-				for (i = whitespace_len[0]; i < whitespace_len[0] + whitespace_len[1]; i++) {
+				for (int i = whitespace_len[0]; i < whitespace_len[0] + whitespace_len[1]; i++) {
 					converted += whitespace[i];
 				}
 			} else {
@@ -293,29 +258,12 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
 		} else {
 			/* If buf contains a non-control character, interpret it.  If buf
 			 * contains an invalid multibyte sequence, display it as such. */
-			char *nctrl_buf_mb = charalloc(mb_cur_max());
-			int nctrl_buf_mb_len, i;
-
-			/* Make sure an invalid sequence-starter byte is properly
-			 * terminated, so that it doesn't pick up lingering bytes
-			 * of any previous content. */
-			null_at(&buf_mb, buf_mb_len);
-
-			nctrl_buf_mb = mbrep(buf_mb, nctrl_buf_mb, &nctrl_buf_mb_len);
-
-			for (i = 0; i < nctrl_buf_mb_len; i++) {
-				converted += nctrl_buf_mb[i];
-			}
-
-			start_col += mbwidth(nctrl_buf_mb);
-
-			free(nctrl_buf_mb);
+			converted += ch;
+			start_col += ch.display_width();
 		}
 
-		start_index += buf_mb_len;
+		start_index++;
 	}
-
-	free(buf_mb);
 
 	/* Make sure converted takes up no more than len columns. */
 	return converted.substr(0, len);
@@ -328,11 +276,6 @@ string display_string(const char *buf, size_t start_col, size_t len, bool dollar
  * browser in, so display the current version of pinot and the contents
  * of path on the titlebar. */
 void titlebar(string path)
-{
-	titlebar(path.c_str());
-}
-
-void titlebar(const char *path)
 {
 	int space = COLS;
 	/* The space we have available for display. */
@@ -378,13 +321,13 @@ void titlebar(const char *path)
 	}
 
 	/* Don't display the state if we're in the file browser. */
-	if (path != NULL) {
+	if (path != "") {
 		state = "";
 	} else {
 		state = openfile->modified ? _("Modified") : ISSET(VIEW_MODE) ? _("View") : "";
 	}
 
-	ssize_t statelen = strlenpt((state.empty() && path == NULL) ? _("Modified") : state);
+	ssize_t statelen = strlenpt((state.empty() && path == "") ? _("Modified") : state);
 
 	/* If possible, add a space before state. */
 	if (space > 0 && statelen < space) {
@@ -394,7 +337,7 @@ void titlebar(const char *path)
 	}
 
 	/* path should be a directory if we're in the file browser. */
-	if (path != NULL) {
+	if (path != "") {
 		prefix = _("DIR:");
 	} else {
 		if (openfile->filename.empty()) {
@@ -405,7 +348,7 @@ void titlebar(const char *path)
 		}
 	}
 
-	prefixlen = strnlenpt(prefix.c_str(), space - statelen) + 1;
+	prefixlen = prefix.display_width(space - statelen) + 1;
 
 	/* If newfie is false, add a space after prefix. */
 	if (!newfie && prefixlen + statelen < space) {
@@ -413,8 +356,8 @@ void titlebar(const char *path)
 	}
 
 	/* If we're not in the file browser, set path to the current filename. */
-	if (path == NULL) {
-		path = openfile->filename.c_str();
+	if (path == "") {
+		path = openfile->filename;
 	}
 
 	/* Account for the full lengths of the prefix and the state. */
@@ -492,7 +435,7 @@ void set_modified(void)
 {
 	if (!openfile->modified) {
 		openfile->modified = true;
-		titlebar(NULL);
+		titlebar("");
 		if (ISSET(LOCKING)) {
 			if (openfile->filename == "") {
 				/* Don't bother with a lockfile if there isn't an actual file open */
@@ -1455,7 +1398,7 @@ void total_redraw(void)
 void total_refresh(void)
 {
 	total_redraw();
-	titlebar(NULL);
+	titlebar("");
 	edit_refresh();
 	bottombars(currmenu);
 }

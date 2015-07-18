@@ -268,7 +268,7 @@ change_browser_directory:
 	if (kbinput) {
 		delete kbinput;
 	}
-	titlebar(NULL);
+	titlebar("");
 	edit_refresh();
 	curs_set(1);
 	if (old_const_update) {
