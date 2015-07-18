@@ -142,16 +142,6 @@ void skip_whitespace(std::stringstream& stream)
 	}
 }
 
-std::stringstream rest(std::stringstream& stream)
-{
-	skip_whitespace(stream);
-
-	string remaining = stream.eof() ? "" : stream.str().substr(stream.tellg());
-	std::stringstream s;
-	s << remaining;
-	return s;
-}
-
 string parse_regex(std::stringstream& line)
 {
 	string regex;
@@ -442,7 +432,8 @@ void parse_include(std::stringstream& line)
 	size_t lineno_save = lineno;
 	glob_t files;
 
-	string option = rest(line).str();
+	skip_whitespace(line);
+	string option = line.str();
 
 	/* Expand tildes first, then the globs. */
 	auto expanded = real_dir_from_tilde(option);
@@ -774,7 +765,7 @@ void parse_set(std::stringstream& line)
 {
 	string option;
 	line >> option;
-	line = rest(line);
+	skip_whitespace(line);
 
 	for (auto rcopt : rcopts) {
 		if (rcopt.name == option) {
@@ -884,7 +875,7 @@ void parse_rcfile(std::ifstream& rcstream, bool syntax_only)
 		// Read keyword
 		string keyword;
 		linestream >> keyword;
-		linestream = rest(linestream);
+		skip_whitespace(linestream);
 
 		if (keyword == "set") {
 			if (syntax_only) {
