@@ -523,10 +523,8 @@ void do_right(void)
 {
 	size_t pww_save = openfile->placewewant;
 
-	assert(openfile->current_x <= openfile->current->data.length());
-
-	if (openfile->current->data[openfile->current_x] != '\0') {
-		openfile->current_x = move_mbright(openfile->current->data, openfile->current_x);
+	if (openfile->current_x < openfile->current->data.length()) {
+		openfile->current_x++;
 	} else if (openfile->current != openfile->filebot) {
 		do_down_void();
 		openfile->current_x = 0;
