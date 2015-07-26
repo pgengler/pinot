@@ -1,6 +1,6 @@
 ## Here is an example for apt's sources.list.
 
-syntax "sources.list"
+syntax sources.list
 filename /sources\.list(~|\.old|\.save)?$/
 filename /sources\.list\.d\/.*\.list(~|\.old|\.save)?$/
 

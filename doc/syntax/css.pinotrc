@@ -1,7 +1,7 @@
 ##
 ## CSS/LESS
 ##
-syntax css/
+syntax css
 filename /\.css$/
 
 # CSS rules
