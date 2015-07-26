@@ -134,6 +134,17 @@ bool nregcomp(string regex, int cflags)
 	return (rc == 0);
 }
 
+string rest(std::stringstream& stream)
+{
+	auto max_size = stream.str().length();
+	char *buffer = new char[max_size + 1];
+	stream.get(buffer, max_size);
+	string str(buffer);
+	delete[] buffer;
+
+	return str;
+}
+
 void skip_whitespace(std::stringstream& stream)
 {
 	// Eliminate leading whitespace
@@ -197,6 +208,7 @@ void parse_syntax(std::stringstream& line)
 	auto existing_syntax = syntaxes[name];
 	if (existing_syntax) {
 		DEBUG_LOG("Found existing syntax with name \"" << name << "\"; overriding with new definition");
+		syntaxes.erase(name);
 		delete existing_syntax;
 		existing_syntax = nullptr;
 	}
@@ -433,17 +445,17 @@ void parse_include(std::stringstream& line)
 	glob_t files;
 
 	skip_whitespace(line);
-	string option = line.str();
+	string filename = rest(line);
 
 	/* Expand tildes first, then the globs. */
-	auto expanded = real_dir_from_tilde(option);
+	auto expanded = real_dir_from_tilde(filename);
 
 	if (glob(expanded.c_str(), GLOB_ERR|GLOB_NOSORT, NULL, &files) == 0) {
 		for (int i = 0; i < files.gl_pathc; ++i) {
 			parse_include_file(files.gl_pathv[i]);
 		}
 	} else {
-		rcfile_error(_("Error expanding %s: %s"), option.c_str(), strerror(errno));
+		rcfile_error(_("Error expanding %s: %s"), filename.c_str(), strerror(errno));
 	}
 	globfree(&files);
 
@@ -780,7 +792,7 @@ void parse_set(std::stringstream& line)
 			/* This option doesn't have a flag, so it takes an argument. */
 
 			// The argument is whatever's left over on the line
-			string argument = line.str();
+			string argument = rest(line);
 			argument = argument.trim();
 			if (argument.empty()) {
 				rcfile_error(N_("Option \"%s\" requires an argument"), rcopt.name.c_str());
