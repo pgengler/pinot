@@ -1,0 +1,41 @@
+pinot - an developer-focused fork of the GNU nano text editor.
+
+## Overview
+
+ The pinot project was started to make some not-insigificant changes to the
+ wonderful GNU nano text editor.
+
+ Most of the changes are aimed at making a more developer-friendly editor.
+
+## How to compile and install pinot (from Github)
+
+```
+git clone https://github.com/pgengler/pinot.git
+cd pinot
+./autogen.sh
+./configure
+make
+sudo make install
+```
+
+## Building from a release
+
+```
+tar zxvf pinot-x.y.z.tar.gz
+cd pinot-x.y.z
+./configure
+make
+sudo make install
+```
+
+## Bug Reports
+
+For general bug reports, you can use the "Issues" section of the pinot
+Github project: https://github.com/pgengler/pinot/issues
+
+## Current Status
+
+While pinot is new, it is based on GNU nano's 2.3.1 (development)
+release. This means that while there's a good change that things
+will work well, there's always the possibility of something being
+broken. All bug reports are welcome, no matter how insignificant.
