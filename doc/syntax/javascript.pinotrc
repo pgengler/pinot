@@ -19,8 +19,8 @@ color green "\b(Array|Date|Math|Object|String)\b"
 # Strings (single and double quotes)
 color red ""([^"]*)"|'([^']*)'"
 # Comments
-color 69 "\/\/.*"
-color 69 start="\/\*" end="\*\/"
+color 240 "\/\/.*"
+color 240 start="\/\*" end="\*\/"
 # Make FIXME/TODO more visible
 color ,yellow "\b(FIXME|TODO)\b"
 # Trailing whitespace

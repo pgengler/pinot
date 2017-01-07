@@ -2,9 +2,6 @@
 ## Ruby
 ##
 syntax "ruby" "\.rb$"
-header "^#!.*ruby[-0-9._]*"
-linter ruby -w -c
-
 # Function names
 icolor blue "(class|def) [0-9A-Z_]+"
 
@@ -15,7 +12,7 @@ color yellow "\b(BEGIN|END|alias|and|begin|break|case|class|def|defined\?|do|els
 #color green "(\$|@|@@)?\b[A-Z]+[0-9A-Z_a-z]*"
 
 # Ruby "symbols"
-icolor magenta "(\s|^):[0-9A-Z_]+\b"
+icolor magenta "(\s|^):[0-9A-Z_]+\b" "\b\w+:\s"
 
 # Instance variables
 icolor cyan "@[A-Z_][0-9A-Z_]+"
@@ -42,8 +39,8 @@ color cyan "#\{[^}]*\}"
 color red "'([^']|(\\'))*'" "%[qw]\{[^}]*\}" "%[qw]\([^)]*\)" "%[qw]<[^>]*>" "%[qw]\[[^]]*\]" "%[qw]\$[^$]*\$" "%[qw]\^[^^]*\^" "%[qw]![^!]*!"
 
 # Comments
-color blue "#[^{].*$" "#$"
-color blue "##[^{].*$" "##$"
+color 240 "#[^{].*$" "#$"
+color 240 "##[^{].*$" "##$"
 
 # "Here" docs
 color green start="<<-?'?EOT'?" end="^EOT"

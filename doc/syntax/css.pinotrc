@@ -1,9 +1,30 @@
-## Here is an example for css files.
 ##
-syntax "css" "\.css$"
-color brightred     "."
-color brightyellow  start="\{" end="\}"
-color brightwhite   start=":" end="([;^\{]|$)"
-color brightblue    ":active|:focus|:hover|:link|:visited|:link|:after|:before|$"
-color brightblue    start="\/\*" end="\\*/"
-color green         ";|:|\{|\}"
+## CSS/LESS
+##
+syntax "css" "\.(css|less)$"
+
+# LESS mixins
+color magenta "\.\w+\(\);?"
+
+# CSS rules
+color green  start="\{" end="\}"
+
+# CSS values
+color blue   start=":" end="([;^\{]|$)"
+
+# CSS pseudoclasses
+color yellow ":active|:focus|:hover|:link|:visited|:link|:after|:before|$"
+
+# Comments
+color 240   start="\/\*" end="\*/"
+color 240 "//.*"
+
+# Punctuation characters
+color green  ";|:|\{|\}"
+
+# LESS variables
+color 27 "@[A-Za-z0-9_]+\b"
+
+# RGB colors (#RRGGBB)
+color 108 "#[0-9A-F]{6}"
+

@@ -1,7 +1,8 @@
 ## Here is an example for C/C++.
 ##
-syntax "c" "\.(c(c|pp|xx|\+\+)?|C)$" "\.(h(h|pp|xx)?|H)$" "\.ii?$"
-magic "ASCII C(\+\+)? program text"
+syntax "c" "\.(c(c|pp|xx)?|C)$" "\.(h(h|pp|xx)?|H)$" "\.ii?$"
+magic "C source, ASCII text"
+linter cpplint
 color brightred "\b[A-Z_][0-9A-Z_]+\b" 
 color green "\b(auto|bool|char|double|float|int|long|short)\b"
 color green "\b(sizeof|enum|void|static|const|struct|union|typedef|extern|(un)?signed|inline)\b"
@@ -10,8 +11,9 @@ color green "\b(class|namespace|template|public|protected|private|typename|this|
 color brightyellow "\b(for|if|while|do|else|case|default|switch)\b"
 color brightyellow "\b(try|throw|catch|operator|new|delete)\b"
 color magenta "\b(goto|continue|break|return)\b"
-color brightcyan "^\s*#\s*(define|include(_next)?|(un|ifn?)def|endif|el(if|se)|if|warning|error|pragma)"
-color brightmagenta "'([^'\]|(\\["'abfnrtv\\]))'" "'\\(([0-3]?[0-7]{1,2}))'" "'\\x[0-9A-Fa-f]{1,2}'"
+color blue "^\s*#\s*(define|include(_next)?|(un|ifn?)def|endif|el(if|se)|if|warning|error|pragma)"
+color cyan "\b(false|true|nullptr)\b"
+#color brightmagenta "'([^'\]|(\\["'abfnrtv\\]))'" "'\\(([0-3]?[0-7]{1,2}))'" "'\\x[0-9A-Fa-f]{1,2}'"
 ##
 ## GCC builtins
 color cyan "__attribute__\s*\(\([^)]*\)\)" "__(aligned|asm|builtin|hidden|inline|packed|restrict|section|typeof|weak)__"
@@ -22,11 +24,16 @@ color cyan "__attribute__\s*\(\([^)]*\)\)" "__(aligned|asm|builtin|hidden|inline
 color brightyellow "<[^= 	]*>" ""(\\.|[^"])*""
 ##
 ## This string is VERY resource intensive!
+color green "'(.|\\.)'"
 color brightyellow start=""(\\.|[^"])*\\\s*$" end="^(\\.|[^"])*""
 
 ## Comment highlighting
-color brightblue "//.*"
-color brightblue start="/\*" end="\*/"
+#color brightblue "//.*"
+#color brightblue start="/\*" end="\*/"
+color 240 "//.*"
+color 240 start="/\*" end="\*/"
 
 ## Trailing whitespace
 color ,green "\s+$"
+
+color blue "#ifdef"

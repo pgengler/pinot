@@ -2,17 +2,14 @@
 ##
 syntax "sh" "\.sh$"
 magic "(POSIX|Bourne.*) shell script text"
-header "^#!.*((ba|da|k|pdk)?sh[-0-9_]*|openrc-run|runscript)"
-linter dash -n
-
+header "^#!.*/(ba|k|pdk)?sh[-0-9_]*"
 icolor brightgreen "^[0-9A-Z_]+\(\)"
 color green "\b(case|do|done|elif|else|esac|exit|fi|for|function|if|in|local|read|return|select|shift|then|time|until|while)\b"
 color green "(\{|\}|\(|\)|\;|\]|\[|`|\\|\$|<|>|!|=|&|\|)"
 color green "-[Ldefgruwx]\b"
 color green "-(eq|ne|gt|lt|ge|le|s|n|z)\b"
 color brightblue "\b(cat|cd|chmod|chown|cp|echo|env|export|grep|install|let|ln|make|mkdir|mv|rm|sed|set|tar|touch|umask|unset)\b"
-color brightyellow ""(\\.|[^"])*""
 icolor brightred "\$\{?[0-9A-Z_!@#$*?-]+\}?"
-color brightyellow "'(\\.|[^'])*'"
-color cyan "(^|\s)#.*$"
-color ,green "\s+$"
+color cyan "(^|[[:space:]])#.*$"
+color brightyellow ""(\\.|[^"])*"" "'(\\.|[^'])*'"
+color ,green "[[:space:]]+$"
