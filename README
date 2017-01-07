@@ -39,3 +39,6 @@ While pinot is new, it is based on GNU nano's 2.3.1 (development)
 release. This means that while there's a good change that things
 will work well, there's always the possibility of something being
 broken. All bug reports are welcome, no matter how insignificant.
+
+## Building on MacOS
+In order to get `pinot` to build on MacOS (using [homebrew](http://brew.sh/)), you'll need to run `brew install gettext` and then `brew link gettext --force` in order to install and use GNU gettext.
